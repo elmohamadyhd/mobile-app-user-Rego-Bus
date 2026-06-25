@@ -1,0 +1,72 @@
+---
+description: Dart code style, formatting, and quality rules
+globs: ["**/*.dart"]
+alwaysApply: true
+---
+
+# Dart Style Guide
+
+## Formatting
+
+- Run `dart format .` before every commit — enforced by CI.
+- Line length: 80 (dart format default). No manual wrapping needed.
+- Always use trailing commas on multi-line argument lists.
+
+## Imports
+
+Always use **package imports** (`package:app_skeleton/...`), never relative imports outside of the same directory.
+
+```dart
+// ✅
+import 'package:app_skeleton/core/theme/app_colors.dart';
+
+// ❌
+import '../../../core/theme/app_colors.dart';
+```
+
+Sort imports: dart → flutter → packages → project (dart format handles this with `dart fix`).
+
+## Types and nullability
+
+- Prefer explicit types on public APIs; let inference work for local variables.
+- Never use `dynamic` unless unavoidable (JSON deserialization). Annotate with `// ignore: avoid_dynamic_calls` if Dio forces it.
+- Use `?.` and `??` instead of null checks where possible.
+
+## Const and final
+
+- Mark constructors `const` whenever all fields are final and compile-time constant.
+- Mark widget fields `final`.
+- `const` widget constructors dramatically reduce rebuilds.
+
+## Classes
+
+```dart
+// ✅ Abstract final for static utility classes (no accidental instantiation)
+abstract final class AppColors { ... }
+
+// ✅ Freezed for data classes
+@freezed
+class User with _$User {
+  const factory User({required String id, required String name}) = _User;
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+}
+```
+
+## Error handling
+
+- Use typed exceptions or `sealed` result types — not bare `catch (e)`.
+- Surface errors via `AsyncValue.error` in providers, not try/catch in widgets.
+- Log errors; don't swallow them silently.
+
+## Comments
+
+- Only comment the **why**, not the what.
+- Good: `// Drift requires a unique name per accessor — reusing trips a compile error.`
+- Bad: `// Get the user` (the method name already says that).
+- No multi-line block comments. One line max.
+
+## Tests
+
+- File mirrors the source tree: `test/features/home/presentation/home_screen_test.dart`.
+- Name tests as sentences: `test('shows empty state when list is empty', ...)`.
+- Use `flutter_test` for widget tests; `test` package for pure Dart unit tests.

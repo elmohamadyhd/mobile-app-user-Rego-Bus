@@ -1,0 +1,66 @@
+name: app_skeleton
+description: Flutter skeleton — rename `app_skeleton` → your app name across this file and lib/.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^3.3.2
+  riverpod_annotation: ^2.6.1
+
+  # Navigation
+  go_router: ^17.3.0
+
+  # Immutable models / JSON serialization
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.12.0
+
+  # HTTP client
+  dio: ^5.7.0
+
+  # Environment variables
+  flutter_dotenv: ^5.2.1
+
+  # Utilities
+  path_provider: ^2.1.5
+  path: ^1.9.0
+
+  # ── Optional: uncomment when needed ──────────────────────────────────────
+  # Local database (Drift / SQLite)
+  # drift: ^2.34.0
+  # sqlite3_flutter_libs: ^0.6.0
+
+  # Cloud backend (Supabase)
+  # supabase_flutter: ^2.8.0
+
+  # Permissions
+  # permission_handler: ^11.3.1
+
+  # File picker
+  # file_picker: ^10.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Code generation
+  build_runner: ^2.15.0
+  riverpod_generator: ^2.6.2
+  freezed: ^3.2.5
+  json_serializable: ^6.14.0
+
+  # ── Optional codegen: uncomment with drift ────────────────────────────────
+  # drift_dev: ^2.34.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env

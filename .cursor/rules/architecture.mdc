@@ -1,0 +1,56 @@
+---
+description: Feature-first layered architecture conventions for this Flutter project
+globs: ["lib/**/*.dart"]
+alwaysApply: true
+---
+
+# Flutter Architecture Rules
+
+## Folder structure
+
+```
+lib/
+├── core/           # App-wide infrastructure (theme, router, config, network, utils)
+├── features/       # One directory per vertical slice
+│   └── <feature>/
+│       ├── data/         # Repositories impl, API clients, local DAO adapters
+│       ├── domain/       # Entities, abstract repositories, use-cases
+│       └── presentation/ # Screens, widgets, Riverpod providers
+└── shared/         # Reusable widgets and models used by 2+ features
+```
+
+## Layer rules
+
+- `presentation/` imports `domain/` only — never another feature's `data/`.
+- `data/` implements `domain/` interfaces — never imports `presentation/`.
+- Cross-feature sharing goes through `core/` or `shared/`, never feature→feature.
+- `core/` has no dependency on any feature.
+
+## Naming conventions
+
+| Type | Naming | File |
+|------|--------|------|
+| Screen | `FooScreen` | `foo_screen.dart` |
+| Widget | `FooCard`, `FooButton` | `foo_card.dart` |
+| Provider | `fooProvider` | `foo_provider.dart` or `foo_providers.dart` |
+| Repository (abstract) | `FooRepository` | `foo_repository.dart` |
+| Repository (impl) | `FooRepositoryImpl` | `foo_repository_impl.dart` |
+| Entity | `Foo` (Freezed) | `foo.dart` |
+| Use-case | `GetFooUseCase` | `get_foo_use_case.dart` |
+
+## Adding a new feature checklist
+
+1. Create `lib/features/<name>/{data,domain,presentation}/` directories.
+2. Define entity in `domain/entities/`.
+3. Define repository interface in `domain/repositories/`.
+4. Implement repository in `data/repositories/`.
+5. Create Riverpod provider in `presentation/providers/`.
+6. Build screen in `presentation/<name>_screen.dart`.
+7. Register route in `core/router/app_router.dart`.
+
+## What NOT to do
+
+- Don't put business logic inside a widget's `build()`.
+- Don't hardcode strings or colors — use `AppColors`, `AppTypography`, localization keys.
+- Don't navigate with `Navigator.push` — use `context.go()` from go_router.
+- Don't call APIs directly from presentation — always go through a repository.

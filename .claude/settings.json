@@ -1,0 +1,64 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/format-analyze.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(flutter *)",
+      "Bash(dart *)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git fetch*)",
+      "Bash(git pull*)",
+      "Bash(git checkout*)",
+      "Bash(git branch*)",
+      "Bash(cp .env.example .env)"
+    ]
+  },
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      }
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "env": {}
+    },
+    "figma": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "figma-mcp@latest"],
+      "env": {
+        "FIGMA_API_KEY": "${FIGMA_API_KEY}"
+      }
+    }
+  }
+}
