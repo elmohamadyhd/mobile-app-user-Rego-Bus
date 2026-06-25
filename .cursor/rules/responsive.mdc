@@ -1,0 +1,54 @@
+---
+description: Responsive & adaptive layout — phone-first, rotates (portrait + landscape)
+globs: ["lib/**/*.dart"]
+alwaysApply: true
+---
+
+# Responsive & Adaptive Layout
+
+REGO is **phone-first but rotates** — every screen must work in **portrait and
+landscape**, across small and large phones, with the user's text-size setting
+honoured. Helpers live in `core/utils/responsive.dart`: `AppBreakpoints`,
+`context.windowSize`, `context.isLandscape`, `context.textScaler`.
+
+## Never
+
+- Never hardcode a pixel width/height for a layout container (fixed icon/avatar sizes are fine).
+- Never assume portrait. The app is **not** orientation-locked — don't add
+  `SystemChrome.setPreferredOrientations` unless one specific screen truly requires it.
+- Never disable text scaling (no `MediaQuery(textScaler: TextScaler.noScaling)`).
+- Never build a non-scrollable screen body — landscape height is short and the keyboard eats most of it.
+
+## Always
+
+- Derive size from `MediaQuery.sizeOf(context)` / `context.windowSize`, or measure with
+  `LayoutBuilder`. Use fractions, `Flexible`/`Expanded`/`Wrap` — not fixed boxes.
+- Wrap page bodies in `SafeArea` and make them scrollable (`SingleChildScrollView` / `ListView`)
+  so they survive landscape + an open keyboard.
+- Keep `Scaffold.resizeToAvoidBottomInset: true` (default) on forms; for content pinned above the
+  keyboard, account for `MediaQuery.viewInsetsOf(context).bottom`.
+- On wider screens, constrain content to `AppBreakpoints.maxContentWidth` and center it — don't
+  stretch a form full-bleed across a landscape/tablet width.
+- Respect `context.textScaler`; let text grow and reflow. Verify screens at large text scales.
+
+## Orientation (rotation)
+
+- Branch on `context.isLandscape` (or `OrientationBuilder`) when the layout changes shape — e.g. a
+  stacked hero-over-form in portrait becomes side-by-side `hero | form` in landscape.
+- State survives rotation via Riverpod providers and `State` — don't re-fetch on rebuild. Give list
+  items stable `Key`s so scroll position is retained across the rotation.
+- Re-check overflow after rotating: a `Column` that fits in portrait often overflows the short
+  landscape height — make it scrollable, or switch to a `Row`/`Wrap`.
+
+## Window size classes (Material 3)
+
+| Class | Width | Typical | REGO behaviour |
+|-------|-------|---------|----------------|
+| `compact` | < 600 | phone portrait | single column |
+| `medium` | 600–839 | phone landscape, small tablet | single column, centered, max-width |
+| `expanded` | ≥ 840 | tablet | headroom for master/detail later |
+
+## RTL
+
+Combine with `localization.mdc`: use `EdgeInsetsDirectional` and start/end (never left/right) so
+responsive layouts still mirror correctly in Arabic.

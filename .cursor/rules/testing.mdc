@@ -1,0 +1,33 @@
+---
+description: Testing discipline and conventions
+globs: ["lib/**/*.dart", "test/**/*.dart"]
+alwaysApply: false
+---
+
+# Testing
+
+Cursor doesn't have the Claude Code workflow skills, so the testing discipline lives here.
+
+## Approach
+
+- Bugfixes are **test-first**: reproduce the bug with a failing test, then fix the root cause.
+- Features ship with at least one widget/unit test (architecture.mdc requires it).
+- Test observable behavior, not implementation details. Name tests as sentences
+  (`test('shows empty state when list is empty', …)`).
+
+## Structure
+
+- Mirror the source tree: `test/features/<f>/presentation/<f>_screen_test.dart`.
+- `flutter_test` for widget tests; the `test` package for pure-Dart unit tests.
+- Inject fakes with `ProviderScope(overrides: [...])` — never hit a real Dio/network in a test.
+
+## What to cover
+
+- Providers: loading / data / error (`AsyncValue`) paths.
+- Screens: empty, loaded, and error states — under `Locale('ar')` (RTL) and `Locale('en')`.
+- Repositories: success mapping plus each typed failure.
+
+## Commands
+
+- `flutter test` (CI runs `flutter test --coverage`).
+- `flutter analyze` must be clean — CI uses `--fatal-infos`.

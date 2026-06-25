@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'package:app_skeleton/core/theme/app_colors.dart';
-import 'package:app_skeleton/core/theme/app_spacing.dart';
-import 'package:app_skeleton/core/theme/app_typography.dart';
+import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_spacing.dart';
+import 'package:rego/core/theme/app_typography.dart';
 
+/// REGO "Skyline" theme. Light is the primary, brand-rich mode; dark is a
+/// deep-navy variant of the same tokens.
 abstract final class AppTheme {
-  static ThemeData dark() {
-    const cs = ColorScheme.dark(
+  static ThemeData light() {
+    final cs = const ColorScheme.light(
       primary: AppColors.primary,
       onPrimary: AppColors.onPrimary,
       secondary: AppColors.secondary,
@@ -14,24 +16,29 @@ abstract final class AppTheme {
       surface: AppColors.bgCard,
       onSurface: AppColors.textPrimary,
       error: AppColors.error,
-    );
-    return _base(cs, AppColors.bgBase, AppColors.bgCard);
+    ).copyWith(outline: AppColors.border);
+    return _base(cs, AppColors.bgBase, AppColors.bgCard, AppColors.border);
   }
 
-  static ThemeData light() {
-    const cs = ColorScheme.light(
+  static ThemeData dark() {
+    final cs = const ColorScheme.dark(
       primary: AppColors.primary,
       onPrimary: AppColors.onPrimary,
       secondary: AppColors.secondary,
       onSecondary: AppColors.onSecondary,
-      surface: AppColors.lightBgCard,
-      onSurface: AppColors.lightTextPrimary,
+      surface: AppColors.darkBgCard,
+      onSurface: AppColors.darkTextPrimary,
       error: AppColors.error,
+    ).copyWith(outline: AppColors.darkBorder);
+    return _base(
+      cs,
+      AppColors.darkBgBase,
+      AppColors.darkBgCard,
+      AppColors.darkBorder,
     );
-    return _base(cs, AppColors.lightBgBase, AppColors.lightBgCard);
   }
 
-  static ThemeData _base(ColorScheme cs, Color bg, Color card) {
+  static ThemeData _base(ColorScheme cs, Color bg, Color card, Color border) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: cs,
@@ -46,7 +53,7 @@ abstract final class AppTheme {
         labelMedium: AppTypography.caption,
         labelSmall: AppTypography.overline,
       ),
-      dividerColor: cs.outline,
+      dividerColor: border,
       appBarTheme: AppBarTheme(
         backgroundColor: bg,
         foregroundColor: cs.onSurface,
@@ -64,6 +71,9 @@ abstract final class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: cs.primary,
           foregroundColor: cs.onPrimary,
+          elevation: 0,
+          minimumSize: const Size.fromHeight(54),
+          textStyle: AppTypography.title,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.button),
           ),
@@ -77,20 +87,20 @@ abstract final class AppTheme {
         filled: true,
         fillColor: card,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(color: cs.outline),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          borderSide: BorderSide(color: border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(color: cs.outline),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          borderSide: BorderSide(color: border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(color: cs.primary, width: 2),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          borderSide: const BorderSide(color: AppColors.borderFocus, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
+          vertical: AppSpacing.md,
         ),
       ),
     );

@@ -10,15 +10,17 @@ abstract final class AppSpacing {
   static const double xxl = 48;
 
   // ── Edge insets ──────────────────────────────────────────────────────────
-  static const pagePadding = EdgeInsets.symmetric(horizontal: md, vertical: md);
-  static const cardPadding = EdgeInsets.all(md);
+  static const pagePadding = EdgeInsets.symmetric(horizontal: lg, vertical: md);
+  static const cardPadding = EdgeInsets.all(lg);
 }
 
+/// Corner radii. Skyline uses soft, generous rounding — 24 px cards.
 abstract final class AppRadius {
-  static const double sm = 4;
-  static const double md = 8;
-  static const double lg = 12;
-  static const double card = 12;
-  static const double button = 8;
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double card = 24;
+  static const double sheet = 28; // bottom sheets / hero bottom curve
+  static const double button = 16;
   static const double pill = 999;
 }

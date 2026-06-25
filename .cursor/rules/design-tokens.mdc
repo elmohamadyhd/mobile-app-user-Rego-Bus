@@ -1,0 +1,29 @@
+---
+description: Skyline design tokens — how to consume theme values
+globs: ["lib/**/*.dart"]
+alwaysApply: true
+---
+
+# Design Tokens (Skyline)
+
+Every visual value comes from `core/theme/`. Never hardcode colors, radii, spacing,
+or font families in a widget.
+
+## Source of truth
+
+- Screens are designed on **claude.ai/design** (REGO Buses project). The imported `.dc.html`
+  batch under `design/` is the visual reference; its tokens are mirrored into `core/theme/`.
+- `AppColors` — brand blue (`primary` / `primaryDark` / `primaryDeep`), `heroGradient`,
+  amber `secondary`, neutrals, semantic colors, and `dark*` overrides.
+- `AppTypography` — the Tajawal scale (`display` … `overline`).
+- `AppSpacing` (4 px scale) + `AppRadius` (`card` = 24, `button` = 16, `sheet` = 28, `pill`).
+
+## Rules
+
+- Material surfaces: read from `Theme.of(context).colorScheme.*`. Brand-specific paint
+  (gradient, amber, hero text): use `AppColors.*` directly.
+- The blue header uses `AppColors.heroGradient`; text/icons over it use `AppColors.onHero`.
+- Radii: `AppRadius.card` for cards, `AppRadius.button` for buttons — no literal `BorderRadius.circular(12)`.
+- Spacing: `AppSpacing.*` with `EdgeInsetsDirectional`. No magic numbers.
+- Light is the primary theme; when you add a token, keep `AppTheme.dark()` in parity.
+- If a design value has no token yet, **add it to `core/theme/`** — never inline it in a widget.

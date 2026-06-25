@@ -1,5 +1,5 @@
-name: app_skeleton
-description: Flutter skeleton — rename `app_skeleton` → your app name across this file and lib/.
+name: rego
+description: REGO Buses — rider mobile app (Wadeny). Arabic-first, RTL.
 publish_to: "none"
 version: 0.1.0+1
 
@@ -10,6 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # Localization (Arabic-first, RTL)
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
   # State management
   flutter_riverpod: ^3.3.2
@@ -62,5 +67,22 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # Generate localizations from lib/l10n/*.arb (see l10n.yaml).
+  generate: true
+
   assets:
     - .env
+    - assets/
+
+  fonts:
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Tajawal-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Tajawal-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Tajawal-Bold.ttf
+          weight: 700

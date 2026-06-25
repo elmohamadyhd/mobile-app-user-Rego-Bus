@@ -12,6 +12,9 @@ pubspec.lock
 *.freezed.dart
 *.gr.dart
 
+# Generated localizations (regenerate with: flutter gen-l10n)
+/lib/l10n/app_localizations*.dart
+
 # Secrets — never commit these
 .env
 

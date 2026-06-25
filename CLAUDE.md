@@ -5,8 +5,9 @@
 
 ## What this project is
 
-A Flutter starter template using **Riverpod + go_router + Freezed + Dio**.
-Replace `app_skeleton` (the package name) and the `HomeScreen` with your first real feature.
+**REGO Buses** (Wadeny) — the Arabic-first, RTL rider mobile app, built on a
+**Riverpod + go_router + Freezed + Dio** foundation. Dart package name: `rego`.
+Screens follow the "Skyline" design direction (blue gradient hero + amber accent, Tajawal).
 
 ## Architecture at a glance
 

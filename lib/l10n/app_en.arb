@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "appTitle": "REGO",
+  "@appTitle": {
+    "description": "Application/brand name. Kept in Latin across all locales."
+  },
+  "homeTitle": "Home",
+  "@homeTitle": {
+    "description": "Title of the home screen."
+  },
+  "homeWelcome": "Welcome to REGO",
+  "@homeWelcome": {
+    "description": "Greeting shown on the home screen body."
+  }
+}

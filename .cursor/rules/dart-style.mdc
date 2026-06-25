@@ -14,11 +14,11 @@ alwaysApply: true
 
 ## Imports
 
-Always use **package imports** (`package:app_skeleton/...`), never relative imports outside of the same directory.
+Always use **package imports** (`package:rego/...`), never relative imports outside of the same directory.
 
 ```dart
 // ✅
-import 'package:app_skeleton/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_colors.dart';
 
 // ❌
 import '../../../core/theme/app_colors.dart';

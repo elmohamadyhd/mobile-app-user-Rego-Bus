@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:app_skeleton/core/theme/app_spacing.dart';
+import 'package:rego/core/theme/app_spacing.dart';
 
 /// Standard page scaffold. Wraps [body] in padding and adds a consistent
 /// [AppBar]. Pass [actions] or override [padding] as needed.
@@ -28,9 +28,8 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      appBar: title != null
-          ? AppBar(title: Text(title!), actions: actions)
-          : null,
+      appBar:
+          title != null ? AppBar(title: Text(title!), actions: actions) : null,
       body: Padding(padding: padding, child: body),
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,

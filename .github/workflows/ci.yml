@@ -16,7 +16,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.24.x"
+          flutter-version: "3.44.x"
           channel: "stable"
           cache: true
 
@@ -25,6 +25,9 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate localizations
+        run: flutter gen-l10n
 
       - name: Run code generation
         run: dart run build_runner build --delete-conflicting-outputs
@@ -61,7 +64,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.24.x"
+          flutter-version: "3.44.x"
           channel: "stable"
           cache: true
 
@@ -70,6 +73,9 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate localizations
+        run: flutter gen-l10n
 
       - name: Run code generation
         run: dart run build_runner build --delete-conflicting-outputs
