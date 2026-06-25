@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../shared/widgets/app_scaffold.dart';
+import 'package:app_skeleton/shared/widgets/app_scaffold.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -22,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
             Text(
               'Replace this screen with your first feature.',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               textAlign: TextAlign.center,
             ),

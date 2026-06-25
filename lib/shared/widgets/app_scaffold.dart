@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_spacing.dart';
+import 'package:app_skeleton/core/theme/app_spacing.dart';
 
 /// Standard page scaffold. Wraps [body] in padding and adds a consistent
 /// [AppBar]. Pass [actions] or override [padding] as needed.

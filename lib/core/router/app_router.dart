@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/home/presentation/home_screen.dart';
+import 'package:app_skeleton/features/home/presentation/home_screen.dart';
 
 // Add named route constants here so call-sites never use raw strings.
 abstract final class AppRoutes {

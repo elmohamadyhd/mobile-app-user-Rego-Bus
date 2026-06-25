@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../config/app_config.dart';
+import 'package:app_skeleton/core/config/app_config.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(
