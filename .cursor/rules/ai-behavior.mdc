@@ -18,6 +18,28 @@ Before writing any code:
 2. Identify the right layer: domain entity → repository interface → data impl → provider → UI.
 3. Follow the feature-first structure in `architecture.mdc`.
 
+## Feature workflow
+
+For any feature that touches multiple files, screens, or layers:
+
+1. **Spec before code.** Write a design doc to `docs/superpowers/specs/YYYY-MM-DD-<feature>-design.md` covering: scope, state approach, entity shapes, file layout, screen-by-screen behavior, error states, and explicit out-of-scope items. Get approval before writing any implementation.
+2. **Plan before code.** Break the spec into a task list (`docs/superpowers/plans/YYYY-MM-DD-<feature>.md`) — exact file paths, exact code, TDD order: failing test → implement → pass → commit. No placeholders, no "TODO: implement later."
+3. **TDD for business logic.** Notifiers, providers, and repositories get a failing test written first. UI screens are mostly visual — use judgment.
+4. **One task, one commit.** Run `flutter analyze` and the relevant test suite before every commit.
+5. **Two-stage self-review before calling a task done:**
+   - *Spec compliance:* does the code match the plan exactly — nothing missing, nothing extra (no scope creep, no unrequested abstractions)?
+   - *Code quality:* look for real bugs (null-safety gaps, RTL/i18n regressions, accessibility) vs. style opinions. Fix real bugs; note style opinions without blocking on them.
+
+### Cross-cutting checks (every new screen or widget)
+
+These are easy to miss and have caused regressions in this project — always verify before committing:
+
+- **RTL:** Directional icons (chevrons, arrows) must be mirrored with `Transform.flip(flipX: Directionality.of(context) == TextDirection.rtl, child: Icon(...))`. Reference: `lib/features/auth/presentation/widgets/auth_back_button.dart`.
+- **i18n:** All user-visible strings go through `AppLocalizations.of(context)` backed by the `.arb` files in `lib/l10n/`. Never hardcode English literals in widget or screen code.
+- **Icons:** Use the `AppIcons` facade (`lib/core/theme/app_icons.dart`) for every icon — never raw `Icons.*` in widget/screen code. Add new entries to the facade when a needed icon is missing.
+
+---
+
 ## Code generation
 
 When editing annotated code (Freezed, Drift, `@riverpod`), always remind the developer to run:
