@@ -16,6 +16,7 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return ColoredBox(
       color: AppColors.bgElevated,
       child: SafeArea(
@@ -25,7 +26,10 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               IconButton(
-                icon: const Icon(AppIcons.back, color: AppColors.textPrimary),
+                icon: Transform.flip(
+                  flipX: isRtl,
+                  child: const Icon(AppIcons.back, color: AppColors.textPrimary),
+                ),
                 onPressed: () => context.pop(),
               ),
               Expanded(

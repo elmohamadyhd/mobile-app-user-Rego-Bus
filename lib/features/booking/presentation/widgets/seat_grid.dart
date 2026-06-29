@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/booking/domain/entities/seat.dart';
@@ -23,7 +24,7 @@ class SeatGrid extends StatelessWidget {
       children: [
         const Align(
           alignment: Alignment.centerRight,
-          child: Icon(Icons.drive_eta_outlined,
+          child: Icon(AppIcons.busFront,
               color: AppColors.textMuted, size: 28),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -85,23 +86,27 @@ class _SeatCellView extends StatelessWidget {
       textColor = AppColors.textSecondary;
     }
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 34,
-        height: 34,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(8),
-          border: borderColor != null ? Border.all(color: borderColor) : null,
-        ),
-        child: Text(
-          cell.id,
-          style: AppTypography.caption.copyWith(
-            color: textColor,
-            fontWeight: FontWeight.w600,
-            fontSize: 10,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: 34,
+          height: 34,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(8),
+            border: borderColor != null ? Border.all(color: borderColor) : null,
+          ),
+          child: Text(
+            cell.id,
+            style: AppTypography.caption.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 10,
+            ),
           ),
         ),
       ),

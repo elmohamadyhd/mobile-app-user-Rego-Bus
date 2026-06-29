@@ -32,6 +32,7 @@ abstract final class AppIcons {
 
   // ── Travel / domain ──────────────────────────────────────────────────────
   static const IconData bus = Icons.directions_bus_outlined;
+  static const IconData busFront = Icons.drive_eta_outlined;
   static const IconData flight = Icons.flight_outlined;
   static const IconData transfer = Icons.local_taxi_outlined;
   static const IconData train = Icons.train_outlined;
