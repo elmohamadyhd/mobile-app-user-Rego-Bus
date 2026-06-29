@@ -68,12 +68,20 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
   }
 
   Future<void> confirmBooking() async {
-    state = state.copyWith(status: BookingFlowStatus.confirming);
+    final detail = state.tripDetail;
+    if (detail == null) {
+      state = state.copyWith(
+        status: BookingFlowStatus.error,
+        error: 'No trip selected',
+      );
+      return;
+    }
+    state = state.copyWith(status: BookingFlowStatus.confirming, error: null);
     await Future<void>.delayed(const Duration(milliseconds: 800));
     final ref = 'RG-${DateTime.now().millisecondsSinceEpoch.toRadixString(36).toUpperCase()}';
     final ticket = ETicket(
       bookingRef: ref,
-      trip: state.tripDetail!,
+      trip: detail,
       seats: List.unmodifiable(state.selectedSeats),
       passengerName: state.passengerName,
       gate: 'A3',
