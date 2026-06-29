@@ -137,9 +137,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   GradientHero(
                     title: l10n.registerTitle,
                     subtitle: l10n.registerSubtitle,
-                    padding: const EdgeInsets.fromLTRB(26, 56, 26, 36),
                   ),
                   AuthCard(
+                    gap: 13,
                     children: [
                       AuthTextField(
                         controller: _name,

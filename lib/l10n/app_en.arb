@@ -32,6 +32,14 @@
   "loginButton": "Sign in",
   "loginNoAccount": "Don't have an account?",
   "loginSignUp": "Sign up",
+  "loginIdentifierHint": "Phone or email",
+  "@loginIdentifierHint": {
+    "description": "Hint for the combined sign-in identifier field on the login screen."
+  },
+  "loginEmailUnsupported": "Email sign-in is coming soon — please use your phone number",
+  "@loginEmailUnsupported": {
+    "description": "Shown when a user tries to sign in with an email; the backend is phone-only for now."
+  },
 
   "phoneHint": "10 1234 5678",
   "passwordHint": "Password",

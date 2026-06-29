@@ -138,7 +138,7 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
     "message": "قيمة حقل البريد الالكتروني مُستخدمة من قبل",
     "errors": {
         "email": "قيمة حقل البريد الالكتروني مُستخدمة من قبل",
-        "mobile": "قيمة حقل الجوال مُستخدمة من قبل"
+        "mobile": "قيمة حقل الهاتف مُستخدمة من قبل"
     },
     "data": {}
 }

@@ -13,7 +13,6 @@ import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_card.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:rego/features/auth/presentation/widgets/country_picker.dart';
-import 'package:rego/features/auth/presentation/widgets/phone_field.dart';
 import 'package:rego/features/auth/presentation/widgets/social_row.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/gradient_hero.dart';
@@ -27,40 +26,34 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _phone = TextEditingController();
+  final _identifier = TextEditingController();
   final _password = TextEditingController();
-  CountryCode _country = kDefaultCountry;
   bool _obscure = true;
   bool _submitting = false;
-  String? _phoneError;
+  String? _identifierError;
   String? _passwordError;
 
   @override
   void dispose() {
-    _phone.dispose();
+    _identifier.dispose();
     _password.dispose();
     super.dispose();
   }
 
-  Future<void> _pickCountry() async {
-    final picked = await showCountryCodePicker(context);
-    if (picked != null) setState(() => _country = picked);
-  }
-
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context);
+    final identifier = _identifier.text.trim();
     setState(() {
-      _phoneError =
-          Validators.isValidPhone(_phone.text) ? null : l10n.valPhone;
+      _identifierError = _identifierErrorFor(identifier, l10n);
       _passwordError = _password.text.isEmpty ? l10n.valRequired : null;
     });
-    if (_phoneError != null || _passwordError != null) return;
+    if (_identifierError != null || _passwordError != null) return;
 
     setState(() => _submitting = true);
     try {
       final session = await ref.read(authRepositoryProvider).login(
-            phoneCode: _country.dial,
-            mobile: Validators.digitsOnly(_phone.text),
+            phoneCode: kDefaultCountry.dial,
+            mobile: Validators.digitsOnly(identifier),
             password: _password.text,
           );
       await ref.read(sessionControllerProvider.notifier).setSession(session);
@@ -72,10 +65,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  /// design/V1 shows one "Phone or email" field, but the backend login is
+  /// phone-only — email entries get a friendly "coming soon" until it lands.
+  String? _identifierErrorFor(String value, AppLocalizations l10n) {
+    if (value.isEmpty) return l10n.valRequired;
+    if (value.contains('@')) return l10n.loginEmailUnsupported;
+    return Validators.isValidPhone(value) ? null : l10n.valPhone;
+  }
+
   void _applyErrors(ApiException e) {
     final fields = e.errors;
     setState(() {
-      _phoneError = fields?['mobile']?.first;
+      _identifierError = fields?['mobile']?.first;
       _passwordError = fields?['password']?.first;
     });
     if (fields == null || fields.isEmpty) {
@@ -100,17 +101,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   GradientHero(
                     title: l10n.loginTitle,
                     subtitle: l10n.loginSubtitle,
-                    padding: const EdgeInsets.fromLTRB(26, 56, 26, 36),
                   ),
                   AuthCard(
                     children: [
-                      PhoneField(
-                        controller: _phone,
-                        country: _country,
-                        hint: l10n.phoneHint,
-                        onTapCountry: _pickCountry,
-                        errorText: _phoneError,
+                      AuthTextField(
+                        controller: _identifier,
+                        hint: l10n.loginIdentifierHint,
+                        icon: AppIcons.mail,
+                        keyboardType: TextInputType.emailAddress,
+                        errorText: _identifierError,
                         textInputAction: TextInputAction.next,
+                        autofillHints: const [AutofillHints.username],
                       ),
                       AuthTextField(
                         controller: _password,
