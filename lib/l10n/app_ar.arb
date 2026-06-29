@@ -60,5 +60,8 @@
   "valEmail": "أدخل بريداً إلكترونياً صالحاً",
   "valPhone": "أدخل رقم هاتف صالحاً",
   "valPasswordShort": "يجب ألا تقل كلمة المرور عن 6 أحرف",
-  "valPasswordMatch": "كلمتا المرور غير متطابقتان"
+  "valPasswordMatch": "كلمتا المرور غير متطابقتان",
+
+  "bookingSelect": "اختر",
+  "bookingSeatsLeft": "{count} مقعد متاح"
 }

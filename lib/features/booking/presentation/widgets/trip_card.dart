@@ -4,6 +4,7 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/booking/domain/entities/trip.dart';
+import 'package:rego/l10n/app_localizations.dart';
 
 class TripCard extends StatelessWidget {
   const TripCard({super.key, required this.trip, required this.onTap});
@@ -13,6 +14,7 @@ class TripCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final lowSeats = trip.seatsLeft < 3;
 
     return Material(
@@ -63,7 +65,7 @@ class TripCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                     child: Text(
-                      '${trip.seatsLeft} seats left',
+                      l10n.bookingSeatsLeft(trip.seatsLeft),
                       style: AppTypography.caption.copyWith(
                         color: lowSeats ? AppColors.error : AppColors.onSecondary,
                         fontWeight: FontWeight.w600,
@@ -138,12 +140,12 @@ class TripCard extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(AppRadius.input),
                       onTap: onTap,
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.lg, vertical: 10),
                         child: Text(
-                          'Select',
-                          style: TextStyle(
+                          l10n.bookingSelect,
+                          style: const TextStyle(
                             fontFamily: AppTypography.fontFamily,
                             color: AppColors.onPrimary,
                             fontWeight: FontWeight.w700,

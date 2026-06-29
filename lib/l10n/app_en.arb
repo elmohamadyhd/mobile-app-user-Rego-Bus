@@ -78,5 +78,19 @@
   "valEmail": "Enter a valid email",
   "valPhone": "Enter a valid phone number",
   "valPasswordShort": "Password must be at least 6 characters",
-  "valPasswordMatch": "Passwords don't match"
+  "valPasswordMatch": "Passwords don't match",
+
+  "bookingSelect": "Select",
+  "@bookingSelect": {
+    "description": "Label for the Select button on a trip card."
+  },
+  "bookingSeatsLeft": "{count} seats left",
+  "@bookingSeatsLeft": {
+    "description": "Seats remaining badge on a trip card.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
