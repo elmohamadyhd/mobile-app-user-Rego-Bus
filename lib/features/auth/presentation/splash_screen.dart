@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/storage/secure_storage.dart';
 import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_theme.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
@@ -47,34 +49,36 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final session = ref.watch(sessionControllerProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) => _route(session));
 
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(gradient: AppColors.heroGradient),
-        child: SafeArea(
-          child: Column(
-            children: [
-              const Spacer(),
-              Image.asset(
-                'assets/rego-wordmark-white.png',
-                width: 168,
-                fit: BoxFit.contain,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: AppTheme.statusBarLight,
+        child: Scaffold(
+          body: Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(gradient: AppColors.heroGradient),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  const Spacer(),
+                  Image.asset(
+                    'assets/rego-wordmark-white.png',
+                    width: 168,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    l10n.appTagline,
+                    style: AppTypography.title.copyWith(
+                      color: AppColors.onHero.withValues(alpha: 0.9),
+                    ),
+                  ),
+                  const Spacer(),
+                  const _LoadingDots(),
+                  const SizedBox(height: 48),
+                ],
               ),
-              const SizedBox(height: 18),
-              Text(
-                l10n.appTagline,
-                style: AppTypography.title.copyWith(
-                  color: AppColors.onHero.withValues(alpha: 0.9),
-                ),
-              ),
-              const Spacer(),
-              const _LoadingDots(),
-              const SizedBox(height: 48),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
 

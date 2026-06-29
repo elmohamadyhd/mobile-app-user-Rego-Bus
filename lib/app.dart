@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rego/core/providers/locale_controller.dart';
@@ -23,6 +24,12 @@ class App extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       routerConfig: router,
+      // Default the status bar to dark icons (light screens); the blue/hero
+      // screens override this to white icons via a nested AnnotatedRegion.
+      builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+        value: AppTheme.statusBarDark,
+        child: child!,
+      ),
     );
   }
 }

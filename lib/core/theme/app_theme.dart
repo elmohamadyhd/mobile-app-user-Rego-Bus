@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
@@ -7,6 +8,21 @@ import 'package:rego/core/theme/app_typography.dart';
 /// REGO "Skyline" theme. Light is the primary, brand-rich mode; dark is a
 /// deep-navy variant of the same tokens.
 abstract final class AppTheme {
+  /// Status bar for the blue/hero screens: fully transparent so the gradient
+  /// shows through, with white icons.
+  static const SystemUiOverlayStyle statusBarLight = SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light, // Android
+    statusBarBrightness: Brightness.dark, // iOS
+  );
+
+  /// Status bar for the white/light screens: transparent with dark icons.
+  static const SystemUiOverlayStyle statusBarDark = SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark, // Android
+    statusBarBrightness: Brightness.light, // iOS
+  );
+
   static ThemeData light() {
     final cs = const ColorScheme.light(
       primary: AppColors.primary,

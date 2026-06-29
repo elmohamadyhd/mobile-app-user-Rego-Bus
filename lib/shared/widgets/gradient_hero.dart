@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
+import 'package:rego/core/theme/app_theme.dart';
 import 'package:rego/core/theme/app_typography.dart';
 
 /// The signature Skyline hero: an immersive blue gradient with curved bottom
@@ -28,7 +30,9 @@ class GradientHero extends StatelessWidget {
     // Full-bleed: the Stack would otherwise shrink-wrap to its text content
     // (the parent Column centers it), collapsing the hero into a floating
     // card. Forcing infinite width makes it span the screen edge-to-edge.
-    return SizedBox(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: AppTheme.statusBarLight,
+      child: SizedBox(
         width: double.infinity,
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(
@@ -92,7 +96,9 @@ class GradientHero extends StatelessWidget {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _blob(double size, Color color) => Container(
