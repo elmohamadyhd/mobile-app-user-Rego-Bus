@@ -1,0 +1,17 @@
+// lib/features/booking/domain/entities/booking.dart
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:rego/features/booking/domain/entities/trip.dart';
+
+part 'booking.freezed.dart';
+
+@freezed
+class ETicket with _$ETicket {
+  const factory ETicket({
+    required String bookingRef,
+    required TripDetail trip,
+    required List<String> seats,
+    required String passengerName,
+    required String gate,
+    required DateTime issuedAt,
+  }) = _ETicket;
+}
