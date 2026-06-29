@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,57 +52,145 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _route(session));
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: AppTheme.statusBarLight,
-        child: Scaffold(
-          body: Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(gradient: AppColors.heroGradient),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  const Spacer(),
-                  Image.asset(
-                    'assets/rego-wordmark-white.png',
-                    width: 168,
-                    fit: BoxFit.contain,
+      value: AppTheme.statusBarLight,
+      child: Scaffold(
+        body: DecoratedBox(
+          decoration: const BoxDecoration(gradient: AppColors.heroGradient),
+          child: SizedBox.expand(
+            child: Stack(
+              children: [
+                // Skyline decorative "blobs".
+                Positioned(
+                  top: -56,
+                  right: -44,
+                  child: _circle(210, Colors.white.withValues(alpha: 0.08)),
+                ),
+                Positioned(
+                  bottom: 120,
+                  left: -34,
+                  child: _circle(120, Colors.white.withValues(alpha: 0.06)),
+                ),
+                Positioned(
+                  bottom: 230,
+                  right: 34,
+                  child:
+                      _circle(74, AppColors.secondary.withValues(alpha: 0.16)),
+                ),
+                Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Glassy rounded badge holding the brand mark.
+                      Container(
+                        width: 108,
+                        height: 108,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.16),
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.22),
+                          ),
+                        ),
+                        child: Image.asset(
+                          'assets/rego-mark-white.png',
+                          width: 62,
+                          height: 62,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Image.asset(
+                        'assets/rego-wordmark-white.png',
+                        width: 194,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        l10n.appTagline,
+                        style: AppTypography.title.copyWith(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.onHero.withValues(alpha: 0.85),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 18),
-                  Text(
-                    l10n.appTagline,
-                    style: AppTypography.title.copyWith(
-                      color: AppColors.onHero.withValues(alpha: 0.9),
+                ),
+                const Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 48),
+                      child: _LoadingDots(),
                     ),
                   ),
-                  const Spacer(),
-                  const _LoadingDots(),
-                  const SizedBox(height: 48),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
+
+  Widget _circle(double size, Color color) => Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      );
 }
 
-class _LoadingDots extends StatelessWidget {
+/// Three softly pulsing dots, staggered — the Skyline loading indicator.
+class _LoadingDots extends StatefulWidget {
   const _LoadingDots();
+
+  @override
+  State<_LoadingDots> createState() => _LoadingDotsState();
+}
+
+class _LoadingDotsState extends State<_LoadingDots>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        3,
-        (i) => Container(
-          width: 8,
-          height: 8,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color: AppColors.onHero.withValues(alpha: i == 1 ? 0.9 : 0.4),
-            shape: BoxShape.circle,
-          ),
-        ),
-      ),
+      children: List.generate(3, (i) {
+        return AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final phase = (_controller.value - i * 0.16) % 1.0;
+            final t = (1 - math.cos(phase * 2 * math.pi)) / 2; // 0 → 1 → 0
+            return Transform.scale(
+              scale: 0.78 + 0.22 * t,
+              child: Container(
+                width: 9,
+                height: 9,
+                margin: const EdgeInsets.symmetric(horizontal: 4.5),
+                decoration: BoxDecoration(
+                  color: AppColors.onHero.withValues(alpha: 0.4 + 0.6 * t),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 }
