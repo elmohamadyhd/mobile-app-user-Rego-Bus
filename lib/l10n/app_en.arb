@@ -11,5 +11,64 @@
   "homeWelcome": "Welcome to REGO",
   "@homeWelcome": {
     "description": "Greeting shown on the home screen body."
-  }
+  },
+
+  "appTagline": "All buses, one platform",
+  "@appTagline": {
+    "description": "Brand tagline on the splash screen."
+  },
+
+  "onboardingSkip": "Skip",
+  "onboarding1Title": "Book your trip with ease",
+  "onboarding1Body": "Search intercity buses, flights and private transfers — all in one place.",
+  "onboarding2Title": "Tickets in your pocket",
+  "onboarding2Body": "Manage every booking and board with a QR code, no paperwork needed.",
+  "onboarding3Title": "Pay your way",
+  "onboarding3Body": "Top up your REGO wallet and check out in seconds.",
+
+  "loginTitle": "Welcome back",
+  "loginSubtitle": "Sign in to continue",
+  "loginForgot": "Forgot password?",
+  "loginButton": "Sign in",
+  "loginNoAccount": "Don't have an account?",
+  "loginSignUp": "Sign up",
+
+  "phoneHint": "10 1234 5678",
+  "passwordHint": "Password",
+
+  "authOrContinueWith": "or continue with",
+  "authOrSignUpWith": "or sign up with",
+  "socialComingSoon": "Social sign-in is coming soon",
+
+  "registerTitle": "Create new account",
+  "registerSubtitle": "Join REGO and travel smarter",
+  "registerName": "Full name",
+  "registerEmail": "Email",
+  "registerButton": "Create account",
+  "registerHaveAccount": "Already have an account?",
+  "registerSignIn": "Sign in",
+
+  "otpTitle": "Enter verification code",
+  "otpSubtitle": "We sent a 4-digit code to",
+  "otpResendIn": "Resend code in",
+  "otpResend": "Resend code",
+  "otpResent": "A new code has been sent",
+  "commonConfirm": "Confirm",
+
+  "forgotTitle": "Forgot password?",
+  "forgotSubtitle": "Enter your phone number and we'll send you a code to reset your password.",
+  "forgotButton": "Send code",
+
+  "newPasswordTitle": "Set a new password",
+  "newPasswordSubtitle": "Your new password must be different from previously used passwords.",
+  "newPasswordHint": "New password",
+  "confirmPasswordHint": "Confirm password",
+  "newPasswordButton": "Save password",
+  "newPasswordDone": "Your password has been updated",
+
+  "valRequired": "This field is required",
+  "valEmail": "Enter a valid email",
+  "valPhone": "Enter a valid phone number",
+  "valPasswordShort": "Password must be at least 6 characters",
+  "valPasswordMatch": "Passwords don't match"
 }

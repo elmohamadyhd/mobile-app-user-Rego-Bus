@@ -44,6 +44,12 @@ abstract final class AppColors {
   static const border = Color(0xFFE3E9F2);
   static const borderFocus = primary;
 
+  // ── Auth / form surfaces (from the Skyline canvas) ───────────────────────
+  static const inputFill = Color(0xFFF4F6FB); // input pill background
+  static const hairline = Color(0xFFEEF1F6); // input border / dividers
+  static const primaryTint = Color(0xFFE8F0FE); // filled OTP box / icon circle
+  static const secondaryTint = Color(0xFFFBF0DE); // amber icon circle
+
   // ── Dark-mode overrides (used by AppTheme.dark) ──────────────────────────
   static const darkBgBase = Color(0xFF0A1426);
   static const darkBgCard = Color(0xFF13203A);

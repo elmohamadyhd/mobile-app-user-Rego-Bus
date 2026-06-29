@@ -21,6 +21,8 @@ abstract final class AppRadius {
   static const double lg = 16;
   static const double card = 24;
   static const double sheet = 28; // bottom sheets / hero bottom curve
+  static const double input = 15; // text fields / pill buttons (Skyline)
   static const double button = 16;
+  static const double hero = 40; // curved hero bottom corners
   static const double pill = 999;
 }

@@ -2,5 +2,61 @@
   "@@locale": "ar",
   "appTitle": "REGO",
   "homeTitle": "الرئيسية",
-  "homeWelcome": "أهلاً بك في REGO"
+  "homeWelcome": "أهلاً بك في REGO",
+
+  "appTagline": "كل الباصات.. منصة واحدة",
+
+  "onboardingSkip": "تخطّي",
+  "onboarding1Title": "احجز رحلتك بكل سهولة",
+  "onboarding1Body": "ابحث عن الباصات بين المدن والطيران والنقل الخاص — كل ذلك في مكان واحد.",
+  "onboarding2Title": "تذاكرك في جيبك",
+  "onboarding2Body": "تابع كل حجوزاتك واصعد بمسح رمز QR دون أي أوراق.",
+  "onboarding3Title": "ادفع بطريقتك",
+  "onboarding3Body": "اشحن محفظة REGO وأكمل الدفع في ثوانٍ.",
+
+  "loginTitle": "أهلاً بعودتك",
+  "loginSubtitle": "سجّل الدخول للمتابعة",
+  "loginForgot": "نسيت كلمة المرور؟",
+  "loginButton": "تسجيل الدخول",
+  "loginNoAccount": "ليس لديك حساب؟",
+  "loginSignUp": "أنشئ حساباً",
+
+  "phoneHint": "10 1234 5678",
+  "passwordHint": "كلمة المرور",
+
+  "authOrContinueWith": "أو تابع عبر",
+  "authOrSignUpWith": "أو سجّل عبر",
+  "socialComingSoon": "تسجيل الدخول عبر مواقع التواصل قريباً",
+
+  "registerTitle": "إنشاء حساب جديد",
+  "registerSubtitle": "انضم إلى REGO وسافر بذكاء",
+  "registerName": "الاسم الكامل",
+  "registerEmail": "البريد الإلكتروني",
+  "registerButton": "إنشاء الحساب",
+  "registerHaveAccount": "لديك حساب بالفعل؟",
+  "registerSignIn": "تسجيل الدخول",
+
+  "otpTitle": "أدخل رمز التحقق",
+  "otpSubtitle": "أرسلنا رمزاً مكوّناً من 4 أرقام إلى",
+  "otpResendIn": "إعادة الإرسال خلال",
+  "otpResend": "إعادة إرسال الرمز",
+  "otpResent": "تم إرسال رمز جديد",
+  "commonConfirm": "تأكيد",
+
+  "forgotTitle": "نسيت كلمة المرور؟",
+  "forgotSubtitle": "أدخل رقم هاتفك وسنرسل لك رمزاً لإعادة تعيين كلمة المرور.",
+  "forgotButton": "إرسال الرمز",
+
+  "newPasswordTitle": "تعيين كلمة مرور جديدة",
+  "newPasswordSubtitle": "يجب أن تختلف كلمة المرور الجديدة عن كلمات المرور السابقة.",
+  "newPasswordHint": "كلمة المرور الجديدة",
+  "confirmPasswordHint": "تأكيد كلمة المرور",
+  "newPasswordButton": "حفظ كلمة المرور",
+  "newPasswordDone": "تم تحديث كلمة المرور",
+
+  "valRequired": "هذا الحقل مطلوب",
+  "valEmail": "أدخل بريداً إلكترونياً صالحاً",
+  "valPhone": "أدخل رقم هاتف صالحاً",
+  "valPasswordShort": "يجب ألا تقل كلمة المرور عن 6 أحرف",
+  "valPasswordMatch": "كلمتا المرور غير متطابقتان"
 }

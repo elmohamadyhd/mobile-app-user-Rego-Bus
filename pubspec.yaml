@@ -37,6 +37,12 @@ dependencies:
   path_provider: ^2.1.5
   path: ^1.9.0
 
+  # Secure session/token storage
+  flutter_secure_storage: ^9.2.4
+
+  # SVG rendering (brand marks: Google / Facebook / Apple)
+  flutter_svg: ^2.0.17
+
   # ── Optional: uncomment when needed ──────────────────────────────────────
   # Local database (Drift / SQLite)
   # drift: ^2.34.0
@@ -74,6 +80,7 @@ flutter:
   assets:
     - .env
     - assets/
+    - assets/brand/
 
   fonts:
     - family: Tajawal
