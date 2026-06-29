@@ -14,7 +14,7 @@ string is localized — no hardcoded text in widgets, ever.
 - `flutter_localizations` + `intl`; codegen config in `l10n.yaml`.
 - ARB files in `lib/l10n/` — `app_ar.arb` (Arabic) + `app_en.arb` (English template carrying `@key` metadata).
 - Generated `AppLocalizations` → `package:rego/l10n/app_localizations.dart` (gitignored; run `flutter gen-l10n`).
-- `MaterialApp` pins `locale: Locale('ar')` and uses `AppLocalizations.localizationsDelegates` / `supportedLocales`.
+- `LocaleController` defaults to the device language (`ar` / `en`; unsupported langs → `en`) and persists a user override in `SecureStorage` when they change it in Settings. `MaterialApp` uses `AppLocalizations.localizationsDelegates` / `supportedLocales`.
 
 ## Rules
 

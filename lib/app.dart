@@ -20,7 +20,7 @@ class App extends ConsumerWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.light, // Skyline is a light-first design.
-      locale: locale, // Arabic-first; switchable via LocaleController.
+      locale: locale, // Device default unless user overrides via settings.
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       routerConfig: router,

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:rego/app.dart';
+import 'package:rego/core/storage/secure_storage.dart';
 
 void main() {
   setUpAll(() {
@@ -14,8 +15,18 @@ void main() {
   });
 
   testWidgets('HomeScreen renders the brand title', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: App()));
-    await tester.pumpAndSettle();
-    expect(find.text('REGO'), findsOneWidget);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          secureStorageProvider.overrideWithValue(
+            SecureStorage(memoryLocaleStore: {}),
+          ),
+        ],
+        child: const App(),
+      ),
+    );
+    // Splash loading dots animate forever — one frame is enough to render.
+    await tester.pump();
+    expect(find.text('All journeys, one platform'), findsOneWidget);
   });
 }
