@@ -6,7 +6,7 @@ part 'seat.freezed.dart';
 enum SeatStatus { available, booked }
 
 @freezed
-class SeatCell with _$SeatCell {
+abstract class SeatCell with _$SeatCell {
   const factory SeatCell({
     required String id,
     required SeatStatus status,
@@ -14,7 +14,7 @@ class SeatCell with _$SeatCell {
 }
 
 @freezed
-class SeatRow with _$SeatRow {
+abstract class SeatRow with _$SeatRow {
   const factory SeatRow({
     required List<SeatCell?> cells, // null element = aisle gap
   }) = _SeatRow;

@@ -5,7 +5,7 @@ import 'package:rego/features/booking/domain/entities/trip.dart';
 part 'booking.freezed.dart';
 
 @freezed
-class ETicket with _$ETicket {
+abstract class ETicket with _$ETicket {
   const factory ETicket({
     required String bookingRef,
     required TripDetail trip,

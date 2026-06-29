@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'trip.freezed.dart';
 
 @freezed
-class TripSummary with _$TripSummary {
+abstract class TripSummary with _$TripSummary {
   const factory TripSummary({
     required String id,
     required String operatorName,
@@ -33,7 +33,7 @@ extension TripSummaryX on TripSummary {
 }
 
 @freezed
-class TripDetail with _$TripDetail {
+abstract class TripDetail with _$TripDetail {
   const factory TripDetail({
     required TripSummary summary,
     required String terminalFrom,
