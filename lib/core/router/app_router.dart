@@ -12,6 +12,11 @@ import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/register_screen.dart';
 import 'package:rego/features/auth/presentation/splash_screen.dart';
 import 'package:rego/features/home/presentation/home_screen.dart';
+import 'package:rego/features/booking/presentation/trip_results_screen.dart';
+import 'package:rego/features/booking/presentation/trip_details_screen.dart';
+import 'package:rego/features/booking/presentation/seat_selection_screen.dart';
+import 'package:rego/features/booking/presentation/passenger_confirm_screen.dart';
+import 'package:rego/features/booking/presentation/eticket_screen.dart';
 
 // Named route constants so call-sites never use raw strings.
 abstract final class AppRoutes {
@@ -23,6 +28,11 @@ abstract final class AppRoutes {
   static const forgotPassword = '/forgot-password';
   static const newPassword = '/new-password';
   static const home = '/';
+  static const trips = '/trips';
+  static const tripDetail = '/trips/detail';
+  static const tripSeats = '/trips/seats';
+  static const tripConfirm = '/trips/confirm';
+  static const eTicket = '/booking/ticket';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -74,6 +84,26 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.home,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.trips,
+        builder: (context, state) => const TripResultsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.tripDetail,
+        builder: (context, state) => const TripDetailsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.tripSeats,
+        builder: (context, state) => const SeatSelectionScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.tripConfirm,
+        builder: (context, state) => const PassengerConfirmScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.eTicket,
+        builder: (context, state) => const ETicketScreen(),
       ),
     ],
   );
