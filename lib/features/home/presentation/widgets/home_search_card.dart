@@ -30,6 +30,18 @@ class HomeSearchCard extends ConsumerStatefulWidget {
 class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   final _from = TextEditingController();
   final _to = TextEditingController();
+  var _fieldsInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_fieldsInitialized) {
+      final l10n = AppLocalizations.of(context);
+      _from.text = l10n.homeCityCairo;
+      _to.text = l10n.homeCityAlexandria;
+      _fieldsInitialized = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -55,10 +67,10 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tabs = [
-      l10n.homeTabBus,
-      l10n.homeTabPrivate,
-      l10n.homeTabFlight,
-      l10n.homeTabTrain,
+      (l10n.homeTabBus, AppIcons.bus),
+      (l10n.homeTabPrivate, AppIcons.private),
+      (l10n.homeTabFlight, AppIcons.flight),
+      (l10n.homeTabTrain, AppIcons.train),
     ];
 
     return Container(
@@ -67,78 +79,83 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
         borderRadius: BorderRadius.circular(AppRadius.card),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x1A000000),
-            blurRadius: 20,
-            offset: Offset(0, 8),
+            color: Color(0x59146CEC),
+            blurRadius: 40,
+            spreadRadius: -18,
+            offset: Offset(0, 18),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Transport tabs
-          Row(
-            children: List.generate(tabs.length, (i) {
-              final active = widget.selectedTab == i;
-              return Expanded(
-                child: Material(
-                  color: active ? AppColors.primary : AppColors.bgBase,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: AppColors.bgBase,
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+            ),
+            child: Row(
+              children: List.generate(tabs.length, (i) {
+                final (label, icon) = tabs[i];
+                final active = widget.selectedTab == i;
+                return Expanded(
+                  child: _TransportTab(
+                    label: label,
+                    icon: icon,
+                    active: active,
                     onTap: () {
                       widget.onTabChanged(i);
                       if (i != 0) {
                         ScaffoldMessenger.of(context)
                           ..hideCurrentSnackBar()
                           ..showSnackBar(
-                            SnackBar(content: Text(l10n.homeComingSoon)),
+                            SnackBar(
+                              content: Text(l10n.homeComingSoon),
+                              duration: const Duration(seconds: 2),
+                            ),
                           );
                       }
                     },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      alignment: Alignment.center,
-                      child: Text(
-                        tabs[i],
-                        style: AppTypography.caption.copyWith(
-                          color: active ? Colors.white : AppColors.textMuted,
-                          fontWeight:
-                              active ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                    ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
-          const SizedBox(height: AppSpacing.md),
-          // From / To fields with swap
+          const SizedBox(height: 14),
           Stack(
             children: [
-              Column(
-                children: [
-                  _SearchField(
-                    controller: _from,
-                    hint: l10n.homeFrom,
-                    icon: AppIcons.locationTo,
-                  ),
-                  const Divider(
-                    color: AppColors.hairline,
-                    height: 1,
-                    indent: 44,
-                  ),
-                  _SearchField(
-                    controller: _to,
-                    hint: l10n.homeTo,
-                    icon: AppIcons.locationTo,
-                  ),
-                ],
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.hairline),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                ),
+                child: Column(
+                  children: [
+                    _SearchField(
+                      controller: _from,
+                      label: l10n.homeFrom,
+                      iconBg: AppColors.primaryTint,
+                      iconColor: AppColors.primary,
+                    ),
+                    const Divider(
+                      color: AppColors.hairline,
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                    _SearchField(
+                      controller: _to,
+                      label: l10n.homeTo,
+                      iconBg: AppColors.secondaryTint,
+                      iconColor: const Color(0xFFD98A2B),
+                    ),
+                  ],
+                ),
               ),
               PositionedDirectional(
-                end: 0,
+                end: 14,
                 top: 0,
                 bottom: 0,
                 child: Center(
@@ -147,28 +164,84 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.sm),
-          // Date / pax row
+          const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(AppIcons.calendar, color: AppColors.primary, size: 18),
-              const SizedBox(width: 8),
+              const Icon(
+                AppIcons.calendar,
+                color: AppColors.textMuted,
+                size: 17,
+              ),
+              const SizedBox(width: 10),
               Text(
                 l10n.homeTodayDate,
-                style: AppTypography.body
-                    .copyWith(color: AppColors.textSecondary),
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const Spacer(),
               Text(
                 l10n.homeOnePax,
-                style: AppTypography.body.copyWith(color: AppColors.textMuted),
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.md),
-          // Search button
+          const SizedBox(height: 14),
           PrimaryButton(label: l10n.homeSearch, onPressed: _onSearch),
         ],
+      ),
+    );
+  }
+}
+
+class _TransportTab extends StatelessWidget {
+  const _TransportTab({
+    required this.label,
+    required this.icon,
+    required this.active,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: active ? Colors.white : Colors.transparent,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      elevation: active ? 1 : 0,
+      shadowColor: const Color(0x1A000000),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 19,
+                color: active ? AppColors.primary : AppColors.textMuted,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: AppTypography.overline.copyWith(
+                  color: active ? AppColors.textPrimary : AppColors.textMuted,
+                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -177,34 +250,60 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
 class _SearchField extends StatelessWidget {
   const _SearchField({
     required this.controller,
-    required this.hint,
-    required this.icon,
+    required this.label,
+    required this.iconBg,
+    required this.iconColor,
   });
 
   final TextEditingController controller;
-  final String hint;
-  final IconData icon;
+  final String label;
+  final Color iconBg;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.primary, size: 20),
-        const SizedBox(width: 12),
-        Expanded(
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle:
-                  AppTypography.body.copyWith(color: AppColors.textMuted),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 14),
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 56, 14),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: iconBg,
+              shape: BoxShape.circle,
             ),
-            style: AppTypography.body,
+            child: Icon(AppIcons.locationTo, color: iconColor, size: 18),
           ),
-        ),
-      ],
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: AppTypography.overline.copyWith(
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  style: AppTypography.title.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -216,16 +315,33 @@ class _SwapButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.primaryTint,
-      borderRadius: BorderRadius.circular(AppRadius.pill),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-        onTap: onTap,
-        child: const SizedBox(
-          width: 32,
-          height: 32,
-          child: Icon(AppIcons.swap, color: AppColors.primary, size: 18),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.6),
+            blurRadius: 16,
+            spreadRadius: -6,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        color: AppColors.primary,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: const SizedBox(
+            width: 42,
+            height: 42,
+            child: Icon(
+              AppIcons.swap,
+              color: AppColors.onPrimary,
+              size: 20,
+            ),
+          ),
         ),
       ),
     );

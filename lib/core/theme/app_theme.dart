@@ -119,6 +119,14 @@ abstract final class AppTheme {
           vertical: AppSpacing.md,
         ),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: cs.onSurface,
+        contentTextStyle: AppTypography.body.copyWith(color: cs.surface),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+      ),
     );
   }
 }

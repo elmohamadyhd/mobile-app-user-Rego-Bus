@@ -93,7 +93,19 @@
       }
     }
   },
-  "homeGoodMorning": "Good morning,",
+  "homeGreeting": "Hi, {name}",
+  "@homeGreeting": {
+    "description": "Greeting on the home hero with the user's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeWhereTo": "Where to today?",
+  "@homeWhereTo": {
+    "description": "Subtitle under the greeting on the home hero."
+  },
   "homeMockUser": "Ahmed",
   "homeHeroHeadline": "Book your trip in one tap",
   "homeTabBus": "Bus",
@@ -103,16 +115,27 @@
   "homeFrom": "From",
   "homeTo": "To",
   "homeTodayDate": "Today, 25 Jun",
-  "homeOnePax": "1 pax",
-  "homeSearch": "Search",
+  "homeOnePax": "1 passenger",
+  "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
   "homeSeeAll": "See all",
   "homeComingSoon": "Coming soon",
   "homeCityLuxor": "Luxor",
   "homeCityAswan": "Aswan",
   "homeCityCairo": "Cairo",
+  "homeCityAlexandria": "Alexandria",
+  "homeFromPrice": "from {price} EGP",
+  "@homeFromPrice": {
+    "description": "Price subtitle on a popular-destination card.",
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "navHome": "Home",
   "navTickets": "Tickets",
+  "navSearch": "Search",
   "navWallet": "Wallet",
   "navProfile": "Profile",
   "tripResultsFilter": "Filter",

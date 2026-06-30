@@ -19,19 +19,22 @@ class PopularDestinations extends StatelessWidget {
           children: [
             Text(
               l10n.homePopularDestinations,
-              style: AppTypography.title
-                  .copyWith(fontWeight: FontWeight.w700),
+              style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
             ),
             TextButton(
               onPressed: () => ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
-                  SnackBar(content: Text(l10n.homeComingSoon)),
+                  SnackBar(
+                    content: Text(l10n.homeComingSoon),
+                  ),
                 ),
               child: Text(
                 l10n.homeSeeAll,
-                style: AppTypography.caption
-                    .copyWith(color: AppColors.primary),
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -42,10 +45,9 @@ class PopularDestinations extends StatelessWidget {
             Expanded(
               child: _DestCard(
                 city: l10n.homeCityLuxor,
-                fromCity: l10n.homeCityCairo,
-                fromLabel: l10n.homeFrom,
+                price: 240,
                 gradient: const LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryDeep],
+                  colors: [Color(0xFF1D6FF2), AppColors.primaryDeep],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -55,10 +57,9 @@ class PopularDestinations extends StatelessWidget {
             Expanded(
               child: _DestCard(
                 city: l10n.homeCityAswan,
-                fromCity: l10n.homeCityCairo,
-                fromLabel: l10n.homeFrom,
+                price: 290,
                 gradient: const LinearGradient(
-                  colors: [AppColors.secondary, Color(0xFFD4873A)],
+                  colors: [Color(0xFFFBA834), Color(0xFFE0871A)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -74,43 +75,61 @@ class PopularDestinations extends StatelessWidget {
 class _DestCard extends StatelessWidget {
   const _DestCard({
     required this.city,
-    required this.fromCity,
-    required this.fromLabel,
+    required this.price,
     required this.gradient,
   });
 
   final String city;
-  final String fromCity;
-  final String fromLabel;
+  final int price;
   final LinearGradient gradient;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 110,
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            city,
-            style: AppTypography.title.copyWith(
-              color: AppColors.onPrimary,
-              fontWeight: FontWeight.w700,
+    final l10n = AppLocalizations.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: Container(
+        height: 118,
+        decoration: BoxDecoration(gradient: gradient),
+        child: Stack(
+          children: [
+            PositionedDirectional(
+              bottom: -24,
+              end: -16,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
             ),
-          ),
-          Text(
-            '$fromLabel $fromCity',
-            style: AppTypography.caption.copyWith(
-              color: AppColors.onPrimary.withValues(alpha: 0.8),
+            Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    city,
+                    style: AppTypography.h2.copyWith(
+                      color: AppColors.onPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    l10n.homeFromPrice(price),
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.onPrimary.withValues(alpha: 0.85),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -40,7 +40,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(notifier.dispose);
 
   return GoRouter(
-    initialLocation: AppRoutes.splash,
+    initialLocation: AppRoutes.home,
     debugLogDiagnostics: false,
     refreshListenable: notifier,
     redirect: notifier.redirect,
@@ -129,19 +129,7 @@ class _RouterNotifier extends ChangeNotifier {
   };
 
   String? redirect(BuildContext context, GoRouterState state) {
-    final session = _ref.read(sessionControllerProvider);
-    final loc = state.matchedLocation;
-
-    // Hold on the splash until the persisted session resolves.
-    if (session.isLoading || !session.hasValue) {
-      return loc == AppRoutes.splash ? null : AppRoutes.splash;
-    }
-
-    final authed = session.requireValue != null;
-    final onAuthRoute = _authRoutes.contains(loc);
-
-    if (!authed && !onAuthRoute) return AppRoutes.login;
-    if (authed && onAuthRoute) return AppRoutes.home;
+    // DEV BYPASS: skip auth gate so all screens are reachable without login.
     return null;
   }
 }
