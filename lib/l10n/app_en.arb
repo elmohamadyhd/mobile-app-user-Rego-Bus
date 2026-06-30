@@ -114,7 +114,15 @@
   "homeTabTrain": "Train",
   "homeFrom": "From",
   "homeTo": "To",
-  "homeTodayDate": "Today, 25 Jun",
+  "homeSearchDateToday": "Today, {date}",
+  "@homeSearchDateToday": {
+    "description": "Home search date label when the selected day is today.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "homeOnePax": "1 passenger",
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
@@ -124,6 +132,14 @@
   "homeCityAswan": "Aswan",
   "homeCityCairo": "Cairo",
   "homeCityAlexandria": "Alexandria",
+  "homeCitySearchHint": "Search city",
+  "@homeCitySearchHint": {
+    "description": "Placeholder in the home city picker search field."
+  },
+  "homeCitySearchEmpty": "No cities found",
+  "@homeCitySearchEmpty": {
+    "description": "Shown when the city picker search has no matches."
+  },
   "homeFromPrice": "from {price} EGP",
   "@homeFromPrice": {
     "description": "Price subtitle on a popular-destination card.",

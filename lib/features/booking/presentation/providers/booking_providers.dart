@@ -1,13 +1,21 @@
 // lib/features/booking/presentation/providers/booking_providers.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rego/core/utils/date_formatting.dart';
 import 'package:rego/features/booking/data/mock_booking_data.dart';
 import 'package:rego/features/booking/domain/entities/booking.dart';
 import 'package:rego/features/booking/domain/entities/trip.dart';
 
 part 'booking_providers.freezed.dart';
 
-enum BookingFlowStatus { idle, loadingTrips, loadingDetail, confirming, confirmed, error }
+enum BookingFlowStatus {
+  idle,
+  loadingTrips,
+  loadingDetail,
+  confirming,
+  confirmed,
+  error
+}
 
 enum PaymentMethod { wallet, card }
 
@@ -26,6 +34,7 @@ abstract class BookingFlowState with _$BookingFlowState {
     String? error,
     String? searchFrom,
     String? searchTo,
+    DateTime? searchDate,
   }) = _BookingFlowState;
 }
 
@@ -34,10 +43,12 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
   BookingFlowState build() => const BookingFlowState();
 
   Future<void> searchTrips(String from, String to, String date) async {
+    final parsedDate = parseIsoDate(date) ?? dateOnly(DateTime.now());
     state = state.copyWith(
       status: BookingFlowStatus.loadingTrips,
       searchFrom: from,
       searchTo: to,
+      searchDate: parsedDate,
     );
     try {
       await Future<void>.delayed(const Duration(milliseconds: 600));
@@ -91,7 +102,8 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
     }
     state = state.copyWith(status: BookingFlowStatus.confirming, error: null);
     await Future<void>.delayed(const Duration(milliseconds: 800));
-    final ref = 'RG-${DateTime.now().millisecondsSinceEpoch.toRadixString(36).toUpperCase()}';
+    final ref =
+        'RG-${DateTime.now().millisecondsSinceEpoch.toRadixString(36).toUpperCase()}';
     final ticket = ETicket(
       bookingRef: ref,
       trip: detail,
@@ -110,4 +122,5 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
 }
 
 final bookingFlowProvider =
-    NotifierProvider<BookingFlowNotifier, BookingFlowState>(BookingFlowNotifier.new);
+    NotifierProvider<BookingFlowNotifier, BookingFlowState>(
+        BookingFlowNotifier.new);

@@ -9,6 +9,7 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/core/utils/date_formatting.dart';
 import 'package:rego/features/booking/domain/entities/trip.dart';
 import 'package:rego/features/booking/presentation/providers/booking_providers.dart';
 import 'package:rego/features/booking/presentation/widgets/booking_app_bar.dart';
@@ -44,7 +45,8 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
     );
   }
 
-  Widget _buildBody(BuildContext context, AppLocalizations l10n, BookingFlowState state) {
+  Widget _buildBody(
+      BuildContext context, AppLocalizations l10n, BookingFlowState state) {
     if (state.status == BookingFlowStatus.loadingTrips) {
       return const _LoadingSkeleton();
     }
@@ -52,9 +54,11 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
       return _ErrorView(
         message: l10n.tripResultsError,
         retryLabel: l10n.tripResultsRetry,
-        onRetry: () => ref
-            .read(bookingFlowProvider.notifier)
-            .searchTrips(state.searchFrom ?? '', state.searchTo ?? '', 'today'),
+        onRetry: () => ref.read(bookingFlowProvider.notifier).searchTrips(
+              state.searchFrom ?? '',
+              state.searchTo ?? '',
+              toIsoDate(state.searchDate ?? DateTime.now()),
+            ),
       );
     }
     if (state.trips.isEmpty) {
@@ -117,7 +121,8 @@ class _FilterButton extends StatelessWidget {
               ),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Icon(AppIcons.filter, color: AppColors.onPrimary, size: 16),
+              child:
+                  Icon(AppIcons.filter, color: AppColors.onPrimary, size: 16),
             ),
           ),
         ),
@@ -147,7 +152,8 @@ class _SortChips extends StatelessWidget {
     return SizedBox(
       height: 44,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 6),
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 6),
         scrollDirection: Axis.horizontal,
         itemCount: labels.length,
         separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
@@ -219,7 +225,8 @@ class _LoadingSkeleton extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(width: 100, height: 12, color: AppColors.bgBase),
+                      Container(
+                          width: 100, height: 12, color: AppColors.bgBase),
                       const SizedBox(height: 6),
                       Container(width: 60, height: 10, color: AppColors.bgBase),
                     ],
@@ -227,7 +234,8 @@ class _LoadingSkeleton extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
-              Container(width: double.infinity, height: 10, color: AppColors.bgBase),
+              Container(
+                  width: double.infinity, height: 10, color: AppColors.bgBase),
               const SizedBox(height: AppSpacing.md),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

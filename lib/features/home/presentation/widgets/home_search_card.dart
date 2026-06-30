@@ -9,7 +9,9 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/core/utils/date_formatting.dart';
 import 'package:rego/features/booking/presentation/providers/booking_providers.dart';
+import 'package:rego/features/home/presentation/widgets/home_city_picker.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
@@ -28,38 +30,57 @@ class HomeSearchCard extends ConsumerStatefulWidget {
 }
 
 class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
-  final _from = TextEditingController();
-  final _to = TextEditingController();
-  var _fieldsInitialized = false;
+  HomeCity _fromCity = kDefaultFromCity;
+  HomeCity _toCity = kDefaultToCity;
+  DateTime _travelDate = dateOnly(DateTime.now());
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_fieldsInitialized) {
-      final l10n = AppLocalizations.of(context);
-      _from.text = l10n.homeCityCairo;
-      _to.text = l10n.homeCityAlexandria;
-      _fieldsInitialized = true;
-    }
-  }
-
-  @override
-  void dispose() {
-    _from.dispose();
-    _to.dispose();
-    super.dispose();
-  }
+  static const _maxBookingDays = 90;
 
   void _swapFields() {
-    final tmp = _from.text;
-    _from.text = _to.text;
-    _to.text = tmp;
+    setState(() {
+      final tmp = _fromCity;
+      _fromCity = _toCity;
+      _toCity = tmp;
+    });
+  }
+
+  Future<void> _pickFrom() async {
+    final l10n = AppLocalizations.of(context);
+    final picked = await showHomeCityPicker(
+      context,
+      title: l10n.homeFrom,
+      exclude: _toCity,
+    );
+    if (picked != null) setState(() => _fromCity = picked);
+  }
+
+  Future<void> _pickTo() async {
+    final l10n = AppLocalizations.of(context);
+    final picked = await showHomeCityPicker(
+      context,
+      title: l10n.homeTo,
+      exclude: _fromCity,
+    );
+    if (picked != null) setState(() => _toCity = picked);
+  }
+
+  Future<void> _pickDate() async {
+    final today = dateOnly(DateTime.now());
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _travelDate,
+      firstDate: today,
+      lastDate: today.add(const Duration(days: _maxBookingDays)),
+    );
+    if (picked != null) setState(() => _travelDate = dateOnly(picked));
   }
 
   Future<void> _onSearch() async {
-    final from = _from.text.trim().isEmpty ? 'Cairo' : _from.text.trim();
-    final to = _to.text.trim().isEmpty ? 'Alexandria' : _to.text.trim();
-    await ref.read(bookingFlowProvider.notifier).searchTrips(from, to, 'today');
+    await ref.read(bookingFlowProvider.notifier).searchTrips(
+          _fromCity.apiName,
+          _toCity.apiName,
+          toIsoDate(_travelDate),
+        );
     if (mounted) unawaited(context.push(AppRoutes.trips));
   }
 
@@ -133,11 +154,12 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                 ),
                 child: Column(
                   children: [
-                    _SearchField(
-                      controller: _from,
+                    _CityField(
                       label: l10n.homeFrom,
+                      city: _fromCity,
                       iconBg: AppColors.primaryTint,
                       iconColor: AppColors.primary,
+                      onTap: _pickFrom,
                     ),
                     const Divider(
                       color: AppColors.hairline,
@@ -145,11 +167,22 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                       indent: 16,
                       endIndent: 16,
                     ),
-                    _SearchField(
-                      controller: _to,
+                    _CityField(
                       label: l10n.homeTo,
+                      city: _toCity,
                       iconBg: AppColors.secondaryTint,
                       iconColor: const Color(0xFFD98A2B),
+                      onTap: _pickTo,
+                    ),
+                    const Divider(
+                      color: AppColors.hairline,
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                    _DateField(
+                      date: _travelDate,
+                      onTap: _pickDate,
                     ),
                   ],
                 ),
@@ -164,35 +197,80 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(
-                AppIcons.calendar,
-                color: AppColors.textMuted,
-                size: 17,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                l10n.homeTodayDate,
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                l10n.homeOnePax,
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
           const SizedBox(height: 14),
           PrimaryButton(label: l10n.homeSearch, onPressed: _onSearch),
         ],
+      ),
+    );
+  }
+}
+
+class _DateField extends StatelessWidget {
+  const _DateField({
+    required this.date,
+    required this.onTap,
+  });
+
+  final DateTime date;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final localeName = Localizations.localeOf(context).toString();
+    final value = formatHomeSearchDate(date, l10n, localeName);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 56, 14),
+          child: Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  color: AppColors.bgBase,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  AppIcons.calendar,
+                  color: AppColors.textMuted,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.eTicketDate,
+                      style: AppTypography.overline.copyWith(
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      value,
+                      style: AppTypography.title.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                AppIcons.chevronDown,
+                color: AppColors.textMuted,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -247,62 +325,72 @@ class _TransportTab extends StatelessWidget {
   }
 }
 
-class _SearchField extends StatelessWidget {
-  const _SearchField({
-    required this.controller,
+class _CityField extends StatelessWidget {
+  const _CityField({
     required this.label,
+    required this.city,
     required this.iconBg,
     required this.iconColor,
+    required this.onTap,
   });
 
-  final TextEditingController controller;
   final String label;
+  final HomeCity city;
   final Color iconBg;
   final Color iconColor;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 56, 14),
-      child: Row(
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: iconBg,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(AppIcons.locationTo, color: iconColor, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: AppTypography.overline.copyWith(
-                    color: AppColors.textMuted,
-                    fontWeight: FontWeight.w600,
-                  ),
+    final l10n = AppLocalizations.of(context);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 56, 14),
+          child: Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  shape: BoxShape.circle,
                 ),
-                TextField(
-                  controller: controller,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  style: AppTypography.title.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
+                child: Icon(AppIcons.locationTo, color: iconColor, size: 18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: AppTypography.overline.copyWith(
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      city.label(l10n),
+                      style: AppTypography.title.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const Icon(
+                AppIcons.chevronDown,
+                color: AppColors.textMuted,
+                size: 20,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

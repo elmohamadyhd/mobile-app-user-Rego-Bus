@@ -104,8 +104,8 @@ class _NavActiveOrb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 48,
-      height: 48,
+      width: 52,
+      height: 52,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.primary,
@@ -118,7 +118,7 @@ class _NavActiveOrb extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(icon, color: AppColors.onPrimary, size: 24),
+      child: Icon(icon, color: AppColors.onPrimary, size: 26),
     );
   }
 }
@@ -144,12 +144,12 @@ class _NavItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: 48,
+            width: 52,
             height: 44,
             child: Center(
               child: active
                   ? Transform.translate(
-                      offset: const Offset(0, -16),
+                      offset: const Offset(0, -18),
                       child: _NavActiveOrb(icon: icon),
                     )
                   : Icon(icon, color: AppColors.textMuted, size: 22),
