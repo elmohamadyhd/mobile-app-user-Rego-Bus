@@ -44,4 +44,10 @@ abstract final class AppIcons {
   static const IconData wallet = Icons.account_balance_wallet_outlined;
   static const IconData ticket = Icons.confirmation_number_outlined;
   static const IconData search = Icons.search_rounded;
+
+  // ── Home / nav ────────────────────────────────────────────────────────────
+  static const IconData person = Icons.person_outline_rounded;
+  static const IconData home = Icons.home_rounded;
+  static const IconData calendar = Icons.calendar_today_outlined;
+  static const IconData locationDot = Icons.location_on_outlined;
 }

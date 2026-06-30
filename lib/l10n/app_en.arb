@@ -92,5 +92,27 @@
         "type": "int"
       }
     }
-  }
+  },
+  "homeGoodMorning": "Good morning,",
+  "homeMockUser": "Ahmed",
+  "homeHeroHeadline": "Book your trip in one tap",
+  "homeTabBus": "Bus",
+  "homeTabPrivate": "Private",
+  "homeTabFlight": "Flight",
+  "homeTabTrain": "Train",
+  "homeFrom": "From",
+  "homeTo": "To",
+  "homeTodayDate": "Today, 25 Jun",
+  "homeOnePax": "1 pax",
+  "homeSearch": "Search",
+  "homePopularDestinations": "Popular destinations",
+  "homeSeeAll": "See all",
+  "homeComingSoon": "Coming soon",
+  "homeCityLuxor": "Luxor",
+  "homeCityAswan": "Aswan",
+  "homeCityCairo": "Cairo",
+  "navHome": "Home",
+  "navTickets": "Tickets",
+  "navWallet": "Wallet",
+  "navProfile": "Profile"
 }

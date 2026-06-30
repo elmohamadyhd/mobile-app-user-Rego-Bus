@@ -63,5 +63,27 @@
   "valPasswordMatch": "كلمتا المرور غير متطابقتان",
 
   "bookingSelect": "اختر",
-  "bookingSeatsLeft": "{count} مقعد متاح"
+  "bookingSeatsLeft": "{count} مقعد متاح",
+  "homeGoodMorning": "صباح الخير,",
+  "homeMockUser": "أحمد",
+  "homeHeroHeadline": "احجز رحلتك بنقرة واحدة",
+  "homeTabBus": "باص",
+  "homeTabPrivate": "خاص",
+  "homeTabFlight": "طيران",
+  "homeTabTrain": "قطار",
+  "homeFrom": "من",
+  "homeTo": "إلى",
+  "homeTodayDate": "اليوم، 25 يونيو",
+  "homeOnePax": "١ راكب",
+  "homeSearch": "بحث",
+  "homePopularDestinations": "الوجهات الشائعة",
+  "homeSeeAll": "عرض الكل",
+  "homeComingSoon": "قريباً",
+  "homeCityLuxor": "الأقصر",
+  "homeCityAswan": "أسوان",
+  "homeCityCairo": "القاهرة",
+  "navHome": "الرئيسية",
+  "navTickets": "تذاكري",
+  "navWallet": "المحفظة",
+  "navProfile": "حسابي"
 }
