@@ -61,4 +61,9 @@ abstract final class AppIcons {
   static const IconData amenityAC = Icons.ac_unit_outlined;
   static const IconData amenitySockets = Icons.electrical_services_outlined;
   static const IconData amenityWater = Icons.water_drop_outlined;
+
+  // ── Actions ───────────────────────────────────────────────────────────────
+  static const IconData download = Icons.download_outlined;
+  static const IconData share = Icons.ios_share_outlined;
+  static const IconData checkCircle = Icons.check_circle_rounded;
 }

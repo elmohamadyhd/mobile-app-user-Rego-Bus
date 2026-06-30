@@ -152,5 +152,17 @@
   "confirmCardComingSoon": "Card payment coming soon",
   "confirmPriceSection": "Price breakdown",
   "confirmPricePerSeat": "Price per seat",
-  "confirmTotal": "Total"
+  "confirmTotal": "Total",
+
+  "eTicketConfirmed": "Booking confirmed!",
+  "eTicketSubtitle": "Your ticket is ready",
+  "eTicketFrom": "From",
+  "eTicketTo": "To",
+  "eTicketDate": "Date",
+  "eTicketSeats": "Seats",
+  "eTicketRef": "Booking ref.",
+  "eTicketDownload": "Download",
+  "eTicketShare": "Share",
+  "eTicketBackHome": "Back to home",
+  "eTicketComingSoon": "Coming soon"
 }

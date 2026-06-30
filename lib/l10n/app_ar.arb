@@ -123,5 +123,17 @@
   "confirmCardComingSoon": "الدفع بالبطاقة قريباً",
   "confirmPriceSection": "تفاصيل السعر",
   "confirmPricePerSeat": "سعر المقعد",
-  "confirmTotal": "الإجمالي"
+  "confirmTotal": "الإجمالي",
+
+  "eTicketConfirmed": "تم تأكيد الحجز!",
+  "eTicketSubtitle": "تذكرتك جاهزة",
+  "eTicketFrom": "من",
+  "eTicketTo": "إلى",
+  "eTicketDate": "التاريخ",
+  "eTicketSeats": "المقاعد",
+  "eTicketRef": "رقم الحجز",
+  "eTicketDownload": "تحميل",
+  "eTicketShare": "مشاركة",
+  "eTicketBackHome": "العودة للرئيسية",
+  "eTicketComingSoon": "قريباً"
 }
