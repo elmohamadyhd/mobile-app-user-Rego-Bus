@@ -52,4 +52,13 @@ abstract final class AppIcons {
   // ── Filters & feedback ───────────────────────────────────────────────────
   static const IconData filter = Icons.tune_rounded;
   static const IconData error = Icons.error_outline_rounded;
+
+  // ── Ratings ──────────────────────────────────────────────────────────────
+  static const IconData star = Icons.star_rounded;
+
+  // ── Amenities ────────────────────────────────────────────────────────────
+  static const IconData amenityWifi = Icons.wifi_outlined;
+  static const IconData amenityAC = Icons.ac_unit_outlined;
+  static const IconData amenitySockets = Icons.electrical_services_outlined;
+  static const IconData amenityWater = Icons.water_drop_outlined;
 }

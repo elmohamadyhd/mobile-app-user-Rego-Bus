@@ -92,5 +92,13 @@
   "tripResultsSortSeats": "المقاعد",
   "tripResultsNoTrips": "لا توجد رحلات",
   "tripResultsError": "تعذّر تحميل الرحلات",
-  "tripResultsRetry": "حاول مجدداً"
+  "tripResultsRetry": "حاول مجدداً",
+  "tripDetailTitle": "تفاصيل الرحلة",
+  "tripDetailChooseSeats": "اختر المقاعد",
+  "tripDetailAmenities": "المرافق",
+  "tripDetailTotalPrice": "إجمالي السعر",
+  "amenityWifi": "واي فاي",
+  "amenityAC": "تكييف",
+  "amenitySockets": "شواحن",
+  "amenityWater": "مياه"
 }

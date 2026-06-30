@@ -121,5 +121,13 @@
   "tripResultsSortSeats": "Seats",
   "tripResultsNoTrips": "No trips found",
   "tripResultsError": "Couldn't load trips",
-  "tripResultsRetry": "Try again"
+  "tripResultsRetry": "Try again",
+  "tripDetailTitle": "Trip details",
+  "tripDetailChooseSeats": "Choose seats",
+  "tripDetailAmenities": "Amenities",
+  "tripDetailTotalPrice": "Total price",
+  "amenityWifi": "Wi-Fi",
+  "amenityAC": "A/C",
+  "amenitySockets": "Sockets",
+  "amenityWater": "Water"
 }
