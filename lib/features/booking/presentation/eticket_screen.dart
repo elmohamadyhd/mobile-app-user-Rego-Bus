@@ -9,6 +9,7 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/booking/domain/entities/booking.dart';
+import 'package:rego/features/booking/domain/entities/trip.dart';
 import 'package:rego/features/booking/presentation/providers/booking_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -33,7 +34,7 @@ class ETicketScreen extends ConsumerWidget {
           children: [
             _HeroSection(ticket: ticket),
             _BoardingPassCard(ticket: ticket),
-            _ActionButtons(),
+            const _ActionButtons(),
             _BackHomeButton(onPressed: () {
               ref.read(bookingFlowProvider.notifier).reset();
               context.go(AppRoutes.home);
@@ -114,8 +115,7 @@ class _BoardingPassCard extends StatelessWidget {
     final detail = ticket.trip;
     final summary = detail.summary;
 
-    final departTime =
-        '${summary.departHour.toString().padLeft(2, '0')}:${summary.departMinute.toString().padLeft(2, '0')}';
+    final departTime = summary.departLabel;
     final seatsJoined = ticket.seats.join(', ');
 
     return Container(
@@ -224,6 +224,8 @@ class _QrPlaceholder extends StatelessWidget {
 // ── Action buttons row ────────────────────────────────────────────────────────
 
 class _ActionButtons extends StatelessWidget {
+  const _ActionButtons();
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
