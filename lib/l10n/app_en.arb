@@ -114,5 +114,12 @@
   "navHome": "Home",
   "navTickets": "Tickets",
   "navWallet": "Wallet",
-  "navProfile": "Profile"
+  "navProfile": "Profile",
+  "tripResultsFilter": "Filter",
+  "tripResultsSortTimes": "Times",
+  "tripResultsSortCheapest": "Cheapest",
+  "tripResultsSortSeats": "Seats",
+  "tripResultsNoTrips": "No trips found",
+  "tripResultsError": "Couldn't load trips",
+  "tripResultsRetry": "Try again"
 }

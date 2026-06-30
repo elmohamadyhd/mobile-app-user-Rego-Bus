@@ -85,5 +85,12 @@
   "navHome": "الرئيسية",
   "navTickets": "تذاكري",
   "navWallet": "المحفظة",
-  "navProfile": "حسابي"
+  "navProfile": "حسابي",
+  "tripResultsFilter": "تصفية",
+  "tripResultsSortTimes": "المواعيد",
+  "tripResultsSortCheapest": "الأرخص",
+  "tripResultsSortSeats": "المقاعد",
+  "tripResultsNoTrips": "لا توجد رحلات",
+  "tripResultsError": "تعذّر تحميل الرحلات",
+  "tripResultsRetry": "حاول مجدداً"
 }

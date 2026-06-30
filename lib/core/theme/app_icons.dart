@@ -48,4 +48,8 @@ abstract final class AppIcons {
   // ── Home / nav ────────────────────────────────────────────────────────────
   static const IconData home = Icons.home_rounded;
   static const IconData calendar = Icons.calendar_today_outlined;
+
+  // ── Filters & feedback ───────────────────────────────────────────────────
+  static const IconData filter = Icons.tune_rounded;
+  static const IconData error = Icons.error_outline_rounded;
 }

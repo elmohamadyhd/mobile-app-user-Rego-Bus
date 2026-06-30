@@ -24,6 +24,8 @@ abstract class BookingFlowState with _$BookingFlowState {
     @Default(PaymentMethod.wallet) PaymentMethod paymentMethod,
     ETicket? ticket,
     String? error,
+    String? searchFrom,
+    String? searchTo,
   }) = _BookingFlowState;
 }
 
@@ -32,7 +34,11 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
   BookingFlowState build() => const BookingFlowState();
 
   Future<void> searchTrips(String from, String to, String date) async {
-    state = state.copyWith(status: BookingFlowStatus.loadingTrips);
+    state = state.copyWith(
+      status: BookingFlowStatus.loadingTrips,
+      searchFrom: from,
+      searchTo: to,
+    );
     await Future<void>.delayed(const Duration(milliseconds: 600));
     state = state.copyWith(
       status: BookingFlowStatus.idle,
