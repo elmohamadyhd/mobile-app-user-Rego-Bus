@@ -72,7 +72,7 @@ class MainNavBar extends ConsumerWidget {
             onTap: () => _onTap(context, ref, 3),
           ),
           _NavItem(
-            icon: AppIcons.person,
+            icon: AppIcons.user,
             label: l10n.navProfile,
             active: activeTab == 4,
             onTap: () => _onTap(context, ref, 4),

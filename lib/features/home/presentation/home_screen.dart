@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: Colors.white.withValues(alpha: 0.25),
-                    child: const Icon(AppIcons.person, color: AppColors.onPrimary, size: 22),
+                    child: const Icon(AppIcons.user, color: AppColors.onPrimary, size: 22),
                   ),
                   const SizedBox(width: 12),
                   Column(
@@ -157,9 +157,9 @@ class _BellButton extends StatelessWidget {
           icon: const Icon(AppIcons.bell, color: AppColors.onPrimary),
           onPressed: () {},
         ),
-        const Positioned(
+        const PositionedDirectional(
           top: 8,
-          right: 8,
+          end: 8,
           child: CircleAvatar(radius: 4, backgroundColor: AppColors.secondary),
         ),
       ],

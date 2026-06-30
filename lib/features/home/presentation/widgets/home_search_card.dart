@@ -123,7 +123,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                   _SearchField(
                     controller: _from,
                     hint: l10n.homeFrom,
-                    icon: AppIcons.locationDot,
+                    icon: AppIcons.locationTo,
                   ),
                   const Divider(
                     color: AppColors.hairline,
@@ -133,12 +133,12 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                   _SearchField(
                     controller: _to,
                     hint: l10n.homeTo,
-                    icon: AppIcons.locationDot,
+                    icon: AppIcons.locationTo,
                   ),
                 ],
               ),
-              Positioned(
-                right: 0,
+              PositionedDirectional(
+                end: 0,
                 top: 0,
                 bottom: 0,
                 child: Center(
