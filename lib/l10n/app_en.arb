@@ -138,5 +138,19 @@
   "seatSelectionLegendSelected": "Selected",
   "seatSelectionNoSeats": "No seats selected",
   "seatSelectionSeatsLabel": "Seats",
-  "seatSelectionTotal": "Total"
+  "seatSelectionTotal": "Total",
+
+  "confirmTitle": "Confirm booking",
+  "confirmBook": "Confirm & pay",
+  "confirmPassengerSection": "Passenger",
+  "confirmPassengerName": "Full name",
+  "confirmPassengerPhone": "Phone",
+  "confirmEditComingSoon": "Edit coming soon",
+  "confirmPaymentSection": "Payment method",
+  "confirmPaymentWallet": "REGO Wallet",
+  "confirmPaymentCard": "Credit / debit card",
+  "confirmCardComingSoon": "Card payment coming soon",
+  "confirmPriceSection": "Price breakdown",
+  "confirmPricePerSeat": "Price per seat",
+  "confirmTotal": "Total"
 }
