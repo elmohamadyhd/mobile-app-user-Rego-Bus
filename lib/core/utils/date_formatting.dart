@@ -24,6 +24,10 @@ String formatHomeSearchDate(
   return DateFormat.yMMMd(localeName).format(day);
 }
 
+/// Short date for compact search date cells (e.g. "2 Jul").
+String formatSearchDateCell(DateTime date, String localeName) =>
+    DateFormat.MMMd(localeName).format(dateOnly(date));
+
 /// ISO `yyyy-MM-dd` for API / booking state.
 String toIsoDate(DateTime date) =>
     DateFormat('yyyy-MM-dd').format(dateOnly(date));

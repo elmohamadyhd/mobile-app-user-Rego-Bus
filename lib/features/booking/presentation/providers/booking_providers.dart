@@ -35,6 +35,9 @@ abstract class BookingFlowState with _$BookingFlowState {
     String? searchFrom,
     String? searchTo,
     DateTime? searchDate,
+    @Default(false) bool isRoundTrip,
+    DateTime? searchReturnDate,
+    String? flightClass,
   }) = _BookingFlowState;
 }
 
@@ -42,13 +45,25 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
   @override
   BookingFlowState build() => const BookingFlowState();
 
-  Future<void> searchTrips(String from, String to, String date) async {
+  Future<void> searchTrips(
+    String from,
+    String to,
+    String date, {
+    bool isRoundTrip = false,
+    String? returnDate,
+    String? flightClass,
+  }) async {
     final parsedDate = parseIsoDate(date) ?? dateOnly(DateTime.now());
+    final parsedReturn =
+        isRoundTrip && returnDate != null ? parseIsoDate(returnDate) : null;
     state = state.copyWith(
       status: BookingFlowStatus.loadingTrips,
       searchFrom: from,
       searchTo: to,
       searchDate: parsedDate,
+      isRoundTrip: isRoundTrip,
+      searchReturnDate: parsedReturn,
+      flightClass: flightClass,
     );
     try {
       await Future<void>.delayed(const Duration(milliseconds: 600));

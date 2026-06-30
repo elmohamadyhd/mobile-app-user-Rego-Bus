@@ -58,6 +58,11 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
               state.searchFrom ?? '',
               state.searchTo ?? '',
               toIsoDate(state.searchDate ?? DateTime.now()),
+              isRoundTrip: state.isRoundTrip,
+              returnDate: state.isRoundTrip && state.searchReturnDate != null
+                  ? toIsoDate(state.searchReturnDate!)
+                  : null,
+              flightClass: state.flightClass,
             ),
       );
     }
