@@ -13,7 +13,7 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? action;
 
   @override
-  Size get preferredSize => const Size.fromHeight(56);
+  Size get preferredSize => Size.fromHeight(subtitle != null ? 68.0 : 56.0);
 
   @override
   Widget build(BuildContext context) {

@@ -39,11 +39,18 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
       searchFrom: from,
       searchTo: to,
     );
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    state = state.copyWith(
-      status: BookingFlowStatus.idle,
-      trips: MockBookingData.trips,
-    );
+    try {
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      state = state.copyWith(
+        status: BookingFlowStatus.idle,
+        trips: MockBookingData.trips,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: BookingFlowStatus.error,
+        error: e.toString(),
+      );
+    }
   }
 
   Future<void> selectTrip(TripSummary trip) async {

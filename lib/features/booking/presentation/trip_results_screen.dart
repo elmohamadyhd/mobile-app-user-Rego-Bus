@@ -101,20 +101,24 @@ class _FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Material(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        child: InkWell(
+    final l10n = AppLocalizations.of(context);
+    return Tooltip(
+      message: l10n.tripResultsFilter,
+      child: Center(
+        child: Material(
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(AppRadius.sm),
-          onTap: () => ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(content: Text(AppLocalizations.of(context).homeComingSoon)),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            onTap: () => ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(content: Text(l10n.homeComingSoon)),
+              ),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Icon(AppIcons.filter, color: AppColors.onPrimary, size: 16),
             ),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            child: Icon(AppIcons.filter, color: AppColors.onPrimary, size: 16),
           ),
         ),
       ),
@@ -150,7 +154,10 @@ class _SortChips extends StatelessWidget {
         itemBuilder: (_, i) {
           final active = selected == i;
           return GestureDetector(
-            onTap: () => onSelect(i),
+            onTap: () {
+              // TODO: implement sort logic when real trip data is available
+              onSelect(i);
+            },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -181,6 +188,7 @@ class _LoadingSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: replace with shimmer animation when shimmer package is added
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
