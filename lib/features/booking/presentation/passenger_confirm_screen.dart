@@ -61,11 +61,11 @@ class PassengerConfirmScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _TripSummaryCard(state: state),
+            _TripSummaryCard(state: state, l10n: l10n),
             const SizedBox(height: AppSpacing.md),
             _PassengerSection(state: state, l10n: l10n),
             const SizedBox(height: AppSpacing.md),
-            _PaymentSection(state: state, l10n: l10n, ref: ref),
+            _PaymentSection(state: state, l10n: l10n),
             const SizedBox(height: AppSpacing.md),
             _PriceBreakdown(state: state, l10n: l10n),
             const SizedBox(height: AppSpacing.md),
@@ -79,8 +79,9 @@ class PassengerConfirmScreen extends ConsumerWidget {
 // ── Trip summary card ────────────────────────────────────────────────────────
 
 class _TripSummaryCard extends StatelessWidget {
-  const _TripSummaryCard({required this.state});
+  const _TripSummaryCard({required this.state, required this.l10n});
   final BookingFlowState state;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +179,7 @@ class _TripSummaryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
-                  '${seats.length} seat${seats.length == 1 ? '' : 's'}',
+                  '${seats.length} ${l10n.seatSelectionSeatsLabel}',
                   style: AppTypography.caption.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w600,
@@ -308,18 +309,16 @@ class _PassengerRow extends StatelessWidget {
 
 // ── Payment section ──────────────────────────────────────────────────────────
 
-class _PaymentSection extends StatelessWidget {
+class _PaymentSection extends ConsumerWidget {
   const _PaymentSection({
     required this.state,
     required this.l10n,
-    required this.ref,
   });
   final BookingFlowState state;
   final AppLocalizations l10n;
-  final WidgetRef ref;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isWallet = state.paymentMethod == PaymentMethod.wallet;
 
     return Column(
@@ -453,7 +452,7 @@ class _PriceBreakdown extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               _PriceRow(
-                label: 'Seats',
+                label: l10n.seatSelectionSeatsLabel,
                 value: '$seatCount',
                 bold: false,
               ),
