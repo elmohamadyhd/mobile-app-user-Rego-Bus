@@ -100,5 +100,14 @@
   "amenityWifi": "واي فاي",
   "amenityAC": "تكييف",
   "amenitySockets": "شواحن",
-  "amenityWater": "مياه"
+  "amenityWater": "مياه",
+
+  "seatSelectionTitle": "اختر المقاعد",
+  "seatSelectionContinue": "متابعة",
+  "seatSelectionLegendAvailable": "متاح",
+  "seatSelectionLegendBooked": "محجوز",
+  "seatSelectionLegendSelected": "محدد",
+  "seatSelectionNoSeats": "لم يتم تحديد مقاعد",
+  "seatSelectionSeatsLabel": "المقاعد",
+  "seatSelectionTotal": "الإجمالي"
 }

@@ -129,5 +129,14 @@
   "amenityWifi": "Wi-Fi",
   "amenityAC": "A/C",
   "amenitySockets": "Sockets",
-  "amenityWater": "Water"
+  "amenityWater": "Water",
+
+  "seatSelectionTitle": "Select seats",
+  "seatSelectionContinue": "Continue",
+  "seatSelectionLegendAvailable": "Available",
+  "seatSelectionLegendBooked": "Booked",
+  "seatSelectionLegendSelected": "Selected",
+  "seatSelectionNoSeats": "No seats selected",
+  "seatSelectionSeatsLabel": "Seats",
+  "seatSelectionTotal": "Total"
 }
