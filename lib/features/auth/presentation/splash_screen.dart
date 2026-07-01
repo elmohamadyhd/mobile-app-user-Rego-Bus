@@ -15,6 +15,9 @@ import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
+/// Minimum time the brand splash stays visible so users can see it.
+const kMinSplashDuration = Duration(seconds: 2);
+
 /// Brand splash that also bootstraps the session: once the stored session
 /// resolves, it routes to Home (signed in), Onboarding (first run), or Login.
 class SplashScreen extends ConsumerStatefulWidget {
@@ -26,6 +29,7 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _navigated = false;
+  late final DateTime _splashStartedAt = DateTime.now();
 
   Future<void> _route(AsyncValue<AuthSession?> session) async {
     if (_navigated) return;
@@ -33,6 +37,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     _navigated = true;
     final value = session.requireValue;
+
+    final elapsed = DateTime.now().difference(_splashStartedAt);
+    final remaining = kMinSplashDuration - elapsed;
+    if (remaining > Duration.zero) await Future<void>.delayed(remaining);
+
     if (!mounted) return;
 
     if (value != null) {

@@ -27,6 +27,8 @@ void main() {
     );
     // Splash loading dots animate forever — one frame is enough to render.
     await tester.pump();
-    expect(find.text('All journeys, one platform'), findsOneWidget);
+    expect(find.text('All journeys... one platform'), findsOneWidget);
+    // Minimum splash duration before navigation.
+    await tester.pump(const Duration(seconds: 2));
   });
 }

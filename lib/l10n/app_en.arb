@@ -13,7 +13,7 @@
     "description": "Greeting shown on the home screen body."
   },
 
-  "appTagline": "All journeys, one platform",
+  "appTagline": "All journeys... one platform",
   "@appTagline": {
     "description": "Brand tagline on the splash screen."
   },
