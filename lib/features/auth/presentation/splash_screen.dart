@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:rego/core/router/app_router.dart';
@@ -92,8 +93,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                             color: Colors.white.withValues(alpha: 0.22),
                           ),
                         ),
-                        child: Image.asset(
-                          'assets/rego-mark-white.png',
+                        child: SvgPicture.asset(
+                          'assets/new-logo-white.svg',
                           width: 62,
                           height: 62,
                           fit: BoxFit.contain,

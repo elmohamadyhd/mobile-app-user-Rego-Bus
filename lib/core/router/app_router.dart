@@ -40,7 +40,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(notifier.dispose);
 
   return GoRouter(
-    initialLocation: AppRoutes.home,
+    initialLocation: AppRoutes.splash,
     debugLogDiagnostics: false,
     refreshListenable: notifier,
     redirect: notifier.redirect,
@@ -129,7 +129,21 @@ class _RouterNotifier extends ChangeNotifier {
   };
 
   String? redirect(BuildContext context, GoRouterState state) {
-    // DEV BYPASS: skip auth gate so all screens are reachable without login.
+    final session = _ref.read(sessionControllerProvider);
+    if (!session.hasValue) return null; // still resolving — splash waits.
+
+    final loggedIn = session.value != null;
+    final at = state.matchedLocation;
+    final atAuthRoute = _authRoutes.contains(at);
+
+    // Splash always decides its own destination (home/login/onboarding),
+    // so leave it alone even once the session has resolved.
+    if (loggedIn && atAuthRoute && at != AppRoutes.splash) {
+      return AppRoutes.home;
+    }
+    if (!loggedIn && !atAuthRoute) {
+      return AppRoutes.login;
+    }
     return null;
   }
 }

@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/core/utils/validators.dart';
+import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_card.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_text_field.dart';
-import 'package:rego/features/auth/presentation/widgets/country_picker.dart';
 import 'package:rego/features/auth/presentation/widgets/social_row.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/gradient_hero.dart';
@@ -51,15 +50,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     setState(() => _submitting = true);
     try {
-      final session = await ref.read(authRepositoryProvider).login(
-            phoneCode: kDefaultCountry.dial,
-            mobile: Validators.digitsOnly(identifier),
-            password: _password.text,
-          );
-      await ref.read(sessionControllerProvider.notifier).setSession(session);
+      // DEV BYPASS: the login API isn't wired up yet — mint a mock session
+      // and drop straight into Home instead of calling the backend.
+      await ref
+          .read(sessionControllerProvider.notifier)
+          .setSession(const AuthSession(token: 'dev-mock-token'));
       if (mounted) context.go(AppRoutes.home);
-    } on ApiException catch (e) {
-      _applyErrors(e);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -71,19 +67,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (value.isEmpty) return l10n.valRequired;
     if (value.contains('@')) return l10n.loginEmailUnsupported;
     return Validators.isValidPhone(value) ? null : l10n.valPhone;
-  }
-
-  void _applyErrors(ApiException e) {
-    final fields = e.errors;
-    setState(() {
-      _identifierError = fields?['mobile']?.first;
-      _passwordError = fields?['password']?.first;
-    });
-    if (fields == null || fields.isEmpty) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(e.message)));
-    }
   }
 
   @override
