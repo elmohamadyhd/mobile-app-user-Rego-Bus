@@ -11,6 +11,7 @@
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
 | **Total requests** | 60 |
+| **Documented saved responses** | 23 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -99,6 +100,25 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | 7 | `POST` | `/auth/forget-password` | Forget password |
 | 8 | `POST` | `/auth/reset-password` | Reset password |
 
+### Response envelope
+
+All Auth endpoints return JSON with this shape (HTTP status may differ from the inner `status` field):
+
+```json
+{
+  "status": 200,
+  "message": "…",
+  "errors": {
+    "field": "…"
+  },
+  "data": {}
+}
+```
+
+- `errors` values are **strings** in live responses; the mobile app normalizes strings and arrays.
+- `Accept-Language` (`ar` / `en`) localizes `message` and `errors` text.
+- Success responses that return a session include `data.api_token` (Bearer token for subsequent calls).
+
 ### Login
 
 | | |
@@ -106,9 +126,122 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Method** | `POST` |
 | **Path** | `/auth/login` |
 | **Full URL** | `https://app.telefreik.com/auth/login` |
-| **Auth** | Bearer token required |
+| **Auth** | No (public) |
 
 **Body (form-data):** `phonecode`, `mobile`, `password`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Content-Type` | application/json |
+| `Accept-Language` | en |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `422` | Invalid credentials | default | `credentials` |
+| `400` | Mobile not registered | default | `mobile` |
+| `200` | Success — user data | default | — |
+| `200` | Success — user data | en | — |
+| `422` | Invalid credentials | en | `credentials` |
+| `400` | Mobile not registered | en | `mobile` |
+
+#### 422 — Invalid credentials (default)
+
+```json
+{
+  "status": 422,
+  "message": "invalid credential",
+  "errors": {
+    "credentials": "رقم الهاتف او كلمة المرور غير صحيحة"
+  },
+  "data": {}
+}
+```
+
+#### 400 — Mobile not registered (default)
+
+```json
+{
+  "status": 400,
+  "message": "رقم الهاتف غير مسجل لدينا",
+  "errors": {
+    "mobile": "رقم الهاتف غير مسجل لدينا"
+  },
+  "data": {}
+}
+```
+
+#### 200 — Success — user data (default)
+
+```json
+{
+  "status": 200,
+  "message": "ببانات المستخدم",
+  "errors": {},
+  "data": {
+    "id": 75,
+    "name": "abdallah",
+    "email": "elmohamady82@gmail.com",
+    "mobile": "1554052685",
+    "phonecode": "20",
+    "status": "Active",
+    "avatar": "",
+    "api_token": "<redacted>",
+    "is_profile_completed": true
+  }
+}
+```
+
+#### 200 — Success — user data (en)
+
+```json
+{
+  "status": 200,
+  "message": "User data",
+  "errors": {},
+  "data": {
+    "id": 75,
+    "name": "abdallah",
+    "email": "elmohamady82@gmail.com",
+    "mobile": "1554052685",
+    "phonecode": "20",
+    "status": "Active",
+    "avatar": "",
+    "api_token": "<redacted>",
+    "is_profile_completed": true
+  }
+}
+```
+
+#### 422 — Invalid credentials (en)
+
+```json
+{
+  "status": 422,
+  "message": "invalid credential",
+  "errors": {
+    "credentials": "phone or password in invalid"
+  },
+  "data": {}
+}
+```
+
+#### 400 — Mobile not registered (en)
+
+```json
+{
+  "status": 400,
+  "message": "Mobile number is not exists",
+  "errors": {
+    "mobile": "Mobile number is not exists"
+  },
+  "data": {}
+}
+```
 
 ### Register
 
@@ -117,13 +250,62 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Method** | `POST` |
 | **Path** | `/auth/register` |
 | **Full URL** | `https://app.telefreik.com/auth/register` |
-| **Auth** | Bearer token required |
+| **Auth** | No (public) |
 
 **Body (form-data):** `email`, `mobile`, `phonecode`, `name`, `password`, `password_confirmation`, `firebase_token`
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
 
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | ar |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `400` | Email and mobile already taken (×2) | ar | `email`, `mobile` |
+| `400` | Mobile not registered | ar | `mobile` |
+| `200` | Success — OTP sent | ar | — |
+
+#### 400 — Email and mobile already taken (ar)
+
+```json
+{
+  "status": 400,
+  "message": "قيمة حقل البريد الالكتروني مُستخدمة من قبل",
+  "errors": {
+    "email": "قيمة حقل البريد الالكتروني مُستخدمة من قبل",
+    "mobile": "قيمة حقل الجوال مُستخدمة من قبل"
+  },
+  "data": {}
+}
+```
+
+#### 400 — Mobile not registered (ar)
+
+```json
+{
+  "status": 400,
+  "message": "قيمة حقل الجوال مُستخدمة من قبل",
+  "errors": {
+    "mobile": "قيمة حقل الجوال مُستخدمة من قبل"
+  },
+  "data": {}
+}
+```
+
+#### 200 — Success — OTP sent (ar)
+
+```json
+{
+  "status": 200,
+  "message": "تم ارسال كود التحقيق",
+  "errors": {},
+  "data": {}
+}
+```
 
 ### OTP Verification
 
@@ -132,14 +314,57 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Method** | `POST` |
 | **Path** | `/auth/verify-otp` |
 | **Full URL** | `https://app.telefreik.com/auth/verify-otp` |
-| **Auth** | Bearer token required |
+| **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`, `code`
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
 
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | ar |
 
+**Saved responses:**
 
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Success — user data | ar | — |
+| `400` | Invalid verification code | ar | `code` |
+
+#### 200 — Success — user data (ar)
+
+```json
+{
+  "status": 200,
+  "message": "User logged in successfully.",
+  "errors": {},
+  "data": {
+    "id": 75,
+    "name": "abdallah",
+    "email": "elmohamady82@gmail.com",
+    "mobile": "1554052685",
+    "phonecode": "20",
+    "status": "Active",
+    "avatar": "",
+    "api_token": "<redacted>",
+    "is_profile_completed": true
+  }
+}
+```
+
+#### 400 — Invalid verification code (ar)
+
+```json
+{
+  "status": 400,
+  "message": "كود التحقق غير صحيح",
+  "errors": {
+    "code": "كود التحقق غير صحيح"
+  },
+  "data": {}
+}
+```
 
 ### OTP Re-Send
 
@@ -148,11 +373,46 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Method** | `POST` |
 | **Path** | `/auth/resend-otp` |
 | **Full URL** | `https://app.telefreik.com/auth/resend-otp` |
-| **Auth** | Bearer token required |
+| **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Content-Type` | application/json |
+| `Accept` | application/json |
+| `Accept-Language` | ar |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Success — OTP sent | ar | — |
+| `404` | Record not found | ar | — |
+
+#### 200 — Success — OTP sent (ar)
+
+```json
+{
+  "status": 200,
+  "message": "تم ارسال كود التحقيق",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### 404 — Record not found (ar)
+
+```json
+{
+  "status": 404,
+  "message": "This record can't be found",
+  "errors": {},
+  "data": {}
+}
+```
 
 ### OTP Send
 
@@ -161,11 +421,46 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Method** | `POST` |
 | **Path** | `/auth/send-otp` |
 | **Full URL** | `https://app.telefreik.com/auth/send-otp` |
-| **Auth** | Bearer token required |
+| **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Content-Type` | application/json |
+| `Accept` | application/json |
+| `Accept-Language` | ar |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Success — OTP sent | ar | — |
+| `404` | Record not found | ar | — |
+
+#### 200 — Success — OTP sent (ar)
+
+```json
+{
+  "status": 200,
+  "message": "تم ارسال كود التحقيق",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### 404 — Record not found (ar)
+
+```json
+{
+  "status": 404,
+  "message": "This record can't be found",
+  "errors": {},
+  "data": {}
+}
+```
 
 ### Validate OTP
 
@@ -174,11 +469,47 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Method** | `POST` |
 | **Path** | `/auth/validate-otp` |
 | **Full URL** | `https://app.telefreik.com/auth/validate-otp` |
-| **Auth** | Bearer token required |
+| **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`, `code`
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | ar |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `400` | Invalid verification code | ar | `code` |
+| `200` | Success — valid code | ar | — |
+
+#### 400 — Invalid verification code (ar)
+
+```json
+{
+  "status": 400,
+  "message": "كود التحقق غير صحيح",
+  "errors": {
+    "code": "كود التحقق غير صحيح"
+  },
+  "data": {}
+}
+```
+
+#### 200 — Success — valid code (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Valid code",
+  "errors": {},
+  "data": {}
+}
+```
 
 ### Forget password
 
@@ -187,18 +518,55 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Method** | `POST` |
 | **Path** | `/auth/forget-password` |
 | **Full URL** | `https://app.telefreik.com/auth/forget-password` |
-| **Auth** | Bearer token required |
+| **Auth** | No (public) |
 
 **Body (JSON):**
 
 ```json
 {
-  "mobile": 1090510791,
+  "mobile": 1554052685,
   "phonecode": 20
 }
 ```
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Content-Type` | application/json |
+| `Accept` | application/json |
+| `Accept-Language` | ar |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Success — OTP sent | ar | — |
+| `400` | Mobile not registered | ar | `mobile` |
+
+#### 200 — Success — OTP sent (ar)
+
+```json
+{
+  "status": 200,
+  "message": "تم ارسال كود التحقيق",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### 400 — Mobile not registered (ar)
+
+```json
+{
+  "status": 400,
+  "message": "رقم الهاتف غير مسجل لدينا",
+  "errors": {
+    "mobile": "رقم الهاتف غير مسجل لدينا"
+  },
+  "data": {}
+}
+```
 
 ### Reset password
 
@@ -207,11 +575,77 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Method** | `POST` |
 | **Path** | `/auth/reset-password` |
 | **Full URL** | `https://app.telefreik.com/auth/reset-password` |
-| **Auth** | Bearer token required |
+| **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`, `code`, `password`, `password_confirmation`
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Content-Type` | application/json |
+| `Accept` | application/json |
+| `Accept-Language` | ar |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `400` | Invalid verification code | ar | `code` |
+| `400` | Invalid verification code | ar | `code`, `password` |
+| `400` | Password confirmation mismatch | ar | `password` |
+| `200` | Success — password updated | ar | — |
+
+#### 400 — Invalid verification code (ar)
+
+```json
+{
+  "status": 400,
+  "message": "كود التحقق غير صحيح",
+  "errors": {
+    "code": "كود التحقق غير صحيح"
+  },
+  "data": {}
+}
+```
+
+#### 400 — Invalid verification code (ar)
+
+```json
+{
+  "status": 400,
+  "message": "كود التحقق غير صحيح",
+  "errors": {
+    "code": "كود التحقق غير صحيح",
+    "password": "حقل التأكيد غير مُطابق للحقل كلمة المرور"
+  },
+  "data": {}
+}
+```
+
+#### 400 — Password confirmation mismatch (ar)
+
+```json
+{
+  "status": 400,
+  "message": "حقل التأكيد غير مُطابق للحقل كلمة المرور",
+  "errors": {
+    "password": "حقل التأكيد غير مُطابق للحقل كلمة المرور"
+  },
+  "data": {}
+}
+```
+
+#### 200 — Success — password updated (ar)
+
+```json
+{
+  "status": 200,
+  "message": "تم تحديث كلمة المرور",
+  "errors": {},
+  "data": {}
+}
+```
 
 ## Profile
 
@@ -251,7 +685,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Auth** | Bearer token required |
 | **Folder** | addresses |
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | ar |
 
 ### Create
 
@@ -276,6 +715,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
   "notes": "{{$randomLoremText}}"
 }
 ```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Update
 
@@ -303,7 +748,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | ar |
 
 ### Delete
 
@@ -314,6 +764,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Full URL** | `https://app.telefreik.com/profile/address-book/4` |
 | **Auth** | Bearer token required |
 | **Folder** | addresses |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 #### Notifications
 
@@ -327,7 +783,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Auth** | Bearer token required |
 | **Folder** | Notifications |
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | ar |
 
 ### Delete
 
@@ -338,6 +799,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Full URL** | `https://app.telefreik.com/profile/notifications` |
 | **Auth** | Bearer token required |
 | **Folder** | Notifications |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 #### Tickets > Replies
 
@@ -353,6 +820,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 
 **Body (form-data):** `file`, `message`
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Create
 
 | | |
@@ -364,6 +837,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Folder** | Tickets > Replies |
 
 **Body (form-data):** `message`, `attachments[]`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 #### Tickets
 
@@ -377,6 +856,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Auth** | Bearer token required |
 | **Folder** | Tickets |
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Show ticket
 
 | | |
@@ -386,6 +871,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Full URL** | `https://app.telefreik.com/profile/tickets/5` |
 | **Auth** | Bearer token required |
 | **Folder** | Tickets |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Create Ticket
 
@@ -398,6 +889,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Folder** | Tickets |
 
 **Body (form-data):** `title`, `description`, `section`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 #### Wallet
 
@@ -413,6 +910,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 
 **Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`, `password`, `password_confirmation`
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Charge
 
 | | |
@@ -424,6 +927,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Folder** | Wallet |
 
 **Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`, `password`, `password_confirmation`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 #### Orders > Flights
 
@@ -439,6 +948,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 
 **Body (form-data):** `file`, `message`
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Show
 
 | | |
@@ -451,6 +966,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 
 **Body (form-data):** `file`, `message`
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Show profile
 
 | | |
@@ -461,6 +982,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Auth** | Bearer token required |
 
 **Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Update profile
 
@@ -473,6 +1000,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 
 **Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Update Token
 
 | | |
@@ -483,6 +1016,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Auth** | Bearer token required |
 
 **Body (form-data):** 
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Verify Alt phone
 
@@ -503,6 +1042,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Update password
 
 | | |
@@ -514,6 +1059,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 
 **Body (form-data):** `current_password`, `new_password`, `new_password_confirmation`
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Delete account
 
 | | |
@@ -524,6 +1075,13 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Auth** | Bearer token required |
 
 **Body (form-data):** 
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `firebase_token` | AhMeDs |
 
 ## Content
 
@@ -572,6 +1130,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Show
 
 | | |
@@ -592,6 +1156,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
   "message": "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
 }
 ```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Categories
 
@@ -614,6 +1184,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Banners list
 
 | | |
@@ -633,6 +1209,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
   "message": "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
 }
 ```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Faq
 
@@ -654,6 +1236,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Partners list
 
 | | |
@@ -673,6 +1261,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
   "message": "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
 }
 ```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Contact us
 
@@ -694,6 +1288,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Pages
 
 | | |
@@ -708,6 +1308,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 ```json
 ]
 ```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Show Page
 
@@ -729,6 +1335,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Countries List
 
 | | |
@@ -749,6 +1361,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Settings
 
 | | |
@@ -768,6 +1386,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
   "message": "{{$randomLoremLines}}"
 }
 ```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### New Request
 
@@ -806,6 +1430,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 |-----------|---------|
 | `search` | CAI |
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Airports
 
 | | |
@@ -821,7 +1451,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 |-----------|---------|
 | `term` | دبي |
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | ar |
 
 ### Search
 
@@ -853,6 +1488,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Confirm Order
 
 | | |
@@ -861,6 +1502,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | **Path** | `/flights/:offer_id/confirm` |
 | **Full URL** | `https://app.telefreik.com/flights/:offer_id/confirm` |
 | **Auth** | Bearer token required |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Bundels
 
@@ -876,6 +1523,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | Parameter | Example |
 |-----------|---------|
 | `` |  |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Add Passenger
 
@@ -915,6 +1568,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Hold Trip
 
 | | |
@@ -936,6 +1595,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
   ]
 }
 ```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
 
 ### Pending Trip
 
@@ -959,6 +1624,13 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
   "currency": "SAR"
 }
 ```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Authorization` | Bearer {{token}} |
 
 ## Private
 
@@ -987,6 +1659,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | `to_longitude` | 29.894801258559188 |
 | `rounded` | false |
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ### Show Trip Details
 
 | | |
@@ -1002,7 +1680,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 |-----------|---------|
 | `term` | دبي |
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | ar |
 
 ### Orders
 
@@ -1032,6 +1715,13 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Authorization` | Bearer {{token}} |
+
 ## Buses
 
 | # | Method | Path | Name |
@@ -1059,7 +1749,11 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 |-----------|---------|
 | `term` | مرسي |
 
-**Headers:** `Accept-Language: en`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept-Language` | en |
 
 ### Stations
 
@@ -1077,7 +1771,11 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | `term` | سوها |
 | `pagination` | false |
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept-Language` | ar |
 
 ### Carriers
 
@@ -1094,7 +1792,11 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 |-----------|---------|
 | `term` | سوها |
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept-Language` | ar |
 
 ### Search trips
 
@@ -1116,7 +1818,11 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | `page` | 2 |
 | `currency` | SAR |
 
-**Headers:** `Accept-Language: en`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept-Language` | en |
 
 ### Search details
 
@@ -1134,7 +1840,11 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | `page` | 1 |
 | `accept` |  |
 
-**Headers:** `Accept-Language: ar`
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept-Language` | ar |
 
 ### Seats
 
@@ -1154,6 +1864,13 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 | `from_location_id` | EGCAIBCN |
 | `to_location_id` | EGALEALG |
 | `date` | 2026-04-27 |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Content-Type` | application/json |
+| `Accept` | application/json |
 
 ### Create Ticket
 
@@ -1182,6 +1899,13 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 }
 ```
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Content-Type` | application/json |
+
 ## Currencies
 
 | # | Method | Path | Name |
@@ -1203,6 +1927,12 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 |-----------|---------|
 | `search` | CAI |
 
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+
 ## Collection issues
 
 The following inconsistencies exist in the Postman collection and may not reflect the real API:
@@ -1215,3 +1945,5 @@ The following inconsistencies exist in the Postman collection and may not reflec
 | Profile → Orders → Flights → Show | Same URL as List (`/profile/orders/flights`) — Show may need `/{id}` |
 
 Nested items under Flights → Search (One Way, Round Trip, Multi City) and under Buses folders are **saved response examples**, not separate API endpoints. They all call the same endpoint as their parent request.
+
+Saved responses documented under Auth (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.
