@@ -123,32 +123,7 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 
 **Headers:** `Accept-Language: ar`
 
-**Response:** 
-`fail`
-{
-    "status": 400,
-    "message": "قيمة حقل البريد الالكتروني مُستخدمة من قبل",
-    "errors": {
-        "email": "قيمة حقل البريد الالكتروني مُستخدمة من قبل"
-    },
-    "data": {}
-},
-{
-    "status": 400,
-    "message": "قيمة حقل البريد الالكتروني مُستخدمة من قبل",
-    "errors": {
-        "email": "قيمة حقل البريد الالكتروني مُستخدمة من قبل",
-        "mobile": "قيمة حقل الهاتف مُستخدمة من قبل"
-    },
-    "data": {}
-}
-`sucsess`
-{
-    "status": 200,
-    "message": "تم ارسال كود التحقيق",
-    "errors": {},
-    "data": {}
-}
+
 
 ### OTP Verification
 
@@ -163,16 +138,7 @@ Public endpoints (no auth): Auth group (login, register, OTP, password reset) an
 
 **Headers:** `Accept-Language: ar`
 
-**Response:** 
-`Fail`
-{
-    "status": 400,
-    "message": "كود التحقق غير صحيح",
-    "errors": {
-        "code": "كود التحقق غير صحيح"
-    },
-    "data": {}
-},
+
 
 
 ### OTP Re-Send
