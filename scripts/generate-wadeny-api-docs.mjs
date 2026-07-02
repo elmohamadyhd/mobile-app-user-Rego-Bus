@@ -100,7 +100,47 @@ function extractBody(body) {
 
 function getLanguageFromHeaders(headers) {
   const h = (headers || []).find((x) => x.key === "Accept-Language");
-  return h?.value || "default";
+  return h?.value || "ar";
+}
+
+const STANDARD_HEADER_KEYS = new Set(["accept", "accept-language"]);
+
+function renderRequestHeaders(api) {
+  const lines = [];
+  lines.push("**Headers:**");
+  lines.push("");
+  lines.push("| Header | Value |");
+  lines.push("|--------|-------|");
+  lines.push("| `Accept` | application/json |");
+  lines.push("| `Accept-Language` | `ar` \\| `en` (app locale) |");
+
+  const extra = (api.headers || []).filter(
+    (h) => h.key && !STANDARD_HEADER_KEYS.has(h.key.toLowerCase()),
+  );
+  for (const h of extra) {
+    lines.push(`| \`${h.key}\` | ${h.value} |`);
+  }
+  lines.push("");
+  return lines.join("\n");
+}
+
+function renderLocalizationSection() {
+  const lines = [];
+  lines.push("### Localization");
+  lines.push("");
+  lines.push(
+    "Every request must include `Accept-Language: ar` or `Accept-Language: en`.",
+  );
+  lines.push("");
+  lines.push(
+    "The value matches the user's active app locale (Settings or device default, via `LocaleController`). REGO mobile attaches this header automatically on **all** Dio API calls.",
+  );
+  lines.push("");
+  lines.push(
+    "The backend uses it to localize `message`, `errors`, and localized content in responses. Supported values: `ar` (primary), `en`.",
+  );
+  lines.push("");
+  return lines.join("\n");
 }
 
 function redactTokens(value) {
@@ -288,7 +328,7 @@ function renderAuthEnvelope() {
     "- `errors` values are **strings** in live responses; the mobile app normalizes strings and arrays.",
   );
   lines.push(
-    "- `Accept-Language` (`ar` / `en`) localizes `message` and `errors` text.",
+    "- All endpoints honor `Accept-Language`; Auth saved examples below show `ar` and `en` variants where captured in Postman.",
   );
   lines.push(
     "- Success responses that return a session include `data.api_token` (Bearer token for subsequent calls).",
@@ -379,16 +419,7 @@ function renderEndpoint(api, responsesMode) {
     }
   }
 
-  if (api.headers?.length) {
-    lines.push("**Headers:**");
-    lines.push("");
-    lines.push("| Header | Value |");
-    lines.push("|--------|-------|");
-    for (const h of api.headers) {
-      lines.push(`| \`${h.key}\` | ${h.value} |`);
-    }
-    lines.push("");
-  }
+  lines.push(renderRequestHeaders(api));
 
   const includeResponses =
     api.responses?.length > 0 &&
@@ -453,6 +484,7 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
     "Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.",
   );
   md.push("");
+  md.push(renderLocalizationSection());
   md.push("## Quick reference (unique endpoints)");
   md.push("");
   md.push("| Method | Path | Example name |");

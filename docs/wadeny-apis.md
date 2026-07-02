@@ -15,6 +15,14 @@
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
+### Localization
+
+Every request must include `Accept-Language: ar` or `Accept-Language: en`.
+
+The value matches the user's active app locale (Settings or device default, via `LocaleController`). REGO mobile attaches this header automatically on **all** Dio API calls.
+
+The backend uses it to localize `message`, `errors`, and localized content in responses. Supported values: `ar` (primary), `en`.
+
 ## Quick reference (unique endpoints)
 
 | Method | Path | Example name |
@@ -116,7 +124,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 ```
 
 - `errors` values are **strings** in live responses; the mobile app normalizes strings and arrays.
-- `Accept-Language` (`ar` / `en`) localizes `message` and `errors` text.
+- All endpoints honor `Accept-Language`; Auth saved examples below show `ar` and `en` variants where captured in Postman.
 - Success responses that return a session include `data.api_token` (Bearer token for subsequent calls).
 
 ### Login
@@ -135,21 +143,21 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 | `Content-Type` | application/json |
-| `Accept-Language` | en |
 
 **Saved responses:**
 
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
-| `422` | Invalid credentials | default | `credentials` |
-| `400` | Mobile not registered | default | `mobile` |
-| `200` | Success — user data | default | — |
+| `422` | Invalid credentials | ar | `credentials` |
+| `400` | Mobile not registered | ar | `mobile` |
+| `200` | Success — user data | ar | — |
 | `200` | Success — user data | en | — |
 | `422` | Invalid credentials | en | `credentials` |
 | `400` | Mobile not registered | en | `mobile` |
 
-#### 422 — Invalid credentials (default)
+#### 422 — Invalid credentials (ar)
 
 ```json
 {
@@ -162,7 +170,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 }
 ```
 
-#### 400 — Mobile not registered (default)
+#### 400 — Mobile not registered (ar)
 
 ```json
 {
@@ -175,7 +183,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 }
 ```
 
-#### 200 — Success — user data (default)
+#### 200 — Success — user data (ar)
 
 ```json
 {
@@ -259,7 +267,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 **Saved responses:**
 
@@ -323,7 +331,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 **Saved responses:**
 
@@ -381,9 +389,9 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Content-Type` | application/json |
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+| `Content-Type` | application/json |
 
 **Saved responses:**
 
@@ -429,9 +437,9 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Content-Type` | application/json |
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+| `Content-Type` | application/json |
 
 **Saved responses:**
 
@@ -478,7 +486,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 **Saved responses:**
 
@@ -533,9 +541,9 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Content-Type` | application/json |
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+| `Content-Type` | application/json |
 
 **Saved responses:**
 
@@ -583,9 +591,9 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Content-Type` | application/json |
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+| `Content-Type` | application/json |
 
 **Saved responses:**
 
@@ -690,7 +698,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Create
 
@@ -721,6 +729,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Update
 
@@ -753,7 +762,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Delete
 
@@ -770,6 +779,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 #### Notifications
 
@@ -788,7 +798,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Delete
 
@@ -805,6 +815,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 #### Tickets > Replies
 
@@ -825,6 +836,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Create
 
@@ -843,6 +855,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 #### Tickets
 
@@ -861,6 +874,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Show ticket
 
@@ -877,6 +891,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Create Ticket
 
@@ -895,6 +910,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 #### Wallet
 
@@ -915,6 +931,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Charge
 
@@ -933,6 +950,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 #### Orders > Flights
 
@@ -953,6 +971,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Show
 
@@ -971,6 +990,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Show profile
 
@@ -988,6 +1008,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Update profile
 
@@ -1005,6 +1026,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Update Token
 
@@ -1022,6 +1044,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Verify Alt phone
 
@@ -1047,6 +1070,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Update password
 
@@ -1064,6 +1088,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Delete account
 
@@ -1081,6 +1106,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 | `firebase_token` | AhMeDs |
 
 ## Content
@@ -1135,6 +1161,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Show
 
@@ -1162,6 +1189,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Categories
 
@@ -1189,6 +1217,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Banners list
 
@@ -1215,6 +1244,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Faq
 
@@ -1241,6 +1271,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Partners list
 
@@ -1267,6 +1298,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Contact us
 
@@ -1293,6 +1325,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Pages
 
@@ -1314,6 +1347,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Show Page
 
@@ -1340,6 +1374,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Countries List
 
@@ -1366,6 +1401,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Settings
 
@@ -1392,6 +1428,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### New Request
 
@@ -1401,6 +1438,13 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | **Path** | `*(not configured)*` |
 | **Full URL** | `*(not configured)*` |
 | **Auth** | Bearer token required |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ## Flights
 
@@ -1435,6 +1479,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Airports
 
@@ -1456,7 +1501,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Search
 
@@ -1493,6 +1538,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Confirm Order
 
@@ -1508,6 +1554,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Bundels
 
@@ -1529,6 +1576,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Add Passenger
 
@@ -1573,6 +1621,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Hold Trip
 
@@ -1601,6 +1650,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Pending Trip
 
@@ -1630,6 +1680,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 | `Authorization` | Bearer {{token}} |
 
 ## Private
@@ -1664,6 +1715,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Show Trip Details
 
@@ -1685,7 +1737,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
-| `Accept-Language` | ar |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Orders
 
@@ -1720,6 +1772,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 | `Authorization` | Bearer {{token}} |
 
 ## Buses
@@ -1753,7 +1806,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Accept-Language` | en |
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Stations
 
@@ -1775,7 +1829,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Accept-Language` | ar |
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Carriers
 
@@ -1796,7 +1851,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Accept-Language` | ar |
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Search trips
 
@@ -1822,7 +1878,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Accept-Language` | en |
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Search details
 
@@ -1844,7 +1901,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Accept-Language` | ar |
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ### Seats
 
@@ -1869,8 +1927,9 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Header | Value |
 |--------|-------|
-| `Content-Type` | application/json |
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+| `Content-Type` | application/json |
 
 ### Create Ticket
 
@@ -1904,6 +1963,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 | `Content-Type` | application/json |
 
 ## Currencies
@@ -1932,6 +1992,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | Header | Value |
 |--------|-------|
 | `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ## Collection issues
 
