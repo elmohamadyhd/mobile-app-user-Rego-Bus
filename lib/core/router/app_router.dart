@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/forgot_password_screen.dart';
 import 'package:rego/features/auth/presentation/login_screen.dart';
@@ -12,11 +13,14 @@ import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/register_screen.dart';
 import 'package:rego/features/auth/presentation/splash_screen.dart';
 import 'package:rego/features/home/presentation/home_screen.dart';
+import 'package:rego/features/shell/presentation/coming_soon_screen.dart';
+import 'package:rego/features/shell/presentation/main_shell.dart';
 import 'package:rego/features/booking/presentation/trip_results_screen.dart';
 import 'package:rego/features/booking/presentation/trip_details_screen.dart';
 import 'package:rego/features/booking/presentation/seat_selection_screen.dart';
 import 'package:rego/features/booking/presentation/passenger_confirm_screen.dart';
 import 'package:rego/features/booking/presentation/eticket_screen.dart';
+import 'package:rego/l10n/app_localizations.dart';
 
 // Named route constants so call-sites never use raw strings.
 abstract final class AppRoutes {
@@ -28,6 +32,10 @@ abstract final class AppRoutes {
   static const forgotPassword = '/forgot-password';
   static const newPassword = '/new-password';
   static const home = '/';
+  static const tickets = '/tickets';
+  static const search = '/search';
+  static const wallet = '/wallet';
+  static const profile = '/profile';
   static const trips = '/trips';
   static const tripDetail = '/trips/detail';
   static const tripSeats = '/trips/seats';
@@ -81,9 +89,66 @@ final routerProvider = Provider<GoRouter>((ref) {
           return NewPasswordScreen(args: args);
         },
       ),
-      GoRoute(
-        path: AppRoutes.home,
-        builder: (context, state) => const HomeScreen(),
+      // Signed-in tab shell. Each tab is a branch with preserved state; the
+      // shell scaffold supplies the shared bottom nav bar. Full-screen flows
+      // (booking below, auth above) stay on the root navigator and hide it.
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            MainShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.home,
+                builder: (context, state) => const HomeScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.tickets,
+                builder: (context, state) => ComingSoonScreen(
+                  title: AppLocalizations.of(context).navTickets,
+                  icon: AppIcons.ticket,
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.search,
+                builder: (context, state) => ComingSoonScreen(
+                  title: AppLocalizations.of(context).navSearch,
+                  icon: AppIcons.search,
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.wallet,
+                builder: (context, state) => ComingSoonScreen(
+                  title: AppLocalizations.of(context).navWallet,
+                  icon: AppIcons.wallet,
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.profile,
+                builder: (context, state) => ComingSoonScreen(
+                  title: AppLocalizations.of(context).navProfile,
+                  icon: AppIcons.user,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.trips,

@@ -5,7 +5,6 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/home/presentation/widgets/home_search_card.dart';
-import 'package:rego/features/home/presentation/widgets/main_nav_bar.dart';
 import 'package:rego/features/home/presentation/widgets/popular_destinations.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
@@ -21,47 +20,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBody: true,
-      backgroundColor: AppColors.bgBase,
-      body: SingleChildScrollView(
-        padding: EdgeInsetsDirectional.only(
-          bottom: MainNavBar.scrollBottomPadding(context) +
-              MediaQuery.viewInsetsOf(context).bottom,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildHero(context),
-            Transform.translate(
-              offset: const Offset(0, -24),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: HomeSearchCard(
-                  selectedTab: _transportTab,
-                  onTabChanged: (i) => setState(() => _transportTab = i),
-                ),
-              ),
-            ),
-            Transform.translate(
-              offset: const Offset(0, -24),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: PopularDestinations(),
-              ),
-            ),
-          ],
-        ),
+    // Rendered as a shell branch body — the shell owns the Scaffold and the
+    // bottom nav bar. MediaQuery's bottom padding already carries the shell's
+    // measured nav-bar height (auto-adapts to font scale), so the last item
+    // clears the floating bar without any hardcoded guess.
+    return SingleChildScrollView(
+      padding: EdgeInsetsDirectional.only(
+        bottom: MediaQuery.paddingOf(context).bottom +
+            AppSpacing.md +
+            MediaQuery.viewInsetsOf(context).bottom,
       ),
-      bottomNavigationBar: const Material(
-        color: Colors.transparent,
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(14, 0, 14, 16),
-            child: MainNavBar(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildHero(context),
+          Transform.translate(
+            offset: const Offset(0, -24),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: HomeSearchCard(
+                selectedTab: _transportTab,
+                onTabChanged: (i) => setState(() => _transportTab = i),
+              ),
+            ),
           ),
-        ),
+          Transform.translate(
+            offset: const Offset(0, -24),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: PopularDestinations(),
+            ),
+          ),
+        ],
       ),
     );
   }
