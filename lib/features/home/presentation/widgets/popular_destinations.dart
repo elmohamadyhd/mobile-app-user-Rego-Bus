@@ -15,11 +15,14 @@ class PopularDestinations extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              l10n.homePopularDestinations,
-              style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
+            Expanded(
+              child: Text(
+                l10n.homePopularDestinations,
+                style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             TextButton(
               onPressed: () => ScaffoldMessenger.of(context)

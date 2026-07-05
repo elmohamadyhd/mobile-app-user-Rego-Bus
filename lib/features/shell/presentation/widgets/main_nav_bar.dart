@@ -97,7 +97,6 @@ class MainNavBar extends StatelessWidget {
             child: Material(
               type: MaterialType.transparency,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (var i = 0; i < destinations.length; i++)
                     Expanded(
