@@ -126,6 +126,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 - `errors` values are **strings** in live responses; the mobile app normalizes strings and arrays.
 - All endpoints honor `Accept-Language`; Auth saved examples below show `ar` and `en` variants where captured in Postman.
 - Success responses that return a session include `data.api_token` (Bearer token for subsequent calls).
+- When credentials are valid but the account is not yet verified, login returns `need_verification: true` with empty `data` and an OTP already dispatched (see below).
 
 ### Login
 
@@ -154,6 +155,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `400` | Mobile not registered | ar | `mobile` |
 | `200` | Success — user data | ar | — |
 | `200` | Success — user data | en | — |
+| `200` | Account needs verification — OTP sent | — | — |
 | `422` | Invalid credentials | en | `credentials` |
 | `400` | Mobile not registered | en | `mobile` |
 
@@ -222,6 +224,20 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
     "api_token": "<redacted>",
     "is_profile_completed": true
   }
+}
+```
+
+#### 200 — Account needs verification — OTP sent
+
+Returned when credentials are valid but the phone has not been verified yet. The backend dispatches an OTP automatically; the client should navigate to OTP verification (`/auth/verify-otp`) rather than expecting `data.api_token`.
+
+```json
+{
+  "status": 200,
+  "message": "OTP code sent",
+  "errors": {},
+  "data": {},
+  "need_verification": true
 }
 ```
 

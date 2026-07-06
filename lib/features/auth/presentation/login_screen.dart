@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,9 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/core/utils/validators.dart';
+import 'package:rego/features/auth/domain/exceptions/account_not_verified_exception.dart';
+import 'package:rego/features/auth/domain/value/otp_purpose.dart';
+import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_card.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
@@ -66,6 +71,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
       await ref.read(sessionControllerProvider.notifier).setSession(session);
       if (mounted) context.go(AppRoutes.home);
+    } on AccountNotVerifiedException {
+      if (!mounted) return;
+      unawaited(
+        context.push(
+          AppRoutes.otp,
+          extra: OtpArgs(
+            phoneCode: _country.dial,
+            mobile: mobile,
+            purpose: OtpPurpose.registration,
+          ),
+        ),
+      );
     } on ApiException catch (e) {
       _applyErrors(e);
     } finally {
@@ -106,7 +123,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 PhoneField(
                   controller: _phone,
                   country: _country,
-                  hint: l10n.phoneHint,
                   onTapCountry: _pickCountry,
                   errorText: _phoneError,
                   textInputAction: TextInputAction.next,

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/core/utils/phone_number_formatter.dart';
+import 'package:rego/core/utils/validators.dart';
 import 'package:rego/features/auth/presentation/widgets/country_picker.dart';
 
 /// Phone input with a tappable country-code chip, matching the Skyline design.
-class PhoneField extends StatelessWidget {
+class PhoneField extends StatefulWidget {
   const PhoneField({
     super.key,
     required this.controller,
     required this.country,
-    required this.hint,
     this.onTapCountry,
     this.errorText,
     this.focusNode,
@@ -23,7 +23,6 @@ class PhoneField extends StatelessWidget {
 
   final TextEditingController controller;
   final CountryCode country;
-  final String hint;
   final VoidCallback? onTapCountry;
   final String? errorText;
   final FocusNode? focusNode;
@@ -31,8 +30,38 @@ class PhoneField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
 
   @override
+  State<PhoneField> createState() => _PhoneFieldState();
+}
+
+class _PhoneFieldState extends State<PhoneField> {
+  @override
+  void initState() {
+    super.initState();
+    _reformatController(widget.country.groupSizes);
+  }
+
+  @override
+  void didUpdateWidget(covariant PhoneField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.country.dial != widget.country.dial) {
+      _reformatController(widget.country.groupSizes);
+    }
+  }
+
+  void _reformatController(List<int> groupSizes) {
+    final digits = Validators.digitsOnly(widget.controller.text);
+    if (digits.isEmpty) return;
+    final formatted = formatNationalPhone(digits, groupSizes);
+    if (formatted == widget.controller.text) return;
+    widget.controller.value = widget.controller.value.copyWith(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final hasError = errorText != null && errorText!.isNotEmpty;
+    final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,18 +78,23 @@ class PhoneField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _CountryChip(country: country, onTap: onTapCountry),
+              _CountryChip(
+                country: widget.country,
+                onTap: widget.onTapCountry,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: TextField(
-                  controller: controller,
-                  focusNode: focusNode,
+                  controller: widget.controller,
+                  focusNode: widget.focusNode,
                   keyboardType: TextInputType.phone,
-                  textInputAction: textInputAction,
-                  onSubmitted: onSubmitted,
+                  textInputAction: widget.textInputAction,
+                  onSubmitted: widget.onSubmitted,
                   autofillHints: const [AutofillHints.telephoneNumberLocal],
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9 ]')),
+                    NationalPhoneInputFormatter(
+                      groupSizes: widget.country.groupSizes,
+                    ),
                   ],
                   style: AppTypography.body.copyWith(
                     color: AppColors.textPrimary,
@@ -71,7 +105,7 @@ class PhoneField extends StatelessWidget {
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    hintText: hint,
+                    hintText: widget.country.sampleHint,
                     hintStyle: AppTypography.body.copyWith(
                       color: AppColors.textMuted,
                     ),
@@ -86,7 +120,7 @@ class PhoneField extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 6, left: 6, right: 6),
             child: Text(
-              errorText!,
+              widget.errorText!,
               style: AppTypography.caption.copyWith(color: AppColors.error),
             ),
           ),
@@ -127,8 +161,11 @@ class _CountryChip extends StatelessWidget {
             ),
             if (onTap != null) ...[
               const SizedBox(width: 2),
-              const Icon(AppIcons.chevronDown,
-                  size: 16, color: AppColors.textMuted),
+              const Icon(
+                AppIcons.chevronDown,
+                size: 16,
+                color: AppColors.textMuted,
+              ),
             ],
           ],
         ),

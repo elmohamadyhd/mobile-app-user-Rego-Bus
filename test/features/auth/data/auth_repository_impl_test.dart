@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/auth/data/auth_api.dart';
 import 'package:rego/features/auth/data/auth_repository_impl.dart';
+import 'package:rego/features/auth/domain/exceptions/account_not_verified_exception.dart';
 
 class _FakeAuthApi extends AuthApi {
   _FakeAuthApi(this._loginBody) : super(Dio());
@@ -46,6 +47,34 @@ void main() {
                 'credentials',
                 'phone or password in invalid',
               ),
+        ),
+      );
+    });
+
+    test('throws AccountNotVerifiedException when need_verification is true',
+        () async {
+      const envelope = {
+        'status': 200,
+        'message': 'OTP code sent',
+        'errors': <String, dynamic>{},
+        'data': <String, dynamic>{},
+        'need_verification': true,
+      };
+
+      final repo = AuthRepositoryImpl(_FakeAuthApi(envelope));
+
+      await expectLater(
+        repo.login(
+          phoneCode: '20',
+          mobile: '1276586027',
+          password: '123456',
+        ),
+        throwsA(
+          isA<AccountNotVerifiedException>().having(
+            (e) => e.message,
+            'message',
+            'OTP code sent',
+          ),
         ),
       );
     });

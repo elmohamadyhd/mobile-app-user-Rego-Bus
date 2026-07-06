@@ -6,23 +6,70 @@ import 'package:rego/core/theme/app_typography.dart';
 
 /// A country dial code. Minimal static set for now; wire `/countries` later.
 class CountryCode {
-  const CountryCode(
-      {required this.name, required this.dial, required this.emoji});
+  const CountryCode({
+    required this.name,
+    required this.dial,
+    required this.emoji,
+    required this.groupSizes,
+    required this.sampleHint,
+  });
 
   final String name;
   final String dial;
   final String emoji;
+
+  /// National-number digit block lengths, e.g. `[3, 3, 4]` → `101 234 5678`.
+  final List<int> groupSizes;
+
+  /// Locale-neutral placeholder matching [groupSizes].
+  final String sampleHint;
 }
 
 const kCountryCodes = <CountryCode>[
-  CountryCode(name: 'مصر', dial: '20', emoji: '🇪🇬'),
-  CountryCode(name: 'السعودية', dial: '966', emoji: '🇸🇦'),
-  CountryCode(name: 'الإمارات', dial: '971', emoji: '🇦🇪'),
-  CountryCode(name: 'الكويت', dial: '965', emoji: '🇰🇼'),
-  CountryCode(name: 'قطر', dial: '974', emoji: '🇶🇦'),
+  CountryCode(
+    name: 'مصر',
+    dial: '20',
+    emoji: '🇪🇬',
+    groupSizes: [3, 3, 4],
+    sampleHint: '101 234 5678',
+  ),
+  CountryCode(
+    name: 'السعودية',
+    dial: '966',
+    emoji: '🇸🇦',
+    groupSizes: [2, 3, 4],
+    sampleHint: '50 123 4567',
+  ),
+  CountryCode(
+    name: 'الإمارات',
+    dial: '971',
+    emoji: '🇦🇪',
+    groupSizes: [2, 3, 4],
+    sampleHint: '50 123 4567',
+  ),
+  CountryCode(
+    name: 'الكويت',
+    dial: '965',
+    emoji: '🇰🇼',
+    groupSizes: [4, 4],
+    sampleHint: '1234 5678',
+  ),
+  CountryCode(
+    name: 'قطر',
+    dial: '974',
+    emoji: '🇶🇦',
+    groupSizes: [4, 4],
+    sampleHint: '1234 5678',
+  ),
 ];
 
-const kDefaultCountry = CountryCode(name: 'مصر', dial: '20', emoji: '🇪🇬');
+const kDefaultCountry = CountryCode(
+  name: 'مصر',
+  dial: '20',
+  emoji: '🇪🇬',
+  groupSizes: [3, 3, 4],
+  sampleHint: '101 234 5678',
+);
 
 /// Bottom-sheet picker; resolves to the chosen [CountryCode] or null.
 Future<CountryCode?> showCountryCodePicker(BuildContext context) {

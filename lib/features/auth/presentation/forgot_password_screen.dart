@@ -120,7 +120,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               PhoneField(
                 controller: _phone,
                 country: _country,
-                hint: l10n.phoneHint,
                 onTapCountry: _pickCountry,
                 errorText: _phoneError,
                 textInputAction: TextInputAction.done,
