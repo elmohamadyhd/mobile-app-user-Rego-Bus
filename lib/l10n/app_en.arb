@@ -32,6 +32,7 @@
   "loginButton": "Sign in",
   "loginNoAccount": "Don't have an account?",
   "loginSignUp": "Sign up",
+  "authContinueGuest": "Continue as a guest",
 
   "phoneHint": "10 1234 5678",
   "passwordHint": "Password",
@@ -237,6 +238,12 @@
   "@profileMenuLogout": {
     "description": "Profile menu row for signing out."
   },
+  "guestGateTitle": "One step before payment",
+  "guestGateBody": "Sign in or create an account to confirm your booking and pay securely.",
+  "guestGateSignIn": "Sign in",
+  "guestGateCreate": "Create account",
+  "guestGateReassure": "Your booking is saved — you won't lose your seats",
+  "profileGuestSignInCta": "Sign in or create an account",
   "profileLogoutTitle": "Log out?",
   "@profileLogoutTitle": {
     "description": "Title of the logout confirmation dialog."
