@@ -41,3 +41,6 @@ ios/Flutter/flutter_export_environment.sh
 
 # Web
 lib/generated_plugin_registrant.dart
+
+# Superpowers brainstorming (visual companion, mockups)
+.superpowers/
