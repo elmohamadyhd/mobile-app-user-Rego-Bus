@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rego/app.dart';
 import 'package:rego/core/storage/secure_storage.dart';
 
+import '../../support/in_memory_secure_storage.dart';
+
 void main() {
   setUpAll(() {
     dotenv.testLoad(fileInput: File('.env.example').readAsStringSync());
@@ -17,7 +19,11 @@ void main() {
       ProviderScope(
         overrides: [
           secureStorageProvider.overrideWithValue(
-            SecureStorage(memoryLocaleStore: {}, memoryGuestModeStore: {}),
+            SecureStorage(
+              storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
+              memoryLocaleStore: {},
+              memoryGuestModeStore: {},
+            ),
           ),
         ],
         child: const App(),
@@ -36,6 +42,7 @@ void main() {
         overrides: [
           secureStorageProvider.overrideWithValue(
             SecureStorage(
+              storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
               memoryLocaleStore: {},
               memoryGuestModeStore: {'guest_mode': 'true'},
             ),
@@ -48,6 +55,6 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome to REGO'), findsOneWidget);
+    expect(find.text('Where to today?'), findsOneWidget);
   });
 }
