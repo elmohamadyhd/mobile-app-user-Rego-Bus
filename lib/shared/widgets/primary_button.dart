@@ -4,10 +4,14 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 
-enum PrimaryButtonVariant { primary, amber }
+enum PrimaryButtonVariant { primary, amber, ghost }
 
 /// Skyline primary action button: solid fill, soft colored glow, and a
 /// built-in loading state. Disabled when [onPressed] is null or [loading].
+///
+/// [PrimaryButtonVariant.ghost] renders the same size and shape as an
+/// outlined secondary action (e.g. "Continue as a guest") — transparent
+/// fill, primary-colored border and label, no glow.
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,
@@ -25,12 +29,17 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !loading;
-    final bg = variant == PrimaryButtonVariant.amber
-        ? AppColors.secondary
-        : AppColors.primary;
-    final fg = variant == PrimaryButtonVariant.amber
-        ? AppColors.onSecondary
-        : AppColors.onPrimary;
+    final isGhost = variant == PrimaryButtonVariant.ghost;
+    final bg = isGhost
+        ? Colors.transparent
+        : variant == PrimaryButtonVariant.amber
+            ? AppColors.secondary
+            : AppColors.primary;
+    final fg = isGhost
+        ? AppColors.primary
+        : variant == PrimaryButtonVariant.amber
+            ? AppColors.onSecondary
+            : AppColors.onPrimary;
     final radius = BorderRadius.circular(AppRadius.input);
 
     return Opacity(
@@ -38,14 +47,16 @@ class PrimaryButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: radius,
-          boxShadow: [
-            BoxShadow(
-              color: bg.withValues(alpha: 0.45),
-              blurRadius: 26,
-              spreadRadius: -10,
-              offset: const Offset(0, 14),
-            ),
-          ],
+          boxShadow: isGhost
+              ? null
+              : [
+                  BoxShadow(
+                    color: bg.withValues(alpha: 0.45),
+                    blurRadius: 26,
+                    spreadRadius: -10,
+                    offset: const Offset(0, 14),
+                  ),
+                ],
         ),
         child: Material(
           color: bg,
@@ -53,27 +64,32 @@ class PrimaryButton extends StatelessWidget {
           child: InkWell(
             borderRadius: radius,
             onTap: enabled ? onPressed : null,
-            child: SizedBox(
+            child: Container(
               height: 54,
               width: double.infinity,
-              child: Center(
-                child: loading
-                    ? SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.4,
-                          valueColor: AlwaysStoppedAnimation(fg),
-                        ),
-                      )
-                    : Text(
-                        label,
-                        style: AppTypography.title.copyWith(
-                          color: fg,
-                          fontWeight: FontWeight.w700,
-                        ),
+              alignment: Alignment.center,
+              decoration: isGhost
+                  ? BoxDecoration(
+                      borderRadius: radius,
+                      border: Border.all(color: AppColors.primary, width: 1.5),
+                    )
+                  : null,
+              child: loading
+                  ? SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.4,
+                        valueColor: AlwaysStoppedAnimation(fg),
                       ),
-              ),
+                    )
+                  : Text(
+                      label,
+                      style: AppTypography.title.copyWith(
+                        color: fg,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
             ),
           ),
         ),
