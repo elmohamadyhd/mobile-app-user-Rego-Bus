@@ -9,6 +9,16 @@ import 'package:rego/core/storage/secure_storage.dart';
 
 import '../../support/in_memory_secure_storage.dart';
 
+// These tests render the full `App()` (splash -> router guard -> screen), so
+// `SessionController.build()` runs for real. The real `FlutterSecureStorage`
+// backend never resolves its platform-channel `read()` in this `flutter test`
+// environment (it hangs rather than throwing), which would leave the splash
+// screen's looping dots animation scheduling frames forever and time out
+// `pumpAndSettle()`. `InMemorySecureStorage` avoids the platform channel
+// entirely. It's seeded with `onboarding_seen: true` because
+// `SecureStorage.onboardingSeen()` has no memory-store bypass of its own and
+// would otherwise always read `false`, sending splash to Onboarding instead
+// of Login/Home regardless of session or guest state.
 void main() {
   setUpAll(() {
     dotenv.testLoad(fileInput: File('.env.example').readAsStringSync());
