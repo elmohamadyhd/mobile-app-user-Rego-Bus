@@ -64,11 +64,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) {
+          final args = state.extra;
+          return LoginScreen(
+            gateArgs: args is AuthGateArgs ? args : null,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.register,
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) {
+          final args = state.extra;
+          return RegisterScreen(
+            gateArgs: args is AuthGateArgs ? args : null,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.otp,
@@ -173,10 +183,12 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 /// Bridges the session state to go_router: notifies on auth changes (so the
-/// guard re-runs) and decides redirects based on whether a session exists.
+/// guard re-runs) and decides redirects based on whether a session exists
+/// or the user is browsing as a guest.
 class _RouterNotifier extends ChangeNotifier {
   _RouterNotifier(this._ref) {
     _ref.listen(sessionControllerProvider, (_, __) => notifyListeners());
+    _ref.listen(guestModeProvider, (_, __) => notifyListeners());
   }
 
   final Ref _ref;
@@ -193,18 +205,23 @@ class _RouterNotifier extends ChangeNotifier {
 
   String? redirect(BuildContext context, GoRouterState state) {
     final session = _ref.read(sessionControllerProvider);
-    if (!session.hasValue) return null; // still resolving — splash waits.
+    final guestMode = _ref.read(guestModeProvider);
+    if (!session.hasValue || !guestMode.hasValue) {
+      return null; // still resolving — splash waits.
+    }
 
     final loggedIn = session.value != null;
+    final isGuest = guestMode.value ?? false;
+    final allowedInApp = loggedIn || isGuest;
     final at = state.matchedLocation;
     final atAuthRoute = _authRoutes.contains(at);
 
     // Splash always decides its own destination (home/login/onboarding),
     // so leave it alone even once the session has resolved.
-    if (loggedIn && atAuthRoute && at != AppRoutes.splash) {
+    if (allowedInApp && atAuthRoute && at != AppRoutes.splash) {
       return AppRoutes.home;
     }
-    if (!loggedIn && !atAuthRoute) {
+    if (!allowedInApp && !atAuthRoute) {
       return AppRoutes.login;
     }
     return null;
