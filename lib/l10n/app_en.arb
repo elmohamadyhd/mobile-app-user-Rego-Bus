@@ -32,14 +32,6 @@
   "loginButton": "Sign in",
   "loginNoAccount": "Don't have an account?",
   "loginSignUp": "Sign up",
-  "loginIdentifierHint": "Phone or email",
-  "@loginIdentifierHint": {
-    "description": "Hint for the combined sign-in identifier field on the login screen."
-  },
-  "loginEmailUnsupported": "Email sign-in is coming soon — please use your phone number",
-  "@loginEmailUnsupported": {
-    "description": "Shown when a user tries to sign in with an email; the backend is phone-only for now."
-  },
 
   "phoneHint": "10 1234 5678",
   "passwordHint": "Password",
@@ -211,5 +203,58 @@
   "eTicketDownload": "Download",
   "eTicketShare": "Share",
   "eTicketBackHome": "Back to home",
-  "eTicketComingSoon": "Coming soon"
+  "eTicketComingSoon": "Coming soon",
+
+  "profileGuest": "Guest",
+  "@profileGuest": {
+    "description": "Fallback display name when the session has no user name."
+  },
+  "profileMenuTrips": "My trips",
+  "@profileMenuTrips": {
+    "description": "Profile menu row for booking history."
+  },
+  "profileMenuAddresses": "Addresses",
+  "@profileMenuAddresses": {
+    "description": "Profile menu row for saved addresses."
+  },
+  "profileMenuWallet": "Wallet",
+  "@profileMenuWallet": {
+    "description": "Profile menu row for wallet shortcut."
+  },
+  "profileMenuLanguage": "Language",
+  "@profileMenuLanguage": {
+    "description": "Profile menu row for language settings."
+  },
+  "profileMenuSettings": "Settings",
+  "@profileMenuSettings": {
+    "description": "Profile menu row for app settings."
+  },
+  "profileMenuHelp": "Help",
+  "@profileMenuHelp": {
+    "description": "Profile menu row for help and support."
+  },
+  "profileMenuLogout": "Log out",
+  "@profileMenuLogout": {
+    "description": "Profile menu row for signing out."
+  },
+  "profileLogoutTitle": "Log out?",
+  "@profileLogoutTitle": {
+    "description": "Title of the logout confirmation dialog."
+  },
+  "profileLogoutMessage": "You will need to sign in again to access your account.",
+  "@profileLogoutMessage": {
+    "description": "Body of the logout confirmation dialog."
+  },
+  "profileLogoutCancel": "Cancel",
+  "@profileLogoutCancel": {
+    "description": "Cancel button on the logout confirmation dialog."
+  },
+  "profileLogoutConfirm": "Log out",
+  "@profileLogoutConfirm": {
+    "description": "Confirm button on the logout confirmation dialog."
+  },
+  "profileComingSoon": "Coming soon",
+  "@profileComingSoon": {
+    "description": "Snackbar shown when a profile menu row is not yet implemented."
+  }
 }

@@ -11,6 +11,7 @@ import 'package:rego/core/utils/validators.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_back_button.dart';
+import 'package:rego/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:rego/features/auth/presentation/widgets/icon_badge.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -66,8 +67,9 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
         ..showSnackBar(SnackBar(content: Text(l10n.newPasswordDone)));
       context.go(AppRoutes.login);
     } on ApiException catch (e) {
-      setState(() => _passwordError = e.errors?['password']?.first);
-      if (e.errors == null || e.errors!.isEmpty) {
+      final passwordMsg = e.errors?['password']?.first;
+      setState(() => _passwordError = passwordMsg);
+      if (passwordMsg == null) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(SnackBar(content: Text(e.message)));
@@ -92,11 +94,13 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.bgElevated,
       body: SafeArea(
-        child: Padding(
+        child: AuthPinnedBottomLayout(
           padding: const EdgeInsets.fromLTRB(26, 8, 26, 24),
-          child: Column(
+          bottomPadding: const EdgeInsets.fromLTRB(26, 0, 26, 24),
+          scrollChild: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AuthBackButton(onTap: () => context.pop()),
@@ -141,13 +145,12 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
                 autofillHints: const [AutofillHints.newPassword],
                 trailing: _eye(),
               ),
-              const Spacer(),
-              PrimaryButton(
-                label: l10n.newPasswordButton,
-                loading: _submitting,
-                onPressed: _submit,
-              ),
             ],
+          ),
+          bottom: PrimaryButton(
+            label: l10n.newPasswordButton,
+            loading: _submitting,
+            onPressed: _submit,
           ),
         ),
       ),

@@ -20,8 +20,6 @@
   "loginButton": "تسجيل الدخول",
   "loginNoAccount": "ليس لديك حساب؟",
   "loginSignUp": "أنشئ حساباً",
-  "loginIdentifierHint": "رقم الهاتف أو البريد الإلكتروني",
-  "loginEmailUnsupported": "تسجيل الدخول بالبريد قريباً — يُرجى استخدام رقم هاتفك",
 
   "phoneHint": "10 1234 5678",
   "passwordHint": "كلمة المرور",
@@ -149,5 +147,19 @@
   "eTicketDownload": "تحميل",
   "eTicketShare": "مشاركة",
   "eTicketBackHome": "العودة للرئيسية",
-  "eTicketComingSoon": "قريباً"
+  "eTicketComingSoon": "قريباً",
+
+  "profileGuest": "زائر",
+  "profileMenuTrips": "طلباتي",
+  "profileMenuAddresses": "العناوين",
+  "profileMenuWallet": "المحفظة",
+  "profileMenuLanguage": "اللغة",
+  "profileMenuSettings": "الإعدادات",
+  "profileMenuHelp": "المساعدة",
+  "profileMenuLogout": "تسجيل الخروج",
+  "profileLogoutTitle": "تسجيل الخروج؟",
+  "profileLogoutMessage": "ستحتاج إلى تسجيل الدخول مجدداً للوصول إلى حسابك.",
+  "profileLogoutCancel": "إلغاء",
+  "profileLogoutConfirm": "تسجيل الخروج",
+  "profileComingSoon": "قريباً"
 }

@@ -67,7 +67,8 @@ class TripCard extends StatelessWidget {
                     child: Text(
                       l10n.bookingSeatsLeft(trip.seatsLeft),
                       style: AppTypography.caption.copyWith(
-                        color: lowSeats ? AppColors.error : AppColors.onSecondary,
+                        color:
+                            lowSeats ? AppColors.error : AppColors.onSecondary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

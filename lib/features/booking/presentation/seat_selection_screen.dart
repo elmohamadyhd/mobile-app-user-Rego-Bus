@@ -126,7 +126,8 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           label,
-          style: AppTypography.caption.copyWith(color: textColor ?? AppColors.textSecondary),
+          style: AppTypography.caption
+              .copyWith(color: textColor ?? AppColors.textSecondary),
         ),
       ],
     );
@@ -193,8 +194,8 @@ class _BottomPanel extends StatelessWidget {
                               .copyWith(color: AppColors.textMuted)),
                       Text(
                         '$totalPrice EGP',
-                        style: AppTypography.h2
-                            .copyWith(color: AppColors.primary),
+                        style:
+                            AppTypography.h2.copyWith(color: AppColors.primary),
                       ),
                     ],
                   ),

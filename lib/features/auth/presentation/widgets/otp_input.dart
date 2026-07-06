@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -52,13 +54,19 @@ class _OtpInputState extends State<OtpInput> {
 
   String get _value => _controllers.map((c) => c.text).join();
 
-  void _onChanged(int i, String v) {
-    if (v.isNotEmpty && i < widget.length - 1) {
-      _nodes[i + 1].requestFocus();
-    } else if (v.isEmpty && i > 0) {
-      _nodes[i - 1].requestFocus();
+  void _handlePaste(String digits) {
+    if (digits.isEmpty) return;
+    final clipped = digits.length > widget.length
+        ? digits.substring(0, widget.length)
+        : digits;
+    for (var j = 0; j < widget.length; j++) {
+      _controllers[j].text = j < clipped.length ? clipped[j] : '';
     }
+    _nodes[(clipped.length - 1).clamp(0, widget.length - 1)].requestFocus();
+    _notify();
+  }
 
+  void _notify() {
     final value = _value;
     widget.onChanged(value);
     if (value.length == widget.length &&
@@ -66,6 +74,16 @@ class _OtpInputState extends State<OtpInput> {
       widget.onCompleted?.call(value);
     }
     setState(() {});
+  }
+
+  void _onChanged(int i, String v) {
+    if (v.isNotEmpty && i < widget.length - 1) {
+      _nodes[i + 1].requestFocus();
+    } else if (v.isEmpty && i > 0) {
+      _nodes[i - 1].requestFocus();
+    }
+
+    _notify();
   }
 
   @override
@@ -108,7 +126,16 @@ class _OtpInputState extends State<OtpInput> {
           fontWeight: FontWeight.w700,
           color: AppColors.primary,
         ),
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          TextInputFormatter.withFunction((oldValue, newValue) {
+            if (newValue.text.length - oldValue.text.length >= 2) {
+              Future.microtask(() => _handlePaste(newValue.text));
+              return oldValue;
+            }
+            return newValue;
+          }),
+        ],
         decoration: const InputDecoration(
           counterText: '',
           filled: false,

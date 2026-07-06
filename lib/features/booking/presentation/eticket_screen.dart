@@ -69,7 +69,11 @@ class _HeroSection extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF1D6FF2), AppColors.primaryDark, AppColors.primaryDeep],
+          colors: [
+            Color(0xFF1D6FF2),
+            AppColors.primaryDark,
+            AppColors.primaryDeep
+          ],
         ),
       ),
       child: Column(

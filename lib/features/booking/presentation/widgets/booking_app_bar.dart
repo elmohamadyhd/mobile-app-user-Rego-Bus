@@ -6,7 +6,8 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_typography.dart';
 
 class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const BookingAppBar({super.key, required this.title, this.subtitle, this.action});
+  const BookingAppBar(
+      {super.key, required this.title, this.subtitle, this.action});
 
   final String title;
   final String? subtitle;
@@ -28,7 +29,8 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
               IconButton(
                 icon: Transform.flip(
                   flipX: Directionality.of(context) == TextDirection.rtl,
-                  child: const Icon(AppIcons.back, color: AppColors.textPrimary),
+                  child:
+                      const Icon(AppIcons.back, color: AppColors.textPrimary),
                 ),
                 onPressed: () => context.pop(),
               ),
@@ -40,19 +42,22 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
                           Text(
                             title,
                             textAlign: TextAlign.center,
-                            style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+                            style: AppTypography.title
+                                .copyWith(fontWeight: FontWeight.w700),
                           ),
                           Text(
                             subtitle!,
                             textAlign: TextAlign.center,
-                            style: AppTypography.caption.copyWith(color: AppColors.textMuted),
+                            style: AppTypography.caption
+                                .copyWith(color: AppColors.textMuted),
                           ),
                         ],
                       )
                     : Text(
                         title,
                         textAlign: TextAlign.center,
-                        style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+                        style: AppTypography.title
+                            .copyWith(fontWeight: FontWeight.w700),
                       ),
               ),
               SizedBox(width: 48, child: action),

@@ -6,7 +6,8 @@ import 'package:rego/core/theme/app_typography.dart';
 
 /// A country dial code. Minimal static set for now; wire `/countries` later.
 class CountryCode {
-  const CountryCode({required this.name, required this.dial, required this.emoji});
+  const CountryCode(
+      {required this.name, required this.dial, required this.emoji});
 
   final String name;
   final String dial;
@@ -21,8 +22,7 @@ const kCountryCodes = <CountryCode>[
   CountryCode(name: 'قطر', dial: '974', emoji: '🇶🇦'),
 ];
 
-const kDefaultCountry =
-    CountryCode(name: 'مصر', dial: '20', emoji: '🇪🇬');
+const kDefaultCountry = CountryCode(name: 'مصر', dial: '20', emoji: '🇪🇬');
 
 /// Bottom-sheet picker; resolves to the chosen [CountryCode] or null.
 Future<CountryCode?> showCountryCodePicker(BuildContext context) {
@@ -30,7 +30,8 @@ Future<CountryCode?> showCountryCodePicker(BuildContext context) {
     context: context,
     backgroundColor: AppColors.bgCard,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+      borderRadius:
+          BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
     ),
     builder: (context) => SafeArea(
       child: ListView(

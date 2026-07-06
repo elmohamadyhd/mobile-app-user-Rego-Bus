@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/auth/data/auth_api.dart';
-import 'package:rego/features/auth/data/models/auth_response_parser.dart';
+import 'package:rego/features/auth/data/models/auth_response_dto.dart';
 import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/domain/repositories/auth_repository.dart';
 
@@ -23,7 +23,7 @@ class AuthRepositoryImpl implements AuthRepository {
         mobile: mobile,
         password: password,
       );
-      return AuthResponseParser.parseSession(data);
+      return _parseSession(data);
     });
   }
 
@@ -60,7 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
         mobile: mobile,
         code: code,
       );
-      return AuthResponseParser.parseSession(data);
+      return _parseSession(data);
     });
   }
 
@@ -110,6 +110,26 @@ class AuthRepositoryImpl implements AuthRepository {
           password: password,
           passwordConfirmation: passwordConfirmation,
         ));
+  }
+
+  AuthSession _parseSession(dynamic body) {
+    final envelope = body as Map<String, dynamic>;
+    final innerStatus = envelope['status'];
+    if (innerStatus is num && innerStatus.toInt() != 200) {
+      throw ApiException.fromEnvelope(envelope);
+    }
+
+    final data = envelope['data'];
+    if (data is! Map<String, dynamic>) {
+      throw const ApiException('No auth token found in response');
+    }
+
+    final token = data['api_token'];
+    if (token is! String || token.isEmpty) {
+      throw const ApiException('No auth token found in response');
+    }
+
+    return AuthResponseDto.fromJson(data).toEntity();
   }
 
   /// Runs [action], converting Dio transport failures into [ApiException].

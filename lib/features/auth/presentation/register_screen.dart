@@ -15,6 +15,7 @@ import 'package:rego/features/auth/domain/value/otp_purpose.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_card.dart';
+import 'package:rego/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:rego/features/auth/presentation/widgets/country_picker.dart';
 import 'package:rego/features/auth/presentation/widgets/phone_field.dart';
@@ -60,10 +61,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _validate(AppLocalizations l10n) {
     setState(() {
       _nameError = _name.text.trim().isEmpty ? l10n.valRequired : null;
-      _phoneError =
-          Validators.isValidPhone(_phone.text) ? null : l10n.valPhone;
-      _emailError =
-          Validators.isValidEmail(_email.text) ? null : l10n.valEmail;
+      _phoneError = Validators.isValidPhone(_phone.text) ? null : l10n.valPhone;
+      _emailError = Validators.isValidEmail(_email.text) ? null : l10n.valEmail;
       _passwordError = Validators.isStrongEnough(_password.text)
           ? null
           : l10n.valPasswordShort;
@@ -127,112 +126,108 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.bgBase,
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  GradientHero(
-                    title: l10n.registerTitle,
-                    subtitle: l10n.registerSubtitle,
-                  ),
-                  AuthCard(
-                    gap: 13,
-                    children: [
-                      AuthTextField(
-                        controller: _name,
-                        hint: l10n.registerName,
-                        icon: AppIcons.user,
-                        errorText: _nameError,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.name],
-                      ),
-                      PhoneField(
-                        controller: _phone,
-                        country: _country,
-                        hint: l10n.phoneHint,
-                        onTapCountry: _pickCountry,
-                        errorText: _phoneError,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      AuthTextField(
-                        controller: _email,
-                        hint: l10n.registerEmail,
-                        icon: AppIcons.mail,
-                        keyboardType: TextInputType.emailAddress,
-                        errorText: _emailError,
-                        textInputAction: TextInputAction.next,
-                        autofillHints: const [AutofillHints.email],
-                      ),
-                      AuthTextField(
-                        controller: _password,
-                        hint: l10n.passwordHint,
-                        icon: AppIcons.lock,
-                        obscure: _obscure,
-                        errorText: _passwordError,
-                        textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => _submit(),
-                        autofillHints: const [AutofillHints.newPassword],
-                        trailing: GestureDetector(
-                          onTap: () => setState(() => _obscure = !_obscure),
-                          behavior: HitTestBehavior.opaque,
-                          child: Icon(
-                            _obscure ? AppIcons.eye : AppIcons.eyeOff,
-                            size: 20,
-                            color: AppColors.textMuted,
-                          ),
-                        ),
-                      ),
-                      PrimaryButton(
-                        label: l10n.registerButton,
-                        loading: _submitting,
-                        onPressed: _submit,
-                      ),
-                      SocialRow(
-                        dividerLabel: l10n.authOrSignUpWith,
-                        onDisabledTap: () => ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(
-                            SnackBar(content: Text(l10n.socialComingSoon)),
-                          ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                ],
-              ),
+      body: AuthPinnedBottomLayout(
+        bottomPadding: const EdgeInsets.all(AppSpacing.lg),
+        scrollChild: Column(
+          children: [
+            GradientHero(
+              title: l10n.registerTitle,
+              subtitle: l10n.registerSubtitle,
             ),
-          ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    l10n.registerHaveAccount,
-                    style: AppTypography.body
-                        .copyWith(color: AppColors.textMuted),
-                  ),
-                  const SizedBox(width: 4),
-                  GestureDetector(
-                    onTap: () => context.pop(),
-                    child: Text(
-                      l10n.registerSignIn,
-                      style: AppTypography.body.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
+            AuthCard(
+              gap: 13,
+              children: [
+                AuthTextField(
+                  controller: _name,
+                  hint: l10n.registerName,
+                  icon: AppIcons.user,
+                  errorText: _nameError,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.name],
+                ),
+                PhoneField(
+                  controller: _phone,
+                  country: _country,
+                  hint: l10n.phoneHint,
+                  onTapCountry: _pickCountry,
+                  errorText: _phoneError,
+                  textInputAction: TextInputAction.next,
+                ),
+                AuthTextField(
+                  controller: _email,
+                  hint: l10n.registerEmail,
+                  icon: AppIcons.mail,
+                  keyboardType: TextInputType.emailAddress,
+                  errorText: _emailError,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.email],
+                ),
+                AuthTextField(
+                  controller: _password,
+                  hint: l10n.passwordHint,
+                  icon: AppIcons.lock,
+                  obscure: _obscure,
+                  errorText: _passwordError,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _submit(),
+                  autofillHints: const [AutofillHints.newPassword],
+                  trailing: GestureDetector(
+                    onTap: () => setState(() => _obscure = !_obscure),
+                    behavior: HitTestBehavior.opaque,
+                    child: Icon(
+                      _obscure ? AppIcons.eye : AppIcons.eyeOff,
+                      size: 20,
+                      color: AppColors.textMuted,
                     ),
                   ),
-                ],
-              ),
+                ),
+                SocialRow(
+                  dividerLabel: l10n.authOrSignUpWith,
+                  onDisabledTap: () => ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(content: Text(l10n.socialComingSoon)),
+                    ),
+                ),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.md),
+          ],
+        ),
+        bottom: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PrimaryButton(
+              label: l10n.registerButton,
+              loading: _submitting,
+              onPressed: _submit,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  l10n.registerHaveAccount,
+                  style:
+                      AppTypography.body.copyWith(color: AppColors.textMuted),
+                ),
+                const SizedBox(width: 4),
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Text(
+                    l10n.registerSignIn,
+                    style: AppTypography.body.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

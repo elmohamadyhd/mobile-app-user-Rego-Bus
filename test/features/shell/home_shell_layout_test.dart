@@ -71,7 +71,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final screenH = tester.view.physicalSize.height / tester.view.devicePixelRatio;
+    final screenH =
+        tester.view.physicalSize.height / tester.view.devicePixelRatio;
 
     final homeSize = tester.getSize(find.byType(HomeScreen));
     final navTop = tester.getTopLeft(find.byType(MainNavBar)).dy;

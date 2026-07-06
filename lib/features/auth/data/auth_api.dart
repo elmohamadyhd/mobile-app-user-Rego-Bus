@@ -110,7 +110,10 @@ class AuthApi {
   }) async {
     final res = await _dio.post(
       '/auth/forget-password',
-      data: {'phonecode': int.tryParse(phoneCode) ?? phoneCode, 'mobile': mobile},
+      data: {
+        'phonecode': int.tryParse(phoneCode) ?? phoneCode,
+        'mobile': mobile
+      },
     );
     return res.data;
   }

@@ -19,7 +19,8 @@ class PopularDestinations extends StatelessWidget {
             Expanded(
               child: Text(
                 l10n.homePopularDestinations,
-                style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
+                style:
+                    AppTypography.title.copyWith(fontWeight: FontWeight.w800),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

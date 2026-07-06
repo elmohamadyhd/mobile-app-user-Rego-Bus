@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/home/presentation/widgets/home_search_card.dart';
 import 'package:rego/features/home/presentation/widgets/popular_destinations.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _transportTab = 0;
 
   @override
@@ -58,9 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHero(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final userName = l10n.homeMockUser;
-    final initial =
-        userName.isNotEmpty ? userName.substring(0, 1) : '?';
+    final user = ref.watch(sessionControllerProvider).value?.user;
+    final userName = (user?.name?.trim().isNotEmpty ?? false)
+        ? user!.name!
+        : l10n.homeMockUser;
+    final initial = userName.isNotEmpty ? userName.substring(0, 1) : '?';
 
     return Container(
       decoration: const BoxDecoration(

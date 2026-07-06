@@ -20,7 +20,9 @@ void main() {
       expect(state.ticket, isNull);
     });
 
-    test('searchTrips sets status to loadingTrips then idle and populates trips', () async {
+    test(
+        'searchTrips sets status to loadingTrips then idle and populates trips',
+        () async {
       final container = makeContainer();
       final notifier = container.read(bookingFlowProvider.notifier);
 
@@ -88,7 +90,8 @@ void main() {
       notifier.toggleSeat('A2');
       notifier.toggleSeat('A2');
 
-      expect(container.read(bookingFlowProvider).selectedSeats, isNot(contains('A2')));
+      expect(container.read(bookingFlowProvider).selectedSeats,
+          isNot(contains('A2')));
     });
 
     test('setPaymentMethod updates paymentMethod', () {
@@ -97,10 +100,13 @@ void main() {
 
       notifier.setPaymentMethod(PaymentMethod.card);
 
-      expect(container.read(bookingFlowProvider).paymentMethod, PaymentMethod.card);
+      expect(container.read(bookingFlowProvider).paymentMethod,
+          PaymentMethod.card);
     });
 
-    test('confirmBooking produces ETicket with RG- prefix and sets status to confirmed', () async {
+    test(
+        'confirmBooking produces ETicket with RG- prefix and sets status to confirmed',
+        () async {
       final container = makeContainer();
       final notifier = container.read(bookingFlowProvider.notifier);
 

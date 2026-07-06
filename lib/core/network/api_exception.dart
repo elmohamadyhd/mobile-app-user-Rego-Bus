@@ -14,32 +14,26 @@ class ApiException implements Exception {
   /// Field-level validation errors keyed by field name.
   final Map<String, List<String>>? errors;
 
+  /// Parses the Wadeny JSON envelope when HTTP succeeded but `status` != 200.
+  factory ApiException.fromEnvelope(Map<String, dynamic> envelope) {
+    final parsed = _parseEnvelopeFields(envelope);
+    return ApiException(
+      parsed.message ?? 'Something went wrong. Please try again.',
+      statusCode: _innerStatusCode(envelope['status']),
+      errors: parsed.errors,
+    );
+  }
+
   factory ApiException.fromDio(DioException e) {
     final response = e.response;
     final data = response?.data;
     String? message;
     Map<String, List<String>>? errors;
 
-    if (data is Map) {
-      final m = data['message'];
-      if (m is String && m.isNotEmpty) message = m;
-
-      final rawErrors = data['errors'];
-      if (rawErrors is Map && rawErrors.isNotEmpty) {
-        errors = rawErrors.map(
-          (key, value) => MapEntry(
-            key.toString(),
-            value is List
-                ? value.map((v) => v.toString()).toList()
-                : [value.toString()],
-          ),
-        );
-        // Surface the first field error when there's no top-level message.
-        if (message == null) {
-          final firstList = errors.values.first;
-          if (firstList.isNotEmpty) message = firstList.first;
-        }
-      }
+    if (data is Map<String, dynamic>) {
+      final parsed = _parseEnvelopeFields(data);
+      message = parsed.message;
+      errors = parsed.errors;
     }
 
     message ??= switch (e.type) {
@@ -58,6 +52,44 @@ class ApiException implements Exception {
     );
   }
 
+  static int? _innerStatusCode(dynamic status) {
+    if (status is num) return status.toInt();
+    return null;
+  }
+
+  static _EnvelopeFields _parseEnvelopeFields(Map<String, dynamic> envelope) {
+    String? message;
+    Map<String, List<String>>? errors;
+
+    final m = envelope['message'];
+    if (m is String && m.isNotEmpty) message = m;
+
+    final rawErrors = envelope['errors'];
+    if (rawErrors is Map && rawErrors.isNotEmpty) {
+      errors = rawErrors.map(
+        (key, value) => MapEntry(
+          key.toString(),
+          value is List
+              ? value.map((v) => v.toString()).toList()
+              : [value.toString()],
+        ),
+      );
+      if (message == null) {
+        final firstList = errors.values.first;
+        if (firstList.isNotEmpty) message = firstList.first;
+      }
+    }
+
+    return _EnvelopeFields(message: message, errors: errors);
+  }
+
   @override
   String toString() => message;
+}
+
+class _EnvelopeFields {
+  const _EnvelopeFields({this.message, this.errors});
+
+  final String? message;
+  final Map<String, List<String>>? errors;
 }

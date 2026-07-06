@@ -13,6 +13,7 @@ import 'package:rego/features/auth/domain/value/otp_purpose.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_back_button.dart';
+import 'package:rego/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
 import 'package:rego/features/auth/presentation/widgets/icon_badge.dart';
 import 'package:rego/features/auth/presentation/widgets/otp_input.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -133,11 +134,13 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.bgElevated,
       body: SafeArea(
-        child: Padding(
+        child: AuthPinnedBottomLayout(
           padding: const EdgeInsets.fromLTRB(26, 8, 26, 24),
-          child: Column(
+          bottomPadding: const EdgeInsets.fromLTRB(26, 0, 26, 24),
+          scrollChild: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AuthBackButton(onTap: () => context.pop()),
@@ -211,13 +214,12 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
                         ),
                       ),
               ),
-              const Spacer(),
-              PrimaryButton(
-                label: l10n.commonConfirm,
-                loading: _submitting,
-                onPressed: _confirm,
-              ),
             ],
+          ),
+          bottom: PrimaryButton(
+            label: l10n.commonConfirm,
+            loading: _submitting,
+            onPressed: _confirm,
           ),
         ),
       ),

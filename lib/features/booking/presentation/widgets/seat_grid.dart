@@ -24,8 +24,7 @@ class SeatGrid extends StatelessWidget {
       children: [
         const Align(
           alignment: Alignment.centerRight,
-          child: Icon(AppIcons.busFront,
-              color: AppColors.textMuted, size: 28),
+          child: Icon(AppIcons.busFront, color: AppColors.textMuted, size: 28),
         ),
         const SizedBox(height: AppSpacing.md),
         for (final row in rows) ...[

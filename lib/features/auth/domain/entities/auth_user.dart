@@ -4,9 +4,6 @@ part 'auth_user.freezed.dart';
 part 'auth_user.g.dart';
 
 /// The signed-in user.
-///
-/// Fields are intentionally nullable and tolerant: the backend's exact user
-/// payload isn't finalized yet. Tighten this up when the response DTO lands.
 @freezed
 abstract class AuthUser with _$AuthUser {
   const factory AuthUser({
@@ -16,6 +13,8 @@ abstract class AuthUser with _$AuthUser {
     String? mobile,
     @JsonKey(name: 'phonecode') String? phoneCode,
     @JsonKey(name: 'avatar') String? avatarUrl,
+    String? status,
+    @JsonKey(name: 'is_profile_completed') bool? isProfileCompleted,
   }) = _AuthUser;
 
   factory AuthUser.fromJson(Map<String, dynamic> json) =>

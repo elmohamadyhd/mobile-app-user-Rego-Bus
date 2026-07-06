@@ -94,9 +94,11 @@ class _OperatorCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(summary.operatorName,
-                    style: AppTypography.title.copyWith(fontWeight: FontWeight.w700)),
+                    style: AppTypography.title
+                        .copyWith(fontWeight: FontWeight.w700)),
                 Text(summary.serviceClass,
-                    style: AppTypography.caption.copyWith(color: AppColors.textMuted)),
+                    style: AppTypography.caption
+                        .copyWith(color: AppColors.textMuted)),
               ],
             ),
           ),
@@ -205,7 +207,8 @@ class _RouteTimelineCard extends StatelessWidget {
 }
 
 class _StopInfo extends StatelessWidget {
-  const _StopInfo({required this.time, required this.terminal, required this.sub});
+  const _StopInfo(
+      {required this.time, required this.terminal, required this.sub});
   final String time;
   final String terminal;
   final String sub;

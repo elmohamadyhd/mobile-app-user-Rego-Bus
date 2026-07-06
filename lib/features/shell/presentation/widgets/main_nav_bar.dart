@@ -18,7 +18,8 @@ const double _navIconSize = 22;
 /// stays inside its item's hit-test box.
 const double _orbLift = 18;
 
-const double _barPadH = AppSpacing.sm; // horizontal inset of items from the edge
+const double _barPadH =
+    AppSpacing.sm; // horizontal inset of items from the edge
 const double _barPadV = AppSpacing.sm; // vertical breathing room inside the bar
 const double _labelGap = AppSpacing.xs; // gap between icon and label
 

@@ -13,6 +13,7 @@ import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/register_screen.dart';
 import 'package:rego/features/auth/presentation/splash_screen.dart';
 import 'package:rego/features/home/presentation/home_screen.dart';
+import 'package:rego/features/profile/presentation/profile_screen.dart';
 import 'package:rego/features/shell/presentation/coming_soon_screen.dart';
 import 'package:rego/features/shell/presentation/main_shell.dart';
 import 'package:rego/features/booking/presentation/trip_results_screen.dart';
@@ -141,10 +142,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.profile,
-                builder: (context, state) => ComingSoonScreen(
-                  title: AppLocalizations.of(context).navProfile,
-                  icon: AppIcons.user,
-                ),
+                builder: (context, state) => const ProfileScreen(),
               ),
             ],
           ),

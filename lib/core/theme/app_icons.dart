@@ -67,4 +67,10 @@ abstract final class AppIcons {
   static const IconData download = Icons.download_outlined;
   static const IconData share = Icons.ios_share_outlined;
   static const IconData checkCircle = Icons.check_circle_rounded;
+
+  // ── Profile ───────────────────────────────────────────────────────────────
+  static const IconData logout = Icons.logout_rounded;
+  static const IconData language = Icons.language_rounded;
+  static const IconData settings = Icons.settings_outlined;
+  static const IconData help = Icons.help_outline_rounded;
 }

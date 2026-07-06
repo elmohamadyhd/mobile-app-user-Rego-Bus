@@ -203,9 +203,8 @@ class _PassengerSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = state.passengerName.isNotEmpty
-        ? state.passengerName
-        : 'Ahmed Mohamed';
+    final name =
+        state.passengerName.isNotEmpty ? state.passengerName : 'Ahmed Mohamed';
     final phone = state.passengerPhone.isNotEmpty
         ? state.passengerPhone
         : '+20 10 1234 5678';
@@ -298,7 +297,8 @@ class _PassengerRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(AppIcons.forward, size: 18, color: AppColors.textMuted),
+              const Icon(AppIcons.forward,
+                  size: 18, color: AppColors.textMuted),
             ],
           ),
         ),
@@ -405,7 +405,8 @@ class _PaymentOption extends StatelessWidget {
                 ),
               ),
               if (selected)
-                const Icon(AppIcons.check, size: 20, color: AppColors.onPrimary),
+                const Icon(AppIcons.check,
+                    size: 20, color: AppColors.onPrimary),
             ],
           ),
         ),
