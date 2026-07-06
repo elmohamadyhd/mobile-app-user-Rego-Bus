@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -61,19 +59,19 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             mobile: mobile,
           );
       if (!mounted) return;
-      unawaited(
-        context.push(
-          AppRoutes.otp,
-          extra: OtpArgs(
-            phoneCode: _country.dial,
-            mobile: mobile,
-            purpose: OtpPurpose.passwordReset,
-          ),
+      await context.push(
+        AppRoutes.otp,
+        extra: OtpArgs(
+          phoneCode: _country.dial,
+          mobile: mobile,
+          purpose: OtpPurpose.passwordReset,
         ),
       );
     } on ApiException catch (e) {
-      setState(() => _phoneError = e.errors?['mobile']?.first);
-      if (e.errors == null || e.errors!.isEmpty) {
+      final phoneMsg = e.errors?['mobile']?.first;
+      setState(() => _phoneError = phoneMsg);
+      if (phoneMsg == null) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(SnackBar(content: Text(e.message)));

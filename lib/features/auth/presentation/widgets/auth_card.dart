@@ -9,12 +9,12 @@ class AuthCard extends StatelessWidget {
     super.key,
     required this.children,
     this.gap = 14,
-    this.margin = const EdgeInsets.fromLTRB(18, 20, 18, 0),
+    this.margin = const EdgeInsetsDirectional.fromSTEB(18, 0, 18, 0),
   });
 
   final List<Widget> children;
   final double gap;
-  final EdgeInsets margin;
+  final EdgeInsetsGeometry margin;
 
   @override
   Widget build(BuildContext context) {

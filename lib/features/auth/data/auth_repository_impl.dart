@@ -24,8 +24,7 @@ class AuthRepositoryImpl implements AuthRepository {
         mobile: mobile,
         password: password,
       ) as Map<String, dynamic>;
-
-      if (envelope['need_verfication'] == true) {
+      if (envelope['need_verification'] == true) {
         throw AccountNotVerifiedException(
           (envelope['message'] as String?) ?? 'Account verification required',
         );
@@ -45,15 +44,18 @@ class AuthRepositoryImpl implements AuthRepository {
     required String passwordConfirmation,
     String firebaseToken = '',
   }) {
-    return _guard(() => _api.register(
-          name: name,
-          email: email,
-          phoneCode: phoneCode,
-          mobile: mobile,
-          password: password,
-          passwordConfirmation: passwordConfirmation,
-          firebaseToken: firebaseToken,
-        ));
+    return _guard(() async {
+      final envelope = await _api.register(
+        name: name,
+        email: email,
+        phoneCode: phoneCode,
+        mobile: mobile,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+        firebaseToken: firebaseToken,
+      );
+      _ensureSuccessEnvelope(envelope);
+    });
   }
 
   @override
@@ -74,12 +76,20 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> sendOtp({required String phoneCode, required String mobile}) {
-    return _guard(() => _api.sendOtp(phoneCode: phoneCode, mobile: mobile));
+    return _guard(() async {
+      final envelope =
+          await _api.sendOtp(phoneCode: phoneCode, mobile: mobile);
+      _ensureSuccessEnvelope(envelope);
+    });
   }
 
   @override
   Future<void> resendOtp({required String phoneCode, required String mobile}) {
-    return _guard(() => _api.resendOtp(phoneCode: phoneCode, mobile: mobile));
+    return _guard(() async {
+      final envelope =
+          await _api.resendOtp(phoneCode: phoneCode, mobile: mobile);
+      _ensureSuccessEnvelope(envelope);
+    });
   }
 
   @override
@@ -88,9 +98,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String mobile,
     required String code,
   }) {
-    return _guard(
-      () => _api.validateOtp(phoneCode: phoneCode, mobile: mobile, code: code),
-    );
+    return _guard(() async {
+      final envelope = await _api.validateOtp(
+        phoneCode: phoneCode,
+        mobile: mobile,
+        code: code,
+      );
+      _ensureSuccessEnvelope(envelope);
+    });
   }
 
   @override
@@ -98,9 +113,11 @@ class AuthRepositoryImpl implements AuthRepository {
     required String phoneCode,
     required String mobile,
   }) {
-    return _guard(
-      () => _api.forgetPassword(phoneCode: phoneCode, mobile: mobile),
-    );
+    return _guard(() async {
+      final envelope =
+          await _api.forgetPassword(phoneCode: phoneCode, mobile: mobile);
+      _ensureSuccessEnvelope(envelope);
+    });
   }
 
   @override
@@ -111,21 +128,29 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String passwordConfirmation,
   }) {
-    return _guard(() => _api.resetPassword(
-          phoneCode: phoneCode,
-          mobile: mobile,
-          code: code,
-          password: password,
-          passwordConfirmation: passwordConfirmation,
-        ));
+    return _guard(() async {
+      final envelope = await _api.resetPassword(
+        phoneCode: phoneCode,
+        mobile: mobile,
+        code: code,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+      );
+      _ensureSuccessEnvelope(envelope);
+    });
   }
 
-  AuthSession _parseSession(dynamic body) {
+  void _ensureSuccessEnvelope(dynamic body) {
     final envelope = body as Map<String, dynamic>;
     final innerStatus = envelope['status'];
     if (innerStatus is num && innerStatus.toInt() != 200) {
       throw ApiException.fromEnvelope(envelope);
     }
+  }
+
+  AuthSession _parseSession(dynamic body) {
+    final envelope = body as Map<String, dynamic>;
+    _ensureSuccessEnvelope(envelope);
 
     final data = envelope['data'];
     if (data is! Map<String, dynamic>) {

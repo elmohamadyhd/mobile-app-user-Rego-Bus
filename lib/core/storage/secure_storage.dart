@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:rego/core/utils/device_token.dart';
+
 final secureStorageProvider = Provider<SecureStorage>((ref) => SecureStorage());
 
 /// Thin wrapper over [FlutterSecureStorage] for the handful of keys the app
@@ -10,19 +12,23 @@ class SecureStorage {
   SecureStorage({
     FlutterSecureStorage? storage,
     Map<String, String>? memoryLocaleStore,
+    Map<String, String>? memoryDeviceTokenStore,
   })  : _storage = storage ??
             const FlutterSecureStorage(
               aOptions: AndroidOptions(encryptedSharedPreferences: true),
             ),
-        _memoryLocaleStore = memoryLocaleStore;
+        _memoryLocaleStore = memoryLocaleStore,
+        _memoryDeviceTokenStore = memoryDeviceTokenStore;
 
   final FlutterSecureStorage _storage;
   final Map<String, String>? _memoryLocaleStore;
+  final Map<String, String>? _memoryDeviceTokenStore;
 
   static const _kToken = 'auth_token';
   static const _kUser = 'auth_user';
   static const _kOnboardingSeen = 'onboarding_seen';
   static const _kLocaleOverride = 'locale_override';
+  static const _kDeviceToken = 'device_token';
 
   Future<String?> readToken() => _storage.read(key: _kToken);
   Future<void> writeToken(String token) =>
@@ -63,5 +69,25 @@ class SecureStorage {
       return;
     }
     await _storage.delete(key: _kLocaleOverride);
+  }
+
+  /// Returns a stable per-install device token for push registration.
+  ///
+  /// Until FCM is wired up, this is a locally generated UUID persisted in
+  /// secure storage and sent as [firebase_token] on register.
+  Future<String> readOrCreateDeviceToken() async {
+    if (_memoryDeviceTokenStore != null) {
+      final existing = _memoryDeviceTokenStore[_kDeviceToken];
+      if (existing != null && existing.isNotEmpty) return existing;
+      final generated = generateDeviceToken();
+      _memoryDeviceTokenStore[_kDeviceToken] = generated;
+      return generated;
+    }
+
+    final existing = await _storage.read(key: _kDeviceToken);
+    if (existing != null && existing.isNotEmpty) return existing;
+    final generated = generateDeviceToken();
+    await _storage.write(key: _kDeviceToken, value: generated);
+    return generated;
   }
 }

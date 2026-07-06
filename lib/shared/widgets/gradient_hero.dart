@@ -16,6 +16,7 @@ class GradientHero extends StatelessWidget {
     this.subtitle,
     this.showWordmark = true,
     this.padding = const EdgeInsets.fromLTRB(26, 64, 26, 40),
+    this.reserveCardOverlap = false,
     this.child,
   });
 
@@ -23,6 +24,10 @@ class GradientHero extends StatelessWidget {
   final String? subtitle;
   final bool showWordmark;
   final EdgeInsets padding;
+
+  /// When true, extends the gradient below the text so a floating card can
+  /// overlap upward (matches Home / Profile Skyline layout).
+  final bool reserveCardOverlap;
   final Widget? child;
 
   @override
@@ -90,6 +95,10 @@ class GradientHero extends StatelessWidget {
                         ),
                       ],
                       if (child != null) child!,
+                      if (reserveCardOverlap)
+                        const SizedBox(
+                          height: AppSpacing.lg + AppSpacing.xxl,
+                        ),
                     ],
                   ),
                 ),

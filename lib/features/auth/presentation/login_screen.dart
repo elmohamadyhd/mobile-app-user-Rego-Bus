@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,13 +14,13 @@ import 'package:rego/features/auth/domain/value/otp_purpose.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_card.dart';
+import 'package:rego/features/auth/presentation/widgets/auth_hero_layout.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
 import 'package:rego/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:rego/features/auth/presentation/widgets/country_picker.dart';
 import 'package:rego/features/auth/presentation/widgets/phone_field.dart';
 import 'package:rego/features/auth/presentation/widgets/social_row.dart';
 import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/gradient_hero.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -73,14 +71,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) context.go(AppRoutes.home);
     } on AccountNotVerifiedException {
       if (!mounted) return;
-      unawaited(
-        context.push(
-          AppRoutes.otp,
-          extra: OtpArgs(
-            phoneCode: _country.dial,
-            mobile: mobile,
-            purpose: OtpPurpose.registration,
-          ),
+      await context.push(
+        AppRoutes.otp,
+        extra: OtpArgs(
+          phoneCode: _country.dial,
+          mobile: mobile,
+          purpose: OtpPurpose.registration,
         ),
       );
     } on ApiException catch (e) {
@@ -92,11 +88,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _applyErrors(ApiException e) {
     final fields = e.errors;
+    final phoneMsg = fields?['mobile']?.first;
+    final passwordMsg = fields?['credentials']?.first;
     setState(() {
-      _phoneError = fields?['mobile']?.first;
-      _passwordError = fields?['credentials']?.first;
+      _phoneError = phoneMsg;
+      _passwordError = passwordMsg;
     });
-    if (fields == null || fields.isEmpty) {
+    final hasInline = phoneMsg != null || passwordMsg != null;
+    if (!hasInline) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(e.message)));
@@ -114,55 +113,55 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         bottomPadding: const EdgeInsets.all(AppSpacing.lg),
         scrollChild: Column(
           children: [
-            GradientHero(
+            AuthHeroLayout(
               title: l10n.loginTitle,
               subtitle: l10n.loginSubtitle,
-            ),
-            AuthCard(
-              children: [
-                PhoneField(
-                  controller: _phone,
-                  country: _country,
-                  onTapCountry: _pickCountry,
-                  errorText: _phoneError,
-                  textInputAction: TextInputAction.next,
-                ),
-                AuthTextField(
-                  controller: _password,
-                  hint: l10n.passwordHint,
-                  icon: AppIcons.lock,
-                  obscure: _obscure,
-                  errorText: _passwordError,
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) => _submit(),
-                  autofillHints: const [AutofillHints.password],
-                  trailing: _EyeToggle(
-                    obscure: _obscure,
-                    onTap: () => setState(() => _obscure = !_obscure),
+              child: AuthCard(
+                children: [
+                  PhoneField(
+                    controller: _phone,
+                    country: _country,
+                    onTapCountry: _pickCountry,
+                    errorText: _phoneError,
+                    textInputAction: TextInputAction.next,
                   ),
-                ),
-                Align(
-                  alignment: AlignmentDirectional.centerEnd,
-                  child: GestureDetector(
-                    onTap: () => context.push(AppRoutes.forgotPassword),
-                    child: Text(
-                      l10n.loginForgot,
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
+                  AuthTextField(
+                    controller: _password,
+                    hint: l10n.passwordHint,
+                    icon: AppIcons.lock,
+                    obscure: _obscure,
+                    errorText: _passwordError,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _submit(),
+                    autofillHints: const [AutofillHints.password],
+                    trailing: _EyeToggle(
+                      obscure: _obscure,
+                      onTap: () => setState(() => _obscure = !_obscure),
+                    ),
+                  ),
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: GestureDetector(
+                      onTap: () => context.push(AppRoutes.forgotPassword),
+                      child: Text(
+                        l10n.loginForgot,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SocialRow(
-                  dividerLabel: l10n.authOrContinueWith,
-                  onDisabledTap: () => ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      SnackBar(content: Text(l10n.socialComingSoon)),
-                    ),
-                ),
-              ],
+                  SocialRow(
+                    dividerLabel: l10n.authOrContinueWith,
+                    onDisabledTap: () => ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(content: Text(l10n.socialComingSoon)),
+                      ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
           ],
