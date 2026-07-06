@@ -19,7 +19,8 @@ import 'package:rego/l10n/app_localizations.dart';
 const kMinSplashDuration = Duration(seconds: 2);
 
 /// Brand splash that also bootstraps the session: once the stored session
-/// resolves, it routes to Home (signed in), Onboarding (first run), or Login.
+/// and guest-mode flag resolve, it routes to Home (signed in or guest),
+/// Onboarding (first run), or Login.
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -31,12 +32,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _navigated = false;
   late final DateTime _splashStartedAt = DateTime.now();
 
-  Future<void> _route(AsyncValue<AuthSession?> session) async {
+  Future<void> _route(
+    AsyncValue<AuthSession?> session,
+    AsyncValue<bool> guestMode,
+  ) async {
     if (_navigated) return;
-    if (!session.hasValue) return;
+    if (!session.hasValue || !guestMode.hasValue) return;
 
     _navigated = true;
     final value = session.requireValue;
+    final isGuest = guestMode.requireValue;
 
     final elapsed = DateTime.now().difference(_splashStartedAt);
     final remaining = kMinSplashDuration - elapsed;
@@ -44,7 +49,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     if (!mounted) return;
 
-    if (value != null) {
+    if (value != null || isGuest) {
       context.go(AppRoutes.home);
       return;
     }
@@ -56,10 +61,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    ref.listen(sessionControllerProvider, (_, next) => _route(next));
+    ref.listen(
+      sessionControllerProvider,
+      (_, next) => _route(next, ref.read(guestModeProvider)),
+    );
+    ref.listen(
+      guestModeProvider,
+      (_, next) => _route(ref.read(sessionControllerProvider), next),
+    );
 
     final session = ref.watch(sessionControllerProvider);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _route(session));
+    final guestMode = ref.watch(guestModeProvider);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _route(session, guestMode));
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: AppTheme.statusBarLight,
