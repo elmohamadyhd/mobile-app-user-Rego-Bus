@@ -60,3 +60,27 @@ final sessionControllerProvider =
     AsyncNotifierProvider<SessionController, AuthSession?>(
   SessionController.new,
 );
+
+/// Tracks whether the current install is browsing without an account.
+/// Independent of [SessionController] — a token always means a real
+/// authenticated session; this is a separate, best-effort persisted flag.
+class GuestController extends AsyncNotifier<bool> {
+  SecureStorage get _storage => ref.read(secureStorageProvider);
+
+  @override
+  Future<bool> build() => _storage.isGuestMode();
+
+  Future<void> enable() async {
+    await _storage.setGuestMode();
+    state = const AsyncData(true);
+  }
+
+  Future<void> disable() async {
+    await _storage.clearGuestMode();
+    state = const AsyncData(false);
+  }
+}
+
+final guestModeProvider = AsyncNotifierProvider<GuestController, bool>(
+  GuestController.new,
+);
