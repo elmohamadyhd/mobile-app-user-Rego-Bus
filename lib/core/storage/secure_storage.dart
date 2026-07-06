@@ -13,22 +13,26 @@ class SecureStorage {
     FlutterSecureStorage? storage,
     Map<String, String>? memoryLocaleStore,
     Map<String, String>? memoryDeviceTokenStore,
+    Map<String, String>? memoryGuestModeStore,
   })  : _storage = storage ??
             const FlutterSecureStorage(
               aOptions: AndroidOptions(encryptedSharedPreferences: true),
             ),
         _memoryLocaleStore = memoryLocaleStore,
-        _memoryDeviceTokenStore = memoryDeviceTokenStore;
+        _memoryDeviceTokenStore = memoryDeviceTokenStore,
+        _memoryGuestModeStore = memoryGuestModeStore;
 
   final FlutterSecureStorage _storage;
   final Map<String, String>? _memoryLocaleStore;
   final Map<String, String>? _memoryDeviceTokenStore;
+  final Map<String, String>? _memoryGuestModeStore;
 
   static const _kToken = 'auth_token';
   static const _kUser = 'auth_user';
   static const _kOnboardingSeen = 'onboarding_seen';
   static const _kLocaleOverride = 'locale_override';
   static const _kDeviceToken = 'device_token';
+  static const _kGuestMode = 'guest_mode';
 
   Future<String?> readToken() => _storage.read(key: _kToken);
   Future<void> writeToken(String token) =>
@@ -89,5 +93,29 @@ class SecureStorage {
     final generated = generateDeviceToken();
     await _storage.write(key: _kDeviceToken, value: generated);
     return generated;
+  }
+
+  /// Whether the current install is browsing without an account.
+  Future<bool> isGuestMode() async {
+    if (_memoryGuestModeStore != null) {
+      return _memoryGuestModeStore[_kGuestMode] == 'true';
+    }
+    return (await _storage.read(key: _kGuestMode)) == 'true';
+  }
+
+  Future<void> setGuestMode() async {
+    if (_memoryGuestModeStore != null) {
+      _memoryGuestModeStore[_kGuestMode] = 'true';
+      return;
+    }
+    await _storage.write(key: _kGuestMode, value: 'true');
+  }
+
+  Future<void> clearGuestMode() async {
+    if (_memoryGuestModeStore != null) {
+      _memoryGuestModeStore.remove(_kGuestMode);
+      return;
+    }
+    await _storage.delete(key: _kGuestMode);
   }
 }

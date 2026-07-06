@@ -30,4 +30,32 @@ void main() {
     expect(token, existing);
     expect(generateDeviceToken(), isNot(equals(existing)));
   });
+
+  group('guest mode', () {
+    test('isGuestMode is false when nothing is stored', () async {
+      final storage = SecureStorage(memoryGuestModeStore: {});
+      expect(await storage.isGuestMode(), isFalse);
+    });
+
+    test('setGuestMode persists true and isGuestMode reads it back',
+        () async {
+      final memoryStore = <String, String>{};
+      final storage = SecureStorage(memoryGuestModeStore: memoryStore);
+
+      await storage.setGuestMode();
+
+      expect(await storage.isGuestMode(), isTrue);
+      expect(memoryStore['guest_mode'], 'true');
+    });
+
+    test('clearGuestMode removes the flag', () async {
+      final memoryStore = <String, String>{'guest_mode': 'true'};
+      final storage = SecureStorage(memoryGuestModeStore: memoryStore);
+
+      await storage.clearGuestMode();
+
+      expect(await storage.isGuestMode(), isFalse);
+      expect(memoryStore.containsKey('guest_mode'), isFalse);
+    });
+  });
 }
