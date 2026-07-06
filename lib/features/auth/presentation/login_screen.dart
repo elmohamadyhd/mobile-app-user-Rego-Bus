@@ -24,7 +24,9 @@ import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.gateArgs});
+
+  final AuthGateArgs? gateArgs;
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();

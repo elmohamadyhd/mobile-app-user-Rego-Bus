@@ -24,7 +24,9 @@ import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, this.gateArgs});
+
+  final AuthGateArgs? gateArgs;
 
   @override
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
