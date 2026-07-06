@@ -52,6 +52,7 @@ class SessionController extends AsyncNotifier<AuthSession?> {
 
   Future<void> logout() async {
     await _storage.clearSession();
+    await ref.read(guestModeProvider.notifier).disable();
     state = const AsyncData(null);
   }
 }
