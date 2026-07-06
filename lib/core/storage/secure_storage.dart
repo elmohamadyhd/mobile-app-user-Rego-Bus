@@ -7,7 +7,8 @@ final secureStorageProvider = Provider<SecureStorage>((ref) => SecureStorage());
 
 /// Thin wrapper over [FlutterSecureStorage] for the handful of keys the app
 /// persists across launches: the auth token, a cached user blob, the
-/// "onboarding seen" flag, and an optional locale override.
+/// "onboarding seen" flag, an optional locale override, a device token, and
+/// a guest-mode flag.
 class SecureStorage {
   SecureStorage({
     FlutterSecureStorage? storage,
