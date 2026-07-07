@@ -11,6 +11,7 @@ import 'package:rego/features/auth/domain/entities/auth_user.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/ltr_text.dart';
 import 'package:rego/shared/widgets/shell_tab_scroll_view.dart';
 import 'package:rego/shared/widgets/skyline_tab_hero.dart';
 
@@ -171,7 +172,7 @@ class _ProfileHeroContent extends StatelessWidget {
               ),
               if (phone != null) ...[
                 const SizedBox(height: AppSpacing.xs),
-                Text(
+                LtrText(
                   phone,
                   style: AppTypography.body.copyWith(
                     color: AppColors.onHero.withValues(alpha: 0.78),

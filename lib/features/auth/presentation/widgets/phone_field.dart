@@ -76,44 +76,49 @@ class _PhoneFieldState extends State<PhoneField> {
               color: hasError ? AppColors.error : AppColors.hairline,
             ),
           ),
-          child: Row(
-            children: [
-              _CountryChip(
-                country: widget.country,
-                onTap: widget.onTapCountry,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  controller: widget.controller,
-                  focusNode: widget.focusNode,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: widget.textInputAction,
-                  onSubmitted: widget.onSubmitted,
-                  autofillHints: const [AutofillHints.telephoneNumberLocal],
-                  inputFormatters: [
-                    NationalPhoneInputFormatter(
-                      groupSizes: widget.country.groupSizes,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Row(
+              children: [
+                _CountryChip(
+                  country: widget.country,
+                  onTap: widget.onTapCountry,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    controller: widget.controller,
+                    focusNode: widget.focusNode,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: widget.textInputAction,
+                    textDirection: TextDirection.ltr,
+                    textAlign: TextAlign.start,
+                    onSubmitted: widget.onSubmitted,
+                    autofillHints: const [AutofillHints.telephoneNumberLocal],
+                    inputFormatters: [
+                      NationalPhoneInputFormatter(
+                        groupSizes: widget.country.groupSizes,
+                      ),
+                    ],
+                    style: AppTypography.body.copyWith(
+                      color: AppColors.textPrimary,
                     ),
-                  ],
-                  style: AppTypography.body.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
-                  decoration: InputDecoration(
-                    isCollapsed: true,
-                    filled: false,
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    hintText: widget.country.sampleHint,
-                    hintStyle: AppTypography.body.copyWith(
-                      color: AppColors.textMuted,
+                    decoration: InputDecoration(
+                      isCollapsed: true,
+                      filled: false,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      hintText: widget.country.sampleHint,
+                      hintStyle: AppTypography.body.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 6),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 6),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         if (hasError)

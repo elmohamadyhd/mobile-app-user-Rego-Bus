@@ -17,6 +17,7 @@ import 'package:rego/features/auth/presentation/widgets/auth_pinned_bottom_layou
 import 'package:rego/features/auth/presentation/widgets/icon_badge.dart';
 import 'package:rego/features/auth/presentation/widgets/otp_input.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/ltr_text.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 const _otpLength = 4;
@@ -159,23 +160,19 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
                 style: AppTypography.h1.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 10),
-              Text.rich(
-                TextSpan(
-                  text: '${l10n.otpSubtitle}\n',
-                  style: AppTypography.body.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: _phoneLabel,
-                      style: AppTypography.body.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
+              Text(
+                l10n.otpSubtitle,
+                style: AppTypography.body.copyWith(
+                  color: AppColors.textSecondary,
                 ),
-                textDirection: TextDirection.ltr,
+              ),
+              const SizedBox(height: 4),
+              LtrText(
+                _phoneLabel,
+                style: AppTypography.body.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 30),
               OtpInput(
