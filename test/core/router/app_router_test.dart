@@ -67,4 +67,43 @@ void main() {
 
     expect(find.text('Where to today?'), findsOneWidget);
   });
+
+  testWidgets(
+    'guest tapping profile sign-in CTA opens Login instead of bouncing to Home',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            secureStorageProvider.overrideWithValue(
+              SecureStorage(
+                storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
+                memoryLocaleStore: {},
+                memoryGuestModeStore: {'guest_mode': 'true'},
+              ),
+            ),
+          ],
+          child: const App(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Where to today?'), findsOneWidget);
+
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+
+      final signInCta = find.text('Sign in or create an account');
+      expect(signInCta, findsOneWidget);
+
+      await tester.ensureVisible(signInCta);
+      await tester.pumpAndSettle();
+      await tester.tap(signInCta);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Welcome back'), findsOneWidget);
+      expect(find.text('Where to today?'), findsNothing);
+    },
+  );
 }

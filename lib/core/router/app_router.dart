@@ -216,9 +216,9 @@ class _RouterNotifier extends ChangeNotifier {
     final at = state.matchedLocation;
     final atAuthRoute = _authRoutes.contains(at);
 
-    // Splash always decides its own destination (home/login/onboarding),
-    // so leave it alone even once the session has resolved.
-    if (allowedInApp && atAuthRoute && at != AppRoutes.splash) {
+    // Signed-in users should not linger on auth screens; guests may open
+    // login/register voluntarily (profile CTA, guest gate sheet).
+    if (loggedIn && atAuthRoute && at != AppRoutes.splash) {
       return AppRoutes.home;
     }
     if (!allowedInApp && !atAuthRoute) {
