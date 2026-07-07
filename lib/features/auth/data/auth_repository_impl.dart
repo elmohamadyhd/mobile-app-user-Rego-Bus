@@ -24,7 +24,7 @@ class AuthRepositoryImpl implements AuthRepository {
         mobile: mobile,
         password: password,
       ) as Map<String, dynamic>;
-      if (envelope['need_verification'] == true) {
+      if (envelope['need_verfication'] == true) {
         throw AccountNotVerifiedException(
           (envelope['message'] as String?) ?? 'Account verification required',
         );

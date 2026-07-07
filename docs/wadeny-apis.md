@@ -126,7 +126,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 - `errors` values are **strings** in live responses; the mobile app normalizes strings and arrays.
 - All endpoints honor `Accept-Language`; Auth saved examples below show `ar` and `en` variants where captured in Postman.
 - Success responses that return a session include `data.api_token` (Bearer token for subsequent calls).
-- When credentials are valid but the account is not yet verified, login returns `need_verification: true` with empty `data` and an OTP already dispatched (see below).
+- When credentials are valid but the account is not yet verified, login returns `need_verfication: true` with empty `data` and an OTP already dispatched (see below).
 
 ### Login
 
@@ -237,7 +237,7 @@ Returned when credentials are valid but the phone has not been verified yet. The
   "message": "OTP code sent",
   "errors": {},
   "data": {},
-  "need_verification": true
+  "need_verfication": true
 }
 ```
 

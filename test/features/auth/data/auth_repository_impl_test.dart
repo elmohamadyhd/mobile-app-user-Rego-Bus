@@ -64,14 +64,14 @@ void main() {
       );
     });
 
-    test('throws AccountNotVerifiedException when need_verification is true',
+    test('throws AccountNotVerifiedException when need_verfication is true',
         () async {
       const envelope = {
         'status': 200,
         'message': 'OTP code sent',
         'errors': <String, dynamic>{},
         'data': <String, dynamic>{},
-        'need_verification': true,
+        'need_verfication': true,
       };
 
       final repo = AuthRepositoryImpl(_FakeAuthApi(loginBody: envelope));
