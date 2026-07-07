@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_theme.dart';
 import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/domain/entities/auth_user.dart';
+import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/profile/presentation/profile_screen.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -21,6 +24,14 @@ class _FakeSessionController extends SessionController {
   Future<void> logout() async {
     state = const AsyncData(null);
   }
+}
+
+class _FakeGuestController extends GuestController {
+  _FakeGuestController(this._value);
+  final bool _value;
+
+  @override
+  Future<bool> build() async => _value;
 }
 
 void main() {
@@ -91,5 +102,65 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(container.read(sessionControllerProvider).value, isNull);
+  });
+
+  testWidgets(
+      'guest sees a sign-in CTA instead of Log out, and it opens Login with returnTo',
+      (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        sessionControllerProvider.overrideWith(
+          () => _FakeSessionController(null),
+        ),
+        guestModeProvider.overrideWith(() => _FakeGuestController(true)),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.profile,
+      routes: [
+        GoRoute(
+          path: AppRoutes.profile,
+          builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) {
+            final args = state.extra;
+            return Text(
+              args is AuthGateArgs
+                  ? 'LOGIN returnTo=${args.returnTo}'
+                  : 'LOGIN no gate args',
+            );
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Log out'), findsNothing);
+    final ctaLabel = find.text('Sign in or create an account');
+    expect(ctaLabel, findsOneWidget);
+
+    await tester.ensureVisible(ctaLabel);
+    await tester.pumpAndSettle();
+    await tester.tap(ctaLabel);
+    await tester.pumpAndSettle();
+
+    expect(find.text('LOGIN returnTo=${AppRoutes.profile}'), findsOneWidget);
   });
 }

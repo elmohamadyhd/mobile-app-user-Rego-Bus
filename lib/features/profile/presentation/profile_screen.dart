@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_theme.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/auth/domain/entities/auth_user.dart';
+import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
@@ -18,6 +21,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(sessionControllerProvider).value?.user;
+    final isGuest = ref.watch(guestModeProvider).value ?? false;
 
     return SingleChildScrollView(
       padding: EdgeInsetsDirectional.only(
@@ -71,10 +75,19 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  _ProfileLogoutCard(
-                    label: l10n.profileMenuLogout,
-                    onTap: () => _confirmLogout(context, ref),
-                  ),
+                  isGuest
+                      ? _ProfileSignInCard(
+                          label: l10n.profileGuestSignInCta,
+                          onTap: () => context.push(
+                            AppRoutes.login,
+                            extra:
+                                const AuthGateArgs(returnTo: AppRoutes.profile),
+                          ),
+                        )
+                      : _ProfileLogoutCard(
+                          label: l10n.profileMenuLogout,
+                          onTap: () => _confirmLogout(context, ref),
+                        ),
                 ],
               ),
             ),
@@ -379,6 +392,36 @@ class _ProfileLogoutCard extends StatelessWidget {
         label: label,
         onTap: onTap,
         destructive: true,
+      ),
+    );
+  }
+}
+
+class _ProfileSignInCard extends StatelessWidget {
+  const _ProfileSignInCard({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryDark.withValues(alpha: 0.12),
+            blurRadius: 24,
+            spreadRadius: -12,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: _ProfileMenuTile(
+        icon: AppIcons.user,
+        label: label,
+        onTap: onTap,
       ),
     );
   }
