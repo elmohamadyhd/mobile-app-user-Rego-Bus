@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/home/presentation/widgets/home_search_card.dart';
 import 'package:rego/features/home/presentation/widgets/popular_destinations.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/shell_tab_scroll_view.dart';
+import 'package:rego/shared/widgets/skyline_tab_hero.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -18,49 +16,10 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  static const double _cardOverlap = AppSpacing.xxl;
-
   int _transportTab = 0;
 
   @override
   Widget build(BuildContext context) {
-    // Rendered as a shell branch body — the shell owns the Scaffold and the
-    // bottom nav bar. MediaQuery's bottom padding already carries the shell's
-    // measured nav-bar height (auto-adapts to font scale), so the last item
-    // clears the floating bar without any hardcoded guess.
-    return SingleChildScrollView(
-      padding: EdgeInsetsDirectional.only(
-        bottom: MediaQuery.paddingOf(context).bottom +
-            AppSpacing.md +
-            MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildHero(context),
-          Transform.translate(
-            offset: const Offset(0, -_cardOverlap),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: HomeSearchCard(
-                selectedTab: _transportTab,
-                onTabChanged: (i) => setState(() => _transportTab = i),
-              ),
-            ),
-          ),
-          Transform.translate(
-            offset: const Offset(0, -_cardOverlap),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: PopularDestinations(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHero(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(sessionControllerProvider).value?.user;
     final userName = (user?.name?.trim().isNotEmpty ?? false)
@@ -68,158 +27,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         : l10n.homeMockUser;
     final initial = userName.isNotEmpty ? userName.substring(0, 1) : '?';
 
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1D6FF2),
-            AppColors.primaryDark,
-            AppColors.primaryDeep,
-          ],
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(AppRadius.hero),
-          bottomRight: Radius.circular(AppRadius.hero),
+    return ShellTabScrollView(
+      hero: SkylineTabHero(
+        child: SkylineTabGreetingRow(
+          initial: initial,
+          greeting: l10n.homeGreeting(userName),
+          headline: l10n.homeWhereTo,
+          trailing: const SkylineTabHeroBellButton(),
         ),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          PositionedDirectional(
-            top: -50,
-            end: -40,
-            child: Container(
-              width: 170,
-              height: 170,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.08),
-              ),
-            ),
-          ),
-          PositionedDirectional(
-            bottom: 24,
-            start: -26,
-            child: Container(
-              width: 90,
-              height: 90,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.secondary.withValues(alpha: 0.13),
-              ),
-            ),
-          ),
-          SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.lg,
-                AppSpacing.md,
-                AppSpacing.lg,
-                AppSpacing.xs,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.18),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.25),
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          initial,
-                          style: AppTypography.title.copyWith(
-                            color: AppColors.onHero,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 11),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.homeGreeting(userName),
-                            style: AppTypography.caption.copyWith(
-                              color: AppColors.onHero.withValues(alpha: 0.78),
-                            ),
-                          ),
-                          Text(
-                            l10n.homeWhereTo,
-                            style: AppTypography.title.copyWith(
-                              color: AppColors.onHero,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      const _BellButton(),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  const SizedBox(height: AppSpacing.xxl),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BellButton extends StatelessWidget {
-  const _BellButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
       children: [
-        Material(
-          color: Colors.white.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(14),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: () {},
-            child: const SizedBox(
-              width: 42,
-              height: 42,
-              child: Icon(
-                AppIcons.bell,
-                color: AppColors.onHero,
-                size: 22,
-              ),
-            ),
-          ),
+        HomeSearchCard(
+          selectedTab: _transportTab,
+          onTabChanged: (i) => setState(() => _transportTab = i),
         ),
-        PositionedDirectional(
-          top: 9,
-          end: 10,
-          child: Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFFFBA834),
-              border: Border.all(
-                color: const Color(0xFF1D6FF2),
-                width: 1.5,
-              ),
-            ),
-          ),
-        ),
+        const PopularDestinations(),
       ],
     );
   }

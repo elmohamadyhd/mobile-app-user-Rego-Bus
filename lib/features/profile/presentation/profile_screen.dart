@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,12 +6,13 @@ import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_theme.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/auth/domain/entities/auth_user.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/shell_tab_scroll_view.dart';
+import 'package:rego/shared/widgets/skyline_tab_hero.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -23,77 +23,64 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(sessionControllerProvider).value?.user;
     final isGuest = ref.watch(guestModeProvider).value ?? false;
 
-    return SingleChildScrollView(
-      padding: EdgeInsetsDirectional.only(
-        bottom: MediaQuery.paddingOf(context).bottom +
-            AppSpacing.md +
-            MediaQuery.viewInsetsOf(context).bottom,
+    return ShellTabScrollView(
+      hero: SkylineTabHero(
+        child: _ProfileHeroContent(user: user),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _ProfileHero(user: user),
-          Transform.translate(
-            offset: const Offset(0, -24),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _ProfileMenuCard(
-                    items: [
-                      _ProfileMenuItem(
-                        icon: AppIcons.ticket,
-                        label: l10n.profileMenuTrips,
-                        onTap: () => _showComingSoon(context, l10n),
-                      ),
-                      _ProfileMenuItem(
-                        icon: AppIcons.locationTo,
-                        label: l10n.profileMenuAddresses,
-                        onTap: () => _showComingSoon(context, l10n),
-                      ),
-                      _ProfileMenuItem(
-                        icon: AppIcons.wallet,
-                        label: l10n.profileMenuWallet,
-                        onTap: () => _showComingSoon(context, l10n),
-                      ),
-                      _ProfileMenuItem(
-                        icon: AppIcons.language,
-                        label: l10n.profileMenuLanguage,
-                        onTap: () => _showComingSoon(context, l10n),
-                      ),
-                      _ProfileMenuItem(
-                        icon: AppIcons.settings,
-                        label: l10n.profileMenuSettings,
-                        onTap: () => _showComingSoon(context, l10n),
-                      ),
-                      _ProfileMenuItem(
-                        icon: AppIcons.help,
-                        label: l10n.profileMenuHelp,
-                        onTap: () => _showComingSoon(context, l10n),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  isGuest
-                      ? _ProfileSignInCard(
-                          label: l10n.profileGuestSignInCta,
-                          onTap: () => context.go(
-                            AppRoutes.login,
-                            extra:
-                                const AuthGateArgs(returnTo: AppRoutes.profile),
-                          ),
-                        )
-                      : _ProfileLogoutCard(
-                          label: l10n.profileMenuLogout,
-                          onTap: () => _confirmLogout(context, ref),
-                        ),
-                ],
-              ),
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _ProfileMenuCard(
+              items: [
+                _ProfileMenuItem(
+                  icon: AppIcons.ticket,
+                  label: l10n.profileMenuTrips,
+                  onTap: () => _showComingSoon(context, l10n),
+                ),
+                _ProfileMenuItem(
+                  icon: AppIcons.locationTo,
+                  label: l10n.profileMenuAddresses,
+                  onTap: () => _showComingSoon(context, l10n),
+                ),
+                _ProfileMenuItem(
+                  icon: AppIcons.wallet,
+                  label: l10n.profileMenuWallet,
+                  onTap: () => _showComingSoon(context, l10n),
+                ),
+                _ProfileMenuItem(
+                  icon: AppIcons.language,
+                  label: l10n.profileMenuLanguage,
+                  onTap: () => _showComingSoon(context, l10n),
+                ),
+                _ProfileMenuItem(
+                  icon: AppIcons.settings,
+                  label: l10n.profileMenuSettings,
+                  onTap: () => _showComingSoon(context, l10n),
+                ),
+                _ProfileMenuItem(
+                  icon: AppIcons.help,
+                  label: l10n.profileMenuHelp,
+                  onTap: () => _showComingSoon(context, l10n),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
+            const SizedBox(height: AppSpacing.md),
+            isGuest
+                ? _ProfileSignInCard(
+                    label: l10n.profileGuestSignInCta,
+                    onTap: () => context.go(
+                      AppRoutes.login,
+                      extra: const AuthGateArgs(returnTo: AppRoutes.profile),
+                    ),
+                  )
+                : _ProfileLogoutCard(
+                    label: l10n.profileMenuLogout,
+                    onTap: () => _confirmLogout(context, ref),
+                  ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -146,8 +133,8 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _ProfileHero extends StatelessWidget {
-  const _ProfileHero({required this.user});
+class _ProfileHeroContent extends StatelessWidget {
+  const _ProfileHeroContent({required this.user});
 
   static const double _avatarSize = 56;
 
@@ -162,91 +149,39 @@ class _ProfileHero extends StatelessWidget {
     final initial = name.isNotEmpty ? name.substring(0, 1) : '?';
     final phone = _formatPhone(user);
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: AppTheme.statusBarLight,
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.heroGradient,
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(AppRadius.hero),
-            bottomRight: Radius.circular(AppRadius.hero),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _ProfileAvatar(
+          avatarUrl: user?.avatarUrl,
+          initial: initial,
+          size: _avatarSize,
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: AppTypography.h2.copyWith(
+                  color: AppColors.onHero,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              if (phone != null) ...[
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  phone,
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.onHero.withValues(alpha: 0.78),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          children: [
-            PositionedDirectional(
-              top: -50,
-              end: -40,
-              child: Container(
-                width: 170,
-                height: 170,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.08),
-                ),
-              ),
-            ),
-            PositionedDirectional(
-              bottom: 24,
-              start: -26,
-              child: Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.secondary.withValues(alpha: 0.13),
-                ),
-              ),
-            ),
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  AppSpacing.lg,
-                  AppSpacing.md,
-                  AppSpacing.lg,
-                  AppSpacing.xl,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _ProfileAvatar(
-                      avatarUrl: user?.avatarUrl,
-                      initial: initial,
-                      size: _avatarSize,
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: AppTypography.h2.copyWith(
-                              color: AppColors.onHero,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          if (phone != null) ...[
-                            const SizedBox(height: AppSpacing.xs),
-                            Text(
-                              phone,
-                              style: AppTypography.body.copyWith(
-                                color: AppColors.onHero.withValues(alpha: 0.78),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      ],
     );
   }
 
