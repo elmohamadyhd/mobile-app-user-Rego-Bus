@@ -18,6 +18,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  static const double _cardOverlap = AppSpacing.xxl;
+
   int _transportTab = 0;
 
   @override
@@ -37,9 +39,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           _buildHero(context),
           Transform.translate(
-            offset: const Offset(0, -24),
+            offset: const Offset(0, -_cardOverlap),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: HomeSearchCard(
                 selectedTab: _transportTab,
                 onTabChanged: (i) => setState(() => _transportTab = i),
@@ -47,9 +49,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           Transform.translate(
-            offset: const Offset(0, -24),
+            offset: const Offset(0, -_cardOverlap),
             child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: PopularDestinations(),
             ),
           ),

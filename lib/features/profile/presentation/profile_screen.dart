@@ -149,6 +149,8 @@ class ProfileScreen extends ConsumerWidget {
 class _ProfileHero extends StatelessWidget {
   const _ProfileHero({required this.user});
 
+  static const double _avatarSize = 56;
+
   final AuthUser? user;
 
   @override
@@ -204,33 +206,40 @@ class _ProfileHero extends StatelessWidget {
                   AppSpacing.lg,
                   AppSpacing.md,
                   AppSpacing.lg,
-                  AppSpacing.xxl,
+                  AppSpacing.xl,
                 ),
-                child: Column(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _ProfileAvatar(
                       avatarUrl: user?.avatarUrl,
                       initial: initial,
+                      size: _avatarSize,
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(
-                      name,
-                      style: AppTypography.h1.copyWith(
-                        color: AppColors.onHero,
-                        fontWeight: FontWeight.w800,
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: AppTypography.h2.copyWith(
+                              color: AppColors.onHero,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          if (phone != null) ...[
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              phone,
+                              style: AppTypography.body.copyWith(
+                                color: AppColors.onHero.withValues(alpha: 0.78),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    if (phone != null) ...[
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        phone,
-                        style: AppTypography.body.copyWith(
-                          color: AppColors.onHero.withValues(alpha: 0.78),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -251,15 +260,18 @@ class _ProfileHero extends StatelessWidget {
 }
 
 class _ProfileAvatar extends StatelessWidget {
-  const _ProfileAvatar({required this.avatarUrl, required this.initial});
+  const _ProfileAvatar({
+    required this.avatarUrl,
+    required this.initial,
+    required this.size,
+  });
 
   final String? avatarUrl;
   final String initial;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
-    const size = 88.0;
-
     if (avatarUrl != null && avatarUrl!.trim().isNotEmpty) {
       return Container(
         width: size,
@@ -275,25 +287,27 @@ class _ProfileAvatar extends StatelessWidget {
         child: Image.network(
           avatarUrl!,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _InitialAvatar(initial: initial),
+          errorBuilder: (_, __, ___) =>
+              _InitialAvatar(initial: initial, size: size),
         ),
       );
     }
 
-    return _InitialAvatar(initial: initial);
+    return _InitialAvatar(initial: initial, size: size);
   }
 }
 
 class _InitialAvatar extends StatelessWidget {
-  const _InitialAvatar({required this.initial});
+  const _InitialAvatar({required this.initial, required this.size});
 
   final String initial;
+  final double size;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 88,
-      height: 88,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.white.withValues(alpha: 0.18),
@@ -304,7 +318,7 @@ class _InitialAvatar extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         initial,
-        style: AppTypography.display.copyWith(
+        style: AppTypography.h1.copyWith(
           color: AppColors.onHero,
           fontWeight: FontWeight.w800,
         ),

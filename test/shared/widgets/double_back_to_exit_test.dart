@@ -99,9 +99,9 @@ void main() {
         ),
         GoRoute(
           path: '/login',
-          builder: (context, state) => DoubleBackToExit(
+          builder: (context, state) => const DoubleBackToExit(
             alwaysIntercept: true,
-            child: const Scaffold(body: Text('LOGIN')),
+            child: Scaffold(body: Text('LOGIN')),
           ),
         ),
       ],
