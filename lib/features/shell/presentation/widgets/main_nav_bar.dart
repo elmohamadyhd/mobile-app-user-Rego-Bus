@@ -8,8 +8,8 @@ import 'package:rego/l10n/app_localizations.dart';
 
 // ── Nav-bar geometry (matches the Skyline design canvas) ─────────────────────
 const double _barRadius = 40;
-const double _orbSize = 52;
-const double _orbIconSize = 26;
+const double _orbSize = 56;
+const double _orbIconSize = 28;
 const double _iconSlotHeight = 44;
 const double _navIconSize = 22;
 
@@ -91,8 +91,7 @@ class MainNavBar extends StatelessWidget {
               ),
             ),
           ),
-          // Transparent Material in front of the bar so ripples render over it,
-          // and full-height items so every tap (orb included) is captured.
+          // Full-height tap targets over the bar; orb-lift zone included.
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: _barPadH),
             child: Material(
@@ -141,6 +140,8 @@ class _NavItem extends StatelessWidget {
         button: true,
         child: InkWell(
           onTap: onTap,
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
           borderRadius: BorderRadius.circular(AppRadius.lg),
           // Top padding reserves the transparent orb-lift zone as tappable, so
           // the raised orb sits inside this InkWell's hit box.
