@@ -75,7 +75,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             password: _password.text,
           );
       await ref.read(sessionControllerProvider.notifier).setSession(session);
-      if (mounted) context.go(AppRoutes.home);
+      await ref.read(guestModeProvider.notifier).disable();
+      if (mounted) context.go(widget.gateArgs?.returnTo ?? AppRoutes.home);
     } on AccountNotVerifiedException {
       if (!mounted) return;
       await context.push(
@@ -198,7 +199,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(width: 4),
                 GestureDetector(
-                  onTap: () => context.push(AppRoutes.register),
+                  onTap: () =>
+                      context.push(AppRoutes.register, extra: widget.gateArgs),
                   child: Text(
                     l10n.loginSignUp,
                     style: AppTypography.body.copyWith(

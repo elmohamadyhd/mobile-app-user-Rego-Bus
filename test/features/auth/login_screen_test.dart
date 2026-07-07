@@ -6,9 +6,84 @@ import 'package:go_router/go_router.dart';
 import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/storage/secure_storage.dart';
 import 'package:rego/core/theme/app_theme.dart';
+import 'package:rego/features/auth/domain/entities/auth_session.dart';
+import 'package:rego/features/auth/domain/entities/auth_user.dart';
+import 'package:rego/features/auth/domain/repositories/auth_repository.dart';
+import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/login_screen.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
+
+import '../../support/in_memory_secure_storage.dart';
+
+class _FakeAuthRepository implements AuthRepository {
+  _FakeAuthRepository(this._session);
+  final AuthSession _session;
+
+  @override
+  Future<AuthSession> login({
+    required String phoneCode,
+    required String mobile,
+    required String password,
+  }) async =>
+      _session;
+
+  @override
+  Future<void> register({
+    required String name,
+    required String email,
+    required String phoneCode,
+    required String mobile,
+    required String password,
+    required String passwordConfirmation,
+    String firebaseToken = '',
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<AuthSession> verifyOtp({
+    required String phoneCode,
+    required String mobile,
+    required String code,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> sendOtp({required String phoneCode, required String mobile}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> resendOtp({
+    required String phoneCode,
+    required String mobile,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> validateOtp({
+    required String phoneCode,
+    required String mobile,
+    required String code,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> forgetPassword({
+    required String phoneCode,
+    required String mobile,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<void> resetPassword({
+    required String phoneCode,
+    required String mobile,
+    required String code,
+    required String password,
+    required String passwordConfirmation,
+  }) =>
+      throw UnimplementedError();
+}
 
 void main() {
   Future<ProviderContainer> pumpLogin(
@@ -73,5 +148,144 @@ void main() {
     expect(find.text('HOME'), findsOneWidget);
     expect(container.read(guestModeProvider).value, isTrue);
     expect(memory['guest_mode'], 'true');
+  });
+
+  testWidgets(
+      'successful login with gateArgs navigates to returnTo and clears guest mode',
+      (tester) async {
+    const session = AuthSession(
+      token: 't',
+      user: AuthUser(mobile: '1012345678', phoneCode: '20'),
+    );
+    final memory = <String, String>{'guest_mode': 'true'};
+    final container = ProviderContainer(
+      overrides: [
+        secureStorageProvider.overrideWithValue(
+          SecureStorage(
+            storage: InMemorySecureStorage({}),
+            memoryGuestModeStore: memory,
+          ),
+        ),
+        authRepositoryProvider.overrideWithValue(_FakeAuthRepository(session)),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(guestModeProvider.future);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.login,
+      routes: [
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) {
+            final args = state.extra;
+            return LoginScreen(gateArgs: args is AuthGateArgs ? args : null);
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.tripConfirm,
+          builder: (context, state) => const Text('CONFIRM'),
+        ),
+        GoRoute(
+          path: AppRoutes.home,
+          builder: (context, state) => const Text('HOME'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    router.go(
+      AppRoutes.login,
+      extra: const AuthGateArgs(returnTo: AppRoutes.tripConfirm),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).first, '1012345678');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('CONFIRM'), findsOneWidget);
+    expect(container.read(guestModeProvider).value, isFalse);
+    expect(memory.containsKey('guest_mode'), isFalse);
+  });
+
+  testWidgets('Sign up link forwards gateArgs to the register screen',
+      (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        secureStorageProvider.overrideWithValue(
+          SecureStorage(
+            storage: InMemorySecureStorage({}),
+            memoryGuestModeStore: {'guest_mode': 'true'},
+          ),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(guestModeProvider.future);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.login,
+      routes: [
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) {
+            final args = state.extra;
+            return LoginScreen(gateArgs: args is AuthGateArgs ? args : null);
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.register,
+          builder: (context, state) {
+            final args = state.extra;
+            return Text(
+              args is AuthGateArgs
+                  ? 'REGISTER returnTo=${args.returnTo}'
+                  : 'REGISTER no gate args',
+            );
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    router.go(
+      AppRoutes.login,
+      extra: const AuthGateArgs(returnTo: AppRoutes.tripConfirm),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Sign up'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('REGISTER returnTo=${AppRoutes.tripConfirm}'),
+      findsOneWidget,
+    );
   });
 }
