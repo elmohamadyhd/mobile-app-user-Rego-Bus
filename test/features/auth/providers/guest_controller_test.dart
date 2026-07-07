@@ -31,8 +31,7 @@ void main() {
     expect(await container.read(guestModeProvider.future), isFalse);
   });
 
-  test('build restores true when a guest flag is already persisted',
-      () async {
+  test('build restores true when a guest flag is already persisted', () async {
     final container = makeContainer({'guest_mode': 'true'});
     expect(await container.read(guestModeProvider.future), isTrue);
   });

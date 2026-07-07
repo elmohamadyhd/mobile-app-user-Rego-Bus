@@ -17,7 +17,8 @@ class InMemorySecureStorage extends FlutterSecureStorage {
     WindowsOptions? wOptions,
     WebOptions? webOptions,
     MacOsOptions? mOptions,
-  }) async => _data[key];
+  }) async =>
+      _data[key];
 
   @override
   Future<void> write({
@@ -44,7 +45,8 @@ class InMemorySecureStorage extends FlutterSecureStorage {
     WindowsOptions? wOptions,
     WebOptions? webOptions,
     MacOsOptions? mOptions,
-  }) async => _data.remove(key);
+  }) async =>
+      _data.remove(key);
 
   @override
   Future<Map<String, String>> readAll({
@@ -54,7 +56,8 @@ class InMemorySecureStorage extends FlutterSecureStorage {
     WindowsOptions? wOptions,
     WebOptions? webOptions,
     MacOsOptions? mOptions,
-  }) async => Map.from(_data);
+  }) async =>
+      Map.from(_data);
 
   @override
   Future<void> deleteAll({
@@ -64,7 +67,8 @@ class InMemorySecureStorage extends FlutterSecureStorage {
     WindowsOptions? wOptions,
     WebOptions? webOptions,
     MacOsOptions? mOptions,
-  }) async => _data.clear();
+  }) async =>
+      _data.clear();
 
   @override
   Future<bool> containsKey({
@@ -75,13 +79,14 @@ class InMemorySecureStorage extends FlutterSecureStorage {
     WindowsOptions? wOptions,
     WebOptions? webOptions,
     MacOsOptions? mOptions,
-  }) async => _data.containsKey(key);
+  }) async =>
+      _data.containsKey(key);
 
   // Stub out remaining properties/methods
   @override
   AndroidOptions get aOptions => const AndroidOptions(
-    encryptedSharedPreferences: true,
-  );
+        encryptedSharedPreferences: true,
+      );
 
   @override
   IOSOptions get iOptions => const IOSOptions();

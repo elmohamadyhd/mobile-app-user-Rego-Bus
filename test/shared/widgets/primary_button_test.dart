@@ -19,7 +19,8 @@ void main() {
     );
   }
 
-  testWidgets('ghost variant is transparent, bordered, and primary-colored text',
+  testWidgets(
+      'ghost variant is transparent, bordered, and primary-colored text',
       (tester) async {
     await pump(tester, PrimaryButtonVariant.ghost);
 

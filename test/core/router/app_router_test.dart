@@ -106,4 +106,47 @@ void main() {
       expect(find.text('Where to today?'), findsNothing);
     },
   );
+
+  testWidgets(
+    'guest login opened from profile shows exit snackbar on back, not Profile',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            secureStorageProvider.overrideWithValue(
+              SecureStorage(
+                storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
+                memoryLocaleStore: {},
+                memoryGuestModeStore: {'guest_mode': 'true'},
+              ),
+            ),
+          ],
+          child: const App(),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+
+      final signInCta = find.text('Sign in or create an account');
+      await tester.ensureVisible(signInCta);
+      await tester.pumpAndSettle();
+      await tester.tap(signInCta);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Welcome back'), findsOneWidget);
+      expect(find.text('Guest'), findsNothing);
+
+      expect(await tester.binding.handlePopRoute(), isTrue);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Press back again to exit'), findsOneWidget);
+      expect(find.text('Welcome back'), findsOneWidget);
+      expect(find.text('Guest'), findsNothing);
+      expect(find.text('Where to today?'), findsNothing);
+    },
+  );
 }

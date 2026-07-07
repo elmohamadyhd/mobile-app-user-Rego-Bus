@@ -77,8 +77,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> sendOtp({required String phoneCode, required String mobile}) {
     return _guard(() async {
-      final envelope =
-          await _api.sendOtp(phoneCode: phoneCode, mobile: mobile);
+      final envelope = await _api.sendOtp(phoneCode: phoneCode, mobile: mobile);
       _ensureSuccessEnvelope(envelope);
     });
   }

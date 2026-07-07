@@ -168,5 +168,7 @@
   "profileLogoutMessage": "ستحتاج إلى تسجيل الدخول مجدداً للوصول إلى حسابك.",
   "profileLogoutCancel": "إلغاء",
   "profileLogoutConfirm": "تسجيل الخروج",
-  "profileComingSoon": "قريباً"
+  "profileComingSoon": "قريباً",
+
+  "pressBackAgainToExit": "اضغط رجوع مرة أخرى للخروج"
 }

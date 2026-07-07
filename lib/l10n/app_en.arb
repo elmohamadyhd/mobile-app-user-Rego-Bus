@@ -263,5 +263,10 @@
   "profileComingSoon": "Coming soon",
   "@profileComingSoon": {
     "description": "Snackbar shown when a profile menu row is not yet implemented."
+  },
+
+  "pressBackAgainToExit": "Press back again to exit",
+  "@pressBackAgainToExit": {
+    "description": "Snackbar shown on the first back press when the user must press back again to leave the app."
   }
 }

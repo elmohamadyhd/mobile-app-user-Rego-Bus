@@ -37,8 +37,7 @@ void main() {
       expect(await storage.isGuestMode(), isFalse);
     });
 
-    test('setGuestMode persists true and isGuestMode reads it back',
-        () async {
+    test('setGuestMode persists true and isGuestMode reads it back', () async {
       final memoryStore = <String, String>{};
       final storage = SecureStorage(memoryGuestModeStore: memoryStore);
 

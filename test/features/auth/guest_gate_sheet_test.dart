@@ -93,7 +93,8 @@ void main() {
     await tester.tap(find.text('Sign in'));
     await tester.pumpAndSettle();
 
-    expect(find.text('LOGIN returnTo=${AppRoutes.tripConfirm}'), findsOneWidget);
+    expect(
+        find.text('LOGIN returnTo=${AppRoutes.tripConfirm}'), findsOneWidget);
   });
 
   testWidgets('Create account pushes register with AuthGateArgs(returnTo)',

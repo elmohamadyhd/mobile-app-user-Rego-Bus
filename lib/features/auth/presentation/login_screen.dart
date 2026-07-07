@@ -21,6 +21,7 @@ import 'package:rego/features/auth/presentation/widgets/country_picker.dart';
 import 'package:rego/features/auth/presentation/widgets/phone_field.dart';
 import 'package:rego/features/auth/presentation/widgets/social_row.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/double_back_to_exit.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -114,104 +115,107 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: AppColors.bgBase,
-      body: AuthPinnedBottomLayout(
-        bottomPadding: const EdgeInsets.all(AppSpacing.lg),
-        scrollChild: Column(
-          children: [
-            AuthHeroLayout(
-              title: l10n.loginTitle,
-              subtitle: l10n.loginSubtitle,
-              child: AuthCard(
-                children: [
-                  PhoneField(
-                    controller: _phone,
-                    country: _country,
-                    onTapCountry: _pickCountry,
-                    errorText: _phoneError,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  AuthTextField(
-                    controller: _password,
-                    hint: l10n.passwordHint,
-                    icon: AppIcons.lock,
-                    obscure: _obscure,
-                    errorText: _passwordError,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _submit(),
-                    autofillHints: const [AutofillHints.password],
-                    trailing: _EyeToggle(
-                      obscure: _obscure,
-                      onTap: () => setState(() => _obscure = !_obscure),
+    return DoubleBackToExit(
+      alwaysIntercept: true,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: AppColors.bgBase,
+        body: AuthPinnedBottomLayout(
+          bottomPadding: const EdgeInsets.all(AppSpacing.lg),
+          scrollChild: Column(
+            children: [
+              AuthHeroLayout(
+                title: l10n.loginTitle,
+                subtitle: l10n.loginSubtitle,
+                child: AuthCard(
+                  children: [
+                    PhoneField(
+                      controller: _phone,
+                      country: _country,
+                      onTapCountry: _pickCountry,
+                      errorText: _phoneError,
+                      textInputAction: TextInputAction.next,
                     ),
-                  ),
-                  Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: GestureDetector(
-                      onTap: () => context.push(AppRoutes.forgotPassword),
-                      child: Text(
-                        l10n.loginForgot,
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
+                    AuthTextField(
+                      controller: _password,
+                      hint: l10n.passwordHint,
+                      icon: AppIcons.lock,
+                      obscure: _obscure,
+                      errorText: _passwordError,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _submit(),
+                      autofillHints: const [AutofillHints.password],
+                      trailing: _EyeToggle(
+                        obscure: _obscure,
+                        onTap: () => setState(() => _obscure = !_obscure),
+                      ),
+                    ),
+                    Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: GestureDetector(
+                        onTap: () => context.push(AppRoutes.forgotPassword),
+                        child: Text(
+                          l10n.loginForgot,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
+                    SocialRow(
+                      dividerLabel: l10n.authOrContinueWith,
+                      onDisabledTap: () => ScaffoldMessenger.of(context)
+                        ..hideCurrentSnackBar()
+                        ..showSnackBar(
+                          SnackBar(content: Text(l10n.socialComingSoon)),
+                        ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
+          ),
+          bottom: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PrimaryButton(
+                label: l10n.loginButton,
+                loading: _submitting,
+                onPressed: _submit,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              PrimaryButton(
+                label: l10n.authContinueGuest,
+                variant: PrimaryButtonVariant.ghost,
+                onPressed: _submitting ? null : _continueAsGuest,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    l10n.loginNoAccount,
+                    style:
+                        AppTypography.body.copyWith(color: AppColors.textMuted),
                   ),
-                  SocialRow(
-                    dividerLabel: l10n.authOrContinueWith,
-                    onDisabledTap: () => ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(
-                        SnackBar(content: Text(l10n.socialComingSoon)),
+                  const SizedBox(width: 4),
+                  GestureDetector(
+                    onTap: () => context.push(AppRoutes.register,
+                        extra: widget.gateArgs),
+                    child: Text(
+                      l10n.loginSignUp,
+                      style: AppTypography.body.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
                       ),
+                    ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-          ],
-        ),
-        bottom: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PrimaryButton(
-              label: l10n.loginButton,
-              loading: _submitting,
-              onPressed: _submit,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            PrimaryButton(
-              label: l10n.authContinueGuest,
-              variant: PrimaryButtonVariant.ghost,
-              onPressed: _submitting ? null : _continueAsGuest,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l10n.loginNoAccount,
-                  style:
-                      AppTypography.body.copyWith(color: AppColors.textMuted),
-                ),
-                const SizedBox(width: 4),
-                GestureDetector(
-                  onTap: () =>
-                      context.push(AppRoutes.register, extra: widget.gateArgs),
-                  child: Text(
-                    l10n.loginSignUp,
-                    style: AppTypography.body.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

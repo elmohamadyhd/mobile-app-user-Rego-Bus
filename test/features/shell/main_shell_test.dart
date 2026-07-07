@@ -69,4 +69,29 @@ void main() {
     await tester.pumpAndSettle();
     expect(currentLocation(router), '/');
   });
+
+  testWidgets('back on a non-home tab switches to Home', (tester) async {
+    final router = buildRouter();
+    await pumpShell(tester, router);
+
+    await tester.tap(find.text('Wallet'));
+    await tester.pumpAndSettle();
+    expect(currentLocation(router), '/wallet');
+
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await tester.pumpAndSettle();
+
+    expect(currentLocation(router), '/');
+  });
+
+  testWidgets('double back on Home shows exit snackbar', (tester) async {
+    final router = buildRouter();
+    await pumpShell(tester, router);
+
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Press back again to exit'), findsOneWidget);
+    expect(currentLocation(router), '/');
+  });
 }

@@ -78,7 +78,7 @@ class ProfileScreen extends ConsumerWidget {
                   isGuest
                       ? _ProfileSignInCard(
                           label: l10n.profileGuestSignInCta,
-                          onTap: () => context.push(
+                          onTap: () => context.go(
                             AppRoutes.login,
                             extra:
                                 const AuthGateArgs(returnTo: AppRoutes.profile),
