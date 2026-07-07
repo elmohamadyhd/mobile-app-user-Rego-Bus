@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/auth/data/auth_api.dart';
+import 'package:rego/features/auth/data/auth_envelope_keys.dart';
 import 'package:rego/features/auth/data/auth_repository_impl.dart';
 import 'package:rego/features/auth/domain/exceptions/account_not_verified_exception.dart';
 
@@ -32,6 +33,9 @@ class _FakeAuthApi extends AuthApi {
       registerBody;
 }
 
+// The Wadeny login API uses `need_verfication` (backend typo). Do NOT rename
+// to `need_verification` in tests or production code — see
+// [AuthEnvelopeKeys.needVerfication].
 void main() {
   group('AuthRepositoryImpl.login', () {
     test('throws ApiException on error envelope with empty data', () async {
@@ -64,14 +68,15 @@ void main() {
       );
     });
 
-    test('throws AccountNotVerifiedException when need_verfication is true',
+    test(
+        'throws AccountNotVerifiedException when backend need_verfication is true',
         () async {
       const envelope = {
         'status': 200,
         'message': 'OTP code sent',
         'errors': <String, dynamic>{},
         'data': <String, dynamic>{},
-        'need_verfication': true,
+        AuthEnvelopeKeys.needVerfication: true,
       };
 
       final repo = AuthRepositoryImpl(_FakeAuthApi(loginBody: envelope));
@@ -92,14 +97,15 @@ void main() {
       );
     });
 
-    test('does not treat need_verfication typo as verification required',
+    test(
+        'ignores correctly spelled need_verification — only backend typo counts',
         () async {
       const envelope = {
         'status': 200,
         'message': 'User data',
         'errors': <String, dynamic>{},
         'data': <String, dynamic>{},
-        'need_verfication': true,
+        'need_verification': true,
       };
 
       final repo = AuthRepositoryImpl(_FakeAuthApi(loginBody: envelope));

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/auth/data/auth_api.dart';
+import 'package:rego/features/auth/data/auth_envelope_keys.dart';
 import 'package:rego/features/auth/data/models/auth_response_dto.dart';
 import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/domain/exceptions/account_not_verified_exception.dart';
@@ -24,7 +25,7 @@ class AuthRepositoryImpl implements AuthRepository {
         mobile: mobile,
         password: password,
       ) as Map<String, dynamic>;
-      if (envelope['need_verfication'] == true) {
+      if (envelope[AuthEnvelopeKeys.needVerfication] == true) {
         throw AccountNotVerifiedException(
           (envelope['message'] as String?) ?? 'Account verification required',
         );
