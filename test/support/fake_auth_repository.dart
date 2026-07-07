@@ -1,8 +1,8 @@
 import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/domain/repositories/auth_repository.dart';
 
-/// Minimal fake of [AuthRepository] for widget tests that only need [login]
-/// or [verifyOtp] to succeed with a fixed session. All other methods throw
+/// Minimal fake of [AuthRepository] for widget tests. Supports [login] and
+/// [verifyOtp] (both return [_session]). All other methods throw
 /// [UnimplementedError] — tests that need them should use a different fake.
 class FakeAuthRepository implements AuthRepository {
   FakeAuthRepository(this._session);
