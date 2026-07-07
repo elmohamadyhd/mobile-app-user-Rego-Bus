@@ -53,6 +53,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (picked != null) setState(() => _country = picked);
   }
 
+  Future<void> _continueAsGuest() async {
+    await ref.read(guestModeProvider.notifier).enable();
+    if (mounted) context.go(AppRoutes.home);
+  }
+
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context);
     setState(() {
@@ -175,6 +180,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               label: l10n.loginButton,
               loading: _submitting,
               onPressed: _submit,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            PrimaryButton(
+              label: l10n.authContinueGuest,
+              variant: PrimaryButtonVariant.ghost,
+              onPressed: _submitting ? null : _continueAsGuest,
             ),
             const SizedBox(height: AppSpacing.lg),
             Row(
