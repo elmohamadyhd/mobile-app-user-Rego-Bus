@@ -81,7 +81,10 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
           code: _code,
         );
         await ref.read(sessionControllerProvider.notifier).setSession(session);
-        if (mounted) context.go(AppRoutes.home);
+        await ref.read(guestModeProvider.notifier).disable();
+        if (mounted) {
+          context.go(widget.args.returnTo ?? AppRoutes.home);
+        }
       } else {
         await repo.validateOtp(
           phoneCode: widget.args.phoneCode,

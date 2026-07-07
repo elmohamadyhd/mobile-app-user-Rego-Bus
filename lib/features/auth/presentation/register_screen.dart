@@ -99,6 +99,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           phoneCode: _country.dial,
           mobile: mobile,
           purpose: OtpPurpose.registration,
+          returnTo: widget.gateArgs?.returnTo,
         ),
       );
     } on ApiException catch (e) {
