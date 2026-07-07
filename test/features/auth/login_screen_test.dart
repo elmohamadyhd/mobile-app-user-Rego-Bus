@@ -8,82 +8,13 @@ import 'package:rego/core/storage/secure_storage.dart';
 import 'package:rego/core/theme/app_theme.dart';
 import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/domain/entities/auth_user.dart';
-import 'package:rego/features/auth/domain/repositories/auth_repository.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/login_screen.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
+import '../../support/fake_auth_repository.dart';
 import '../../support/in_memory_secure_storage.dart';
-
-class _FakeAuthRepository implements AuthRepository {
-  _FakeAuthRepository(this._session);
-  final AuthSession _session;
-
-  @override
-  Future<AuthSession> login({
-    required String phoneCode,
-    required String mobile,
-    required String password,
-  }) async =>
-      _session;
-
-  @override
-  Future<void> register({
-    required String name,
-    required String email,
-    required String phoneCode,
-    required String mobile,
-    required String password,
-    required String passwordConfirmation,
-    String firebaseToken = '',
-  }) =>
-      throw UnimplementedError();
-
-  @override
-  Future<AuthSession> verifyOtp({
-    required String phoneCode,
-    required String mobile,
-    required String code,
-  }) =>
-      throw UnimplementedError();
-
-  @override
-  Future<void> sendOtp({required String phoneCode, required String mobile}) =>
-      throw UnimplementedError();
-
-  @override
-  Future<void> resendOtp({
-    required String phoneCode,
-    required String mobile,
-  }) =>
-      throw UnimplementedError();
-
-  @override
-  Future<void> validateOtp({
-    required String phoneCode,
-    required String mobile,
-    required String code,
-  }) =>
-      throw UnimplementedError();
-
-  @override
-  Future<void> forgetPassword({
-    required String phoneCode,
-    required String mobile,
-  }) =>
-      throw UnimplementedError();
-
-  @override
-  Future<void> resetPassword({
-    required String phoneCode,
-    required String mobile,
-    required String code,
-    required String password,
-    required String passwordConfirmation,
-  }) =>
-      throw UnimplementedError();
-}
 
 void main() {
   Future<ProviderContainer> pumpLogin(
@@ -166,7 +97,7 @@ void main() {
             memoryGuestModeStore: memory,
           ),
         ),
-        authRepositoryProvider.overrideWithValue(_FakeAuthRepository(session)),
+        authRepositoryProvider.overrideWithValue(FakeAuthRepository(session)),
       ],
     );
     addTearDown(container.dispose);
