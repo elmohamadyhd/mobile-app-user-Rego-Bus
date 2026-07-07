@@ -35,8 +35,8 @@ const _finalPinSize = 62.0;
 const _lockupSettleOffset = 72.0;
 
 /// Brand splash that also bootstraps the session: once the stored session
-/// and guest-mode flag resolve, it routes to Home (signed in or guest),
-/// Onboarding (first run), or Login.
+/// resolves, it routes to Home (signed in), Onboarding (first run), or Login.
+/// Guest browsing is session-only and never survives an app restart.
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 

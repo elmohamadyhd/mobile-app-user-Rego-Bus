@@ -62,22 +62,24 @@ final sessionControllerProvider =
   SessionController.new,
 );
 
-/// Tracks whether the current install is browsing without an account.
-/// Independent of [SessionController] — a token always means a real
-/// authenticated session; this is a separate, best-effort persisted flag.
+/// Tracks whether the current app session is browsing without an account.
+///
+/// Session-scoped only — guest mode is never restored after the app is
+/// closed. Any legacy persisted flag is cleared on launch.
 class GuestController extends AsyncNotifier<bool> {
   SecureStorage get _storage => ref.read(secureStorageProvider);
 
   @override
-  Future<bool> build() => _storage.isGuestMode();
+  Future<bool> build() async {
+    await _storage.clearGuestMode();
+    return false;
+  }
 
   Future<void> enable() async {
-    await _storage.setGuestMode();
     state = const AsyncData(true);
   }
 
   Future<void> disable() async {
-    await _storage.clearGuestMode();
     state = const AsyncData(false);
   }
 }

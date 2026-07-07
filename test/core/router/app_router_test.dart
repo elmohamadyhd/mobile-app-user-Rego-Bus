@@ -24,17 +24,23 @@ void main() {
     dotenv.testLoad(fileInput: File('.env.example').readAsStringSync());
   });
 
-  testWidgets('signed-out, non-guest user is routed to Login', (tester) async {
+  SecureStorage testStorage({Map<String, String>? legacyGuestFlag}) {
+    final guestMemory = <String, String>{};
+    if (legacyGuestFlag != null) {
+      guestMemory.addAll(legacyGuestFlag);
+    }
+    return SecureStorage(
+      storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
+      memoryLocaleStore: {},
+      memoryGuestModeStore: guestMemory,
+    );
+  }
+
+  Future<void> pumpApp(WidgetTester tester, SecureStorage storage) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          secureStorageProvider.overrideWithValue(
-            SecureStorage(
-              storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
-              memoryLocaleStore: {},
-              memoryGuestModeStore: {},
-            ),
-          ),
+          secureStorageProvider.overrideWithValue(storage),
         ],
         child: const App(),
       ),
@@ -42,28 +48,37 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle();
+  }
+
+  Future<void> continueAsGuest(WidgetTester tester) async {
+    await tester.tap(find.text('Continue as a guest'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('signed-out, non-guest user is routed to Login', (tester) async {
+    await pumpApp(tester, testStorage());
 
     expect(find.text('Welcome back'), findsOneWidget);
   });
 
-  testWidgets('guest-mode user is routed straight to Home', (tester) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          secureStorageProvider.overrideWithValue(
-            SecureStorage(
-              storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
-              memoryLocaleStore: {},
-              memoryGuestModeStore: {'guest_mode': 'true'},
-            ),
-          ),
-        ],
-        child: const App(),
-      ),
-    );
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'legacy persisted guest flag does not restore guest session on cold start',
+    (tester) async {
+      await pumpApp(
+        tester,
+        testStorage(legacyGuestFlag: {'guest_mode': 'true'}),
+      );
+
+      expect(find.text('Welcome back'), findsOneWidget);
+      expect(find.text('Where to today?'), findsNothing);
+    },
+  );
+
+  testWidgets('guest can browse Home during the current session', (tester) async {
+    await pumpApp(tester, testStorage());
+    expect(find.text('Welcome back'), findsOneWidget);
+
+    await continueAsGuest(tester);
 
     expect(find.text('Where to today?'), findsOneWidget);
   });
@@ -71,23 +86,8 @@ void main() {
   testWidgets(
     'guest tapping profile sign-in CTA opens Login instead of bouncing to Home',
     (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            secureStorageProvider.overrideWithValue(
-              SecureStorage(
-                storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
-                memoryLocaleStore: {},
-                memoryGuestModeStore: {'guest_mode': 'true'},
-              ),
-            ),
-          ],
-          child: const App(),
-        ),
-      );
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
+      await pumpApp(tester, testStorage());
+      await continueAsGuest(tester);
 
       expect(find.text('Where to today?'), findsOneWidget);
 
@@ -110,23 +110,8 @@ void main() {
   testWidgets(
     'guest login opened from profile shows exit snackbar on back, not Profile',
     (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            secureStorageProvider.overrideWithValue(
-              SecureStorage(
-                storage: InMemorySecureStorage({'onboarding_seen': 'true'}),
-                memoryLocaleStore: {},
-                memoryGuestModeStore: {'guest_mode': 'true'},
-              ),
-            ),
-          ],
-          child: const App(),
-        ),
-      );
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
+      await pumpApp(tester, testStorage());
+      await continueAsGuest(tester);
 
       await tester.tap(find.text('Profile'));
       await tester.pumpAndSettle();

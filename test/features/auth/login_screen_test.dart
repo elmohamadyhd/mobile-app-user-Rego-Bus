@@ -70,15 +70,13 @@ void main() {
 
   testWidgets('tapping the guest button enables guest mode and goes Home',
       (tester) async {
-    final memory = <String, String>{};
-    final container = await pumpLogin(tester, guestModeMemory: memory);
+    final container = await pumpLogin(tester, guestModeMemory: {});
 
     await tester.tap(find.text('Continue as a guest'));
     await tester.pumpAndSettle();
 
     expect(find.text('HOME'), findsOneWidget);
     expect(container.read(guestModeProvider).value, isTrue);
-    expect(memory['guest_mode'], 'true');
   });
 
   testWidgets(
@@ -88,20 +86,17 @@ void main() {
       token: 't',
       user: AuthUser(mobile: '1012345678', phoneCode: '20'),
     );
-    final memory = <String, String>{'guest_mode': 'true'};
     final container = ProviderContainer(
       overrides: [
         secureStorageProvider.overrideWithValue(
-          SecureStorage(
-            storage: InMemorySecureStorage({}),
-            memoryGuestModeStore: memory,
-          ),
+          SecureStorage(storage: InMemorySecureStorage({})),
         ),
         authRepositoryProvider.overrideWithValue(FakeAuthRepository(session)),
       ],
     );
     addTearDown(container.dispose);
     await container.read(guestModeProvider.future);
+    await container.read(guestModeProvider.notifier).enable();
 
     final router = GoRouter(
       initialLocation: AppRoutes.login,
@@ -150,7 +145,6 @@ void main() {
 
     expect(find.text('CONFIRM'), findsOneWidget);
     expect(container.read(guestModeProvider).value, isFalse);
-    expect(memory.containsKey('guest_mode'), isFalse);
   });
 
   testWidgets('Sign up link forwards gateArgs to the register screen',
@@ -158,10 +152,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         secureStorageProvider.overrideWithValue(
-          SecureStorage(
-            storage: InMemorySecureStorage({}),
-            memoryGuestModeStore: {'guest_mode': 'true'},
-          ),
+          SecureStorage(storage: InMemorySecureStorage({})),
         ),
       ],
     );

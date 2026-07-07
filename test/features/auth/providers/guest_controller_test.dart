@@ -26,17 +26,16 @@ void main() {
     return container;
   }
 
-  test('build restores false when no guest flag is stored', () async {
-    final container = makeContainer({});
+  test('build always starts false and clears any legacy persisted flag',
+      () async {
+    final memory = <String, String>{'guest_mode': 'true'};
+    final container = makeContainer(memory);
+
     expect(await container.read(guestModeProvider.future), isFalse);
+    expect(memory.containsKey('guest_mode'), isFalse);
   });
 
-  test('build restores true when a guest flag is already persisted', () async {
-    final container = makeContainer({'guest_mode': 'true'});
-    expect(await container.read(guestModeProvider.future), isTrue);
-  });
-
-  test('enable persists true and flips state', () async {
+  test('enable flips state without persisting', () async {
     final memory = <String, String>{};
     final container = makeContainer(memory);
     await container.read(guestModeProvider.future);
@@ -44,34 +43,30 @@ void main() {
     await container.read(guestModeProvider.notifier).enable();
 
     expect(container.read(guestModeProvider).value, isTrue);
-    expect(memory['guest_mode'], 'true');
+    expect(memory.containsKey('guest_mode'), isFalse);
   });
 
-  test('disable clears the persisted flag and flips state', () async {
-    final memory = <String, String>{'guest_mode': 'true'};
-    final container = makeContainer(memory);
+  test('disable flips state to false', () async {
+    final container = makeContainer({});
     await container.read(guestModeProvider.future);
+    await container.read(guestModeProvider.notifier).enable();
 
     await container.read(guestModeProvider.notifier).disable();
 
     expect(container.read(guestModeProvider).value, isFalse);
-    expect(memory.containsKey('guest_mode'), isFalse);
   });
 
   test('SessionController.logout also clears guest mode', () async {
-    final memory = <String, String>{};
-    final container = makeContainer(memory);
+    final container = makeContainer({});
 
     await container.read(guestModeProvider.future);
     await container.read(guestModeProvider.notifier).enable();
     expect(container.read(guestModeProvider).value, isTrue);
 
-    // Calling logout on the controller should clear guest mode
     final sessionController =
         container.read(sessionControllerProvider.notifier);
     await sessionController.logout();
 
     expect(container.read(guestModeProvider).value, isFalse);
-    expect(memory.containsKey('guest_mode'), isFalse);
   });
 }

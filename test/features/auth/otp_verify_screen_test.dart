@@ -24,20 +24,17 @@ void main() {
       token: 't',
       user: AuthUser(mobile: '1012345678', phoneCode: '20'),
     );
-    final memory = <String, String>{'guest_mode': 'true'};
     final container = ProviderContainer(
       overrides: [
         secureStorageProvider.overrideWithValue(
-          SecureStorage(
-            storage: InMemorySecureStorage({}),
-            memoryGuestModeStore: memory,
-          ),
+          SecureStorage(storage: InMemorySecureStorage({})),
         ),
         authRepositoryProvider.overrideWithValue(FakeAuthRepository(session)),
       ],
     );
     addTearDown(container.dispose);
     await container.read(guestModeProvider.future);
+    await container.read(guestModeProvider.notifier).enable();
 
     final router = GoRouter(
       initialLocation: AppRoutes.otp,
@@ -82,6 +79,5 @@ void main() {
 
     expect(find.text('CONFIRM'), findsOneWidget);
     expect(container.read(guestModeProvider).value, isFalse);
-    expect(memory.containsKey('guest_mode'), isFalse);
   });
 }
