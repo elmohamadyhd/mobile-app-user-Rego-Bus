@@ -43,6 +43,9 @@ dependencies:
   # SVG rendering (brand marks: Google / Facebook / Apple)
   flutter_svg: ^2.0.17
 
+  # Native splash hold until Flutter paints the matching first frame.
+  flutter_native_splash: ^2.4.6
+
   # ── Optional: uncomment when needed ──────────────────────────────────────
   # Local database (Drift / SQLite)
   # drift: ^2.34.0
@@ -61,7 +64,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  flutter_native_splash: ^2.4.6
 
   # Code generation
   build_runner: ^2.15.0
