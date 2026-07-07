@@ -34,9 +34,10 @@ class _OtpInputState extends State<OtpInput> {
   void initState() {
     super.initState();
     _controllers = List.generate(widget.length, (_) => TextEditingController());
-    _nodes = List.generate(widget.length, (_) {
+    _nodes = List.generate(widget.length, (index) {
       final node = FocusNode();
       node.addListener(() => setState(() {}));
+      node.onKeyEvent = (node, event) => _onKeyEvent(index, node, event);
       return node;
     });
   }
@@ -84,6 +85,23 @@ class _OtpInputState extends State<OtpInput> {
     }
 
     _notify();
+  }
+
+  KeyEventResult _onKeyEvent(int i, FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent ||
+        event.logicalKey != LogicalKeyboardKey.backspace) {
+      return KeyEventResult.ignored;
+    }
+
+    // Soft keyboard backspace on an empty box does not fire [onChanged].
+    if (_controllers[i].text.isEmpty && i > 0) {
+      _controllers[i - 1].clear();
+      _nodes[i - 1].requestFocus();
+      _notify();
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
   }
 
   @override
