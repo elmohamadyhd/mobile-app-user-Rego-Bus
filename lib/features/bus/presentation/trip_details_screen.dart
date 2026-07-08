@@ -8,7 +8,7 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
+import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/amenity_chip.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -21,10 +21,10 @@ class BusTripDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final (tripDetail, status) = ref.watch(
-      bookingFlowProvider.select((s) => (s.tripDetail, s.status)),
+      busBookingProvider.select((s) => (s.tripDetail, s.status)),
     );
 
-    if (status == BookingFlowStatus.loadingDetail || tripDetail == null) {
+    if (status == BusBookingStatus.loadingDetail || tripDetail == null) {
       return Scaffold(
         backgroundColor: AppColors.bgBase,
         appBar: BookingAppBar(title: l10n.tripDetailTitle),

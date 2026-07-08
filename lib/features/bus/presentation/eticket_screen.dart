@@ -10,7 +10,7 @@ import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
+import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
@@ -19,7 +19,7 @@ class BusTicketScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ticket = ref.watch(bookingFlowProvider.select((s) => s.ticket));
+    final ticket = ref.watch(busBookingProvider.select((s) => s.ticket));
 
     if (ticket == null) {
       return const Scaffold(
@@ -36,7 +36,7 @@ class BusTicketScreen extends ConsumerWidget {
             _BoardingPassCard(ticket: ticket),
             const _ActionButtons(),
             _BackHomeButton(onPressed: () {
-              ref.read(bookingFlowProvider.notifier).reset();
+              ref.read(busBookingProvider.notifier).reset();
               context.go(AppRoutes.home);
             }),
             const SizedBox(height: AppSpacing.lg),

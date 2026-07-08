@@ -9,7 +9,7 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
+import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -22,18 +22,18 @@ class PassengerConfirmScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     // Side-effect navigation via ref.listen — never call context.go inside build.
-    ref.listen<BookingFlowState>(bookingFlowProvider, (prev, next) {
-      if (next.status == BookingFlowStatus.confirmed) {
+    ref.listen<BusBookingState>(busBookingProvider, (prev, next) {
+      if (next.status == BusBookingStatus.confirmed) {
         context.go(AppRoutes.eTicket);
-      } else if (next.status == BookingFlowStatus.error && next.error != null) {
+      } else if (next.status == BusBookingStatus.error && next.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.error!)),
         );
       }
     });
 
-    final state = ref.watch(bookingFlowProvider);
-    final isLoading = state.status == BookingFlowStatus.confirming;
+    final state = ref.watch(busBookingProvider);
+    final isLoading = state.status == BusBookingStatus.confirming;
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
@@ -52,7 +52,7 @@ class PassengerConfirmScreen extends ConsumerWidget {
             loading: isLoading,
             onPressed: isLoading
                 ? null
-                : () => ref.read(bookingFlowProvider.notifier).confirmBooking(),
+                : () => ref.read(busBookingProvider.notifier).confirmBooking(),
           ),
         ),
       ),
@@ -80,7 +80,7 @@ class PassengerConfirmScreen extends ConsumerWidget {
 
 class _BusTripSummaryCard extends StatelessWidget {
   const _BusTripSummaryCard({required this.state, required this.l10n});
-  final BookingFlowState state;
+  final BusBookingState state;
   final AppLocalizations l10n;
 
   @override
@@ -198,7 +198,7 @@ class _BusTripSummaryCard extends StatelessWidget {
 
 class _PassengerSection extends StatelessWidget {
   const _PassengerSection({required this.state, required this.l10n});
-  final BookingFlowState state;
+  final BusBookingState state;
   final AppLocalizations l10n;
 
   @override
@@ -314,7 +314,7 @@ class _PaymentSection extends ConsumerWidget {
     required this.state,
     required this.l10n,
   });
-  final BookingFlowState state;
+  final BusBookingState state;
   final AppLocalizations l10n;
 
   @override
@@ -336,7 +336,7 @@ class _PaymentSection extends ConsumerWidget {
           selected: isWallet,
           onTap: () {
             ref
-                .read(bookingFlowProvider.notifier)
+                .read(busBookingProvider.notifier)
                 .setPaymentMethod(PaymentMethod.wallet);
           },
         ),
@@ -419,7 +419,7 @@ class _PaymentOption extends StatelessWidget {
 
 class _PriceBreakdown extends StatelessWidget {
   const _PriceBreakdown({required this.state, required this.l10n});
-  final BookingFlowState state;
+  final BusBookingState state;
   final AppLocalizations l10n;
 
   @override

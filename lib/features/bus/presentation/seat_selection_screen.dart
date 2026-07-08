@@ -7,7 +7,7 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/data/mock_booking_data.dart';
-import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
+import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/seat_grid.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -20,7 +20,7 @@ class SeatSelectionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final (tripDetail, selectedSeats) = ref.watch(
-      bookingFlowProvider.select((s) => (s.tripDetail, s.selectedSeats)),
+      busBookingProvider.select((s) => (s.tripDetail, s.selectedSeats)),
     );
 
     final priceEgp = tripDetail?.summary.priceEgp ?? 0;
@@ -41,7 +41,7 @@ class SeatSelectionScreen extends ConsumerWidget {
                 rows: MockBookingData.seatLayout,
                 selectedSeats: selectedSeats,
                 onToggle: (id) =>
-                    ref.read(bookingFlowProvider.notifier).toggleSeat(id),
+                    ref.read(busBookingProvider.notifier).toggleSeat(id),
               ),
             ),
           ),

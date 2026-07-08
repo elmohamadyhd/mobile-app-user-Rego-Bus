@@ -1,4 +1,4 @@
-// lib/features/bus/presentation/providers/booking_providers.dart
+// lib/features/bus/presentation/providers/bus_booking_providers.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rego/core/utils/date_formatting.dart';
@@ -6,24 +6,24 @@ import 'package:rego/features/bus/data/mock_booking_data.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 
-part 'booking_providers.freezed.dart';
+part 'bus_booking_providers.freezed.dart';
 
-enum BookingFlowStatus {
+enum BusBookingStatus {
   idle,
   loadingTrips,
   loadingDetail,
   confirming,
   confirmed,
-  error
+  error,
 }
 
 enum PaymentMethod { wallet, card }
 
 @freezed
-abstract class BookingFlowState with _$BookingFlowState {
-  const factory BookingFlowState({
+abstract class BusBookingState with _$BusBookingState {
+  const factory BusBookingState({
     @Default([]) List<BusTripSummary> trips,
-    @Default(BookingFlowStatus.idle) BookingFlowStatus status,
+    @Default(BusBookingStatus.idle) BusBookingStatus status,
     BusTripSummary? selectedTrip,
     BusTripDetail? tripDetail,
     @Default([]) List<String> selectedSeats,
@@ -35,45 +35,30 @@ abstract class BookingFlowState with _$BookingFlowState {
     String? searchFrom,
     String? searchTo,
     DateTime? searchDate,
-    @Default(false) bool isRoundTrip,
-    DateTime? searchReturnDate,
-    String? flightClass,
-  }) = _BookingFlowState;
+  }) = _BusBookingState;
 }
 
-class BookingFlowNotifier extends Notifier<BookingFlowState> {
+class BusBookingNotifier extends Notifier<BusBookingState> {
   @override
-  BookingFlowState build() => const BookingFlowState();
+  BusBookingState build() => const BusBookingState();
 
-  Future<void> searchTrips(
-    String from,
-    String to,
-    String date, {
-    bool isRoundTrip = false,
-    String? returnDate,
-    String? flightClass,
-  }) async {
+  Future<void> searchTrips(String from, String to, String date) async {
     final parsedDate = parseIsoDate(date) ?? dateOnly(DateTime.now());
-    final parsedReturn =
-        isRoundTrip && returnDate != null ? parseIsoDate(returnDate) : null;
     state = state.copyWith(
-      status: BookingFlowStatus.loadingTrips,
+      status: BusBookingStatus.loadingTrips,
       searchFrom: from,
       searchTo: to,
       searchDate: parsedDate,
-      isRoundTrip: isRoundTrip,
-      searchReturnDate: parsedReturn,
-      flightClass: flightClass,
     );
     try {
       await Future<void>.delayed(const Duration(milliseconds: 600));
       state = state.copyWith(
-        status: BookingFlowStatus.idle,
+        status: BusBookingStatus.idle,
         trips: MockBookingData.trips,
       );
     } catch (e) {
       state = state.copyWith(
-        status: BookingFlowStatus.error,
+        status: BusBookingStatus.error,
         error: e.toString(),
       );
     }
@@ -81,13 +66,13 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
 
   Future<void> selectTrip(BusTripSummary trip) async {
     state = state.copyWith(
-      status: BookingFlowStatus.loadingDetail,
+      status: BusBookingStatus.loadingDetail,
       selectedTrip: trip,
       selectedSeats: [],
     );
     await Future<void>.delayed(const Duration(milliseconds: 400));
     state = state.copyWith(
-      status: BookingFlowStatus.idle,
+      status: BusBookingStatus.idle,
       tripDetail: MockBookingData.detailFor(trip.id),
     );
   }
@@ -110,17 +95,17 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
     final detail = state.tripDetail;
     if (detail == null) {
       state = state.copyWith(
-        status: BookingFlowStatus.error,
+        status: BusBookingStatus.error,
         error: 'No trip selected',
       );
       return;
     }
-    state = state.copyWith(status: BookingFlowStatus.confirming, error: null);
+    state = state.copyWith(status: BusBookingStatus.confirming, error: null);
     await Future<void>.delayed(const Duration(milliseconds: 800));
-    final ref =
+    final bookingRef =
         'RG-${DateTime.now().millisecondsSinceEpoch.toRadixString(36).toUpperCase()}';
     final ticket = BusTicket(
-      bookingRef: ref,
+      bookingRef: bookingRef,
       trip: detail,
       seats: List.unmodifiable(state.selectedSeats),
       passengerName: state.passengerName,
@@ -128,14 +113,14 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
       issuedAt: DateTime.now(),
     );
     state = state.copyWith(
-      status: BookingFlowStatus.confirmed,
+      status: BusBookingStatus.confirmed,
       ticket: ticket,
     );
   }
 
-  void reset() => state = const BookingFlowState();
+  void reset() => state = const BusBookingState();
 }
 
-final bookingFlowProvider =
-    NotifierProvider<BookingFlowNotifier, BookingFlowState>(
-        BookingFlowNotifier.new);
+final busBookingProvider =
+    NotifierProvider<BusBookingNotifier, BusBookingState>(
+        BusBookingNotifier.new);

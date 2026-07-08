@@ -11,7 +11,7 @@ import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/core/utils/date_formatting.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
+import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/trip_card.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -29,7 +29,7 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final state = ref.watch(bookingFlowProvider);
+    final state = ref.watch(busBookingProvider);
     final from = state.searchFrom ?? 'Cairo';
     final to = state.searchTo ?? 'Alexandria';
     final title = '$from → $to';
@@ -46,23 +46,18 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
   }
 
   Widget _buildBody(
-      BuildContext context, AppLocalizations l10n, BookingFlowState state) {
-    if (state.status == BookingFlowStatus.loadingTrips) {
+      BuildContext context, AppLocalizations l10n, BusBookingState state) {
+    if (state.status == BusBookingStatus.loadingTrips) {
       return const _LoadingSkeleton();
     }
-    if (state.status == BookingFlowStatus.error) {
+    if (state.status == BusBookingStatus.error) {
       return _ErrorView(
         message: l10n.tripResultsError,
         retryLabel: l10n.tripResultsRetry,
-        onRetry: () => ref.read(bookingFlowProvider.notifier).searchTrips(
+        onRetry: () => ref.read(busBookingProvider.notifier).searchTrips(
               state.searchFrom ?? '',
               state.searchTo ?? '',
               toIsoDate(state.searchDate ?? DateTime.now()),
-              isRoundTrip: state.isRoundTrip,
-              returnDate: state.isRoundTrip && state.searchReturnDate != null
-                  ? toIsoDate(state.searchReturnDate!)
-                  : null,
-              flightClass: state.flightClass,
             ),
       );
     }
@@ -98,7 +93,7 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
   }
 
   Future<void> _selectTrip(BusTripSummary trip) async {
-    await ref.read(bookingFlowProvider.notifier).selectTrip(trip);
+    await ref.read(busBookingProvider.notifier).selectTrip(trip);
     if (mounted) unawaited(context.push(AppRoutes.tripDetail));
   }
 }
