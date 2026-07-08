@@ -88,6 +88,35 @@ void main() {
       expect(state.segmentFare, 148.5);
     });
 
+    test('selectTrip enters loadingDetail then settles to idle', () async {
+      final repo = FakeBusRepository(
+        tripsPage: BusTripsPage(
+          trips: [FakeBusRepository.sampleTrip],
+          currentPage: 1,
+          lastPage: 1,
+        ),
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await notifier.searchTrips(
+        BusSearchParams(
+          cityFromId: 1,
+          cityToId: 2,
+          date: DateTime(2026, 7, 10),
+        ),
+      );
+      final trip = container.read(busBookingProvider).trips.first;
+
+      // The synchronous seed sets the trip + loading status before enrichment.
+      final future = notifier.selectTrip(trip);
+      final loadingState = container.read(busBookingProvider);
+      expect(loadingState.status, BusBookingStatus.loadingDetail);
+      expect(loadingState.selectedTrip, isNotNull);
+
+      await future;
+      expect(container.read(busBookingProvider).status, BusBookingStatus.idle);
+    });
+
     test('setStops updates dropoff fare only', () async {
       final container = makeContainer(FakeBusRepository());
       final notifier = container.read(busBookingProvider.notifier);

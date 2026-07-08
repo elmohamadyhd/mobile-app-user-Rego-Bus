@@ -26,6 +26,7 @@ class TripResultsScreen extends ConsumerStatefulWidget {
 
 class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
   int _selectedSort = 0; // 0=Times, 1=Cheapest, 2=Seats
+  String? _loadingTripId;
 
   /// Client-side reorder of already-loaded trips (no re-search).
   List<BusTripSummary> _sorted(List<BusTripSummary> trips) {
@@ -102,6 +103,7 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
             separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
             itemBuilder: (context, i) => TripCard(
               trip: trips[i],
+              loading: _loadingTripId == trips[i].id,
               onTap: () => _selectTrip(trips[i]),
             ),
           ),
@@ -111,8 +113,14 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
   }
 
   Future<void> _selectTrip(BusTripSummary trip) async {
+    // Only one trip can be "loading" at a time — a second tap while one is
+    // in flight is ignored rather than racing the notifier's state.
+    if (_loadingTripId != null) return;
+    setState(() => _loadingTripId = trip.id);
     await ref.read(busBookingProvider.notifier).selectTrip(trip);
-    if (mounted) unawaited(context.push(BusRoutes.detail));
+    if (!mounted) return;
+    setState(() => _loadingTripId = null);
+    unawaited(context.push(BusRoutes.detail));
   }
 }
 

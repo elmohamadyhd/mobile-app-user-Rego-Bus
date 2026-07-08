@@ -43,6 +43,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   DateTime _travelDate = dateOnly(DateTime.now());
   DateTime _returnDate = dateOnly(DateTime.now().add(const Duration(days: 7)));
   FlightClass _flightClass = kDefaultFlightClass;
+  bool _searching = false;
 
   static const _maxBookingDays = 90;
 
@@ -159,13 +160,19 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
       from: _cityLabel(from)!,
       to: _cityLabel(to)!,
     );
-    await notifier.searchTrips(
-      BusSearchParams(
-        cityFromId: from.id,
-        cityToId: to.id,
-        date: _travelDate,
-      ),
-    );
+
+    setState(() => _searching = true);
+    try {
+      await notifier.searchTrips(
+        BusSearchParams(
+          cityFromId: from.id,
+          cityToId: to.id,
+          date: _travelDate,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _searching = false);
+    }
     if (mounted) unawaited(context.push(BusRoutes.results));
   }
 
@@ -338,7 +345,11 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
             ),
           ],
           const SizedBox(height: 14),
-          PrimaryButton(label: l10n.homeSearch, onPressed: _onSearch),
+          PrimaryButton(
+            label: l10n.homeSearch,
+            loading: _searching,
+            onPressed: _onSearch,
+          ),
         ],
       ),
     );

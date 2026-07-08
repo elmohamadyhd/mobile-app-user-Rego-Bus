@@ -43,6 +43,7 @@ Future<void> _pumpCard(
   BusTripSummary trip, {
   Locale locale = const Locale('en'),
   VoidCallback? onTap,
+  bool loading = false,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -54,13 +55,23 @@ Future<void> _pumpCard(
         body: Center(
           child: SizedBox(
             width: 360,
-            child: TripCard(trip: trip, onTap: onTap ?? () {}),
+            child: TripCard(
+              trip: trip,
+              onTap: onTap ?? () {},
+              loading: loading,
+            ),
           ),
         ),
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  // The Select-button spinner animates indefinitely while loading, so
+  // pumpAndSettle would time out — a single pump is enough to lay out.
+  if (loading) {
+    await tester.pump();
+  } else {
+    await tester.pumpAndSettle();
+  }
 }
 
 void main() {
@@ -98,5 +109,23 @@ void main() {
     expect(find.text('السعر'), findsOneWidget); // Fare
     expect(find.text('اختر'), findsOneWidget); // Select
     expect(find.textContaining('Go Bus', findRichText: true), findsOneWidget);
+  });
+
+  testWidgets('loading shows a spinner in place of Select and blocks taps',
+      (tester) async {
+    var tapped = 0;
+    await _pumpCard(
+      tester,
+      _buildTrip(),
+      onTap: () => tapped++,
+      loading: true,
+    );
+
+    expect(find.text('Select'), findsNothing);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    await tester.tap(find.byType(TripCard));
+    await tester.pump();
+    expect(tapped, 0);
   });
 }

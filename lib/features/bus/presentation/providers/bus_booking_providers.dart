@@ -16,6 +16,7 @@ part 'bus_booking_providers.freezed.dart';
 enum BusBookingStatus {
   idle,
   loadingTrips,
+  loadingDetail,
   loadingSeats,
   confirming,
   confirmed,
@@ -109,7 +110,10 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
   }
 
   Future<void> selectTrip(BusTripSummary trip) async {
+    // Seed the default pair synchronously so the detail screen can open
+    // immediately, then enrich in the background behind a loading state.
     state = state.copyWith(
+      status: BusBookingStatus.loadingDetail,
       selectedTrip: trip,
       fromStop: trip.defaultBoardingStop,
       toStop: trip.defaultDropoffStop,
@@ -121,16 +125,21 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
 
     try {
       final detail = await _repo.tripById(trip.id);
-      if (detail.id.isEmpty) return;
-      final merged = trip.mergeEnrichment(detail);
-      state = state.copyWith(
-        selectedTrip: merged,
-        fromStop: state.fromStop ?? merged.defaultBoardingStop,
-        toStop: state.toStop ?? merged.defaultDropoffStop,
-        segmentFare: (state.toStop ?? merged.defaultDropoffStop).finalPrice,
-      );
+      if (detail.id.isNotEmpty) {
+        final merged = trip.mergeEnrichment(detail);
+        state = state.copyWith(
+          selectedTrip: merged,
+          fromStop: state.fromStop ?? merged.defaultBoardingStop,
+          toStop: state.toStop ?? merged.defaultDropoffStop,
+          segmentFare: (state.toStop ?? merged.defaultDropoffStop).finalPrice,
+        );
+      }
     } catch (_) {
       // Background enrichment is best-effort.
+    } finally {
+      if (state.status == BusBookingStatus.loadingDetail) {
+        state = state.copyWith(status: BusBookingStatus.idle);
+      }
     }
   }
 

@@ -32,7 +32,8 @@ class BusApi {
   }
 
   Future<dynamic> tripById(String tripId) async {
-    final res = await _dio.get('/buses/trips/$tripId');
+    const currency = 'EGP';
+    final res = await _dio.get('/buses/trips/$tripId?currency=$currency');
     return res.data;
   }
 

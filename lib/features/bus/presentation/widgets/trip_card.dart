@@ -13,10 +13,19 @@ import 'package:rego/l10n/app_localizations.dart';
 /// The card is split by a perforated tear line: the trip info sits above it,
 /// the fare stub below. See [TicketBorder] for the notch + dash geometry.
 class TripCard extends StatelessWidget {
-  const TripCard({super.key, required this.trip, required this.onTap});
+  const TripCard({
+    super.key,
+    required this.trip,
+    required this.onTap,
+    this.loading = false,
+  });
 
   final BusTripSummary trip;
   final VoidCallback onTap;
+
+  /// Shows a spinner in the Select button and disables this card's tap.
+  /// Other cards in the list stay fully interactive — see [_SelectButton].
+  final bool loading;
 
   /// Height of the fare stub (below the tear line). Drives the notch offset.
   static const double _stubHeight = 64;
@@ -39,7 +48,7 @@ class TripCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         customBorder: shape,
-        onTap: onTap,
+        onTap: loading ? null : onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -68,7 +77,12 @@ class TripCard extends StatelessWidget {
                   AppSpacing.md,
                   0,
                 ),
-                child: _FareStub(trip: trip, l10n: l10n, onTap: onTap),
+                child: _FareStub(
+                  trip: trip,
+                  l10n: l10n,
+                  onTap: onTap,
+                  loading: loading,
+                ),
               ),
             ),
           ],
@@ -321,27 +335,53 @@ class _Endpoint extends StatelessWidget {
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 2),
-        Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(text: station),
-              if (extra > 0)
-                TextSpan(
-                  text: '  +$extra',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+        const SizedBox(height: 4),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                station,
+                textAlign: textAlign,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    AppTypography.caption.copyWith(color: AppColors.textMuted),
+              ),
+            ),
+            if (extra > 0) ...[
+              const SizedBox(width: 5),
+              _StationCountChip(extra: extra),
             ],
-          ),
-          textAlign: textAlign,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: AppTypography.caption.copyWith(color: AppColors.textMuted),
+          ],
         ),
       ],
+    );
+  }
+}
+
+/// Small pill showing how many alternative boarding/drop-off stations exist
+/// beyond the default one (e.g. `+3`).
+class _StationCountChip extends StatelessWidget {
+  const _StationCountChip({required this.extra});
+
+  final int extra;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColors.primaryTint,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+      ),
+      child: Text(
+        '+$extra',
+        style: AppTypography.overline.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 }
@@ -389,11 +429,13 @@ class _FareStub extends StatelessWidget {
     required this.trip,
     required this.l10n,
     required this.onTap,
+    this.loading = false,
   });
 
   final BusTripSummary trip;
   final AppLocalizations l10n;
   final VoidCallback onTap;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -437,17 +479,22 @@ class _FareStub extends StatelessWidget {
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
-        _SelectButton(l10n: l10n, onTap: onTap),
+        _SelectButton(l10n: l10n, onTap: onTap, loading: loading),
       ],
     );
   }
 }
 
 class _SelectButton extends StatelessWidget {
-  const _SelectButton({required this.l10n, required this.onTap});
+  const _SelectButton({
+    required this.l10n,
+    required this.onTap,
+    this.loading = false,
+  });
 
   final AppLocalizations l10n;
   final VoidCallback onTap;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -458,18 +505,27 @@ class _SelectButton extends StatelessWidget {
       shadowColor: AppColors.primary.withValues(alpha: 0.5),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.input),
-        onTap: onTap,
+        onTap: loading ? null : onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
-          child: Text(
-            l10n.bookingSelect,
-            style: const TextStyle(
-              fontFamily: AppTypography.fontFamily,
-              color: AppColors.onPrimary,
-              fontWeight: FontWeight.w800,
-              fontSize: 14,
-            ),
-          ),
+          child: loading
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.2,
+                    valueColor: AlwaysStoppedAnimation(AppColors.onPrimary),
+                  ),
+                )
+              : Text(
+                  l10n.bookingSelect,
+                  style: const TextStyle(
+                    fontFamily: AppTypography.fontFamily,
+                    color: AppColors.onPrimary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                  ),
+                ),
         ),
       ),
     );
