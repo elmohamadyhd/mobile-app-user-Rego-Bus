@@ -1,5 +1,14 @@
 # Booking Flow — Design Spec
-_Date: 2026-06-30 | Status: approved_
+_Date: 2026-06-30 | Status: superseded_
+
+> **Superseded (2026-07-08)** by
+> [`2026-07-08-bus-flow-redesign-design.md`](2026-07-08-bus-flow-redesign-design.md),
+> which rebases the bus flow on the real `/buses/*` API (city→station model,
+> per-segment stop pricing, per-seat classes) and the per-mode feature
+> architecture in `2026-07-08-multi-vehicle-architecture-design.md`. This
+> document is kept for history — the screen designs below are still a useful
+> visual reference, but the single flat-price `BookingFlowNotifier` and the
+> stop chips crammed into the results card are replaced there.
 
 ## Scope
 
