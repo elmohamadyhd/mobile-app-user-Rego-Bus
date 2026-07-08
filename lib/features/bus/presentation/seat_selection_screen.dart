@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
@@ -33,16 +35,12 @@ class SeatSelectionScreen extends ConsumerWidget {
           _LegendRow(l10n: l10n),
           Expanded(
             child: isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const SingleChildScrollView(
+                    padding: EdgeInsets.all(AppSpacing.lg),
+                    child: _SeatGridSkeleton(),
+                  )
                 : seatMap == null
-                    ? Center(
-                        child: Text(
-                          l10n.tripResultsError,
-                          style: AppTypography.body.copyWith(
-                            color: AppColors.textMuted,
-                          ),
-                        ),
-                      )
+                    ? _SeatMapErrorView(message: l10n.tripResultsError)
                     : SingleChildScrollView(
                         padding: const EdgeInsets.all(AppSpacing.lg),
                         child: SeatGrid(
@@ -76,7 +74,16 @@ class _LegendRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.bgElevated,
+      decoration: BoxDecoration(
+        color: AppColors.bgElevated,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.sm,
@@ -129,7 +136,7 @@ class _LegendItem extends StatelessWidget {
           height: 16,
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(6),
             border: border != null ? Border.all(color: border!) : null,
           ),
         ),
@@ -141,6 +148,76 @@ class _LegendItem extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SeatGridSkeleton extends StatelessWidget {
+  const _SeatGridSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.hairline,
+      highlightColor: AppColors.bgElevated,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.bgElevated,
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xl,
+        ),
+        child: Column(
+          children: [
+            for (var r = 0; r < 6; r++) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var c = 0; c < 4; c++)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppColors.hairline,
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SeatMapErrorView extends StatelessWidget {
+  const _SeatMapErrorView({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(AppIcons.error, color: AppColors.error, size: 40),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            message,
+            style: AppTypography.body.copyWith(color: AppColors.textMuted),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -163,13 +240,17 @@ class _BottomPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.bgElevated,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(AppRadius.sheet),
+          topRight: Radius.circular(AppRadius.sheet),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 16,
-            offset: Offset(0, -4),
+            color: AppColors.primary.withValues(alpha: 0.12),
+            blurRadius: 24,
+            offset: const Offset(0, -6),
           ),
         ],
       ),
@@ -181,27 +262,38 @@ class _BottomPanel extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.seatSelectionSeatsLabel,
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textMuted,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.seatSelectionSeatsLabel,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textMuted,
+                          ),
                         ),
-                      ),
-                      Text(
+                        const SizedBox(height: 6),
                         selectedSeats.isEmpty
-                            ? l10n.seatSelectionNoSeats
-                            : selectedSeats.join(', '),
-                        style: AppTypography.body.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                            ? Text(
+                                l10n.seatSelectionNoSeats,
+                                style: AppTypography.body.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              )
+                            : Wrap(
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: [
+                                  for (final seat in selectedSeats)
+                                    _SeatChip(label: seat),
+                                ],
+                              ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: AppSpacing.md),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -228,6 +320,30 @@ class _BottomPanel extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SeatChip extends StatelessWidget {
+  const _SeatChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.primaryTint,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.caption.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

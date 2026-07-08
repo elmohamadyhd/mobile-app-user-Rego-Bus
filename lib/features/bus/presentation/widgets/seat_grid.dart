@@ -6,6 +6,15 @@ import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/seat_map.dart';
 
+/// Shared square size for every grid cell — seats, icon markers (driver,
+/// door, WC), and blank aisle fillers — so rows stay aligned regardless of
+/// what each cell renders.
+const double _cellSize = 36;
+
+/// Bus-body card containing the seat grid: a front-of-bus marker followed by
+/// each row of [SeatMapCell]s. `SeatMapCellKind.space` cells (the aisle) are
+/// rendered as blank filler — no icon, no fill — so the walkway reads as
+/// genuinely empty space rather than a decorated tile.
 class SeatGrid extends StatelessWidget {
   const SeatGrid({
     super.key,
@@ -29,37 +38,75 @@ class SeatGrid extends StatelessWidget {
       rows.add(seatMap.cells.sublist(i, end));
     }
 
-    return Column(
-      children: [
-        const Align(
-          alignment: AlignmentDirectional.centerEnd,
-          child: Icon(AppIcons.busFront, color: AppColors.textMuted, size: 28),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        for (final row in rows) ...[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (final cell in row)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: _SeatCellView(
-                    cell: cell,
-                    selected: cell.id != null && selectedSeats.contains(cell.id),
-                    onTap: _tapHandler(cell),
-                  ),
-                ),
-            ],
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.bgElevated,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.1),
+            blurRadius: 26,
+            spreadRadius: -16,
+            offset: const Offset(0, 10),
           ),
-          const SizedBox(height: AppSpacing.sm),
         ],
-      ],
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.xl,
+      ),
+      child: Column(
+        children: [
+          const Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: _FrontBadge(),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          for (final row in rows) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (final cell in row)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: _SeatCellView(
+                      cell: cell,
+                      selected:
+                          cell.id != null && selectedSeats.contains(cell.id),
+                      onTap: _tapHandler(cell),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ],
+      ),
     );
   }
 
   VoidCallback? _tapHandler(SeatMapCell cell) {
     if (cell.kind != SeatMapCellKind.available || cell.id == null) return null;
     return () => onToggle(cell.id!);
+  }
+}
+
+class _FrontBadge extends StatelessWidget {
+  const _FrontBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 34,
+      height: 34,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: AppColors.primaryTint,
+        shape: BoxShape.circle,
+      ),
+      child: const Icon(AppIcons.busFront, color: AppColors.primary, size: 18),
+    );
   }
 }
 
@@ -76,18 +123,59 @@ class _SeatCellView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (_isNonSeat(cell.kind)) {
-      return SizedBox(
-        width: 34,
-        height: 34,
-        child: Icon(
-          _iconFor(cell.kind),
-          size: 18,
-          color: AppColors.textMuted,
-        ),
-      );
+    switch (cell.kind) {
+      case SeatMapCellKind.space:
+        // The aisle — stays fully blank (no icon, no fill) so it reads as
+        // walkable space rather than a UI element.
+        return const SizedBox(width: _cellSize, height: _cellSize);
+      case SeatMapCellKind.driver:
+        return const _MarkerCell(icon: AppIcons.busFront);
+      case SeatMapCellKind.door:
+        return const _MarkerCell(icon: AppIcons.logout);
+      case SeatMapCellKind.wc:
+        return const _MarkerCell(icon: AppIcons.amenityWater);
+      case SeatMapCellKind.available:
+      case SeatMapCellKind.booked:
+        return _SeatButton(cell: cell, selected: selected, onTap: onTap);
     }
+  }
+}
 
+/// Non-seat informational marker (driver, door, WC) — a small tinted circle
+/// so it reads clearly as "not a seat" without being mistaken for the aisle.
+class _MarkerCell extends StatelessWidget {
+  const _MarkerCell({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: _cellSize,
+      height: _cellSize,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: AppColors.bgBase,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, size: 16, color: AppColors.textMuted),
+    );
+  }
+}
+
+class _SeatButton extends StatelessWidget {
+  const _SeatButton({
+    required this.cell,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final SeatMapCell cell;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
     final booked = cell.kind == SeatMapCellKind.booked;
     final Color bg;
     final Color? borderColor;
@@ -107,47 +195,41 @@ class _SeatCellView extends StatelessWidget {
     }
 
     final label = cell.seatNo ?? cell.id ?? '';
+    final radius = BorderRadius.circular(AppRadius.md);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: radius,
         child: Container(
-          width: 34,
-          height: 34,
+          width: _cellSize,
+          height: _cellSize,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: bg,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: radius,
             border: borderColor != null ? Border.all(color: borderColor) : null,
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
           ),
           child: Text(
             label,
             style: AppTypography.caption.copyWith(
               color: textColor,
-              fontWeight: FontWeight.w600,
-              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              fontSize: 11,
             ),
           ),
         ),
       ),
     );
-  }
-
-  bool _isNonSeat(SeatMapCellKind kind) {
-    return kind == SeatMapCellKind.driver ||
-        kind == SeatMapCellKind.space ||
-        kind == SeatMapCellKind.door ||
-        kind == SeatMapCellKind.wc;
-  }
-
-  IconData _iconFor(SeatMapCellKind kind) {
-    return switch (kind) {
-      SeatMapCellKind.driver => AppIcons.busFront,
-      SeatMapCellKind.wc => AppIcons.amenityWater,
-      SeatMapCellKind.door => AppIcons.logout,
-      _ => AppIcons.spaceBar,
-    };
   }
 }
