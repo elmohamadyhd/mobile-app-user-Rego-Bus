@@ -2,9 +2,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rego/core/utils/date_formatting.dart';
-import 'package:rego/features/bus/data/mock_bus_data.dart';
+import 'package:rego/features/bus/data/bus_repository_impl.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
+import 'package:rego/features/bus/domain/repositories/bus_repository.dart';
 
 part 'bus_booking_providers.freezed.dart';
 
@@ -18,6 +19,9 @@ enum BusBookingStatus {
 }
 
 enum PaymentMethod { wallet, card }
+
+final busRepositoryProvider =
+    Provider<BusRepository>((ref) => BusRepositoryImpl());
 
 @freezed
 abstract class BusBookingState with _$BusBookingState {
@@ -39,6 +43,8 @@ abstract class BusBookingState with _$BusBookingState {
 }
 
 class BusBookingNotifier extends Notifier<BusBookingState> {
+  BusRepository get _repo => ref.read(busRepositoryProvider);
+
   @override
   BusBookingState build() => const BusBookingState();
 
@@ -51,11 +57,8 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
       searchDate: parsedDate,
     );
     try {
-      await Future<void>.delayed(const Duration(milliseconds: 600));
-      state = state.copyWith(
-        status: BusBookingStatus.idle,
-        trips: MockBusData.trips,
-      );
+      final trips = await _repo.searchTrips(from, to, date);
+      state = state.copyWith(status: BusBookingStatus.idle, trips: trips);
     } catch (e) {
       state = state.copyWith(
         status: BusBookingStatus.error,
@@ -70,11 +73,8 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
       selectedTrip: trip,
       selectedSeats: [],
     );
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    state = state.copyWith(
-      status: BusBookingStatus.idle,
-      tripDetail: MockBusData.detailFor(trip.id),
-    );
+    final detail = await _repo.tripDetail(trip.id);
+    state = state.copyWith(status: BusBookingStatus.idle, tripDetail: detail);
   }
 
   void toggleSeat(String id) {
