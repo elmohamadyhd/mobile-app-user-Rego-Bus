@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/amenity_chip.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
@@ -38,7 +38,7 @@ class BusTripDetailsScreen extends ConsumerWidget {
       bottomNavigationBar: _PriceFooter(
         priceEgp: tripDetail.summary.priceEgp,
         l10n: l10n,
-        onChooseSeats: () => context.push(AppRoutes.tripSeats),
+        onChooseSeats: () => context.push(BusRoutes.seats),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),

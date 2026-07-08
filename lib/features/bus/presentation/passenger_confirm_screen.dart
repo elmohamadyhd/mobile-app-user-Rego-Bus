@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -24,7 +24,7 @@ class PassengerConfirmScreen extends ConsumerWidget {
     // Side-effect navigation via ref.listen — never call context.go inside build.
     ref.listen<BusBookingState>(busBookingProvider, (prev, next) {
       if (next.status == BusBookingStatus.confirmed) {
-        context.go(AppRoutes.eTicket);
+        context.go(BusRoutes.ticket);
       } else if (next.status == BusBookingStatus.error && next.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.error!)),

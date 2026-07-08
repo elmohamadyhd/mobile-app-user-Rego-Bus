@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/core/utils/date_formatting.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/home/presentation/widgets/home_city_picker.dart';
 import 'package:rego/features/home/presentation/widgets/home_flight_class_picker.dart';
@@ -138,7 +138,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
           _toCity.apiName,
           toIsoDate(_travelDate),
         );
-    if (mounted) unawaited(context.push(AppRoutes.trips));
+    if (mounted) unawaited(context.push(BusRoutes.results));
   }
 
   @override

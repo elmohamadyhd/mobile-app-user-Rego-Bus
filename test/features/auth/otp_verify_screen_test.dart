@@ -11,6 +11,7 @@ import 'package:rego/features/auth/domain/value/otp_purpose.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/otp_verify_screen.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 import '../../support/fake_auth_repository.dart';
@@ -46,12 +47,12 @@ void main() {
               phoneCode: '20',
               mobile: '1012345678',
               purpose: OtpPurpose.registration,
-              returnTo: AppRoutes.tripConfirm,
+              returnTo: BusRoutes.confirm,
             ),
           ),
         ),
         GoRoute(
-          path: AppRoutes.tripConfirm,
+          path: BusRoutes.confirm,
           builder: (context, state) => const Text('CONFIRM'),
         ),
         GoRoute(

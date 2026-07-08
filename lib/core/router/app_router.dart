@@ -16,11 +16,7 @@ import 'package:rego/features/home/presentation/home_screen.dart';
 import 'package:rego/features/profile/presentation/profile_screen.dart';
 import 'package:rego/features/shell/presentation/coming_soon_screen.dart';
 import 'package:rego/features/shell/presentation/main_shell.dart';
-import 'package:rego/features/bus/presentation/trip_results_screen.dart';
-import 'package:rego/features/bus/presentation/trip_details_screen.dart';
-import 'package:rego/features/bus/presentation/seat_selection_screen.dart';
-import 'package:rego/features/bus/presentation/passenger_confirm_screen.dart';
-import 'package:rego/features/bus/presentation/eticket_screen.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 // Named route constants so call-sites never use raw strings.
@@ -37,11 +33,6 @@ abstract final class AppRoutes {
   static const search = '/search';
   static const wallet = '/wallet';
   static const profile = '/profile';
-  static const trips = '/trips';
-  static const tripDetail = '/trips/detail';
-  static const tripSeats = '/trips/seats';
-  static const tripConfirm = '/trips/confirm';
-  static const eTicket = '/booking/ticket';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -158,26 +149,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      GoRoute(
-        path: AppRoutes.trips,
-        builder: (context, state) => const TripResultsScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.tripDetail,
-        builder: (context, state) => const BusTripDetailsScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.tripSeats,
-        builder: (context, state) => const SeatSelectionScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.tripConfirm,
-        builder: (context, state) => const PassengerConfirmScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.eTicket,
-        builder: (context, state) => const BusTicketScreen(),
-      ),
+      ...busRoutes(),
     ],
   );
 });

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/data/mock_bus_data.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/seat_grid.dart';
@@ -52,7 +52,7 @@ class SeatSelectionScreen extends ConsumerWidget {
             l10n: l10n,
             onContinue: selectedSeats.isEmpty
                 ? null
-                : () => context.push(AppRoutes.tripConfirm),
+                : () => context.push(BusRoutes.confirm),
           ),
         ],
       ),

@@ -5,20 +5,21 @@ import 'package:go_router/go_router.dart';
 import 'package:rego/core/router/app_router.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/widgets/guest_gate_sheet.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 void main() {
   Future<GoRouter> pumpWithGate(WidgetTester tester) async {
     final router = GoRouter(
-      initialLocation: AppRoutes.tripConfirm,
+      initialLocation: BusRoutes.confirm,
       routes: [
         GoRoute(
-          path: AppRoutes.tripConfirm,
+          path: BusRoutes.confirm,
           builder: (context, state) => Scaffold(
             body: Center(
               child: ElevatedButton(
                 onPressed: () =>
-                    showGuestGate(context, returnTo: AppRoutes.tripConfirm),
+                    showGuestGate(context, returnTo: BusRoutes.confirm),
                 child: const Text('Confirm & pay'),
               ),
             ),
@@ -94,7 +95,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-        find.text('LOGIN returnTo=${AppRoutes.tripConfirm}'), findsOneWidget);
+        find.text('LOGIN returnTo=${BusRoutes.confirm}'), findsOneWidget);
   });
 
   testWidgets('Create account pushes register with AuthGateArgs(returnTo)',
@@ -107,7 +108,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text('REGISTER returnTo=${AppRoutes.tripConfirm}'),
+      find.text('REGISTER returnTo=${BusRoutes.confirm}'),
       findsOneWidget,
     );
   });

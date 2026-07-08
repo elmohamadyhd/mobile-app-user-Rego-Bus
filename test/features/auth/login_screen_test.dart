@@ -11,6 +11,7 @@ import 'package:rego/features/auth/domain/entities/auth_user.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/login_screen.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 import '../../support/fake_auth_repository.dart';
@@ -109,7 +110,7 @@ void main() {
           },
         ),
         GoRoute(
-          path: AppRoutes.tripConfirm,
+          path: BusRoutes.confirm,
           builder: (context, state) => const Text('CONFIRM'),
         ),
         GoRoute(
@@ -134,7 +135,7 @@ void main() {
 
     router.go(
       AppRoutes.login,
-      extra: const AuthGateArgs(returnTo: AppRoutes.tripConfirm),
+      extra: const AuthGateArgs(returnTo: BusRoutes.confirm),
     );
     await tester.pumpAndSettle();
 
@@ -198,7 +199,7 @@ void main() {
 
     router.go(
       AppRoutes.login,
-      extra: const AuthGateArgs(returnTo: AppRoutes.tripConfirm),
+      extra: const AuthGateArgs(returnTo: BusRoutes.confirm),
     );
     await tester.pumpAndSettle();
 
@@ -206,7 +207,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text('REGISTER returnTo=${AppRoutes.tripConfirm}'),
+      find.text('REGISTER returnTo=${BusRoutes.confirm}'),
       findsOneWidget,
     );
   });
