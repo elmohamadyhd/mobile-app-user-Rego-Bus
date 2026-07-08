@@ -46,7 +46,31 @@ lib/
 4. Implement repository in `data/repositories/`.
 5. Create Riverpod provider in `presentation/providers/`.
 6. Build screen in `presentation/<name>_screen.dart`.
-7. Register route in `core/router/app_router.dart`.
+7. Federate routes in `presentation/<name>_routes.dart`; spread them into
+   `core/router/app_router.dart` (don't add feature routes to `AppRoutes` directly).
+
+## Multi-vehicle transport features
+
+Bus, flight, and private car (and future train/ship/cruise/hotel) are each a
+**fully independent feature slice** — not variants of one "booking" feature.
+Each owns its entire flow: search form, results/quote, passenger or contact
+capture, payment, and ticket/voucher. This is deliberate: each mode has a
+genuinely different backend contract and session shape (see
+`docs/superpowers/specs/2026-07-08-multi-vehicle-architecture-design.md`).
+
+- Never add a `mode`/`vehicleType` switch inside one feature's screens or
+  notifier — that's how bus ended up with leaked flight fields
+  (`flightClass`, flight-only round-trip) before this convention existed.
+  If two modes need the same *flow shape*, copy the feature skeleton; don't
+  branch inside a shared one.
+- Cross-feature imports between transport features (e.g. `flight/` importing
+  from `bus/`) are not allowed, same as any other feature pair — only
+  `core/` and `shared/` are shared.
+- Stateless presentational atoms with no booking logic (price row, payment
+  tile, labeled input) may live in `shared/widgets` once two features need
+  the identical thing — lift on second use, not preemptively.
+- `home` only knows, per mode: its search-form widget, its search-params
+  type, and its entry route. It must never contain per-mode booking logic.
 
 ## What NOT to do
 

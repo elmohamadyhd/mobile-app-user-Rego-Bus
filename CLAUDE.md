@@ -5,9 +5,16 @@
 
 ## What this project is
 
-**REGO Buses** (Wadeny) — the Arabic-first, RTL rider mobile app, built on a
+**REGO** (Wadeny) — the Arabic-first, RTL multi-modal travel rider app, built on a
 **Riverpod + go_router + Freezed + Dio** foundation. Dart package name: `rego`.
 Screens follow the "Skyline" design direction (blue gradient hero + amber accent, Tajawal).
+
+The app covers multiple transport modes — bus, private car, and flight now;
+train/ship/cruise/hotel possibly later. Each mode is a fully independent
+feature slice (own data/domain/presentation, own booking flow end to end) —
+see `docs/superpowers/specs/2026-07-08-multi-vehicle-architecture-design.md`
+and the "Multi-vehicle transport features" section in
+`.cursor/rules/architecture.mdc` before adding or touching a transport feature.
 
 ## Architecture at a glance
 
@@ -38,7 +45,11 @@ flutter analyze && flutter test
 4. Implementation in `data/repositories/`
 5. Riverpod provider in `presentation/providers/`
 6. Screen in `presentation/<name>_screen.dart`
-7. Route in `core/router/app_router.dart`
+7. Federate routes in `presentation/<name>_routes.dart`, spread into `core/router/app_router.dart`
+
+For a new **transport mode** (bus/flight/car-style), it's a full standalone
+feature slice, not a branch inside an existing one — see the multi-vehicle
+spec linked above.
 
 ## Key packages and why
 
