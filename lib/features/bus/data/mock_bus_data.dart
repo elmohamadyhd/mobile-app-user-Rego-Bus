@@ -1,8 +1,8 @@
-// lib/features/bus/data/mock_booking_data.dart
+// lib/features/bus/data/mock_bus_data.dart
 import 'package:rego/features/bus/domain/entities/seat.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 
-abstract final class MockBookingData {
+abstract final class MockBusData {
   static const double walletBalance = 340.50;
   static const int serviceFeeEgp = 10;
 

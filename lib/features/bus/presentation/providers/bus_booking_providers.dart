@@ -2,7 +2,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rego/core/utils/date_formatting.dart';
-import 'package:rego/features/bus/data/mock_booking_data.dart';
+import 'package:rego/features/bus/data/mock_bus_data.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 
@@ -54,7 +54,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
       await Future<void>.delayed(const Duration(milliseconds: 600));
       state = state.copyWith(
         status: BusBookingStatus.idle,
-        trips: MockBookingData.trips,
+        trips: MockBusData.trips,
       );
     } catch (e) {
       state = state.copyWith(
@@ -73,7 +73,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     await Future<void>.delayed(const Duration(milliseconds: 400));
     state = state.copyWith(
       status: BusBookingStatus.idle,
-      tripDetail: MockBookingData.detailFor(trip.id),
+      tripDetail: MockBusData.detailFor(trip.id),
     );
   }
 
