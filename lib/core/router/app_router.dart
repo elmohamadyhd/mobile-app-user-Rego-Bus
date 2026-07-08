@@ -30,7 +30,6 @@ abstract final class AppRoutes {
   static const newPassword = '/new-password';
   static const home = '/';
   static const tickets = '/tickets';
-  static const search = '/search';
   static const wallet = '/wallet';
   static const profile = '/profile';
 }
@@ -113,17 +112,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => ComingSoonScreen(
                   title: AppLocalizations.of(context).navTickets,
                   icon: AppIcons.ticket,
-                ),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoutes.search,
-                builder: (context, state) => ComingSoonScreen(
-                  title: AppLocalizations.of(context).navSearch,
-                  icon: AppIcons.search,
                 ),
               ),
             ],

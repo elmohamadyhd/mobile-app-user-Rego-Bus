@@ -26,13 +26,12 @@ void main() {
     );
   }
 
-  testWidgets('renders all five destination labels', (tester) async {
+  testWidgets('renders all four destination labels', (tester) async {
     await tester.pumpWidget(wrap(currentIndex: 0, onSelected: (_) {}));
     await tester.pumpAndSettle();
 
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Tickets'), findsOneWidget);
-    expect(find.text('Search'), findsOneWidget);
     expect(find.text('Wallet'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
   });
@@ -45,7 +44,7 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Wallet'));
-    expect(tapped, 3);
+    expect(tapped, 2);
   });
 
   testWidgets('tapping the already-active destination still fires', (

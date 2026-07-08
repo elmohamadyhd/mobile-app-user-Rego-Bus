@@ -46,9 +46,6 @@ void main() {
               routes: [soon('/tickets', (l) => l.navTickets, AppIcons.ticket)],
             ),
             StatefulShellBranch(
-              routes: [soon('/search', (l) => l.navSearch, AppIcons.search)],
-            ),
-            StatefulShellBranch(
               routes: [soon('/wallet', (l) => l.navWallet, AppIcons.wallet)],
             ),
             StatefulShellBranch(

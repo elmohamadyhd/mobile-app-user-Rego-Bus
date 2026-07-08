@@ -22,7 +22,6 @@ void main() {
           branches: [
             StatefulShellBranch(routes: [branch('/')]),
             StatefulShellBranch(routes: [branch('/tickets')]),
-            StatefulShellBranch(routes: [branch('/search')]),
             StatefulShellBranch(routes: [branch('/wallet')]),
             StatefulShellBranch(routes: [branch('/profile')]),
           ],

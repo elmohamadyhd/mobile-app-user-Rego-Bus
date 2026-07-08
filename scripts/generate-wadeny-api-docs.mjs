@@ -25,7 +25,24 @@ function parseArgs() {
       responses = arg.slice("--responses=".length);
     }
   }
-  return { source, responses };
+  return { source, responses: parseResponsesMode(responses) };
+}
+
+function parseResponsesMode(raw) {
+  if (raw === "all") return "all";
+  return new Set(
+    raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()),
+  );
+}
+
+function shouldDocumentResponses(api, mode) {
+  if (!api.responses?.length) return false;
+  if (mode === "all") return true;
+  return mode.has(api.section);
 }
 
 async function fetchFromPostman() {
@@ -150,6 +167,11 @@ function redactTokens(value) {
     for (const [k, v] of Object.entries(value)) {
       if (k === "api_token" && typeof v === "string") {
         out[k] = "<redacted>";
+      } else if (
+        (k === "invoice_url" || k === "payment_url") &&
+        typeof v === "string"
+      ) {
+        out[k] = v.replace(/\/[^/]+$/, "/…");
       } else {
         out[k] = redactTokens(v);
       }
@@ -157,6 +179,69 @@ function redactTokens(value) {
     return out;
   }
   return value;
+}
+
+function isHtmlBody(body) {
+  if (!body || typeof body !== "string") return false;
+  const trimmed = body.trim();
+  return trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html");
+}
+
+function truncateArrays(value, maxItems = 3) {
+  if (Array.isArray(value)) {
+    if (value.length <= maxItems) {
+      return value.map((item) => truncateArrays(item, maxItems));
+    }
+    const truncated = value
+      .slice(0, maxItems)
+      .map((item) => truncateArrays(item, maxItems));
+    truncated.push(`…${value.length - maxItems} more items`);
+    return truncated;
+  }
+  if (value && typeof value === "object") {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) {
+      out[k] = truncateArrays(v, maxItems);
+    }
+    return out;
+  }
+  return value;
+}
+
+function stripLaravelTrace(parsed) {
+  if (!parsed || typeof parsed !== "object") return parsed;
+  if (parsed.exception && parsed.trace) {
+    const { message, exception, file, line } = parsed;
+    return { message, exception, file, line };
+  }
+  return parsed;
+}
+
+function sanitizeResponseBody(bodyParsed, rawBody) {
+  if (!bodyParsed) {
+    if (isHtmlBody(rawBody)) {
+      return {
+        sanitized: null,
+        bodyJson: null,
+        isHtml: true,
+      };
+    }
+    return {
+      sanitized: null,
+      bodyJson: (rawBody || "").trim(),
+      isHtml: false,
+    };
+  }
+
+  let sanitized = redactTokens(bodyParsed);
+  sanitized = stripLaravelTrace(sanitized);
+  sanitized = truncateArrays(sanitized);
+
+  return {
+    sanitized,
+    bodyJson: JSON.stringify(sanitized, null, 2),
+    isHtml: false,
+  };
 }
 
 function parseResponseBody(body) {
@@ -168,12 +253,39 @@ function parseResponseBody(body) {
   }
 }
 
-function scenarioLabel(code, parsed) {
+function scenarioLabel(code, parsed, rawBody) {
   const errors = parsed?.errors || {};
   const keys = Object.keys(errors);
   const message = parsed?.message || "";
 
+  if (isHtmlBody(rawBody)) return "Not found (HTML)";
+
+  if (code === 401 || message === "Unauthenticated") return "Unauthenticated";
+
+  if (parsed?.exception && code === 500) return "Server error";
+
   if (code === 200) {
+    if (Array.isArray(parsed?.data) && parsed.data.length === 0) {
+      return "Empty results";
+    }
+    if (message.toLowerCase().includes("locations list")) {
+      return "Locations list";
+    }
+    if (message.toLowerCase().includes("carriers list")) {
+      return "Carriers list";
+    }
+    if (message.toLowerCase().includes("trips list")) {
+      return "Trips list";
+    }
+    if (message.toLowerCase().includes("salons seats")) {
+      return "Seat map";
+    }
+    if (message.toLowerCase().includes("order created")) {
+      return "Order created";
+    }
+    if (message.toLowerCase().includes("order details")) {
+      return "Order details";
+    }
     if (parsed?.data?.api_token) return "Success — user data";
     if (
       message.toLowerCase().includes("logged in") ||
@@ -199,6 +311,9 @@ function scenarioLabel(code, parsed) {
     }
   }
 
+  if (keys.includes("from_location_id") || keys.includes("to_location_id")) {
+    return "Missing location IDs";
+  }
   if (keys.includes("credentials")) return "Invalid credentials";
   if (keys.includes("mobile") && code === 404) return "Record not found";
   if (keys.includes("mobile") && code === 400 && !keys.includes("email")) {
@@ -222,10 +337,14 @@ function parseSavedResponses(rawResponses) {
   const parsed = (rawResponses || []).map((r) => {
     const headers = r.originalRequest?.header || [];
     const language = getLanguageFromHeaders(headers);
+    const rawBody = (r.body || "").trim();
     const bodyParsed = parseResponseBody(r.body);
-    const redacted = bodyParsed ? redactTokens(bodyParsed) : null;
+    const { sanitized, bodyJson, isHtml } = sanitizeResponseBody(
+      bodyParsed,
+      rawBody,
+    );
     const code = r.code ?? 0;
-    const label = scenarioLabel(code, bodyParsed);
+    const label = scenarioLabel(code, bodyParsed, rawBody);
     const errorKeys = Object.keys(bodyParsed?.errors || {});
 
     return {
@@ -234,12 +353,15 @@ function parseSavedResponses(rawResponses) {
       language,
       label,
       errorKeys,
-      bodyJson: redacted
-        ? JSON.stringify(redacted, null, 2)
-        : (r.body || "").trim(),
-      bodyKey: redacted
-        ? JSON.stringify(redacted)
-        : (r.body || "").trim(),
+      isHtml,
+      bodyJson: isHtml
+        ? null
+        : bodyJson,
+      bodyKey: isHtml
+        ? `html|${code}|${label}`
+        : sanitized
+          ? JSON.stringify(sanitized)
+          : rawBody,
     };
   });
 
@@ -337,6 +459,45 @@ function renderAuthEnvelope() {
   return lines.join("\n");
 }
 
+function renderBusesEnvelope() {
+  const lines = [];
+  lines.push("### Response envelope");
+  lines.push("");
+  lines.push(
+    "All Buses endpoints return JSON with this shape (HTTP status may differ from the inner `status` field):",
+  );
+  lines.push("");
+  lines.push("```json");
+  lines.push(
+    JSON.stringify(
+      {
+        status: 200,
+        message: "…",
+        errors: {},
+        data: {},
+      },
+      null,
+      2,
+    ),
+  );
+  lines.push("```");
+  lines.push("");
+  lines.push(
+    "- List endpoints (`locations`, `stations`, `carriers`, `trips`) return `data` as an **array**.",
+  );
+  lines.push(
+    "- `search trips` also includes a top-level `pagination` object.",
+  );
+  lines.push(
+    "- `seats` and `create-ticket` return `data` as an **object** (seat map / order).",
+  );
+  lines.push(
+    "- `errors` values are **strings** in live responses; the mobile app normalizes strings and arrays.",
+  );
+  lines.push("");
+  return lines.join("\n");
+}
+
 function renderResponses(api) {
   if (!api.responses?.length) return "";
 
@@ -362,6 +523,13 @@ function renderResponses(api) {
     const heading = `${r.code} — ${r.label} (${r.language})`;
     lines.push(`#### ${heading}`);
     lines.push("");
+    if (r.isHtml) {
+      lines.push(
+        "_404 HTML page returned — stale example URL in Postman (`originalRequest` may point to a removed path)._",
+      );
+      lines.push("");
+      continue;
+    }
     lines.push("```json");
     lines.push(r.bodyJson);
     lines.push("```");
@@ -421,10 +589,7 @@ function renderEndpoint(api, responsesMode) {
 
   lines.push(renderRequestHeaders(api));
 
-  const includeResponses =
-    api.responses?.length > 0 &&
-    (responsesMode === "all" || api.section === "Auth");
-  if (includeResponses) {
+  if (shouldDocumentResponses(api, responsesMode)) {
     const responsesBlock = renderResponses(api);
     if (responsesBlock) lines.push(responsesBlock);
   }
@@ -456,7 +621,7 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
   }
 
   const totalSavedResponses = apis.reduce((n, a) => {
-    if (responsesMode === "all" || a.section === "Auth") {
+    if (shouldDocumentResponses(a, responsesMode)) {
       return n + (a.responses?.length || 0);
     }
     return n;
@@ -525,6 +690,10 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
       md.push(renderAuthEnvelope());
     }
 
+    if (sec === "Buses") {
+      md.push(renderBusesEnvelope());
+    }
+
     let currentSub = null;
     for (const api of sections[sec]) {
       if (api.subfolder !== currentSub) {
@@ -556,13 +725,22 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
   md.push(
     "| Profile → Orders → Flights → Show | Same URL as List (`/profile/orders/flights`) — Show may need `/{id}` |",
   );
+  md.push(
+    "| Buses saved examples | Some `originalRequest` URLs still point to legacy `/api/transports/*` paths — response bodies are valid; request snapshots are stale |",
+  );
+  md.push(
+    "| Buses → Create Ticket (500) | Known backend bug in `PayMobPayAction` (`Undefined array key \"url\"`) — not a client contract |",
+  );
+  md.push(
+    "| Buses → Search details (404 HTML) | Saved example returned an HTML 404 page — likely captured against a removed trip ID |",
+  );
   md.push("");
   md.push(
     "Nested items under Flights → Search (One Way, Round Trip, Multi City) and under Buses folders are **saved response examples**, not separate API endpoints. They all call the same endpoint as their parent request.",
   );
   md.push("");
   md.push(
-    "Saved responses documented under Auth (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.",
+    "Saved responses documented under Auth and Buses (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.",
   );
   md.push("");
 
@@ -602,9 +780,13 @@ async function main() {
   console.log(`Total APIs: ${apis.length}`);
   console.log(`Unique endpoints: ${seen.size}`);
   const authResponses = apis
-    .filter((a) => a.section === "Auth")
+    .filter((a) => a.section === "Auth" && shouldDocumentResponses(a, responses))
+    .reduce((n, a) => n + a.responses.length, 0);
+  const busResponses = apis
+    .filter((a) => a.section === "Buses" && shouldDocumentResponses(a, responses))
     .reduce((n, a) => n + a.responses.length, 0);
   console.log(`Auth saved responses documented: ${authResponses}`);
+  console.log(`Buses saved responses documented: ${busResponses}`);
 }
 
 main().catch((err) => {
