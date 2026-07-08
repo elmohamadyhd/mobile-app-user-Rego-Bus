@@ -55,7 +55,6 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
       backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(
         title: title,
-        subtitle: l10n.homeOnePax,
         action: const _FilterButton(),
       ),
       body: _buildBody(context, l10n, state),

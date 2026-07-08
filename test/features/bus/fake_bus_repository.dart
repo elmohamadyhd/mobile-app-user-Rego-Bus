@@ -60,7 +60,10 @@ class FakeBusRepository implements BusRepository {
   }
 
   @override
-  Future<BusTripSummary> tripById(String tripId) async {
+  Future<BusTripSummary> tripById(
+    String tripId, {
+    required String currency,
+  }) async {
     return tripByIdResult ?? sampleTrip;
   }
 

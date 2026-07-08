@@ -43,9 +43,9 @@ class BusRepositoryImpl implements BusRepository {
   }
 
   @override
-  Future<BusTripSummary> tripById(String tripId) {
+  Future<BusTripSummary> tripById(String tripId, {required String currency}) {
     return _guard(() async {
-      final body = await _api.tripById(tripId);
+      final body = await _api.tripById(tripId: tripId, currency: currency);
       return BusDtoMapper.tripFromEnvelope(body);
     });
   }

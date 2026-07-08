@@ -124,7 +124,9 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     );
 
     try {
-      final detail = await _repo.tripById(trip.id);
+      final currency =
+          state.searchParams?.currency ?? BusCurrency.defaultCode;
+      final detail = await _repo.tripById(trip.id, currency: currency);
       if (detail.id.isNotEmpty) {
         final merged = trip.mergeEnrichment(detail);
         state = state.copyWith(

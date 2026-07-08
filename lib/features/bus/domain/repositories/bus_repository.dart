@@ -55,7 +55,7 @@ abstract interface class BusRepository {
 
   Future<BusTripsPage> searchTrips(BusSearchParams params, {int page = 1});
 
-  Future<BusTripSummary> tripById(String tripId);
+  Future<BusTripSummary> tripById(String tripId, {required String currency});
 
   Future<SeatMap> seatMap({
     required String tripId,

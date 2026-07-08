@@ -25,7 +25,11 @@ class _DelayedTripRepository extends FakeBusRepository {
   final Completer<BusTripSummary> detailCompleter;
 
   @override
-  Future<BusTripSummary> tripById(String tripId) => detailCompleter.future;
+  Future<BusTripSummary> tripById(
+    String tripId, {
+    required String currency,
+  }) =>
+      detailCompleter.future;
 }
 
 void main() {
