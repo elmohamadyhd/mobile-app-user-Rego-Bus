@@ -23,6 +23,7 @@ segment-pricing behavior seen in the legacy "Safaria" app.
 | Passengers | **Count only, flat fare.** A stepper on search sets the target seat count; selected seats are the source of truth. No adult/kid price split. |
 | Filtering | **Client-side** over already-loaded results (time, price, operator, sort); a re-search only when date/cities change. The legacy filter's departure/arrival-station dropdowns are folded into the trip-detail stop pickers. |
 | Round trip | **Deferred.** Build one-way end-to-end first; add round trip as a follow-up (the API books one segment at a time via `create-ticket`). |
+| Results card | **WYSIWYG default pair.** The search response already carries each trip's stop lists, so the card shows the **default** boarding + drop-off stations with a `+N` count of alternatives, and that pair's **actual fare** — the same pair pre-selected on trip detail. The card price is exactly what's paid unless the user changes stops. No "from" pricing; no extra API call. |
 
 ## Backend model (why the flow is shaped this way)
 
@@ -52,8 +53,10 @@ each city**:
 ### 2. Results
 - Header: `Cairo → Sinai · Thu 14 Feb · N pax`, filter button.
 - **Decluttered `TripCard`:** operator + logo, class range, `07:00 · 2h · 2 stops · 09:00`,
-  compact amenity icons, **"from EGP X"**, Choose. `See routing` opens the full
-  ordered route. No stop chips on the card.
+  compact amenity icons, the **default stop pair** shown as `October +3` → `Ras Shitan +3`
+  (where `+N` signals other options exist, so no one thinks the stops are fixed),
+  the **default pair's actual fare** (`EGP 300`), Choose. `See routing` opens the
+  full ordered route. No stop chips on the card.
 - Filter sheet: time range, price range, operator, sort — applied client-side.
 - States: loading skeleton, empty ("no trips"), error + retry.
 - Choose → `selectTrip(trip)` → push trip detail.
@@ -62,6 +65,9 @@ each city**:
 - Operator/route/date header + route timeline (`See routing`) + amenities.
 - **Board at** (origin stops) and **Drop off at** (destination stops) — each a
   selectable list of `BusStop { name, area, time }`.
+- Opens with the **default pair pre-selected** — the same pair shown on the
+  results card — so the fare on entry matches the card exactly; changing either
+  stop updates it live.
 - **Live segment fare** box updates as the pair changes; recomputes
   duration/times for the chosen segment.
 - Sets `fromStop` / `toStop` (→ `from_location_id` / `to_location_id`).
@@ -93,7 +99,8 @@ each city**:
 BusStop        { locationId, name, area, time }
 BusTripSummary { id, operatorName, operatorCode, classLabelRange,
                  departTime, arriveTime, durationMin, stopsCount,
-                 amenities: List<String>, fromPriceEgp, currency,
+                 amenities: List<String>, defaultFareEgp, currency,
+                 defaultBoardingStop: BusStop, defaultDropoffStop: BusStop,
                  boardingStops: List<BusStop>, dropoffStops: List<BusStop> }
 BusTripDetail  { summary, routing: List<BusStop>, amenities }
 SeatType       { id, label, colorKey }          // Economy … Prime Mix
@@ -106,6 +113,13 @@ BusSearchParams{ cityFromId, cityToId, date, passengers, currency }
 ```
 
 Seat `status`: `available | reserved | selected`.
+
+**Default pair:** `defaultBoardingStop` / `defaultDropoffStop` are what the
+results card shows and the trip-detail screen pre-selects; `defaultFareEgp` is
+that exact pair's price (WYSIWYG — no "from"). The default is **first boarding +
+last drop-off** unless the live `/buses/trips` response marks a primary station
+per side — confirm against the real payload when wiring the API, and prefer the
+marked primary if present.
 
 ## State & notifier (`bus/presentation/providers/bus_booking_providers.dart`)
 
@@ -171,9 +185,9 @@ presentation/
 | Operator + logo, class | Results card + summary |
 | Depart/arrive time, duration, #stops | Results card + trip detail |
 | Amenities (AC, wifi, WC…) | Results card (compact) + trip detail |
-| Boarding stops (October…) | **Trip detail — Board at** |
-| Drop-off stops (Ras Sdr…) | **Trip detail — Drop off at** |
-| Price (changes with stops) | Results "from EGP X" → **live segment fare** on detail → seat total |
+| Boarding stops (October…) | Results card shows **default + `+N`** · full picker on **trip detail — Board at** |
+| Drop-off stops (Ras Sdr…) | Results card shows **default + `+N`** · full picker on **trip detail — Drop off at** |
+| Price (changes with stops) | Results = **default pair's actual fare** → **live segment fare** on detail → seat total |
 | See Routing | Trip detail route timeline |
 | Time/price/operator/station filters, sort | Results filter sheet (station → trip-detail stops) |
 | Seat map, legend, reserved/available/selected, WC, driver | Seat selection |
