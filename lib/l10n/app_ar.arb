@@ -107,6 +107,7 @@
   "tripResultsNoTrips": "لا توجد رحلات",
   "tripResultsError": "تعذّر تحميل الرحلات",
   "tripResultsRetry": "حاول مجدداً",
+  "tripResultsFareLabel": "السعر",
   "tripDetailTitle": "تفاصيل الرحلة",
   "tripDetailChooseSeats": "اختر المقاعد",
   "tripDetailAmenities": "المرافق",

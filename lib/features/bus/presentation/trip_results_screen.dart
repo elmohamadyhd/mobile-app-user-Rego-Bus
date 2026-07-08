@@ -13,6 +13,7 @@ import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/features/bus/presentation/widgets/trip_card.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
@@ -24,7 +25,22 @@ class TripResultsScreen extends ConsumerStatefulWidget {
 }
 
 class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
-  int _selectedSort = 0; // 0=Times, 1=Cheapest, 2=Seats — UI only
+  int _selectedSort = 0; // 0=Times, 1=Cheapest, 2=Seats
+
+  /// Client-side reorder of already-loaded trips (no re-search).
+  List<BusTripSummary> _sorted(List<BusTripSummary> trips) {
+    final list = [...trips];
+    switch (_selectedSort) {
+      case 1: // Cheapest first
+        list.sort((a, b) => a.priceEgp.compareTo(b.priceEgp));
+      case 2: // Most seats first
+        list.sort((a, b) => b.seatsLeft.compareTo(a.seatsLeft));
+      case 0: // Earliest departure first
+      default:
+        list.sort((a, b) => a.departTime.compareTo(b.departTime));
+    }
+    return list;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +86,7 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
         ),
       );
     }
+    final trips = _sorted(state.trips);
     return Column(
       children: [
         _SortChips(
@@ -81,11 +98,11 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
-            itemCount: state.trips.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemCount: trips.length,
+            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
             itemBuilder: (context, i) => TripCard(
-              trip: state.trips[i],
-              onTap: () => _selectTrip(state.trips[i]),
+              trip: trips[i],
+              onTap: () => _selectTrip(trips[i]),
             ),
           ),
         ),
@@ -161,10 +178,7 @@ class _SortChips extends StatelessWidget {
         itemBuilder: (_, i) {
           final active = selected == i;
           return GestureDetector(
-            onTap: () {
-              // TODO: implement sort logic when real trip data is available
-              onSelect(i);
-            },
+            onTap: () => onSelect(i),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -214,54 +228,79 @@ class _TripCardSkeleton extends StatelessWidget {
 
   static const _block = BoxDecoration(color: AppColors.hairline);
 
+  static Widget _bar(double width, double height) => Container(
+        width: width,
+        height: height,
+        decoration: _block,
+      );
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 160,
-      decoration: BoxDecoration(
+      height: 176,
+      decoration: const ShapeDecoration(
         color: AppColors.bgElevated,
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        shape: TicketBorder(
+          radius: AppRadius.xl,
+          notchRadius: 10,
+          notchOffsetFromBottom: 64,
+          dashColor: AppColors.border,
+        ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: AppColors.hairline,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    Container(width: 100, height: 12, decoration: _block),
-                    const SizedBox(height: 6),
-                    Container(width: 60, height: 10, decoration: _block),
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: AppColors.hairline,
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _bar(110, 13),
+                        const SizedBox(height: 7),
+                        _bar(64, 10),
+                      ],
+                    ),
+                    const Spacer(),
+                    _bar(66, 22),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _bar(52, 20),
+                    _bar(70, 12),
+                    _bar(52, 20),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.md),
-            Container(
-              width: double.infinity,
-              height: 10,
-              decoration: _block,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Row(
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md, 0, AppSpacing.md, AppSpacing.md),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(width: 60, height: 20, decoration: _block),
+                _bar(72, 24),
                 Container(
-                  width: 70,
-                  height: 32,
+                  width: 92,
+                  height: 40,
                   decoration: BoxDecoration(
                     color: AppColors.hairline,
                     borderRadius: BorderRadius.circular(AppRadius.input),
@@ -269,8 +308,8 @@ class _TripCardSkeleton extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

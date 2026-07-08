@@ -169,6 +169,7 @@
   "tripResultsNoTrips": "No trips found",
   "tripResultsError": "Couldn't load trips",
   "tripResultsRetry": "Try again",
+  "tripResultsFareLabel": "Fare",
   "tripDetailTitle": "Trip details",
   "tripDetailChooseSeats": "Choose seats",
   "tripDetailAmenities": "Amenities",

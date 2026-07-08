@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
+import 'package:rego/features/bus/presentation/providers/bus_locations_provider.dart';
 import 'package:rego/features/home/presentation/widgets/home_search_card.dart';
 import 'package:rego/features/home/presentation/widgets/popular_destinations.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -20,6 +21,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Load bus cities once when home opens so pickers are instant.
+    ref.watch(busLocationsProvider);
+
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(sessionControllerProvider).value?.user;
     final userName = (user?.name?.trim().isNotEmpty ?? false)
