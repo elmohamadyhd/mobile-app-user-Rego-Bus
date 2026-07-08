@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
+import 'package:rego/features/bus/presentation/widgets/amenity_chip.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 class TripCard extends StatelessWidget {
@@ -16,6 +18,8 @@ class TripCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final lowSeats = trip.seatsLeft < 3;
+    final boardingExtra = trip.boardingStops.length - 1;
+    final dropoffExtra = trip.dropoffStops.length - 1;
 
     return Material(
       color: AppColors.bgElevated,
@@ -33,13 +37,18 @@ class TripCard extends StatelessWidget {
                   CircleAvatar(
                     radius: 20,
                     backgroundColor: AppColors.primaryTint,
-                    child: Text(
-                      trip.operatorCode,
-                      style: AppTypography.body.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    backgroundImage: trip.operatorLogoUrl != null
+                        ? NetworkImage(trip.operatorLogoUrl!)
+                        : null,
+                    child: trip.operatorLogoUrl == null
+                        ? Text(
+                            trip.operatorCode,
+                            style: AppTypography.body.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          )
+                        : null,
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
@@ -56,8 +65,10 @@ class TripCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: lowSeats
                           ? AppColors.error.withValues(alpha: 0.12)
@@ -75,6 +86,31 @@ class TripCard extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: AppSpacing.sm),
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: trip.amenities
+                    .take(3)
+                    .map(
+                      (a) => AmenityChip(
+                        icon: AppIcons.check,
+                        label: a,
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                '${trip.defaultBoardingStop.name}'
+                '${boardingExtra > 0 ? ' +$boardingExtra' : ''}'
+                ' → '
+                '${trip.defaultDropoffStop.name}'
+                '${dropoffExtra > 0 ? ' +$dropoffExtra' : ''}',
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
               const SizedBox(height: AppSpacing.md),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -82,8 +118,9 @@ class TripCard extends StatelessWidget {
                   Text(trip.departLabel, style: AppTypography.h2),
                   Expanded(
                     child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                      ),
                       child: Column(
                         children: [
                           Row(
@@ -132,7 +169,7 @@ class TripCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${trip.priceEgp} EGP',
+                    '${trip.priceEgp} ${trip.currency}',
                     style: AppTypography.h1.copyWith(color: AppColors.primary),
                   ),
                   Material(
@@ -143,7 +180,9 @@ class TripCard extends StatelessWidget {
                       onTap: onTap,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.lg, vertical: 10),
+                          horizontal: AppSpacing.lg,
+                          vertical: 10,
+                        ),
                         child: Text(
                           l10n.bookingSelect,
                           style: const TextStyle(

@@ -1,85 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/features/bus/domain/entities/bus_location.dart';
+import 'package:rego/features/bus/presentation/providers/bus_locations_provider.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
-/// A bus city. Static set for now; wire `/cities` later.
-class HomeCity {
-  const HomeCity({required this.id, required this.apiName});
-
-  final String id;
-  final String apiName;
-
-  String label(AppLocalizations l10n) => switch (id) {
-        'cairo' => l10n.homeCityCairo,
-        'alexandria' => l10n.homeCityAlexandria,
-        'luxor' => l10n.homeCityLuxor,
-        'aswan' => l10n.homeCityAswan,
-        _ => apiName,
-      };
-
-  bool matchesQuery(AppLocalizations l10n, String query) {
-    if (query.isEmpty) return true;
-    final q = query.toLowerCase();
-    return label(l10n).toLowerCase().contains(q) ||
-        apiName.toLowerCase().contains(q);
-  }
-}
-
-const kHomeCities = <HomeCity>[
-  HomeCity(id: 'cairo', apiName: 'Cairo'),
-  HomeCity(id: 'alexandria', apiName: 'Alexandria'),
-  HomeCity(id: 'luxor', apiName: 'Luxor'),
-  HomeCity(id: 'aswan', apiName: 'Aswan'),
-];
-
-const kDefaultFromCity = HomeCity(id: 'cairo', apiName: 'Cairo');
-const kDefaultToCity = HomeCity(id: 'alexandria', apiName: 'Alexandria');
-
-/// Bottom-sheet picker; resolves to the chosen [HomeCity] or null.
-Future<HomeCity?> showHomeCityPicker(
+/// Bottom-sheet picker backed by the cached `/buses/locations` list.
+Future<BusLocation?> showBusCityPicker(
   BuildContext context, {
   required String title,
-  HomeCity? exclude,
+  int? excludeCityId,
 }) {
-  final cities = exclude == null
-      ? kHomeCities
-      : kHomeCities.where((c) => c.id != exclude.id).toList();
-
-  return showModalBottomSheet<HomeCity>(
+  return showModalBottomSheet<BusLocation>(
     context: context,
     isScrollControlled: true,
     backgroundColor: AppColors.bgCard,
     shape: const RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
     ),
     builder: (context) => Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.viewInsetsOf(context).bottom,
       ),
-      child: _HomeCityPickerSheet(title: title, cities: cities),
+      child: _BusCityPickerSheet(
+        title: title,
+        excludeCityId: excludeCityId,
+      ),
     ),
   );
 }
 
-class _HomeCityPickerSheet extends StatefulWidget {
-  const _HomeCityPickerSheet({
+class _BusCityPickerSheet extends ConsumerStatefulWidget {
+  const _BusCityPickerSheet({
     required this.title,
-    required this.cities,
+    this.excludeCityId,
   });
 
   final String title;
-  final List<HomeCity> cities;
+  final int? excludeCityId;
 
   @override
-  State<_HomeCityPickerSheet> createState() => _HomeCityPickerSheetState();
+  ConsumerState<_BusCityPickerSheet> createState() =>
+      _BusCityPickerSheetState();
 }
 
-class _HomeCityPickerSheetState extends State<_HomeCityPickerSheet> {
+class _BusCityPickerSheetState extends ConsumerState<_BusCityPickerSheet> {
   final _query = TextEditingController();
   final _focusNode = FocusNode();
 
@@ -90,15 +59,21 @@ class _HomeCityPickerSheetState extends State<_HomeCityPickerSheet> {
     super.dispose();
   }
 
-  List<HomeCity> _filtered(AppLocalizations l10n) {
-    final q = _query.text.trim();
-    return widget.cities.where((c) => c.matchesQuery(l10n, q)).toList();
+  List<BusLocation> _filtered(
+    List<BusLocation> locations,
+    String languageCode,
+  ) {
+    return locations
+        .where((l) => widget.excludeCityId == null || l.id != widget.excludeCityId)
+        .where((l) => l.matchesQuery(_query.text, languageCode))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final filtered = _filtered(l10n);
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final locationsAsync = ref.watch(busLocationsProvider);
     final maxHeight = MediaQuery.sizeOf(context).height * 0.75;
 
     return SafeArea(
@@ -187,8 +162,17 @@ class _HomeCityPickerSheetState extends State<_HomeCityPickerSheet> {
             ),
             const Divider(color: AppColors.hairline, height: 1),
             Flexible(
-              child: filtered.isEmpty
-                  ? Center(
+              child: locationsAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (_, __) => _ErrorBody(
+                  message: l10n.tripResultsError,
+                  retryLabel: l10n.tripResultsRetry,
+                  onRetry: () => ref.invalidate(busLocationsProvider),
+                ),
+                data: (locations) {
+                  final filtered = _filtered(locations, languageCode);
+                  if (filtered.isEmpty) {
+                    return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.lg),
                         child: Text(
@@ -199,22 +183,58 @@ class _HomeCityPickerSheetState extends State<_HomeCityPickerSheet> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: filtered.length,
-                      itemBuilder: (context, index) {
-                        final city = filtered[index];
-                        return ListTile(
-                          title: Text(
-                            city.label(l10n),
-                            style: AppTypography.title,
-                          ),
-                          onTap: () => Navigator.of(context).pop(city),
-                        );
-                      },
-                    ),
+                    );
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      final city = filtered[index];
+                      return ListTile(
+                        title: Text(
+                          city.displayName(languageCode),
+                          style: AppTypography.title,
+                        ),
+                        onTap: () => Navigator.of(context).pop(city),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorBody extends StatelessWidget {
+  const _ErrorBody({
+    required this.message,
+    required this.retryLabel,
+    required this.onRetry,
+  });
+
+  final String message;
+  final String retryLabel;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              message,
+              style: AppTypography.body.copyWith(color: AppColors.textMuted),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextButton(onPressed: onRetry, child: Text(retryLabel)),
           ],
         ),
       ),

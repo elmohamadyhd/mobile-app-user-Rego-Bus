@@ -141,6 +141,14 @@
   "@homeCitySearchEmpty": {
     "description": "Shown when the city picker search has no matches."
   },
+  "homeCitySelectPlaceholder": "Select city",
+  "@homeCitySelectPlaceholder": {
+    "description": "Placeholder on home from/to fields before a city is chosen."
+  },
+  "homeBusSearchSelectCities": "Please select departure and destination cities",
+  "@homeBusSearchSelectCities": {
+    "description": "Snackbar when bus search is tapped without both cities selected."
+  },
   "homeFromPrice": "from {price} EGP",
   "@homeFromPrice": {
     "description": "Price subtitle on a popular-destination card.",

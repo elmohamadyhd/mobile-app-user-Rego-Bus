@@ -7,7 +7,6 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
@@ -203,11 +202,8 @@ class _PassengerSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name =
-        state.passengerName.isNotEmpty ? state.passengerName : 'Ahmed Mohamed';
-    final phone = state.passengerPhone.isNotEmpty
-        ? state.passengerPhone
-        : '+20 10 1234 5678';
+    const name = 'Ahmed Mohamed';
+    const phone = '+20 10 1234 5678';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,7 +315,7 @@ class _PaymentSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isWallet = state.paymentMethod == PaymentMethod.wallet;
+    final isVisa = state.paymentMethod == PaymentMethod.visa;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,28 +325,24 @@ class _PaymentSection extends ConsumerWidget {
           style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: AppSpacing.sm),
-        // Wallet option (selectable)
-        _PaymentOption(
-          icon: AppIcons.wallet,
-          label: l10n.confirmPaymentWallet,
-          selected: isWallet,
-          onTap: () {
-            ref
-                .read(busBookingProvider.notifier)
-                .setPaymentMethod(PaymentMethod.wallet);
-          },
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        // Card option (shows snackbar — not selectable)
         _PaymentOption(
           icon: AppIcons.ticket,
           label: l10n.confirmPaymentCard,
-          selected: false,
+          selected: isVisa,
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.confirmCardComingSoon)),
-            );
+            ref
+                .read(busBookingProvider.notifier)
+                .setPaymentMethod(PaymentMethod.visa);
           },
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _PaymentOption(
+          icon: AppIcons.wallet,
+          label: l10n.confirmPaymentWallet,
+          selected: false,
+          enabled: false,
+          subtitle: l10n.confirmCardComingSoon,
+          onTap: () {},
         ),
       ],
     );
@@ -363,17 +355,34 @@ class _PaymentOption extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.enabled = true,
+    this.subtitle,
   });
+
   final IconData icon;
   final String label;
   final bool selected;
   final VoidCallback onTap;
+  final bool enabled;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
-    final bg = selected ? AppColors.primary : AppColors.bgCard;
-    final fg = selected ? AppColors.onPrimary : AppColors.textPrimary;
-    final iconColor = selected ? AppColors.onPrimary : AppColors.primary;
+    final bg = !enabled
+        ? AppColors.bgBase
+        : selected
+            ? AppColors.primary
+            : AppColors.bgCard;
+    final fg = !enabled
+        ? AppColors.textMuted
+        : selected
+            ? AppColors.onPrimary
+            : AppColors.textPrimary;
+    final iconColor = !enabled
+        ? AppColors.textMuted
+        : selected
+            ? AppColors.onPrimary
+            : AppColors.primary;
     final borderColor = selected ? AppColors.primary : AppColors.border;
 
     return Material(
@@ -381,7 +390,7 @@ class _PaymentOption extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: onTap,
+        onTap: enabled ? onTap : null,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.md),
@@ -396,17 +405,32 @@ class _PaymentOption extends StatelessWidget {
               Icon(icon, size: 20, color: iconColor),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: Text(
-                  label,
-                  style: AppTypography.body.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: fg,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: AppTypography.body.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: fg,
+                      ),
+                    ),
+                    if (subtitle != null)
+                      Text(
+                        subtitle!,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                  ],
                 ),
               ),
               if (selected)
-                const Icon(AppIcons.check,
-                    size: 20, color: AppColors.onPrimary),
+                const Icon(
+                  AppIcons.check,
+                  size: 20,
+                  color: AppColors.onPrimary,
+                ),
             ],
           ),
         ),
@@ -424,8 +448,7 @@ class _PriceBreakdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final trip = state.selectedTrip;
-    final pricePerSeat = trip?.priceEgp ?? 0;
+    final pricePerSeat = state.segmentFare.round();
     final seatCount = state.selectedSeats.length;
     final total = pricePerSeat * seatCount;
 

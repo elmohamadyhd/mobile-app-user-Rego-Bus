@@ -85,12 +85,12 @@ void main() {
   ) async {
     await tester.pumpWidget(
       wrap(
-        ShellTabScrollView(
-          hero: const SkylineTabHero(
+        const ShellTabScrollView(
+          hero: SkylineTabHero(
             reserveCardOverlap: true,
             child: Text('Header'),
           ),
-          children: const [
+          children: [
             Text('Body card'),
           ],
         ),

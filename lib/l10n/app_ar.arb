@@ -93,6 +93,8 @@
   "homeCityAlexandria": "الإسكندرية",
   "homeCitySearchHint": "ابحث عن مدينة",
   "homeCitySearchEmpty": "لم يتم العثور على مدن",
+  "homeCitySelectPlaceholder": "اختر المدينة",
+  "homeBusSearchSelectCities": "يرجى اختيار مدينة المغادرة والوصول",
   "homeFromPrice": "من {price} ج.م",
   "navHome": "الرئيسية",
   "navTickets": "تذاكري",

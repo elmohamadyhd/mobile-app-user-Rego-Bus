@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/data/mock_bus_data.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
@@ -19,36 +18,46 @@ class SeatSelectionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final (tripDetail, selectedSeats) = ref.watch(
-      busBookingProvider.select((s) => (s.tripDetail, s.selectedSeats)),
-    );
-
-    final priceEgp = tripDetail?.summary.priceEgp ?? 0;
-    final totalPrice = priceEgp * selectedSeats.length;
+    final state = ref.watch(busBookingProvider);
+    final seatMap = state.seatMap;
+    final selectedSeats = state.selectedSeats;
+    final isLoading = state.status == BusBookingStatus.loadingSeats;
+    final totalPrice = (state.segmentFare * selectedSeats.length).round();
+    final currency = state.selectedTrip?.currency ?? 'EGP';
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(title: l10n.seatSelectionTitle),
       body: Column(
         children: [
-          // Legend row
           _LegendRow(l10n: l10n),
-          // Seat grid (scrollable)
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: SeatGrid(
-                rows: MockBusData.seatLayout,
-                selectedSeats: selectedSeats,
-                onToggle: (id) =>
-                    ref.read(busBookingProvider.notifier).toggleSeat(id),
-              ),
-            ),
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : seatMap == null
+                    ? Center(
+                        child: Text(
+                          l10n.tripResultsError,
+                          style: AppTypography.body.copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      )
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        child: SeatGrid(
+                          seatMap: seatMap,
+                          selectedSeats: selectedSeats,
+                          onToggle: (id) => ref
+                              .read(busBookingProvider.notifier)
+                              .toggleSeat(id),
+                        ),
+                      ),
           ),
-          // Bottom panel
           _BottomPanel(
             selectedSeats: selectedSeats,
             totalPrice: totalPrice,
+            currency: currency,
             l10n: l10n,
             onContinue: selectedSeats.isEmpty
                 ? null
@@ -60,8 +69,6 @@ class SeatSelectionScreen extends ConsumerWidget {
   }
 }
 
-// ── Legend ────────────────────────────────────────────────────────────────────
-
 class _LegendRow extends StatelessWidget {
   const _LegendRow({required this.l10n});
   final AppLocalizations l10n;
@@ -71,7 +78,9 @@ class _LegendRow extends StatelessWidget {
     return Container(
       color: AppColors.bgElevated,
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -104,6 +113,7 @@ class _LegendItem extends StatelessWidget {
     this.border,
     this.textColor,
   });
+
   final Color color;
   final Color? border;
   final String label;
@@ -126,25 +136,27 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           label,
-          style: AppTypography.caption
-              .copyWith(color: textColor ?? AppColors.textSecondary),
+          style: AppTypography.caption.copyWith(
+            color: textColor ?? AppColors.textSecondary,
+          ),
         ),
       ],
     );
   }
 }
 
-// ── Bottom panel ──────────────────────────────────────────────────────────────
-
 class _BottomPanel extends StatelessWidget {
   const _BottomPanel({
     required this.selectedSeats,
     required this.totalPrice,
+    required this.currency,
     required this.l10n,
     required this.onContinue,
   });
+
   final List<String> selectedSeats;
   final int totalPrice;
+  final String currency;
   final AppLocalizations l10n;
   final VoidCallback? onContinue;
 
@@ -174,28 +186,36 @@ class _BottomPanel extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l10n.seatSelectionSeatsLabel,
-                          style: AppTypography.caption
-                              .copyWith(color: AppColors.textMuted)),
+                      Text(
+                        l10n.seatSelectionSeatsLabel,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
                       Text(
                         selectedSeats.isEmpty
                             ? l10n.seatSelectionNoSeats
                             : selectedSeats.join(', '),
-                        style: AppTypography.body
-                            .copyWith(fontWeight: FontWeight.w600),
+                        style: AppTypography.body.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(l10n.seatSelectionTotal,
-                          style: AppTypography.caption
-                              .copyWith(color: AppColors.textMuted)),
                       Text(
-                        '$totalPrice EGP',
-                        style:
-                            AppTypography.h2.copyWith(color: AppColors.primary),
+                        l10n.seatSelectionTotal,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      Text(
+                        '$totalPrice $currency',
+                        style: AppTypography.h2.copyWith(
+                          color: AppColors.primary,
+                        ),
                       ),
                     ],
                   ),

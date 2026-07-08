@@ -118,7 +118,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    router.push('/login');
+    await router.push('/login');
     await tester.pumpAndSettle();
     expect(find.text('LOGIN'), findsOneWidget);
 

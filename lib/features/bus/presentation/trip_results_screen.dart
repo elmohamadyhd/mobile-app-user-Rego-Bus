@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/core/utils/date_formatting.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
@@ -30,8 +30,8 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(busBookingProvider);
-    final from = state.searchFrom ?? 'Cairo';
-    final to = state.searchTo ?? 'Alexandria';
+    final from = state.searchFromLabel ?? 'Cairo';
+    final to = state.searchToLabel ?? 'Alexandria';
     final title = '$from → $to';
 
     return Scaffold(
@@ -54,11 +54,12 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
       return _ErrorView(
         message: l10n.tripResultsError,
         retryLabel: l10n.tripResultsRetry,
-        onRetry: () => ref.read(busBookingProvider.notifier).searchTrips(
-              state.searchFrom ?? '',
-              state.searchTo ?? '',
-              toIsoDate(state.searchDate ?? DateTime.now()),
-            ),
+        onRetry: () {
+          final params = state.searchParams;
+          if (params != null) {
+            ref.read(busBookingProvider.notifier).searchTrips(params);
+          }
+        },
       );
     }
     if (state.trips.isEmpty) {
@@ -194,65 +195,81 @@ class _LoadingSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: replace with shimmer animation when shimmer package is added
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
-      itemCount: 3,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (_, __) => Container(
-        height: 160,
-        decoration: BoxDecoration(
-          color: AppColors.bgElevated,
-          borderRadius: BorderRadius.circular(AppRadius.card),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: AppColors.bgBase,
-                      shape: BoxShape.circle,
-                    ),
+    return Shimmer.fromColors(
+      baseColor: AppColors.hairline,
+      highlightColor: AppColors.bgElevated,
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
+        itemCount: 3,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (_, __) => const _TripCardSkeleton(),
+      ),
+    );
+  }
+}
+
+class _TripCardSkeleton extends StatelessWidget {
+  const _TripCardSkeleton();
+
+  static const _block = BoxDecoration(color: AppColors.hairline);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 160,
+      decoration: BoxDecoration(
+        color: AppColors.bgElevated,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: AppColors.hairline,
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          width: 100, height: 12, color: AppColors.bgBase),
-                      const SizedBox(height: 6),
-                      Container(width: 60, height: 10, color: AppColors.bgBase),
-                    ],
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(width: 100, height: 12, decoration: _block),
+                    const SizedBox(height: 6),
+                    Container(width: 60, height: 10, decoration: _block),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Container(
+              width: double.infinity,
+              height: 10,
+              decoration: _block,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(width: 60, height: 20, decoration: _block),
+                Container(
+                  width: 70,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: AppColors.hairline,
+                    borderRadius: BorderRadius.circular(AppRadius.input),
                   ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Container(
-                  width: double.infinity, height: 10, color: AppColors.bgBase),
-              const SizedBox(height: AppSpacing.md),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(width: 60, height: 20, color: AppColors.bgBase),
-                  Container(
-                    width: 70,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: AppColors.bgBase,
-                      borderRadius: BorderRadius.circular(AppRadius.input),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

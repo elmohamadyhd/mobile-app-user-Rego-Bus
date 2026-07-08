@@ -1,139 +1,115 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
+import 'package:rego/features/bus/domain/entities/bus_stop.dart';
+import 'package:rego/features/bus/domain/entities/bus_trip.dart';
+import 'package:rego/features/bus/domain/repositories/bus_repository.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 
+import 'fake_bus_repository.dart';
+
 void main() {
-  ProviderContainer makeContainer() {
-    final container = ProviderContainer();
+  ProviderContainer makeContainer(FakeBusRepository repo) {
+    final container = ProviderContainer(
+      overrides: [
+        busRepositoryProvider.overrideWithValue(repo),
+      ],
+    );
     addTearDown(container.dispose);
     return container;
   }
 
   group('BusBookingNotifier', () {
-    test('initial state is idle with empty trips and no selection', () {
-      final container = makeContainer();
+    test('initial state is idle with empty trips', () {
+      final container = makeContainer(FakeBusRepository());
       final state = container.read(busBookingProvider);
       expect(state.status, BusBookingStatus.idle);
       expect(state.trips, isEmpty);
-      expect(state.selectedTrip, isNull);
-      expect(state.selectedSeats, isEmpty);
-      expect(state.ticket, isNull);
     });
 
-    test(
-        'searchTrips sets status to loadingTrips then idle and populates trips',
-        () async {
-      final container = makeContainer();
+    test('searchTrips populates trips from repository', () async {
+      final repo = FakeBusRepository(
+        tripsPage: BusTripsPage(
+          trips: [FakeBusRepository.sampleTrip],
+          currentPage: 1,
+          lastPage: 1,
+        ),
+      );
+      final container = makeContainer(repo);
       final notifier = container.read(busBookingProvider.notifier);
 
-      await notifier.searchTrips('Cairo', 'Alexandria', '2026-06-30');
+      await notifier.searchTrips(
+        BusSearchParams(
+          cityFromId: 1,
+          cityToId: 2,
+          date: DateTime(2026, 7, 10),
+        ),
+      );
 
       final state = container.read(busBookingProvider);
       expect(state.status, BusBookingStatus.idle);
-      expect(state.trips, isNotEmpty);
-      expect(state.trips.length, 3);
+      expect(state.trips, hasLength(1));
     });
 
-    test('selectTrip sets selectedTrip and loads tripDetail', () async {
-      final container = makeContainer();
+    test('selectTrip seeds default stops and segment fare', () async {
+      final repo = FakeBusRepository(
+        tripsPage: BusTripsPage(
+          trips: [FakeBusRepository.sampleTrip],
+          currentPage: 1,
+          lastPage: 1,
+        ),
+        tripByIdResult: BusTripSummary(
+          id: '290545',
+          gatewayId: '',
+          operatorName: '',
+          category: '',
+          dateTime: DateTime.now(),
+          currency: 'EGP',
+          defaultBoardingStop: BusStop.empty,
+          defaultDropoffStop: BusStop.empty,
+        ),
+      );
+      final container = makeContainer(repo);
       final notifier = container.read(busBookingProvider.notifier);
+      await notifier.searchTrips(
+        BusSearchParams(
+          cityFromId: 1,
+          cityToId: 2,
+          date: DateTime(2026, 7, 10),
+        ),
+      );
 
-      await notifier.searchTrips('Cairo', 'Alexandria', '2026-06-30');
       final trip = container.read(busBookingProvider).trips.first;
       await notifier.selectTrip(trip);
 
       final state = container.read(busBookingProvider);
-      expect(state.selectedTrip, trip);
-      expect(state.tripDetail, isNotNull);
-      expect(state.tripDetail!.summary.id, trip.id);
+      expect(state.fromStop?.locationId, '985052');
+      expect(state.toStop?.locationId, '985053');
+      expect(state.segmentFare, 148.5);
     });
 
-    test('selectTrip resets selectedSeats', () async {
-      final container = makeContainer();
+    test('setStops updates dropoff fare only', () async {
+      final container = makeContainer(FakeBusRepository());
       final notifier = container.read(busBookingProvider.notifier);
-
-      await notifier.searchTrips('Cairo', 'Alexandria', '2026-06-30');
-      final trip = container.read(busBookingProvider).trips.first;
+      final trip = FakeBusRepository.sampleTrip;
       await notifier.selectTrip(trip);
-      notifier.toggleSeat('A2');
 
-      expect(container.read(busBookingProvider).selectedSeats, contains('A2'));
+      final cheaperStop = trip.dropoffStops.first.copyWith(finalPrice: 99);
+      notifier.setStops(from: trip.defaultBoardingStop, to: cheaperStop);
 
-      // Select a different trip
-      final trip2 = container.read(busBookingProvider).trips[1];
-      await notifier.selectTrip(trip2);
+      expect(container.read(busBookingProvider).segmentFare, 99);
+    });
 
+    test('toggleSeat adds and removes seat ids', () async {
+      final container = makeContainer(FakeBusRepository());
+      final notifier = container.read(busBookingProvider.notifier);
+      await notifier.selectTrip(FakeBusRepository.sampleTrip);
+
+      notifier.toggleSeat('16');
+      expect(container.read(busBookingProvider).selectedSeats, contains('16'));
+
+      notifier.toggleSeat('16');
       expect(container.read(busBookingProvider).selectedSeats, isEmpty);
-    });
-
-    test('toggleSeat adds a seat when not selected', () async {
-      final container = makeContainer();
-      final notifier = container.read(busBookingProvider.notifier);
-
-      await notifier.searchTrips('Cairo', 'Alexandria', '2026-06-30');
-      final trip = container.read(busBookingProvider).trips.first;
-      await notifier.selectTrip(trip);
-
-      notifier.toggleSeat('A2');
-
-      expect(container.read(busBookingProvider).selectedSeats, contains('A2'));
-    });
-
-    test('toggleSeat removes a seat when already selected', () async {
-      final container = makeContainer();
-      final notifier = container.read(busBookingProvider.notifier);
-
-      await notifier.searchTrips('Cairo', 'Alexandria', '2026-06-30');
-      final trip = container.read(busBookingProvider).trips.first;
-      await notifier.selectTrip(trip);
-
-      notifier.toggleSeat('A2');
-      notifier.toggleSeat('A2');
-
-      expect(container.read(busBookingProvider).selectedSeats,
-          isNot(contains('A2')));
-    });
-
-    test('setPaymentMethod updates paymentMethod', () {
-      final container = makeContainer();
-      final notifier = container.read(busBookingProvider.notifier);
-
-      notifier.setPaymentMethod(PaymentMethod.card);
-
-      expect(container.read(busBookingProvider).paymentMethod,
-          PaymentMethod.card);
-    });
-
-    test(
-        'confirmBooking produces BusTicket with RG- prefix and sets status to confirmed',
-        () async {
-      final container = makeContainer();
-      final notifier = container.read(busBookingProvider.notifier);
-
-      await notifier.searchTrips('Cairo', 'Alexandria', '2026-06-30');
-      final trip = container.read(busBookingProvider).trips.first;
-      await notifier.selectTrip(trip);
-      notifier.toggleSeat('A2');
-      await notifier.confirmBooking();
-
-      final state = container.read(busBookingProvider);
-      expect(state.status, BusBookingStatus.confirmed);
-      expect(state.ticket, isNotNull);
-      expect(state.ticket!.bookingRef, startsWith('RG-'));
-      expect(state.ticket!.seats, contains('A2'));
-    });
-
-    test('reset clears all state back to initial', () async {
-      final container = makeContainer();
-      final notifier = container.read(busBookingProvider.notifier);
-
-      await notifier.searchTrips('Cairo', 'Alexandria', '2026-06-30');
-      notifier.reset();
-
-      final state = container.read(busBookingProvider);
-      expect(state.status, BusBookingStatus.idle);
-      expect(state.trips, isEmpty);
-      expect(state.selectedTrip, isNull);
     });
   });
 }

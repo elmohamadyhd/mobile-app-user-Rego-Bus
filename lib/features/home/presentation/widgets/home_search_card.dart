@@ -9,9 +9,11 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/core/utils/date_formatting.dart';
+import 'package:rego/features/bus/domain/entities/bus_location.dart';
+import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/home/presentation/widgets/home_city_picker.dart';
+import 'package:rego/features/bus/presentation/widgets/bus_city_picker.dart';
 import 'package:rego/features/home/presentation/widgets/home_flight_class_picker.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -35,14 +37,19 @@ class HomeSearchCard extends ConsumerStatefulWidget {
 }
 
 class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
-  HomeCity _fromCity = kDefaultFromCity;
-  HomeCity _toCity = kDefaultToCity;
+  BusLocation? _fromCity;
+  BusLocation? _toCity;
   TripType _tripType = TripType.oneWay;
   DateTime _travelDate = dateOnly(DateTime.now());
   DateTime _returnDate = dateOnly(DateTime.now().add(const Duration(days: 7)));
   FlightClass _flightClass = kDefaultFlightClass;
 
   static const _maxBookingDays = 90;
+
+  String? _cityLabel(BusLocation? city) {
+    if (city == null) return null;
+    return city.displayName(Localizations.localeOf(context).languageCode);
+  }
 
   void _swapFields() {
     setState(() {
@@ -63,20 +70,20 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
 
   Future<void> _pickFrom() async {
     final l10n = AppLocalizations.of(context);
-    final picked = await showHomeCityPicker(
+    final picked = await showBusCityPicker(
       context,
       title: l10n.homeFrom,
-      exclude: _toCity,
+      excludeCityId: _toCity?.id,
     );
     if (picked != null) setState(() => _fromCity = picked);
   }
 
   Future<void> _pickTo() async {
     final l10n = AppLocalizations.of(context);
-    final picked = await showHomeCityPicker(
+    final picked = await showBusCityPicker(
       context,
       title: l10n.homeTo,
-      exclude: _fromCity,
+      excludeCityId: _fromCity?.id,
     );
     if (picked != null) setState(() => _toCity = picked);
   }
@@ -133,11 +140,32 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
       return;
     }
 
-    await ref.read(busBookingProvider.notifier).searchTrips(
-          _fromCity.apiName,
-          _toCity.apiName,
-          toIsoDate(_travelDate),
+    if (_fromCity == null || _toCity == null) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(l10n.homeBusSearchSelectCities),
+            duration: const Duration(seconds: 2),
+          ),
         );
+      return;
+    }
+
+    final from = _fromCity!;
+    final to = _toCity!;
+    final notifier = ref.read(busBookingProvider.notifier);
+    notifier.setSearchLabels(
+      from: _cityLabel(from)!,
+      to: _cityLabel(to)!,
+    );
+    await notifier.searchTrips(
+      BusSearchParams(
+        cityFromId: from.id,
+        cityToId: to.id,
+        date: _travelDate,
+      ),
+    );
     if (mounted) unawaited(context.push(BusRoutes.results));
   }
 
@@ -222,7 +250,8 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                   children: [
                     _CityField(
                       label: l10n.homeFrom,
-                      city: _fromCity,
+                      cityLabel: _cityLabel(_fromCity),
+                      placeholder: l10n.homeCitySelectPlaceholder,
                       iconBg: AppColors.primaryTint,
                       iconColor: AppColors.primary,
                       onTap: _pickFrom,
@@ -235,7 +264,8 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                     ),
                     _CityField(
                       label: l10n.homeTo,
-                      city: _toCity,
+                      cityLabel: _cityLabel(_toCity),
+                      placeholder: l10n.homeCitySelectPlaceholder,
                       iconBg: AppColors.secondaryTint,
                       iconColor: const Color(0xFFD98A2B),
                       onTap: _pickTo,
@@ -585,22 +615,22 @@ class _TransportTab extends StatelessWidget {
 class _CityField extends StatelessWidget {
   const _CityField({
     required this.label,
-    required this.city,
+    required this.cityLabel,
+    required this.placeholder,
     required this.iconBg,
     required this.iconColor,
     required this.onTap,
   });
 
   final String label;
-  final HomeCity city;
+  final String? cityLabel;
+  final String placeholder;
   final Color iconBg;
   final Color iconColor;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -631,9 +661,11 @@ class _CityField extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      city.label(l10n),
+                      cityLabel ?? placeholder,
                       style: AppTypography.title.copyWith(
-                        color: AppColors.textPrimary,
+                        color: cityLabel == null
+                            ? AppColors.textMuted
+                            : AppColors.textPrimary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),

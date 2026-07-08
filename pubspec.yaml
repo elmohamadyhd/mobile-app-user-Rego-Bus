@@ -45,6 +45,7 @@ dependencies:
 
   # Native splash hold until Flutter paints the matching first frame.
   flutter_native_splash: ^2.4.6
+  shimmer: ^3.0.0
 
   # ── Optional: uncomment when needed ──────────────────────────────────────
   # Local database (Drift / SQLite)

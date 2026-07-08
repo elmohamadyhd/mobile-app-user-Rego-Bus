@@ -9,7 +9,6 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -117,9 +116,10 @@ class _BoardingPassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final detail = ticket.trip;
-    final summary = detail.summary;
+    final fromStop = ticket.fromStop;
+    final toStop = ticket.toStop;
 
-    final departTime = summary.departLabel;
+    final departTime = detail.departLabel;
     final seatsJoined = ticket.seats.join(', ');
 
     return Container(
@@ -142,9 +142,9 @@ class _BoardingPassCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _TicketRow(label: l10n.eTicketFrom, value: detail.terminalFrom),
+                _TicketRow(label: l10n.eTicketFrom, value: fromStop.name),
                 const SizedBox(height: AppSpacing.sm),
-                _TicketRow(label: l10n.eTicketTo, value: detail.terminalTo),
+                _TicketRow(label: l10n.eTicketTo, value: toStop.name),
                 const SizedBox(height: AppSpacing.sm),
                 _TicketRow(label: l10n.eTicketDate, value: departTime),
                 const SizedBox(height: AppSpacing.sm),
