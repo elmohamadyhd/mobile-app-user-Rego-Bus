@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
@@ -35,14 +36,24 @@ class StopSelector extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: Material(
               color: isSelected ? AppColors.primaryTint : AppColors.bgElevated,
-              borderRadius: BorderRadius.circular(AppRadius.card),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
               child: InkWell(
-                borderRadius: BorderRadius.circular(AppRadius.card),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
                 onTap: () => onSelected(stop),
-                child: Padding(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(
+                      color:
+                          isSelected ? AppColors.primary : AppColors.hairline,
+                      width: isSelected ? 1.5 : 1,
+                    ),
+                  ),
                   padding: AppSpacing.cardPadding,
                   child: Row(
                     children: [
+                      _SelectionDot(selected: isSelected),
+                      const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +78,12 @@ class StopSelector extends StatelessWidget {
                         Text(
                           _formatTime(stop.arrivalAt!),
                           style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondary,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w400,
                           ),
                         ),
                     ],
@@ -85,5 +101,31 @@ class StopSelector extends StatelessWidget {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';
+  }
+}
+
+class _SelectionDot extends StatelessWidget {
+  const _SelectionDot({required this.selected});
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: selected ? AppColors.primary : Colors.transparent,
+        border: Border.all(
+          color: selected ? AppColors.primary : AppColors.border,
+          width: 1.5,
+        ),
+      ),
+      child: selected
+          ? const Icon(AppIcons.check, size: 14, color: AppColors.onPrimary)
+          : null,
+    );
   }
 }

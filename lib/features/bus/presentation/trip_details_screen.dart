@@ -13,8 +13,12 @@ import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/amenity_chip.dart';
+import 'package:rego/features/bus/presentation/widgets/amenity_icon.dart';
+import 'package:rego/features/bus/presentation/widgets/amenity_icons_row.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:rego/features/bus/presentation/widgets/stop_selector.dart';
+import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
@@ -47,7 +51,10 @@ class BusTripDetailsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
-      appBar: BookingAppBar(title: l10n.tripDetailTitle),
+      appBar: BookingAppBar(
+        title: l10n.tripDetailTitle,
+        subtitle: _routeLabel(state, fromStop, toStop),
+      ),
       bottomNavigationBar: _PriceFooter(
         priceEgp: fare,
         currency: trip.currency,
@@ -57,13 +64,37 @@ class BusTripDetailsScreen extends ConsumerWidget {
             ? null
             : () => _onChooseSeats(context, ref),
       ),
+      // Section order mirrors the approved bus-flow-redesign spec: trip
+      // identity + route + amenities first (so the user confirms this is the
+      // trip they picked), then the boarding/drop-off pickers.
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _TripTicketCard(
+              trip: trip,
+              fromStop: fromStop,
+              toStop: toStop,
+              fare: state.segmentFare,
+              l10n: l10n,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                l10n.tripDetailFareLiveHint,
+                textAlign: TextAlign.center,
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            _AmenitiesSection(amenities: trip.amenities, l10n: l10n),
+            const SizedBox(height: AppSpacing.lg),
             StopSelector(
-              title: l10n.homeFrom,
+              title: l10n.tripDetailBoardAt,
               stops: trip.boardingStops,
               selected: fromStop,
               onSelected: (stop) => ref
@@ -72,30 +103,32 @@ class BusTripDetailsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.lg),
             StopSelector(
-              title: l10n.homeTo,
+              title: l10n.tripDetailDropOffAt,
               stops: trip.dropoffStops,
               selected: toStop,
               onSelected: (stop) => ref
                   .read(busBookingProvider.notifier)
                   .setStops(from: fromStop, to: stop),
             ),
-            const SizedBox(height: AppSpacing.md),
-            _SegmentFareBar(fare: state.segmentFare, currency: trip.currency),
-            const SizedBox(height: AppSpacing.md),
-            _OperatorCard(trip: trip, l10n: l10n),
-            const SizedBox(height: 12),
-            _RouteTimelineCard(
-              trip: trip,
-              fromStop: fromStop,
-              toStop: toStop,
-            ),
-            const SizedBox(height: 12),
-            _AmenitiesSection(amenities: trip.amenities, l10n: l10n),
             const SizedBox(height: AppSpacing.lg),
           ],
         ),
       ),
     );
+  }
+
+  /// `"$from → $to"` using the search labels carried over from results, or
+  /// falling back to the selected stops' own city names — keeps the header
+  /// context continuous with the results screen the user just came from.
+  String? _routeLabel(
+    BusBookingState state,
+    BusStop fromStop,
+    BusStop toStop,
+  ) {
+    final from = state.searchFromLabel ?? fromStop.cityName;
+    final to = state.searchToLabel ?? toStop.cityName;
+    if (from.isEmpty || to.isEmpty) return null;
+    return '$from → $to';
   }
 
   Future<void> _onChooseSeats(BuildContext context, WidgetRef ref) async {
@@ -104,174 +137,117 @@ class BusTripDetailsScreen extends ConsumerWidget {
   }
 }
 
-class _SegmentFareBar extends StatelessWidget {
-  const _SegmentFareBar({required this.fare, required this.currency});
+// ── Trip ticket card ────────────────────────────────────────────────────────
 
-  final double fare;
-  final String currency;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Container(
-      width: double.infinity,
-      padding: AppSpacing.cardPadding,
-      decoration: BoxDecoration(
-        color: AppColors.primaryTint,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            l10n.tripDetailTotalPrice,
-            style: AppTypography.body.copyWith(color: AppColors.textSecondary),
-          ),
-          Text(
-            '${fare.round()} $currency',
-            style: AppTypography.h2.copyWith(color: AppColors.primary),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _OperatorCard extends StatelessWidget {
-  const _OperatorCard({required this.trip, required this.l10n});
-
-  final BusTripSummary trip;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.bgElevated,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      padding: AppSpacing.cardPadding,
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: AppColors.primaryTint,
-            backgroundImage:
-                trip.operatorLogoUrl != null
-                    ? NetworkImage(trip.operatorLogoUrl!)
-                    : null,
-            child: trip.operatorLogoUrl == null
-                ? Text(
-                    trip.operatorCode,
-                    style: AppTypography.title.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  )
-                : null,
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  trip.operatorName,
-                  style: AppTypography.title.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  trip.serviceClass,
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.textMuted,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RouteTimelineCard extends StatelessWidget {
-  const _RouteTimelineCard({
+/// Boarding-pass styled summary of the selected trip: operator + amenities,
+/// the route timeline for the currently chosen stop pair, and a live fare
+/// stub below the tear line. Deliberately reuses [TicketBorder] so the shape
+/// a user tapped on the results list carries through to this screen.
+class _TripTicketCard extends StatelessWidget {
+  const _TripTicketCard({
     required this.trip,
     required this.fromStop,
     required this.toStop,
+    required this.fare,
+    required this.l10n,
   });
 
   final BusTripSummary trip;
   final BusStop fromStop;
   final BusStop toStop;
+  final double fare;
+  final AppLocalizations l10n;
+
+  static const double _stubHeight = 60;
 
   @override
   Widget build(BuildContext context) {
     final departLabel = _formatTime(fromStop.arrivalAt ?? trip.departTime);
     final arriveLabel = _formatTime(toStop.arrivalAt ?? trip.arriveTime);
+    const shape = TicketBorder(
+      radius: AppRadius.xl,
+      notchRadius: 10,
+      notchOffsetFromBottom: _stubHeight,
+      dashColor: AppColors.border,
+    );
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.bgElevated,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      padding: AppSpacing.cardPadding,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Column(
+    return Material(
+      color: AppColors.bgElevated,
+      shape: shape,
+      elevation: 6,
+      shadowColor: AppColors.primary.withValues(alpha: 0.18),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    OperatorAvatar(trip: trip, size: 46),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: trip.operatorName,
+                                  style: AppTypography.title.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                if (trip.serviceClass.trim().isNotEmpty)
+                                  TextSpan(
+                                    text: '  ·  ${trip.serviceClass}',
+                                    style: AppTypography.caption.copyWith(
+                                      color: AppColors.textMuted,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 6),
+                          AmenityIconsRow(amenities: trip.amenities),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: Container(
-                    width: 2,
-                    color: AppColors.hairline,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                  ),
-                ),
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: const BoxDecoration(
-                    color: AppColors.secondary,
-                    shape: BoxShape.circle,
-                  ),
+                const SizedBox(height: AppSpacing.lg),
+                _TicketTimeline(
+                  departLabel: departLabel,
+                  arriveLabel: arriveLabel,
+                  fromStop: fromStop,
+                  toStop: toStop,
+                  durationLabel: trip.durationLabel,
                 ),
               ],
             ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _StopInfo(
-                    time: departLabel,
-                    terminal: fromStop.name,
-                    sub: fromStop.cityName,
-                  ),
-                  const SizedBox(height: 24),
-                  _StopInfo(
-                    time: arriveLabel,
-                    terminal: toStop.name,
-                    sub: toStop.cityName,
-                  ),
-                ],
+          ),
+          SizedBox(
+            height: _stubHeight,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                0,
               ),
+              child: _LiveFareRow(fare: fare, currency: trip.currency, l10n: l10n),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -280,6 +256,91 @@ class _RouteTimelineCard extends StatelessWidget {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';
+  }
+}
+
+class _TicketTimeline extends StatelessWidget {
+  const _TicketTimeline({
+    required this.departLabel,
+    required this.arriveLabel,
+    required this.fromStop,
+    required this.toStop,
+    required this.durationLabel,
+  });
+
+  final String departLabel;
+  final String arriveLabel;
+  final BusStop fromStop;
+  final BusStop toStop;
+  final String durationLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Column(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  width: 2,
+                  color: AppColors.hairline,
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                ),
+              ),
+              Container(
+                width: 12,
+                height: 12,
+                decoration: const BoxDecoration(
+                  color: AppColors.secondary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _StopInfo(
+                  time: departLabel,
+                  terminal: fromStop.name,
+                  sub: fromStop.cityName,
+                ),
+                SizedBox(
+                  height: 30,
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      durationLabel,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                _StopInfo(
+                  time: arriveLabel,
+                  terminal: toStop.name,
+                  sub: toStop.cityName,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -313,57 +374,133 @@ class _StopInfo extends StatelessWidget {
   }
 }
 
+class _LiveFareRow extends StatelessWidget {
+  const _LiveFareRow({
+    required this.fare,
+    required this.currency,
+    required this.l10n,
+  });
+
+  final double fare;
+  final String currency;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.tripDetailFareLabel,
+                style:
+                    AppTypography.overline.copyWith(color: AppColors.textMuted),
+              ),
+              const SizedBox(height: 1),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                transitionBuilder: (child, animation) =>
+                    FadeTransition(opacity: animation, child: child),
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${fare.round()}',
+                        style: AppTypography.h1.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' $currency',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textMuted,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  key: ValueKey(fare.round()),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Icon(
+          AppIcons.ticket,
+          size: 30,
+          color: AppColors.primary.withValues(alpha: 0.22),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Amenities ────────────────────────────────────────────────────────────────
+
 class _AmenitiesSection extends StatelessWidget {
   const _AmenitiesSection({required this.amenities, required this.l10n});
 
   final List<String> amenities;
   final AppLocalizations l10n;
 
-  (IconData, String) _amenityInfo(String amenity) {
+  String _amenityLabel(String amenity) {
     switch (amenity.toLowerCase()) {
       case 'wi-fi':
-        return (AppIcons.amenityWifi, l10n.amenityWifi);
+        return l10n.amenityWifi;
       case 'a/c':
-        return (AppIcons.amenityAC, l10n.amenityAC);
+        return l10n.amenityAC;
       case 'sockets':
-        return (AppIcons.amenitySockets, l10n.amenitySockets);
+        return l10n.amenitySockets;
       case 'water':
-        return (AppIcons.amenityWater, l10n.amenityWater);
+        return l10n.amenityWater;
       default:
-        return (AppIcons.check, amenity);
+        return amenity;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.bgElevated,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      padding: AppSpacing.cardPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.tripDetailAmenities,
-            style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: amenities.map((a) {
-              final (icon, label) = _amenityInfo(a);
-              return AmenityChip(icon: icon, label: label);
-            }).toList(),
-          ),
-        ],
+    return Material(
+      color: AppColors.bgElevated,
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      elevation: 3,
+      shadowColor: AppColors.primary.withValues(alpha: 0.1),
+      child: Padding(
+        padding: AppSpacing.cardPadding,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.tripDetailAmenities,
+              style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: amenities
+                  .map(
+                    (a) => AmenityChip(
+                      icon: amenityIconFor(a),
+                      label: _amenityLabel(a),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+// ── Footer ───────────────────────────────────────────────────────────────────
 
 class _PriceFooter extends StatelessWidget {
   const _PriceFooter({

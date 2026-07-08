@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
+import 'package:rego/features/bus/presentation/widgets/amenity_icons_row.dart';
+import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
@@ -106,7 +107,7 @@ class _Header extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _OperatorAvatar(trip: trip),
+        OperatorAvatar(trip: trip),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Column(
@@ -136,7 +137,7 @@ class _Header extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 5),
-              _AmenityIcons(amenities: trip.amenities),
+              AmenityIconsRow(amenities: trip.amenities),
             ],
           ),
         ),
@@ -144,90 +145,6 @@ class _Header extends StatelessWidget {
         _SeatsPill(seatsLeft: trip.seatsLeft, lowSeats: lowSeats, l10n: l10n),
       ],
     );
-  }
-}
-
-class _OperatorAvatar extends StatelessWidget {
-  const _OperatorAvatar({required this.trip});
-
-  final BusTripSummary trip;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool hasLogo = trip.operatorLogoUrl != null;
-    return Container(
-      width: 42,
-      height: 42,
-      clipBehavior: Clip.antiAlias,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.primaryTint,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      child: hasLogo
-          ? Image.network(
-              trip.operatorLogoUrl!,
-              width: 42,
-              height: 42,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _initials(),
-            )
-          : _initials(),
-    );
-  }
-
-  Widget _initials() => Text(
-        trip.operatorCode,
-        style: AppTypography.body.copyWith(
-          color: AppColors.primary,
-          fontWeight: FontWeight.w800,
-        ),
-      );
-}
-
-class _AmenityIcons extends StatelessWidget {
-  const _AmenityIcons({required this.amenities});
-
-  final List<String> amenities;
-
-  @override
-  Widget build(BuildContext context) {
-    final icons = amenities.take(4).map(_amenityIcon).toList();
-    if (icons.isEmpty) return const SizedBox.shrink();
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (final icon in icons)
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-            child: Icon(icon, size: 15, color: AppColors.textSecondary),
-          ),
-      ],
-    );
-  }
-
-  static IconData _amenityIcon(String amenity) {
-    final s = amenity.toLowerCase();
-    if (s.contains('wifi') || s.contains('wi-fi') || s.contains('واي')) {
-      return AppIcons.amenityWifi;
-    }
-    if (s.contains('a/c') ||
-        s.contains('air') ||
-        s.contains('تكييف') ||
-        s.contains('مكي')) {
-      return AppIcons.amenityAC;
-    }
-    if (s.contains('sock') ||
-        s.contains('plug') ||
-        s.contains('power') ||
-        s.contains('كهرب') ||
-        s.contains('شحن')) {
-      return AppIcons.amenitySockets;
-    }
-    if (s.contains('water') || s.contains('مياه') || s.contains('ماء')) {
-      return AppIcons.amenityWater;
-    }
-    return AppIcons.check;
   }
 }
 
