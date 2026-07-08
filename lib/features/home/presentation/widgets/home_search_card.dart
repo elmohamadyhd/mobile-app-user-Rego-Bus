@@ -10,7 +10,7 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/core/utils/date_formatting.dart';
-import 'package:rego/features/booking/presentation/providers/booking_providers.dart';
+import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
 import 'package:rego/features/home/presentation/widgets/home_city_picker.dart';
 import 'package:rego/features/home/presentation/widgets/home_flight_class_picker.dart';
 import 'package:rego/l10n/app_localizations.dart';

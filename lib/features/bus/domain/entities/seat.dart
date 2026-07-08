@@ -1,4 +1,4 @@
-// lib/features/booking/domain/entities/seat.dart
+// lib/features/bus/domain/entities/seat.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'seat.freezed.dart';

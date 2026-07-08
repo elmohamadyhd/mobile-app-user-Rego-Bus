@@ -16,11 +16,11 @@ import 'package:rego/features/home/presentation/home_screen.dart';
 import 'package:rego/features/profile/presentation/profile_screen.dart';
 import 'package:rego/features/shell/presentation/coming_soon_screen.dart';
 import 'package:rego/features/shell/presentation/main_shell.dart';
-import 'package:rego/features/booking/presentation/trip_results_screen.dart';
-import 'package:rego/features/booking/presentation/trip_details_screen.dart';
-import 'package:rego/features/booking/presentation/seat_selection_screen.dart';
-import 'package:rego/features/booking/presentation/passenger_confirm_screen.dart';
-import 'package:rego/features/booking/presentation/eticket_screen.dart';
+import 'package:rego/features/bus/presentation/trip_results_screen.dart';
+import 'package:rego/features/bus/presentation/trip_details_screen.dart';
+import 'package:rego/features/bus/presentation/seat_selection_screen.dart';
+import 'package:rego/features/bus/presentation/passenger_confirm_screen.dart';
+import 'package:rego/features/bus/presentation/eticket_screen.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 // Named route constants so call-sites never use raw strings.

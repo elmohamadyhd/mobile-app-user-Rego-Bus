@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rego/features/booking/presentation/providers/booking_providers.dart';
+import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
 
 void main() {
   ProviderContainer makeContainer() {

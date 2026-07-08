@@ -1,10 +1,10 @@
-// lib/features/booking/presentation/providers/booking_providers.dart
+// lib/features/bus/presentation/providers/booking_providers.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rego/core/utils/date_formatting.dart';
-import 'package:rego/features/booking/data/mock_booking_data.dart';
-import 'package:rego/features/booking/domain/entities/booking.dart';
-import 'package:rego/features/booking/domain/entities/trip.dart';
+import 'package:rego/features/bus/data/mock_booking_data.dart';
+import 'package:rego/features/bus/domain/entities/booking.dart';
+import 'package:rego/features/bus/domain/entities/trip.dart';
 
 part 'booking_providers.freezed.dart';
 

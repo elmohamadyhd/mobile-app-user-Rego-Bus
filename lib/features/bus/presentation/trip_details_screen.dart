@@ -7,10 +7,10 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/booking/domain/entities/trip.dart';
-import 'package:rego/features/booking/presentation/providers/booking_providers.dart';
-import 'package:rego/features/booking/presentation/widgets/amenity_chip.dart';
-import 'package:rego/features/booking/presentation/widgets/booking_app_bar.dart';
+import 'package:rego/features/bus/domain/entities/trip.dart';
+import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
+import 'package:rego/features/bus/presentation/widgets/amenity_chip.dart';
+import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 

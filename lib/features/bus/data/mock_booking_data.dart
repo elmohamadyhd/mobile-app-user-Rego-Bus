@@ -1,6 +1,6 @@
-// lib/features/booking/data/mock_booking_data.dart
-import 'package:rego/features/booking/domain/entities/seat.dart';
-import 'package:rego/features/booking/domain/entities/trip.dart';
+// lib/features/bus/data/mock_booking_data.dart
+import 'package:rego/features/bus/domain/entities/seat.dart';
+import 'package:rego/features/bus/domain/entities/trip.dart';
 
 abstract final class MockBookingData {
   static const double walletBalance = 340.50;

@@ -4,7 +4,7 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/booking/domain/entities/seat.dart';
+import 'package:rego/features/bus/domain/entities/seat.dart';
 
 class SeatGrid extends StatelessWidget {
   const SeatGrid({

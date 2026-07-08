@@ -1,6 +1,6 @@
-// lib/features/booking/domain/entities/booking.dart
+// lib/features/bus/domain/entities/booking.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:rego/features/booking/domain/entities/trip.dart';
+import 'package:rego/features/bus/domain/entities/trip.dart';
 
 part 'booking.freezed.dart';
 
