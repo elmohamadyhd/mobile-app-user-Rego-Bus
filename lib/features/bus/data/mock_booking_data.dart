@@ -1,13 +1,13 @@
 // lib/features/bus/data/mock_booking_data.dart
 import 'package:rego/features/bus/domain/entities/seat.dart';
-import 'package:rego/features/bus/domain/entities/trip.dart';
+import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 
 abstract final class MockBookingData {
   static const double walletBalance = 340.50;
   static const int serviceFeeEgp = 10;
 
-  static final List<TripSummary> trips = [
-    const TripSummary(
+  static final List<BusTripSummary> trips = [
+    const BusTripSummary(
       id: 'gb-vip-0800',
       operatorName: 'Go Bus',
       operatorCode: 'GB',
@@ -20,7 +20,7 @@ abstract final class MockBookingData {
       priceEgp: 180,
       seatsLeft: 6,
     ),
-    const TripSummary(
+    const BusTripSummary(
       id: 'bc-dlx-0915',
       operatorName: 'Blue Bus',
       operatorCode: 'BB',
@@ -33,7 +33,7 @@ abstract final class MockBookingData {
       priceEgp: 150,
       seatsLeft: 12,
     ),
-    const TripSummary(
+    const BusTripSummary(
       id: 'sj-eco-1030',
       operatorName: 'SuperJet',
       operatorCode: 'SJ',
@@ -86,9 +86,9 @@ abstract final class MockBookingData {
     ]),
   ];
 
-  static TripDetail detailFor(String tripId) {
+  static BusTripDetail detailFor(String tripId) {
     final summary = trips.firstWhere((t) => t.id == tripId);
-    return TripDetail(
+    return BusTripDetail(
       summary: summary,
       terminalFrom: 'Cairo Gateway',
       terminalFromSub: 'Abbassia terminal',

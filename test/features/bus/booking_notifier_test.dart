@@ -105,7 +105,7 @@ void main() {
     });
 
     test(
-        'confirmBooking produces ETicket with RG- prefix and sets status to confirmed',
+        'confirmBooking produces BusTicket with RG- prefix and sets status to confirmed',
         () async {
       final container = makeContainer();
       final notifier = container.read(bookingFlowProvider.notifier);

@@ -164,7 +164,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.tripDetail,
-        builder: (context, state) => const TripDetailsScreen(),
+        builder: (context, state) => const BusTripDetailsScreen(),
       ),
       GoRoute(
         path: AppRoutes.tripSeats,
@@ -176,7 +176,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.eTicket,
-        builder: (context, state) => const ETicketScreen(),
+        builder: (context, state) => const BusTicketScreen(),
       ),
     ],
   );

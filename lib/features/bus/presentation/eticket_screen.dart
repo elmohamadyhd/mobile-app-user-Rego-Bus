@@ -8,14 +8,14 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/booking.dart';
-import 'package:rego/features/bus/domain/entities/trip.dart';
+import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
+import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
-class ETicketScreen extends ConsumerWidget {
-  const ETicketScreen({super.key});
+class BusTicketScreen extends ConsumerWidget {
+  const BusTicketScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,7 +51,7 @@ class ETicketScreen extends ConsumerWidget {
 
 class _HeroSection extends StatelessWidget {
   const _HeroSection({required this.ticket});
-  final ETicket ticket;
+  final BusTicket ticket;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class _HeroSection extends StatelessWidget {
 
 class _BoardingPassCard extends StatelessWidget {
   const _BoardingPassCard({required this.ticket});
-  final ETicket ticket;
+  final BusTicket ticket;
 
   @override
   Widget build(BuildContext context) {

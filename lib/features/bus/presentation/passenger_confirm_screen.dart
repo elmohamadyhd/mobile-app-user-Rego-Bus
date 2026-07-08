@@ -8,7 +8,7 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/trip.dart';
+import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -61,7 +61,7 @@ class PassengerConfirmScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _TripSummaryCard(state: state, l10n: l10n),
+            _BusTripSummaryCard(state: state, l10n: l10n),
             const SizedBox(height: AppSpacing.md),
             _PassengerSection(state: state, l10n: l10n),
             const SizedBox(height: AppSpacing.md),
@@ -78,8 +78,8 @@ class PassengerConfirmScreen extends ConsumerWidget {
 
 // ── Trip summary card ────────────────────────────────────────────────────────
 
-class _TripSummaryCard extends StatelessWidget {
-  const _TripSummaryCard({required this.state, required this.l10n});
+class _BusTripSummaryCard extends StatelessWidget {
+  const _BusTripSummaryCard({required this.state, required this.l10n});
   final BookingFlowState state;
   final AppLocalizations l10n;
 

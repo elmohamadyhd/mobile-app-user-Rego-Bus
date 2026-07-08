@@ -1,11 +1,11 @@
-// lib/features/bus/domain/entities/trip.dart
+// lib/features/bus/domain/entities/bus_trip.dart
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'trip.freezed.dart';
+part 'bus_trip.freezed.dart';
 
 @freezed
-abstract class TripSummary with _$TripSummary {
-  const factory TripSummary({
+abstract class BusTripSummary with _$BusTripSummary {
+  const factory BusTripSummary({
     required String id,
     required String operatorName,
     required String operatorCode,
@@ -17,10 +17,10 @@ abstract class TripSummary with _$TripSummary {
     required int durationMin,
     required int priceEgp,
     required int seatsLeft,
-  }) = _TripSummary;
+  }) = _BusTripSummary;
 }
 
-extension TripSummaryX on TripSummary {
+extension BusTripSummaryX on BusTripSummary {
   String get departLabel =>
       '${departHour.toString().padLeft(2, '0')}:${departMinute.toString().padLeft(2, '0')}';
   String get arriveLabel =>
@@ -33,13 +33,13 @@ extension TripSummaryX on TripSummary {
 }
 
 @freezed
-abstract class TripDetail with _$TripDetail {
-  const factory TripDetail({
-    required TripSummary summary,
+abstract class BusTripDetail with _$BusTripDetail {
+  const factory BusTripDetail({
+    required BusTripSummary summary,
     required String terminalFrom,
     required String terminalFromSub,
     required String terminalTo,
     required String terminalToSub,
     required List<String> amenities,
-  }) = _TripDetail;
+  }) = _BusTripDetail;
 }

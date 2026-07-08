@@ -7,15 +7,15 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/trip.dart';
+import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/amenity_chip.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
-class TripDetailsScreen extends ConsumerWidget {
-  const TripDetailsScreen({super.key});
+class BusTripDetailsScreen extends ConsumerWidget {
+  const BusTripDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -62,7 +62,7 @@ class TripDetailsScreen extends ConsumerWidget {
 
 class _OperatorCard extends StatelessWidget {
   const _OperatorCard({required this.tripDetail, required this.l10n});
-  final TripDetail tripDetail;
+  final BusTripDetail tripDetail;
   final AppLocalizations l10n;
 
   @override
@@ -135,7 +135,7 @@ class _OperatorCard extends StatelessWidget {
 
 class _RouteTimelineCard extends StatelessWidget {
   const _RouteTimelineCard({required this.tripDetail});
-  final TripDetail tripDetail;
+  final BusTripDetail tripDetail;
 
   @override
   Widget build(BuildContext context) {

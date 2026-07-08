@@ -10,7 +10,7 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/core/utils/date_formatting.dart';
-import 'package:rego/features/bus/domain/entities/trip.dart';
+import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/providers/booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/trip_card.dart';
@@ -97,7 +97,7 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
     );
   }
 
-  Future<void> _selectTrip(TripSummary trip) async {
+  Future<void> _selectTrip(BusTripSummary trip) async {
     await ref.read(bookingFlowProvider.notifier).selectTrip(trip);
     if (mounted) unawaited(context.push(AppRoutes.tripDetail));
   }

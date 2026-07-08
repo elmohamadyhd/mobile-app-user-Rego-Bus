@@ -3,8 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rego/core/utils/date_formatting.dart';
 import 'package:rego/features/bus/data/mock_booking_data.dart';
-import 'package:rego/features/bus/domain/entities/booking.dart';
-import 'package:rego/features/bus/domain/entities/trip.dart';
+import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
+import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 
 part 'booking_providers.freezed.dart';
 
@@ -22,15 +22,15 @@ enum PaymentMethod { wallet, card }
 @freezed
 abstract class BookingFlowState with _$BookingFlowState {
   const factory BookingFlowState({
-    @Default([]) List<TripSummary> trips,
+    @Default([]) List<BusTripSummary> trips,
     @Default(BookingFlowStatus.idle) BookingFlowStatus status,
-    TripSummary? selectedTrip,
-    TripDetail? tripDetail,
+    BusTripSummary? selectedTrip,
+    BusTripDetail? tripDetail,
     @Default([]) List<String> selectedSeats,
     @Default('Ahmed Hassan') String passengerName,
     @Default('+20 10 1234 5678') String passengerPhone,
     @Default(PaymentMethod.wallet) PaymentMethod paymentMethod,
-    ETicket? ticket,
+    BusTicket? ticket,
     String? error,
     String? searchFrom,
     String? searchTo,
@@ -79,7 +79,7 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
     }
   }
 
-  Future<void> selectTrip(TripSummary trip) async {
+  Future<void> selectTrip(BusTripSummary trip) async {
     state = state.copyWith(
       status: BookingFlowStatus.loadingDetail,
       selectedTrip: trip,
@@ -119,7 +119,7 @@ class BookingFlowNotifier extends Notifier<BookingFlowState> {
     await Future<void>.delayed(const Duration(milliseconds: 800));
     final ref =
         'RG-${DateTime.now().millisecondsSinceEpoch.toRadixString(36).toUpperCase()}';
-    final ticket = ETicket(
+    final ticket = BusTicket(
       bookingRef: ref,
       trip: detail,
       seats: List.unmodifiable(state.selectedSeats),
