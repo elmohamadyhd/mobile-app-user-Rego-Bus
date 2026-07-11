@@ -6,6 +6,12 @@ import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/widgets/trip_card.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
+Offset _textTopLeft(WidgetTester tester, String text) {
+  final finder = find.text(text);
+  expect(finder, findsOneWidget);
+  return tester.getTopLeft(finder);
+}
+
 BusTripSummary _buildTrip({int seats = 6}) {
   final board = BusStop(
     locationId: '1',
@@ -109,6 +115,121 @@ void main() {
     expect(find.text('السعر'), findsOneWidget); // Fare
     expect(find.text('اختر'), findsOneWidget); // Select
     expect(find.textContaining('Go Bus', findRichText: true), findsOneWidget);
+  });
+
+  testWidgets('cards with different content align times and fare rows',
+      (tester) async {
+    final shortTrip = _buildTrip();
+    final board = BusStop(
+      locationId: '3',
+      name: 'Cairo NasrCity Station Very Long Name',
+      cityId: 1,
+      cityName: 'Cairo',
+      arrivalAt: DateTime(2026, 2, 10, 5, 35),
+    );
+    final drop = BusStop(
+      locationId: '9',
+      name: 'Moharam Bek',
+      cityId: 2,
+      cityName: 'Alexandria',
+      arrivalAt: DateTime(2026, 2, 10, 9, 5),
+      finalPrice: 396,
+    );
+    final extraStops = List.generate(
+      5,
+      (i) => board.copyWith(locationId: '$i', name: 'Stop $i'),
+    );
+    final longTrip = BusTripSummary(
+      id: '290546',
+      gatewayId: 'Tazcara',
+      operatorName: 'GO Bus',
+      category: 'FARE-2 business class extra long',
+      dateTime: DateTime(2026, 2, 10, 5, 35),
+      currency: 'EGP',
+      availableSeats: 0,
+      priceStartWith: 396,
+      defaultBoardingStop: board,
+      defaultDropoffStop: drop,
+      boardingStops: [board, ...extraStops],
+      dropoffStops: [drop],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          backgroundColor: const Color(0xFFF4F7FB),
+          body: Center(
+            child: SizedBox(
+              width: 360,
+              child: Column(
+                children: [
+                  TripCard(trip: shortTrip, onTap: () {}),
+                  const SizedBox(height: 16),
+                  TripCard(trip: longTrip, onTap: () {}),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final cards = find.byType(TripCard);
+    expect(cards, findsNWidgets(2));
+
+    final shortCardTop = tester.getTopLeft(cards.at(0)).dy;
+    final longCardTop = tester.getTopLeft(cards.at(1)).dy;
+
+    final shortDepartY = _textTopLeft(tester, '08:00').dy - shortCardTop;
+    final longDepartY = _textTopLeft(tester, '05:35').dy - longCardTop;
+    expect(shortDepartY, longDepartY);
+
+    final fareFinder = find.text('Fare');
+    expect(fareFinder, findsNWidgets(2));
+    final shortFareY =
+        tester.getTopLeft(fareFinder.at(0)).dy - shortCardTop;
+    final longFareY = tester.getTopLeft(fareFinder.at(1)).dy - longCardTop;
+    expect(shortFareY, longFareY);
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('long station names wrap to two lines instead of truncating',
+      (tester) async {
+    final board = BusStop(
+      locationId: '3',
+      name: 'Cairo NasrCity Station Very Long Name',
+      cityId: 1,
+      cityName: 'Cairo',
+      arrivalAt: DateTime(2026, 2, 10, 8),
+    );
+    final drop = BusStop(
+      locationId: '9',
+      name: 'Moharam Bek',
+      cityId: 2,
+      cityName: 'Alexandria',
+      arrivalAt: DateTime(2026, 2, 10, 11, 30),
+      finalPrice: 180,
+    );
+    await _pumpCard(
+      tester,
+      _buildTrip().copyWith(
+        defaultBoardingStop: board,
+        defaultDropoffStop: drop,
+        boardingStops: [board],
+        dropoffStops: [drop],
+      ),
+    );
+
+    final stationText = tester.widget<Text>(
+      find.textContaining('Cairo NasrCity Station Very Long Name'),
+    );
+    expect(stationText.maxLines, 2);
+    expect(stationText.overflow, TextOverflow.ellipsis);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('loading shows a spinner in place of Select and blocks taps',
