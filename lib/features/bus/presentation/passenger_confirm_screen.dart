@@ -7,9 +7,12 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/core/utils/date_formatting.dart';
+import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
@@ -55,21 +58,28 @@ class PassengerConfirmScreen extends ConsumerWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _BusTripSummaryCard(state: state, l10n: l10n),
-            const SizedBox(height: AppSpacing.md),
-            _PassengerSection(state: state, l10n: l10n),
-            const SizedBox(height: AppSpacing.md),
-            _PaymentSection(state: state, l10n: l10n),
-            const SizedBox(height: AppSpacing.md),
-            _PriceBreakdown(state: state, l10n: l10n),
-            const SizedBox(height: AppSpacing.md),
-          ],
-        ),
+      body: Column(
+        children: [
+          const BookingStepBar(current: BusBookingStep.confirm),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _BusTripSummaryCard(state: state, l10n: l10n),
+                  const SizedBox(height: AppSpacing.md),
+                  _PassengerSection(state: state, l10n: l10n),
+                  const SizedBox(height: AppSpacing.md),
+                  _PaymentSection(state: state, l10n: l10n),
+                  const SizedBox(height: AppSpacing.md),
+                  _PriceBreakdown(state: state, l10n: l10n),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -85,7 +95,16 @@ class _BusTripSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final trip = state.selectedTrip;
+    final from = state.fromStop;
+    final to = state.toStop;
     final seats = state.selectedSeats;
+    final params = state.searchParams;
+    final dateLabel = params == null
+        ? ''
+        : formatSearchDateCell(
+            params.date,
+            Localizations.localeOf(context).toString(),
+          );
 
     return Container(
       decoration: BoxDecoration(
@@ -117,77 +136,175 @@ class _BusTripSummaryCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    trip?.operatorName ?? 'REGO Buses',
-                    style: AppTypography.title.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (trip != null)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      trip.serviceClass,
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
+                      trip?.operatorName ?? 'REGO Buses',
+                      style: AppTypography.title.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                ],
+                    if (trip != null)
+                      Text(
+                        trip.serviceClass,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Depart → Arrive times
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    trip?.departLabel ?? '--:--',
-                    style: AppTypography.h2.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                    child: Icon(
-                      AppIcons.forward,
-                      size: 18,
-                      color: AppColors.textMuted,
-                    ),
-                  ),
-                  Text(
-                    trip?.arriveLabel ?? '--:--',
-                    style: AppTypography.h2.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-              // Seats pill
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: 3,
+          if (from != null && to != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            const Divider(height: 1, color: AppColors.hairline),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              l10n.confirmRouteSection,
+              style: AppTypography.caption.copyWith(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 6),
+            _ConfirmRouteRow(from: from, to: to),
+          ],
+          if (dateLabel.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                Text(
+                  l10n.confirmDateLabel,
+                  style:
+                      AppTypography.caption.copyWith(color: AppColors.textMuted),
                 ),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryTint,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: Text(
-                  '${seats.length} ${l10n.seatSelectionSeatsLabel}',
+                const SizedBox(width: 6),
+                Text(
+                  dateLabel,
                   style: AppTypography.caption.copyWith(
-                    color: AppColors.primary,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+              ],
+            ),
+          ],
+          const SizedBox(height: AppSpacing.md),
+          const Divider(height: 1, color: AppColors.hairline),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            l10n.seatSelectionSeatsLabel,
+            style: AppTypography.caption.copyWith(color: AppColors.textMuted),
+          ),
+          const SizedBox(height: 6),
+          seats.isEmpty
+              ? Text(
+                  l10n.seatSelectionNoSeats,
+                  style:
+                      AppTypography.body.copyWith(fontWeight: FontWeight.w600),
+                )
+              : Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final seat in seats) _SeatChip(label: seat),
+                  ],
+                ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ConfirmRouteRow extends StatelessWidget {
+  const _ConfirmRouteRow({required this.from, required this.to});
+
+  final BusStop from;
+  final BusStop to;
+
+  String _formatTime(DateTime? dt) {
+    if (dt == null) return '--:--';
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _formatTime(from.arrivalAt),
+                style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
               ),
+              Text(
+                from.name,
+                style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
+              ),
+              if (from.cityName.isNotEmpty)
+                Text(
+                  from.cityName,
+                  style:
+                      AppTypography.caption.copyWith(color: AppColors.textMuted),
+                ),
             ],
           ),
-        ],
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          child: Icon(AppIcons.forward, size: 18, color: AppColors.textMuted),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                _formatTime(to.arrivalAt),
+                style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+              ),
+              Text(
+                to.name,
+                textAlign: TextAlign.end,
+                style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
+              ),
+              if (to.cityName.isNotEmpty)
+                Text(
+                  to.cityName,
+                  textAlign: TextAlign.end,
+                  style:
+                      AppTypography.caption.copyWith(color: AppColors.textMuted),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SeatChip extends StatelessWidget {
+  const _SeatChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.primaryTint,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.caption.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
