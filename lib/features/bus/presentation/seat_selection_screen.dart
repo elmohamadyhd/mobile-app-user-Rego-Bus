@@ -10,6 +10,7 @@ import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/seat_grid.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -32,6 +33,7 @@ class SeatSelectionScreen extends ConsumerWidget {
       appBar: BookingAppBar(title: l10n.seatSelectionTitle),
       body: Column(
         children: [
+          const BookingStepBar(current: BusBookingStep.seat),
           _LegendRow(l10n: l10n),
           Expanded(
             child: isLoading
