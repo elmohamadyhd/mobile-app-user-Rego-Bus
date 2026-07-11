@@ -16,8 +16,9 @@ import 'package:rego/features/bus/presentation/widgets/amenity_chip.dart';
 import 'package:rego/features/bus/presentation/widgets/amenity_icon.dart';
 import 'package:rego/features/bus/presentation/widgets/amenity_icons_row.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
-import 'package:rego/features/bus/presentation/widgets/stop_selector.dart';
+import 'package:rego/features/bus/presentation/widgets/route_timeline.dart';
 import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -66,53 +67,55 @@ class BusTripDetailsScreen extends ConsumerWidget {
       ),
       // Section order mirrors the approved bus-flow-redesign spec: trip
       // identity + route + amenities first (so the user confirms this is the
-      // trip they picked), then the boarding/drop-off pickers.
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _TripTicketCard(
-              trip: trip,
-              fromStop: fromStop,
-              toStop: toStop,
-              fare: state.segmentFare,
-              l10n: l10n,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            SizedBox(
-              width: double.infinity,
-              child: Text(
-                l10n.tripDetailFareLiveHint,
-                textAlign: TextAlign.center,
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.textMuted,
-                ),
+      // trip they picked), then the route timeline for stop selection.
+      body: Column(
+        children: [
+          const BookingStepBar(current: BusBookingStep.route),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _TripTicketCard(
+                    trip: trip,
+                    fromStop: fromStop,
+                    toStop: toStop,
+                    fare: state.segmentFare,
+                    l10n: l10n,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      l10n.tripDetailFareLiveHint,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  _AmenitiesSection(amenities: trip.amenities, l10n: l10n),
+                  const SizedBox(height: AppSpacing.lg),
+                  RouteTimeline(
+                    boardingStops: trip.boardingStops,
+                    dropoffStops: trip.dropoffStops,
+                    selectedFrom: fromStop,
+                    selectedTo: toStop,
+                    onBoardSelected: (stop) => ref
+                        .read(busBookingProvider.notifier)
+                        .setStops(from: stop, to: toStop),
+                    onDropoffSelected: (stop) => ref
+                        .read(busBookingProvider.notifier)
+                        .setStops(from: fromStop, to: stop),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                ],
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
-            _AmenitiesSection(amenities: trip.amenities, l10n: l10n),
-            const SizedBox(height: AppSpacing.lg),
-            StopSelector(
-              title: l10n.tripDetailBoardAt,
-              stops: trip.boardingStops,
-              selected: fromStop,
-              onSelected: (stop) => ref
-                  .read(busBookingProvider.notifier)
-                  .setStops(from: stop, to: toStop),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            StopSelector(
-              title: l10n.tripDetailDropOffAt,
-              stops: trip.dropoffStops,
-              selected: toStop,
-              onSelected: (stop) => ref
-                  .read(busBookingProvider.notifier)
-                  .setStops(from: fromStop, to: stop),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

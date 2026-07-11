@@ -81,13 +81,19 @@ Future<ProviderContainer> _pumpDetails(
 
 void main() {
   testWidgets(
-    'renders the trip ticket, stop pickers and footer fare',
+    'renders the trip ticket, route timeline and footer fare',
     (tester) async {
       await _pumpDetails(tester, _buildTrip());
 
       expect(find.textContaining('Go Bus', findRichText: true), findsWidgets);
-      expect(find.text('Board at'), findsOneWidget);
-      expect(find.text('Drop off at'), findsOneWidget);
+      expect(find.text('Trip route'), findsOneWidget);
+      // Ramsis/Sidi Gaber are the selected pair, so they render both in the
+      // ticket card's mini timeline and in the full RouteTimeline below.
+      expect(find.text('Ramsis'), findsWidgets);
+      expect(find.text('Sidi Gaber'), findsWidgets);
+      // Moharam Bek is the unselected alternate drop-off, shown only in the
+      // RouteTimeline.
+      expect(find.text('Moharam Bek'), findsOneWidget);
       expect(find.text('Choose seats'), findsOneWidget);
       // Default segment fare (Sidi Gaber, 180) shown in ticket + footer.
       expect(find.textContaining('180', findRichText: true), findsWidgets);
@@ -115,8 +121,7 @@ void main() {
   testWidgets('renders in RTL (Arabic)', (tester) async {
     await _pumpDetails(tester, _buildTrip(), locale: const Locale('ar'));
 
-    expect(find.text('الركوب من'), findsOneWidget); // Board at
-    expect(find.text('النزول في'), findsOneWidget); // Drop off at
+    expect(find.text('مسار الرحلة'), findsOneWidget); // Trip route
     expect(find.text('اختر المقاعد'), findsOneWidget); // Choose seats
   });
 }
