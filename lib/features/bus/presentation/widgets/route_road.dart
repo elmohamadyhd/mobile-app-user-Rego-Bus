@@ -11,12 +11,11 @@ import 'package:rego/l10n/app_localizations.dart';
 
 // ── Tunable geometry ─────────────────────────────────────────────────────────
 const double _kHMargin = 62; // side inset; also caps the U-turn bulge on-canvas
-const double _kTopPad = 34; // room for the first row's label above the road
-const double _kBottomPad = 40;
-const double _kRowStep = 100; // vertical gap between snaking rows
-const double _kColMinSpacing = 96; // min horizontal spacing between stops
+const double _kTopPad = 64; // room for the first row's 2-line label above the line
+const double _kBottomPad = 30;
+const double _kRowStep = 116; // vertical gap between snaking rows
+const double _kColMinSpacing = 108; // min horizontal spacing; fits 2-line labels
 const int _kMaxColumns = 4;
-const double _kRoadWidth = 22;
 
 /// One stop fed into the road layout, tagged with whether it is a boarding
 /// (origin-city) candidate or a drop-off (destination-city) candidate.
@@ -314,8 +313,10 @@ class _RouteNodeHotspot extends StatelessWidget {
   final VoidCallback onTap;
   final void Function(BuildContext nodeContext) onLongPress;
 
-  static const double _halfWidth = 48;
-  static const double _labelBlock = 34;
+  static const double _halfWidth = 50;
+  static const double _labelArea = 50; // fixed label region above the dot
+  static const double _labelGap = 12; // clearance between label and dot
+  static const double _dotHit = 16; // tappable region over the dot
 
   String _formatTime(DateTime dt) {
     final h = dt.hour.toString().padLeft(2, '0');
@@ -332,35 +333,48 @@ class _RouteNodeHotspot extends StatelessWidget {
 
     return Positioned(
       left: left,
-      top: node.center.dy - _labelBlock,
+      top: node.center.dy - _labelArea - _labelGap,
       width: 2 * _halfWidth,
-      height: _labelBlock + 26,
+      height: _labelArea + _labelGap + _dotHit,
       child: Builder(
         builder: (nodeContext) => GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: onTap,
           onLongPress: () => onLongPress(nodeContext),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                node.stop.name,
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.caption.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: isSelected ? accent : AppColors.textPrimary,
-                ),
-              ),
-              if (node.stop.arrivalAt != null)
-                Text(
-                  _formatTime(node.stop.arrivalAt!),
-                  maxLines: 1,
-                  style: AppTypography.overline.copyWith(
-                    color: AppColors.textMuted,
+              SizedBox(
+                height: _labelArea,
+                width: double.infinity,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        node.stop.name,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: AppTypography.body.copyWith(
+                          fontWeight: FontWeight.w700,
+                          height: 1.15,
+                          color: isSelected ? accent : AppColors.textPrimary,
+                        ),
+                      ),
+                      if (node.stop.arrivalAt != null)
+                        Text(
+                          _formatTime(node.stop.arrivalAt!),
+                          maxLines: 1,
+                          style: AppTypography.caption.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color:
+                                isSelected ? accent : AppColors.textSecondary,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
+              ),
             ],
           ),
         ),
@@ -381,8 +395,6 @@ class _RoadPainter extends CustomPainter {
   final int pickupIndex;
   final int dropoffIndex;
   final int? focusedIndex;
-
-  static const Color _road = AppColors.textMuted;
 
   Path _roadPath(List<RouteRoadNode> nodes) {
     final path = Path();
@@ -408,19 +420,6 @@ class _RoadPainter extends CustomPainter {
     return path;
   }
 
-  Path _dashed(Path source, {double dash = 7, double gap = 7}) {
-    final out = Path();
-    for (final metric in source.computeMetrics()) {
-      var distance = 0.0;
-      while (distance < metric.length) {
-        final next = math.min(distance + dash, metric.length);
-        out.addPath(metric.extractPath(distance, next), Offset.zero);
-        distance = next + gap;
-      }
-    }
-    return out;
-  }
-
   @override
   void paint(Canvas canvas, Size size) {
     final nodes = layout.nodes;
@@ -428,12 +427,13 @@ class _RoadPainter extends CustomPainter {
 
     final fullPath = _roadPath(nodes);
 
+    // Thin route line — no filled grey road band.
     canvas.drawPath(
       fullPath,
       Paint()
-        ..color = _road
+        ..color = AppColors.border
         ..style = PaintingStyle.stroke
-        ..strokeWidth = _kRoadWidth
+        ..strokeWidth = 3
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round,
     );
@@ -448,20 +448,11 @@ class _RoadPainter extends CustomPainter {
         Paint()
           ..color = AppColors.primary
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 6
+          ..strokeWidth = 4
           ..strokeCap = StrokeCap.round
           ..strokeJoin = StrokeJoin.round,
       );
     }
-
-    // Dashed centre line.
-    canvas.drawPath(
-      _dashed(fullPath),
-      Paint()
-        ..color = AppColors.bgElevated
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
-    );
 
     // Stop markers.
     for (final node in nodes) {
