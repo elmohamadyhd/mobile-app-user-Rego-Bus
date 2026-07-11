@@ -4,6 +4,14 @@
 > Feature slice: `lib/features/bus`
 > Builds on the approved `2026-07-08-bus-flow-redesign-design.md`.
 
+> **Revision (2026-07-11, post-implementation):** Step 1's stop picker shipped
+> as an **interactive winding road** (`RouteRoad`, `route_road.dart`) instead of
+> the straight vertical `RouteTimeline` described below. Stops lay out on a
+> snaking, road-drawn path (CustomPainter) with name + time labels; **tap**
+> focuses a stop and **long-press** opens a role menu (pickup / drop-off) with
+> only the valid side enabled. All other sections (step bar, seat step, confirm
+> recap, data flow, `setStops` wiring) are unchanged from this spec.
+
 ## Goal
 
 Turn the post-search bus booking into a guided **3-step wizard** with a visible
