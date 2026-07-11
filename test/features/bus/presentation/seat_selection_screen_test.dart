@@ -21,11 +21,11 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const SeatSelectionScreen(),
+          locale: Locale('en'),
+          home: SeatSelectionScreen(),
         ),
       ),
     );

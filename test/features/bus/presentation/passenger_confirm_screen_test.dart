@@ -20,11 +20,11 @@ Future<ProviderContainer> _pumpConfirm(WidgetTester tester) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(
+      child: const MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
-        home: const PassengerConfirmScreen(),
+        locale: Locale('en'),
+        home: PassengerConfirmScreen(),
       ),
     ),
   );
