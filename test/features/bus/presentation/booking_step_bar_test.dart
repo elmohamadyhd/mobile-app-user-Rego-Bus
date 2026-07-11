@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +41,7 @@ Future<GoRouter> _pumpTwoScreenRouter(
 void main() {
   testWidgets('renders all three step labels', (tester) async {
     final router = await _pumpTwoScreenRouter(tester, BusBookingStep.seat);
-    router.push('/second');
+    unawaited(router.push('/second'));
     await tester.pumpAndSettle();
 
     expect(find.text('Route'), findsOneWidget);
@@ -49,7 +51,7 @@ void main() {
 
   testWidgets('tapping a completed step pops back to it', (tester) async {
     final router = await _pumpTwoScreenRouter(tester, BusBookingStep.seat);
-    router.push('/second');
+    unawaited(router.push('/second'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Route'));
@@ -60,7 +62,7 @@ void main() {
 
   testWidgets('upcoming step is not tappable', (tester) async {
     final router = await _pumpTwoScreenRouter(tester, BusBookingStep.route);
-    router.push('/second');
+    unawaited(router.push('/second'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Confirm'));
