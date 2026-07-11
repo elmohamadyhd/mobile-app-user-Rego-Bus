@@ -18,7 +18,7 @@ import 'package:rego/features/bus/presentation/widgets/amenity_icons_row.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
-import 'package:rego/features/bus/presentation/widgets/route_timeline.dart';
+import 'package:rego/features/bus/presentation/widgets/route_road.dart';
 import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -98,7 +98,7 @@ class BusTripDetailsScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.lg),
                   _AmenitiesSection(amenities: trip.amenities, l10n: l10n),
                   const SizedBox(height: AppSpacing.lg),
-                  RouteTimeline(
+                  RouteRoad(
                     boardingStops: trip.boardingStops,
                     dropoffStops: trip.dropoffStops,
                     selectedFrom: fromStop,

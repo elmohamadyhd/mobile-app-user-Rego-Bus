@@ -110,7 +110,10 @@ void main() {
       final altStop = find.text('Moharam Bek');
       await tester.ensureVisible(altStop);
       await tester.pumpAndSettle();
-      await tester.tap(altStop);
+      // The route road assigns stops via long-press → role menu.
+      await tester.longPress(altStop);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Drop off'));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('150', findRichText: true), findsWidgets);
