@@ -37,6 +37,7 @@ Future<FlightClass?> showFlightClassPicker(
 
   return showModalBottomSheet<FlightClass>(
     context: context,
+    useRootNavigator: true,
     backgroundColor: AppColors.bgCard,
     shape: const RoundedRectangleBorder(
       borderRadius:

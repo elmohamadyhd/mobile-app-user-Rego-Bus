@@ -17,6 +17,8 @@ Future<BusLocation?> showBusCityPicker(
 }) {
   return showModalBottomSheet<BusLocation>(
     context: context,
+    // Above [MainShell]'s floating nav bar — branch navigator sheets paint under it.
+    useRootNavigator: true,
     isScrollControlled: true,
     backgroundColor: AppColors.bgCard,
     shape: const RoundedRectangleBorder(
