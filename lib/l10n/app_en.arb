@@ -180,6 +180,8 @@
   "tripDetailFareLabel": "Fare",
   "tripDetailFareLiveHint": "Updates with the stops you pick",
   "tripDetailRouteSection": "Trip route",
+  "tripDetailBoardAt": "Board at",
+  "tripDetailDropOffAt": "Drop off at",
   "tripDetailBoardHere": "Board here",
   "tripDetailDropOffHere": "Drop off",
   "amenityWifi": "Wi-Fi",

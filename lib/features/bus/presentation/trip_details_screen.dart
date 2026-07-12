@@ -18,8 +18,7 @@ import 'package:rego/features/bus/presentation/widgets/amenity_icons_row.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
-import 'package:rego/features/bus/presentation/widgets/route_road.dart';
-import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
+import 'package:rego/features/bus/presentation/widgets/route_timeline.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
@@ -65,9 +64,9 @@ class BusTripDetailsScreen extends ConsumerWidget {
             ? null
             : () => _onChooseSeats(context, ref),
       ),
-      // Section order mirrors the approved bus-flow-redesign spec: trip
-      // identity + route + amenities first (so the user confirms this is the
-      // trip they picked), then the route timeline for stop selection.
+      // The screen's one job is choosing stops: a compact identity header
+      // confirms this is the right trip, then the route timeline (the
+      // screen's focus) drives stop selection and the live fare.
       body: Column(
         children: [
           const BookingStepBar(current: BusBookingStep.route),
@@ -77,12 +76,20 @@ class BusTripDetailsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _TripTicketCard(
-                    trip: trip,
-                    fromStop: fromStop,
-                    toStop: toStop,
-                    fare: state.segmentFare,
-                    l10n: l10n,
+                  _TripHeaderCard(trip: trip, fromStop: fromStop, toStop: toStop),
+                  const SizedBox(height: AppSpacing.lg),
+                  RouteTimeline(
+                    boardingStops: trip.boardingStops,
+                    dropoffStops: trip.dropoffStops,
+                    selectedFrom: fromStop,
+                    selectedTo: toStop,
+                    currency: trip.currency,
+                    onBoardSelected: (stop) => ref
+                        .read(busBookingProvider.notifier)
+                        .setStops(from: stop, to: toStop),
+                    onDropoffSelected: (stop) => ref
+                        .read(busBookingProvider.notifier)
+                        .setStops(from: fromStop, to: stop),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   SizedBox(
@@ -95,22 +102,6 @@ class BusTripDetailsScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _AmenitiesSection(amenities: trip.amenities, l10n: l10n),
-                  const SizedBox(height: AppSpacing.lg),
-                  RouteRoad(
-                    boardingStops: trip.boardingStops,
-                    dropoffStops: trip.dropoffStops,
-                    selectedFrom: fromStop,
-                    selectedTo: toStop,
-                    onBoardSelected: (stop) => ref
-                        .read(busBookingProvider.notifier)
-                        .setStops(from: stop, to: toStop),
-                    onDropoffSelected: (stop) => ref
-                        .read(busBookingProvider.notifier)
-                        .setStops(from: fromStop, to: stop),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
                 ],
               ),
             ),
@@ -140,319 +131,161 @@ class BusTripDetailsScreen extends ConsumerWidget {
   }
 }
 
-// ── Trip ticket card ────────────────────────────────────────────────────────
+// ── Trip header card ────────────────────────────────────────────────────────
 
-/// Boarding-pass styled summary of the selected trip: operator + amenities,
-/// the route timeline for the currently chosen stop pair, and a live fare
-/// stub below the tear line. Deliberately reuses [TicketBorder] so the shape
-/// a user tapped on the results list carries through to this screen.
-class _TripTicketCard extends StatelessWidget {
-  const _TripTicketCard({
+/// Compact operator identity + amenities + selected-journey time line.
+/// Confirms this is the right trip without competing with the route
+/// timeline below it for attention. Amenities are icons-only here; tapping
+/// them opens a labeled sheet.
+class _TripHeaderCard extends StatelessWidget {
+  const _TripHeaderCard({
     required this.trip,
     required this.fromStop,
     required this.toStop,
-    required this.fare,
-    required this.l10n,
   });
 
   final BusTripSummary trip;
   final BusStop fromStop;
   final BusStop toStop;
-  final double fare;
-  final AppLocalizations l10n;
-
-  static const double _stubHeight = 60;
-
-  @override
-  Widget build(BuildContext context) {
-    final departLabel = _formatTime(fromStop.arrivalAt ?? trip.departTime);
-    final arriveLabel = _formatTime(toStop.arrivalAt ?? trip.arriveTime);
-    const shape = TicketBorder(
-      radius: AppRadius.xl,
-      notchRadius: 10,
-      notchOffsetFromBottom: _stubHeight,
-      dashColor: AppColors.border,
-    );
-
-    return Material(
-      color: AppColors.bgElevated,
-      shape: shape,
-      elevation: 6,
-      shadowColor: AppColors.primary.withValues(alpha: 0.18),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    OperatorAvatar(trip: trip, size: 46),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: trip.operatorName,
-                                  style: AppTypography.title.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                if (trip.serviceClass.trim().isNotEmpty)
-                                  TextSpan(
-                                    text: '  ·  ${trip.serviceClass}',
-                                    style: AppTypography.caption.copyWith(
-                                      color: AppColors.textMuted,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 6),
-                          AmenityIconsRow(amenities: trip.amenities),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                _TicketTimeline(
-                  departLabel: departLabel,
-                  arriveLabel: arriveLabel,
-                  fromStop: fromStop,
-                  toStop: toStop,
-                  durationLabel: trip.durationLabel,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: _stubHeight,
-            child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.lg,
-                0,
-                AppSpacing.lg,
-                0,
-              ),
-              child: _LiveFareRow(fare: fare, currency: trip.currency, l10n: l10n),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   String _formatTime(DateTime dt) {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';
   }
-}
 
-class _TicketTimeline extends StatelessWidget {
-  const _TicketTimeline({
-    required this.departLabel,
-    required this.arriveLabel,
-    required this.fromStop,
-    required this.toStop,
-    required this.durationLabel,
-  });
-
-  final String departLabel;
-  final String arriveLabel;
-  final BusStop fromStop;
-  final BusStop toStop;
-  final String durationLabel;
+  String _durationLabel(DateTime depart, DateTime arrive) {
+    final diff = arrive.difference(depart).inMinutes;
+    final minutes = diff > 0 ? diff : 0;
+    final h = minutes ~/ 60;
+    final m = minutes % 60;
+    return m == 0 ? '${h}h' : '${h}h ${m}m';
+  }
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Column(
-            children: [
-              Container(
-                width: 12,
-                height: 12,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  width: 2,
-                  color: AppColors.hairline,
-                  margin: const EdgeInsets.symmetric(vertical: 4),
-                ),
-              ),
-              Container(
-                width: 12,
-                height: 12,
-                decoration: const BoxDecoration(
-                  color: AppColors.secondary,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
+    final l10n = AppLocalizations.of(context);
+    final departDt = fromStop.arrivalAt ?? trip.departTime;
+    final arriveDt = toStop.arrivalAt ?? trip.arriveTime;
+
+    return Material(
+      color: AppColors.bgElevated,
+      borderRadius: BorderRadius.circular(AppRadius.card),
+      elevation: 3,
+      shadowColor: AppColors.primary.withValues(alpha: 0.1),
+      child: Padding(
+        padding: AppSpacing.cardPadding,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _StopInfo(
-                  time: departLabel,
-                  terminal: fromStop.name,
-                  sub: fromStop.cityName,
-                ),
-                SizedBox(
-                  height: 30,
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      durationLabel,
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textMuted,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                _StopInfo(
-                  time: arriveLabel,
-                  terminal: toStop.name,
-                  sub: toStop.cityName,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StopInfo extends StatelessWidget {
-  const _StopInfo({
-    required this.time,
-    required this.terminal,
-    required this.sub,
-  });
-
-  final String time;
-  final String terminal;
-  final String sub;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(time, style: AppTypography.h2),
-        Text(
-          terminal,
-          style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
-        ),
-        Text(
-          sub,
-          style: AppTypography.caption.copyWith(color: AppColors.textMuted),
-        ),
-      ],
-    );
-  }
-}
-
-class _LiveFareRow extends StatelessWidget {
-  const _LiveFareRow({
-    required this.fare,
-    required this.currency,
-    required this.l10n,
-  });
-
-  final double fare;
-  final String currency;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.tripDetailFareLabel,
-                style:
-                    AppTypography.overline.copyWith(color: AppColors.textMuted),
-              ),
-              const SizedBox(height: 1),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                transitionBuilder: (child, animation) =>
-                    FadeTransition(opacity: animation, child: child),
-                child: Text.rich(
-                  TextSpan(
+                OperatorAvatar(trip: trip, size: 46),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(
-                        text: '${fare.round()}',
-                        style: AppTypography.h1.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w800,
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: trip.operatorName,
+                              style: AppTypography.title.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            if (trip.serviceClass.trim().isNotEmpty)
+                              TextSpan(
+                                text: '  ·  ${trip.serviceClass}',
+                                style: AppTypography.caption.copyWith(
+                                  color: AppColors.textMuted,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                          ],
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      TextSpan(
-                        text: ' $currency',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textMuted,
-                          fontWeight: FontWeight.w700,
+                      const SizedBox(height: 6),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        onTap: () => _showAmenitiesSheet(context, l10n),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AmenityIconsRow(amenities: trip.amenities),
+                            const Icon(
+                              AppIcons.chevronDown,
+                              size: 16,
+                              color: AppColors.textMuted,
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  key: ValueKey(fare.round()),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              '${_formatTime(departDt)} → ${_formatTime(arriveDt)} · '
+              '${_durationLabel(departDt, arriveDt)}',
+              style: AppTypography.body.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        Icon(
-          AppIcons.ticket,
-          size: 30,
-          color: AppColors.primary.withValues(alpha: 0.22),
-        ),
-      ],
+      ),
     );
   }
-}
 
-// ── Amenities ────────────────────────────────────────────────────────────────
+  void _showAmenitiesSheet(BuildContext context, AppLocalizations l10n) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.bgElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.sheet),
+        ),
+      ),
+      builder: (sheetContext) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.tripDetailAmenities,
+              style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: trip.amenities
+                  .map(
+                    (a) => AmenityChip(
+                      icon: amenityIconFor(a),
+                      label: _amenityLabel(l10n, a),
+                    ),
+                  )
+                  .toList(),
+            ),
+            SizedBox(height: MediaQuery.of(sheetContext).padding.bottom),
+          ],
+        ),
+      ),
+    );
+  }
 
-class _AmenitiesSection extends StatelessWidget {
-  const _AmenitiesSection({required this.amenities, required this.l10n});
-
-  final List<String> amenities;
-  final AppLocalizations l10n;
-
-  String _amenityLabel(String amenity) {
+  String _amenityLabel(AppLocalizations l10n, String amenity) {
     switch (amenity.toLowerCase()) {
       case 'wi-fi':
         return l10n.amenityWifi;
@@ -465,41 +298,6 @@ class _AmenitiesSection extends StatelessWidget {
       default:
         return amenity;
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.bgElevated,
-      borderRadius: BorderRadius.circular(AppRadius.card),
-      elevation: 3,
-      shadowColor: AppColors.primary.withValues(alpha: 0.1),
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.tripDetailAmenities,
-              style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: amenities
-                  .map(
-                    (a) => AmenityChip(
-                      icon: amenityIconFor(a),
-                      label: _amenityLabel(a),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
 

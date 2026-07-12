@@ -118,6 +118,8 @@
   "tripDetailFareLabel": "السعر",
   "tripDetailFareLiveHint": "يتغيّر السعر حسب المحطات التي تختارها",
   "tripDetailRouteSection": "مسار الرحلة",
+  "tripDetailBoardAt": "تصعد من",
+  "tripDetailDropOffAt": "تنزل في",
   "tripDetailBoardHere": "تصعد هنا",
   "tripDetailDropOffHere": "تنزل هنا",
   "amenityWifi": "واي فاي",
