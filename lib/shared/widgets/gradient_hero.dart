@@ -18,6 +18,7 @@ class GradientHero extends StatelessWidget {
     this.padding = const EdgeInsets.fromLTRB(26, 64, 26, 40),
     this.reserveCardOverlap = false,
     this.child,
+    this.topEnd,
   });
 
   final String? title;
@@ -29,6 +30,9 @@ class GradientHero extends StatelessWidget {
   /// overlap upward (matches Home / Profile Skyline layout).
   final bool reserveCardOverlap;
   final Widget? child;
+
+  /// Optional widget pinned to the top-end corner (e.g. a language switcher).
+  final Widget? topEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +106,12 @@ class GradientHero extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (topEnd != null)
+                  PositionedDirectional(
+                    top: 40,
+                    end: 12,
+                    child: topEnd!,
+                  ),
               ],
             ),
           ),

@@ -11,11 +11,13 @@ class AuthHeroLayout extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
+    this.topEnd,
   });
 
   final String title;
   final String subtitle;
   final Widget child;
+  final Widget? topEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class AuthHeroLayout extends StatelessWidget {
           title: title,
           subtitle: subtitle,
           reserveCardOverlap: true,
+          topEnd: topEnd,
         ),
         Transform.translate(
           offset: const Offset(0, -AppSpacing.lg),

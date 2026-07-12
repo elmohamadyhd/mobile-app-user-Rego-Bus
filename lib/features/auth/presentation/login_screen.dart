@@ -22,6 +22,7 @@ import 'package:rego/features/auth/presentation/widgets/phone_field.dart';
 import 'package:rego/features/auth/presentation/widgets/social_row.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/double_back_to_exit.dart';
+import 'package:rego/shared/widgets/language_icon_button.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -127,6 +128,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               AuthHeroLayout(
                 title: l10n.loginTitle,
                 subtitle: l10n.loginSubtitle,
+                topEnd: const LanguageIconButton(color: AppColors.onHero),
                 child: AuthCard(
                   children: [
                     PhoneField(

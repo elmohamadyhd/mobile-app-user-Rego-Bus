@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/storage/secure_storage.dart';
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_theme.dart';
 import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/domain/entities/auth_user.dart';
@@ -25,7 +26,10 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         secureStorageProvider.overrideWithValue(
-          SecureStorage(memoryGuestModeStore: guestModeMemory),
+          SecureStorage(
+            memoryGuestModeStore: guestModeMemory,
+            memoryLocaleStore: {},
+          ),
         ),
       ],
     );
@@ -210,5 +214,16 @@ void main() {
       find.text('REGISTER returnTo=${BusRoutes.confirm}'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('language button opens the language picker sheet',
+      (tester) async {
+    await pumpLogin(tester, guestModeMemory: {});
+
+    await tester.tap(find.byIcon(AppIcons.language));
+    await tester.pumpAndSettle();
+
+    expect(find.text('English'), findsOneWidget);
+    expect(find.text('العربية'), findsOneWidget);
   });
 }
