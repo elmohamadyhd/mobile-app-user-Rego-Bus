@@ -60,9 +60,8 @@ class BusTripDetailsScreen extends ConsumerWidget {
         currency: trip.currency,
         l10n: l10n,
         loading: isLoadingSeats,
-        onChooseSeats: isLoadingSeats
-            ? null
-            : () => _onChooseSeats(context, ref),
+        onChooseSeats:
+            isLoadingSeats ? null : () => _onChooseSeats(context, ref),
       ),
       // The screen's one job is choosing stops: a compact identity header
       // confirms this is the right trip, then the route timeline (the
@@ -76,7 +75,8 @@ class BusTripDetailsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _TripHeaderCard(trip: trip, fromStop: fromStop, toStop: toStop),
+                  _TripHeaderCard(
+                      trip: trip, fromStop: fromStop, toStop: toStop),
                   const SizedBox(height: AppSpacing.lg),
                   RouteTimeline(
                     boardingStops: trip.boardingStops,
@@ -331,7 +331,8 @@ class _PriceFooter extends StatelessWidget {
               children: [
                 Text(
                   l10n.tripDetailTotalPrice,
-                  style: AppTypography.body.copyWith(color: AppColors.textMuted),
+                  style:
+                      AppTypography.body.copyWith(color: AppColors.textMuted),
                 ),
                 Text(
                   '$priceEgp $currency',

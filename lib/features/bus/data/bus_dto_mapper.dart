@@ -39,10 +39,7 @@ abstract final class BusDtoMapper {
     ensureSuccess(envelope);
     final data = envelope['data'];
     final trips = data is List
-        ? data
-            .whereType<Map<String, dynamic>>()
-            .map(tripFromJson)
-            .toList()
+        ? data.whereType<Map<String, dynamic>>().map(tripFromJson).toList()
         : <BusTripSummary>[];
 
     final pagination = envelope['pagination'];
@@ -215,11 +212,21 @@ abstract final class BusDtoMapper {
         : <BusTicketLine>[];
 
     final number = _string(data['number']) ?? _string(data['id']) ?? '';
+
+    // What to load in the payment WebView is the gateway's hosted-checkout page
+    // exposed at `payment_data.invoice_url` (e.g. the MyFatoorah invoice page).
+    // The top-level `payment_url` is only our backend's `/pay` API endpoint, so
+    // it's kept purely as a defensive fallback. The top-level `invoice_url` is a
+    // different thing entirely — the e-ticket PDF, downloadable as soon as the
+    // order exists (the booking is held ~15 min in `pending` before payment).
     final paymentData = data['payment_data'];
-    String? invoiceUrl;
-    if (paymentData is Map<String, dynamic>) {
-      invoiceUrl = _string(paymentData['invoice_url']);
-    }
+    final gatewayCheckoutUrl = paymentData is Map<String, dynamic>
+        ? _string(paymentData['invoice_url'])
+        : null;
+    final checkoutUrl =
+        (gatewayCheckoutUrl != null && gatewayCheckoutUrl.isNotEmpty)
+            ? gatewayCheckoutUrl
+            : _string(data['payment_url']);
 
     return BusTicket(
       bookingRef: number,
@@ -231,9 +238,9 @@ abstract final class BusDtoMapper {
       ticketLines: lines,
       total: _string(data['total']) ?? '',
       currency: _string(data['currency']) ?? trip.currency,
-      paymentUrl: _string(data['payment_url']),
+      paymentUrl: checkoutUrl,
       cancelUrl: _string(data['cancel_url']),
-      invoiceUrl: invoiceUrl ?? _string(data['invoice_url']),
+      invoiceUrl: _string(data['invoice_url']),
       statusCode: _string(data['status_code']),
       issuedAt: DateTime.now(),
     );

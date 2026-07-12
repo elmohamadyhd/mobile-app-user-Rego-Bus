@@ -46,9 +46,15 @@ dependencies:
   # In-app payment gateway (MyFatoorah hosted checkout via payment_url)
   webview_flutter: ^4.10.0
 
+  # Opens the e-ticket PDF (invoice_url) in an external browser/PDF viewer
+  url_launcher: ^6.3.1
+
   # Native splash hold until Flutter paints the matching first frame.
   flutter_native_splash: ^2.4.6
   shimmer: ^3.0.0
+
+  # Icons (Tabler outline — design system source of truth)
+  tabler_icons_plus: ^3.44.0
 
   # ── Optional: uncomment when needed ──────────────────────────────────────
   # Local database (Drift / SQLite)

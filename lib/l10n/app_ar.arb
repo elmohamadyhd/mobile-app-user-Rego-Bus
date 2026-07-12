@@ -163,6 +163,8 @@
   "eTicketShare": "مشاركة",
   "eTicketBackHome": "العودة للرئيسية",
   "eTicketComingSoon": "قريباً",
+  "eTicketDownloadUnavailable": "تحميل التذكرة غير متاح حالياً",
+  "eTicketDownloadFailed": "تعذر فتح التذكرة، حاول مرة أخرى",
 
   "paymentTitle": "الدفع",
   "paymentDone": "تم",

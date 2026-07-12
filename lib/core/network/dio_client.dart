@@ -43,7 +43,6 @@ class _AuthInterceptor extends Interceptor {
     handler.next(options);
   }
 }
-
 class _LogInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -59,3 +58,4 @@ class _LogInterceptor extends Interceptor {
     handler.next(err);
   }
 }
+

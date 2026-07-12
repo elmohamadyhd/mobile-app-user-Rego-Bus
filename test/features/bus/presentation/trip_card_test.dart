@@ -40,7 +40,14 @@ BusTripSummary _buildTrip({int seats = 6}) {
     defaultBoardingStop: board,
     defaultDropoffStop: drop,
     boardingStops: [board, board.copyWith(locationId: '2', name: 'Giza')],
-    dropoffStops: [drop, drop.copyWith(locationId: '10', name: 'Moharam Bek')],
+    dropoffStops: [
+      drop,
+      drop.copyWith(
+        locationId: '10',
+        name: 'Moharam Bek',
+        arrivalAt: DateTime(2026, 2, 10, 12, 45),
+      ),
+    ],
   );
 }
 
@@ -81,6 +88,16 @@ Future<void> _pumpCard(
 }
 
 void main() {
+  testWidgets('shows the last drop-off stop and its arrival time on the card',
+      (tester) async {
+    await _pumpCard(tester, _buildTrip());
+
+    expect(find.text('Moharam Bek'), findsOneWidget);
+    expect(find.text('Sidi Gaber'), findsNothing);
+    expect(find.text('12:45'), findsOneWidget);
+    expect(find.text('11:30'), findsNothing);
+  });
+
   testWidgets('renders operator, fare stub and select without overflow',
       (tester) async {
     await _pumpCard(tester, _buildTrip());
@@ -189,8 +206,7 @@ void main() {
 
     final fareFinder = find.text('Fare');
     expect(fareFinder, findsNWidgets(2));
-    final shortFareY =
-        tester.getTopLeft(fareFinder.at(0)).dy - shortCardTop;
+    final shortFareY = tester.getTopLeft(fareFinder.at(0)).dy - shortCardTop;
     final longFareY = tester.getTopLeft(fareFinder.at(1)).dy - longCardTop;
     expect(shortFareY, longFareY);
 

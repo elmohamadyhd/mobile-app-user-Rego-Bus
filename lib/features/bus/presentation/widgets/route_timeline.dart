@@ -63,7 +63,8 @@ class RouteTimeline extends StatelessWidget {
               style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: AppSpacing.md),
-            _ZoneHeader(label: l10n.tripDetailBoardAt, color: AppColors.primary),
+            _ZoneHeader(
+                label: l10n.tripDetailBoardAt, color: AppColors.primary),
             for (var i = 0; i < board.length; i++)
               _TimelineRow(
                 stop: board[i],

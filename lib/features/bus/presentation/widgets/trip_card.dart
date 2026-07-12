@@ -239,7 +239,7 @@ class _Timeline extends StatelessWidget {
             Expanded(
               flex: 1,
               child: _TimeCell(
-                time: trip.arriveLabel,
+                time: trip.terminalArriveLabel,
                 alignment: AlignmentDirectional.topEnd,
               ),
             ),
@@ -254,7 +254,7 @@ class _Timeline extends StatelessWidget {
                 flex: 2,
                 child: Center(
                   child: Text(
-                    trip.durationLabel,
+                    trip.terminalDurationLabel,
                     style: AppTypography.caption.copyWith(
                       color: AppColors.textMuted,
                       fontWeight: FontWeight.w600,
@@ -280,7 +280,7 @@ class _Timeline extends StatelessWidget {
             Expanded(
               flex: 1,
               child: _StationCell(
-                station: trip.defaultDropoffStop.name,
+                station: trip.terminalDropoffStop.name,
                 extra: dropoffExtra,
                 textAlign: TextAlign.end,
               ),
@@ -340,8 +340,7 @@ class _StationCell extends StatelessWidget {
               textAlign: textAlign,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style:
-                  AppTypography.caption.copyWith(color: AppColors.textMuted),
+              style: AppTypography.caption.copyWith(color: AppColors.textMuted),
             ),
           ),
           if (extra > 0) ...[

@@ -77,6 +77,23 @@ abstract class BusTripSummary with _$BusTripSummary {
 
   DateTime get arriveTime => defaultDropoffStop.arrivalAt ?? dateTime;
 
+  /// Last drop-off on the route — used for search-result card display only.
+  BusStop get terminalDropoffStop =>
+      dropoffStops.isNotEmpty ? dropoffStops.last : defaultDropoffStop;
+
+  DateTime get terminalArriveTime =>
+      terminalDropoffStop.arrivalAt ?? dateTime;
+
+  String get terminalArriveLabel => _formatTime(terminalArriveTime);
+
+  String get terminalDurationLabel {
+    final diff = terminalArriveTime.difference(departTime).inMinutes;
+    final mins = diff > 0 ? diff : 0;
+    final h = mins ~/ 60;
+    final m = mins % 60;
+    return m == 0 ? '${h}h' : '${h}h ${m}m';
+  }
+
   int get durationMin {
     final diff = arriveTime.difference(departTime).inMinutes;
     return diff > 0 ? diff : 0;

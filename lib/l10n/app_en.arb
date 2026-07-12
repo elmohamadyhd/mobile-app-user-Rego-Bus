@@ -225,6 +225,8 @@
   "eTicketShare": "Share",
   "eTicketBackHome": "Back to home",
   "eTicketComingSoon": "Coming soon",
+  "eTicketDownloadUnavailable": "Ticket download isn't available yet",
+  "eTicketDownloadFailed": "Couldn't open the ticket. Please try again",
 
   "paymentTitle": "Payment",
   "paymentDone": "Done",

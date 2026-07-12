@@ -28,7 +28,8 @@ enum BusBookingStatus {
 
 enum PaymentMethod { visa, wallet }
 
-final busApiProvider = Provider<BusApi>((ref) => BusApi(ref.watch(dioProvider)));
+final busApiProvider =
+    Provider<BusApi>((ref) => BusApi(ref.watch(dioProvider)));
 
 final busRepositoryProvider = Provider<BusRepository>(
   (ref) => BusRepositoryImpl(ref.watch(busApiProvider)),
@@ -127,8 +128,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     );
 
     try {
-      final currency =
-          state.searchParams?.currency ?? BusCurrency.defaultCode;
+      final currency = state.searchParams?.currency ?? BusCurrency.defaultCode;
       final detail = await _repo.tripById(trip.id, currency: currency);
       if (detail.id.isNotEmpty) {
         final merged = trip.mergeEnrichment(detail);
@@ -272,8 +272,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
 
     state = state.copyWith(status: BusBookingStatus.verifyingPayment);
     try {
-      final currency =
-          state.searchParams?.currency ?? BusCurrency.defaultCode;
+      final currency = state.searchParams?.currency ?? BusCurrency.defaultCode;
       final order = await _repo.orderStatus(ticket.orderId, currency: currency);
       state = state.copyWith(
         status: order.isConfirmed

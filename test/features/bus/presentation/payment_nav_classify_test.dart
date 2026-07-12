@@ -3,34 +3,40 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rego/features/bus/presentation/payment_webview_screen.dart';
 
 void main() {
-  const backendHost = 'portal.wdenytravel.com';
+  PaymentNavResult classify(String url) => classifyPaymentNav(Uri.parse(url));
 
-  PaymentNavPhase classify(String url) => classifyPaymentNav(
-        Uri.parse(url),
-        gatewayHostPart: 'myfatoorah',
-        backendHost: backendHost,
-      );
-
-  test('the gateway invoice page is classified as atGateway', () {
+  test('the success redirect is classified as success, regardless of locale',
+      () {
     expect(
-      classify('https://demo.MyFatoorah.com/KWT/ia/abc123'),
-      PaymentNavPhase.atGateway,
+      classify('https://wdenytravel.com/ar/success-payment'),
+      PaymentNavResult.success,
     );
     expect(
-      classify('https://sa.myfatoorah.com/pay/xyz'),
-      PaymentNavPhase.atGateway,
+      classify('https://wdenytravel.com/en/success-payment'),
+      PaymentNavResult.success,
     );
   });
 
-  test('a return to the backend host is classified as returnedToBackend', () {
+  test('the failure redirect is classified as failure', () {
     expect(
-      classify('https://portal.wdenytravel.com/api/v1/buses/orders/1454/pay'),
-      PaymentNavPhase.returnedToBackend,
+      classify('https://wdenytravel.com/ar/failed-payment'),
+      PaymentNavResult.failure,
     );
   });
 
-  test('an unrelated host is classified as other', () {
-    expect(classify('https://google.com'), PaymentNavPhase.other);
-    expect(classify('about:blank'), PaymentNavPhase.other);
+  test('the gateway hosted-checkout page is still pending', () {
+    expect(
+      classify('https://demo.MyFatoorah.com/KWT/ia/01072695205842-dee51cf8'),
+      PaymentNavResult.pending,
+    );
+    expect(
+      classify('https://portal.wdenytravel.com/api/v1/buses/orders/1466/pay'),
+      PaymentNavResult.pending,
+    );
+  });
+
+  test('unrelated and blank navigations are pending', () {
+    expect(classify('https://google.com'), PaymentNavResult.pending);
+    expect(classify('about:blank'), PaymentNavResult.pending);
   });
 }

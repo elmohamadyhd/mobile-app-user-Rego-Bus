@@ -22,7 +22,8 @@ Future<BusLocation?> showBusCityPicker(
     isScrollControlled: true,
     backgroundColor: AppColors.bgCard,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+      borderRadius:
+          BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
     ),
     builder: (context) => Padding(
       padding: EdgeInsets.only(
@@ -66,7 +67,8 @@ class _BusCityPickerSheetState extends ConsumerState<_BusCityPickerSheet> {
     String languageCode,
   ) {
     return locations
-        .where((l) => widget.excludeCityId == null || l.id != widget.excludeCityId)
+        .where(
+            (l) => widget.excludeCityId == null || l.id != widget.excludeCityId)
         .where((l) => l.matchesQuery(_query.text, languageCode))
         .toList();
   }

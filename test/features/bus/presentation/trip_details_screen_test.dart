@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
@@ -131,7 +132,7 @@ void main() {
 
       expect(find.text('Amenities'), findsNothing);
 
-      await tester.tap(find.byIcon(Icons.keyboard_arrow_down_rounded));
+      await tester.tap(find.byIcon(AppIcons.chevronDown));
       await tester.pumpAndSettle();
 
       expect(find.text('Amenities'), findsOneWidget);

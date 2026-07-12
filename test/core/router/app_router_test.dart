@@ -74,7 +74,8 @@ void main() {
     },
   );
 
-  testWidgets('guest can browse Home during the current session', (tester) async {
+  testWidgets('guest can browse Home during the current session',
+      (tester) async {
     await pumpApp(tester, testStorage());
     expect(find.text('Welcome back'), findsOneWidget);
 

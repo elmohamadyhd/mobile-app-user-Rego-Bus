@@ -1,7 +1,10 @@
 // lib/features/bus/presentation/eticket_screen.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
@@ -33,7 +36,7 @@ class BusTicketScreen extends ConsumerWidget {
           children: [
             _HeroSection(ticket: ticket),
             _BoardingPassCard(ticket: ticket),
-            const _ActionButtons(),
+            _ActionButtons(ticket: ticket),
             _BackHomeButton(onPressed: () {
               ref.read(busBookingProvider.notifier).reset();
               context.go(AppRoutes.home);
@@ -228,7 +231,30 @@ class _QrPlaceholder extends StatelessWidget {
 // ── Action buttons row ────────────────────────────────────────────────────────
 
 class _ActionButtons extends StatelessWidget {
-  const _ActionButtons();
+  const _ActionButtons({required this.ticket});
+  final BusTicket ticket;
+
+  /// Opens the e-ticket PDF (`invoice_url`) in an external browser/PDF
+  /// viewer. There's no in-app download UI, so handing off to the OS is the
+  /// simplest reliable path to "download" on both Android and iOS.
+  Future<void> _downloadTicket(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final invoiceUrl = ticket.invoiceUrl ?? '';
+    final uri = invoiceUrl.isEmpty ? null : Uri.tryParse(invoiceUrl);
+    if (uri == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.eTicketDownloadUnavailable)),
+      );
+      return;
+    }
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.eTicketDownloadFailed)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,7 +273,7 @@ class _ActionButtons extends StatelessWidget {
         children: [
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: showComingSoon,
+              onPressed: () => unawaited(_downloadTicket(context)),
               icon: const Icon(AppIcons.download),
               label: Text(l10n.eTicketDownload),
               style: OutlinedButton.styleFrom(

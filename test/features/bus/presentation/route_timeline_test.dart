@@ -129,8 +129,7 @@ void main() {
     expect(tapped?.locationId, 'b2');
   });
 
-  testWidgets('tapping a drop-off row fires onDropoffSelected',
-      (tester) async {
+  testWidgets('tapping a drop-off row fires onDropoffSelected', (tester) async {
     BusStop? tapped;
     await _pump(
       tester,

@@ -94,8 +94,7 @@ void main() {
     await tester.tap(find.text('Sign in'));
     await tester.pumpAndSettle();
 
-    expect(
-        find.text('LOGIN returnTo=${BusRoutes.confirm}'), findsOneWidget);
+    expect(find.text('LOGIN returnTo=${BusRoutes.confirm}'), findsOneWidget);
   });
 
   testWidgets('Create account pushes register with AuthGateArgs(returnTo)',

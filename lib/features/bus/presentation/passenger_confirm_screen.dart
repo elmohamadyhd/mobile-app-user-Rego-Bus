@@ -179,8 +179,8 @@ class _BusTripSummaryCard extends StatelessWidget {
               children: [
                 Text(
                   l10n.confirmDateLabel,
-                  style:
-                      AppTypography.caption.copyWith(color: AppColors.textMuted),
+                  style: AppTypography.caption
+                      .copyWith(color: AppColors.textMuted),
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -243,7 +243,8 @@ class _ConfirmRouteRow extends StatelessWidget {
             children: [
               Text(
                 _formatTime(from.arrivalAt),
-                style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+                style:
+                    AppTypography.title.copyWith(fontWeight: FontWeight.w700),
               ),
               Text(
                 from.name,
@@ -252,8 +253,8 @@ class _ConfirmRouteRow extends StatelessWidget {
               if (from.cityName.isNotEmpty)
                 Text(
                   from.cityName,
-                  style:
-                      AppTypography.caption.copyWith(color: AppColors.textMuted),
+                  style: AppTypography.caption
+                      .copyWith(color: AppColors.textMuted),
                 ),
             ],
           ),
@@ -268,7 +269,8 @@ class _ConfirmRouteRow extends StatelessWidget {
             children: [
               Text(
                 _formatTime(to.arrivalAt),
-                style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+                style:
+                    AppTypography.title.copyWith(fontWeight: FontWeight.w700),
               ),
               Text(
                 to.name,
@@ -279,8 +281,8 @@ class _ConfirmRouteRow extends StatelessWidget {
                 Text(
                   to.cityName,
                   textAlign: TextAlign.end,
-                  style:
-                      AppTypography.caption.copyWith(color: AppColors.textMuted),
+                  style: AppTypography.caption
+                      .copyWith(color: AppColors.textMuted),
                 ),
             ],
           ),
