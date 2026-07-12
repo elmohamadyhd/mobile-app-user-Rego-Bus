@@ -9,6 +9,7 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/language_icon_button.dart';
 
 class _Slide {
   const _Slide(this.icon, this.title, this.body);
@@ -66,19 +67,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                child: TextButton(
-                  onPressed: _finish,
-                  child: Text(
-                    l10n.onboardingSkip,
-                    style: AppTypography.title.copyWith(
-                      color: AppColors.textSecondary,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+              child: Row(
+                children: [
+                  TextButton(
+                    onPressed: _finish,
+                    child: Text(
+                      l10n.onboardingSkip,
+                      style: AppTypography.title.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ),
-                ),
+                  const Spacer(),
+                  const LanguageIconButton(color: AppColors.textSecondary),
+                ],
               ),
             ),
             Expanded(
