@@ -26,7 +26,9 @@ abstract class BusTicket with _$BusTicket {
     required String total,
     required String currency,
     String? paymentUrl,
+    String? cancelUrl,
     String? invoiceUrl,
+    String? statusCode,
     required DateTime issuedAt,
   }) = _BusTicket;
 }

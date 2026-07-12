@@ -13,12 +13,14 @@ class FakeBusRepository implements BusRepository {
     this.tripByIdResult,
     this.seatMapResult,
     this.ticketResult,
+    this.orderStatusResult,
   });
 
   BusTripsPage? tripsPage;
   BusTripSummary? tripByIdResult;
   SeatMap? seatMapResult;
   BusTicket? ticketResult;
+  BusOrderStatus? orderStatusResult;
   List<BusLocation>? locationsResult;
 
   @override
@@ -98,6 +100,19 @@ class FakeBusRepository implements BusRepository {
           total: '100 EGP',
           currency: 'EGP',
           issuedAt: DateTime(2026, 7, 10),
+        );
+  }
+
+  @override
+  Future<BusOrderStatus> orderStatus(
+    String orderId, {
+    required String currency,
+  }) async {
+    return orderStatusResult ??
+        BusOrderStatus(
+          orderId: orderId,
+          statusCode: 'pending',
+          isConfirmed: false,
         );
   }
 

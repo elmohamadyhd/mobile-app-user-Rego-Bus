@@ -164,6 +164,14 @@
   "eTicketBackHome": "العودة للرئيسية",
   "eTicketComingSoon": "قريباً",
 
+  "paymentTitle": "الدفع",
+  "paymentDone": "تم",
+  "paymentVerifying": "جارٍ التحقق من الدفع…",
+  "paymentPendingTitle": "في انتظار الدفع",
+  "paymentPendingBody": "مقعدك محجوز لمدة ١٥ دقيقة. أكمل الدفع لتأكيد حجزك، وإلا سيُلغى تلقائياً.",
+  "paymentPendingComplete": "أكمل الدفع",
+  "paymentPendingBackHome": "العودة للرئيسية",
+
   "profileGuest": "زائر",
   "profileMenuTrips": "طلباتي",
   "profileMenuAddresses": "العناوين",

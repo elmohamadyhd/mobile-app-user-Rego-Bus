@@ -25,7 +25,11 @@ class PassengerConfirmScreen extends ConsumerWidget {
 
     // Side-effect navigation via ref.listen — never call context.go inside build.
     ref.listen<BusBookingState>(busBookingProvider, (prev, next) {
-      if (next.status == BusBookingStatus.confirmed) {
+      if (next.status == BusBookingStatus.awaitingPayment) {
+        // Order created (pending) with a gateway payment_url — go pay.
+        context.push(BusRoutes.pay);
+      } else if (next.status == BusBookingStatus.confirmed) {
+        // Fallback path: order had no payment_url and was confirmed directly.
         context.go(BusRoutes.ticket);
       } else if (next.status == BusBookingStatus.error && next.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(

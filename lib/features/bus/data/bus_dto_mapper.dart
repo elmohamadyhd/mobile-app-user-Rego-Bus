@@ -232,9 +232,40 @@ abstract final class BusDtoMapper {
       total: _string(data['total']) ?? '',
       currency: _string(data['currency']) ?? trip.currency,
       paymentUrl: _string(data['payment_url']),
+      cancelUrl: _string(data['cancel_url']),
       invoiceUrl: invoiceUrl ?? _string(data['invoice_url']),
+      statusCode: _string(data['status_code']),
       issuedAt: DateTime.now(),
     );
+  }
+
+  static BusOrderStatus orderStatusFromEnvelope(dynamic body) {
+    final envelope = body as Map<String, dynamic>;
+    ensureSuccess(envelope);
+    final data = envelope['data'] as Map<String, dynamic>? ?? {};
+
+    final statusCode = _string(data['status_code']) ?? '';
+    final isConfirmedFlag = _int(data['is_confirmed']) ?? 0;
+
+    return BusOrderStatus(
+      orderId: _string(data['id']) ?? '',
+      statusCode: statusCode,
+      isConfirmed: isPaidStatus(statusCode, isConfirmedFlag),
+      total: _string(data['total']),
+      paymentUrl: _string(data['payment_url']),
+    );
+  }
+
+  /// Whether an order's status represents a completed/paid booking.
+  ///
+  /// ⚠️ Backend dependency: the exact set of "paid" status codes isn't
+  /// documented — samples only show `"pending"`. We treat `is_confirmed == 1`
+  /// or any of the common success codes as paid. Adjust here once the backend
+  /// confirms its vocabulary.
+  static bool isPaidStatus(String statusCode, int isConfirmedFlag) {
+    if (isConfirmedFlag == 1) return true;
+    const paid = {'confirmed', 'paid', 'success', 'completed', 'succeeded'};
+    return paid.contains(statusCode.trim().toLowerCase());
   }
 
   static Map<String, dynamic> createTicketBody(BusCreateTicketRequest req) {

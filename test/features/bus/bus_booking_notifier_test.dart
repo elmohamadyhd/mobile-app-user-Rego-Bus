@@ -2,11 +2,39 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
+import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/domain/repositories/bus_repository.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 
 import 'fake_bus_repository.dart';
+
+BusTicket _pendingTicket({String? paymentUrl = 'https://pay.example/1'}) {
+  return BusTicket(
+    bookingRef: '000001',
+    orderId: '42',
+    trip: FakeBusRepository.sampleTrip,
+    fromStop: FakeBusRepository.sampleTrip.defaultBoardingStop,
+    toStop: FakeBusRepository.sampleTrip.defaultDropoffStop,
+    seats: const ['16'],
+    ticketLines: const [],
+    total: 'EGP 100',
+    currency: 'EGP',
+    paymentUrl: paymentUrl,
+    statusCode: 'pending',
+    issuedAt: DateTime(2026, 7, 10),
+  );
+}
+
+/// Drives the notifier to the point just before `confirmBooking`: search
+/// params set (required by `confirmBooking`), a trip selected, one seat picked.
+Future<void> _prepareBooking(BusBookingNotifier notifier) async {
+  await notifier.searchTrips(
+    BusSearchParams(cityFromId: 1, cityToId: 2, date: DateTime(2026, 7, 10)),
+  );
+  await notifier.selectTrip(FakeBusRepository.sampleTrip);
+  notifier.toggleSeat('16');
+}
 
 void main() {
   ProviderContainer makeContainer(FakeBusRepository repo) {
@@ -139,6 +167,80 @@ void main() {
 
       notifier.toggleSeat('16');
       expect(container.read(busBookingProvider).selectedSeats, isEmpty);
+    });
+
+    test('confirmBooking with a payment_url awaits payment (not confirmed)',
+        () async {
+      final repo = FakeBusRepository(ticketResult: _pendingTicket());
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+
+      await notifier.confirmBooking();
+
+      final state = container.read(busBookingProvider);
+      expect(state.status, BusBookingStatus.awaitingPayment);
+      expect(state.ticket?.paymentUrl, isNotNull);
+    });
+
+    test('confirmBooking without a payment_url confirms directly', () async {
+      final repo =
+          FakeBusRepository(ticketResult: _pendingTicket(paymentUrl: null));
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+
+      await notifier.confirmBooking();
+
+      expect(
+        container.read(busBookingProvider).status,
+        BusBookingStatus.confirmed,
+      );
+    });
+
+    test('verifyPayment confirms when the order reads back paid', () async {
+      final repo = FakeBusRepository(
+        ticketResult: _pendingTicket(),
+        orderStatusResult: const BusOrderStatus(
+          orderId: '42',
+          statusCode: 'confirmed',
+          isConfirmed: true,
+        ),
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      await notifier.confirmBooking();
+
+      await notifier.verifyPayment();
+
+      expect(
+        container.read(busBookingProvider).status,
+        BusBookingStatus.confirmed,
+      );
+    });
+
+    test('verifyPayment stays pending when the order is still unpaid',
+        () async {
+      final repo = FakeBusRepository(
+        ticketResult: _pendingTicket(),
+        orderStatusResult: const BusOrderStatus(
+          orderId: '42',
+          statusCode: 'pending',
+          isConfirmed: false,
+        ),
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      await notifier.confirmBooking();
+
+      await notifier.verifyPayment();
+
+      expect(
+        container.read(busBookingProvider).status,
+        BusBookingStatus.paymentPending,
+      );
     });
   });
 }

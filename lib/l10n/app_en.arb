@@ -226,6 +226,14 @@
   "eTicketBackHome": "Back to home",
   "eTicketComingSoon": "Coming soon",
 
+  "paymentTitle": "Payment",
+  "paymentDone": "Done",
+  "paymentVerifying": "Verifying your payment…",
+  "paymentPendingTitle": "Payment pending",
+  "paymentPendingBody": "Your seat is reserved and held for 15 minutes. Complete the payment to confirm your booking — otherwise it will be cancelled automatically.",
+  "paymentPendingComplete": "Complete payment",
+  "paymentPendingBackHome": "Back to home",
+
   "profileGuest": "Guest",
   "@profileGuest": {
     "description": "Fallback display name when the session has no user name."

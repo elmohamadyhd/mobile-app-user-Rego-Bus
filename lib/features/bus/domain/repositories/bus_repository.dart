@@ -26,6 +26,26 @@ final class BusSeatSelection {
   final String seatTypeId;
 }
 
+/// Authoritative payment/booking status for an order, read back from the
+/// backend after the rider goes through the payment gateway. The order is
+/// created in a `pending` state by `create-ticket`; this reflects whether it
+/// has since moved to a paid/confirmed state.
+final class BusOrderStatus {
+  const BusOrderStatus({
+    required this.orderId,
+    required this.statusCode,
+    required this.isConfirmed,
+    this.total,
+    this.paymentUrl,
+  });
+
+  final String orderId;
+  final String statusCode;
+  final bool isConfirmed;
+  final String? total;
+  final String? paymentUrl;
+}
+
 final class BusCreateTicketRequest {
   const BusCreateTicketRequest({
     required this.tripId,
@@ -71,5 +91,13 @@ abstract interface class BusRepository {
     required BusTripSummary trip,
     required BusStop fromStop,
     required BusStop toStop,
+  });
+
+  /// Reads the current payment/booking status for an order created by
+  /// [createTicket]. Used to verify the rider actually paid after the gateway
+  /// hands control back to the app.
+  Future<BusOrderStatus> orderStatus(
+    String orderId, {
+    required String currency,
   });
 }

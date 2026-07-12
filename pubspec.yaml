@@ -43,6 +43,9 @@ dependencies:
   # SVG rendering (brand marks: Google / Facebook / Apple)
   flutter_svg: ^2.0.17
 
+  # In-app payment gateway (MyFatoorah hosted checkout via payment_url)
+  webview_flutter: ^4.10.0
+
   # Native splash hold until Flutter paints the matching first frame.
   flutter_native_splash: ^2.4.6
   shimmer: ^3.0.0

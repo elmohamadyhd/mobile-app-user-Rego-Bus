@@ -73,4 +73,25 @@ class BusApi {
     );
     return res.data;
   }
+
+  /// Order-status lookup used to verify payment after the gateway returns.
+  ///
+  /// ⚠️ Backend dependency: this GET is not yet documented in the Wadeny API
+  /// reference — only `/buses/orders/{id}/pay` and `/cancel` appear (as values
+  /// inside the create-ticket response body). We call the bare resource path
+  /// here, which is conventional for that URL shape; if the backend returns
+  /// 404, payment verification degrades to "pending" (seat stays held). The
+  /// path lives in one place so it's trivial to correct once confirmed.
+  static String orderStatusPath(String orderId) => '/buses/orders/$orderId';
+
+  Future<dynamic> orderStatus({
+    required String orderId,
+    required String currency,
+  }) async {
+    final res = await _dio.get(
+      orderStatusPath(orderId),
+      queryParameters: {'currency': currency},
+    );
+    return res.data;
+  }
 }

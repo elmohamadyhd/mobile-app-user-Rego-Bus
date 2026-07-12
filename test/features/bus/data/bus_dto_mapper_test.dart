@@ -26,5 +26,49 @@ void main() {
       expect(merged.dropoffStops, isNotEmpty);
       expect(merged.defaultDropoffStop.finalPrice, 148.5);
     });
+
+    test('isPaidStatus recognizes paid states and rejects pending', () {
+      expect(BusDtoMapper.isPaidStatus('pending', 0), isFalse);
+      expect(BusDtoMapper.isPaidStatus('Pending', 1), isTrue); // is_confirmed
+      expect(BusDtoMapper.isPaidStatus('confirmed', 0), isTrue);
+      expect(BusDtoMapper.isPaidStatus('PAID', 0), isTrue);
+      expect(BusDtoMapper.isPaidStatus('success', 0), isTrue);
+      expect(BusDtoMapper.isPaidStatus('failed', 0), isFalse);
+    });
+
+    test('orderStatusFromEnvelope reads a pending order', () {
+      final order = BusDtoMapper.orderStatusFromEnvelope(<String, dynamic>{
+        'status': 200,
+        'message': 'order',
+        'errors': <String, dynamic>{},
+        'data': <String, dynamic>{
+          'id': 1454,
+          'status_code': 'pending',
+          'is_confirmed': 0,
+          'total': 'EGP 20.93',
+          'payment_url': 'https://portal.wdenytravel.com/api/v1/buses/orders/1454/pay',
+        },
+      });
+
+      expect(order.orderId, '1454');
+      expect(order.statusCode, 'pending');
+      expect(order.isConfirmed, isFalse);
+      expect(order.total, 'EGP 20.93');
+    });
+
+    test('orderStatusFromEnvelope reads a confirmed order', () {
+      final order = BusDtoMapper.orderStatusFromEnvelope(<String, dynamic>{
+        'status': 200,
+        'message': 'order',
+        'errors': <String, dynamic>{},
+        'data': <String, dynamic>{
+          'id': 1455,
+          'status_code': 'confirmed',
+          'is_confirmed': 1,
+        },
+      });
+
+      expect(order.isConfirmed, isTrue);
+    });
   });
 }

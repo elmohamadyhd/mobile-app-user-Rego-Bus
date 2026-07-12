@@ -19,6 +19,9 @@ enum BusBookingStatus {
   loadingDetail,
   loadingSeats,
   confirming,
+  awaitingPayment,
+  verifyingPayment,
+  paymentPending,
   confirmed,
   error,
 }
@@ -235,13 +238,52 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
         fromStop: from,
         toStop: to,
       );
+      // The order is created in a `pending` state with a gateway payment_url.
+      // Hand off to the payment WebView; the booking is only `confirmed` once
+      // `verifyPayment` reads back a paid status. If no payment_url came back
+      // (unexpected for the card path), fall through to confirmed so the rider
+      // isn't stranded.
+      final hasPaymentUrl = (ticket.paymentUrl ?? '').isNotEmpty;
       state = state.copyWith(
-        status: BusBookingStatus.confirmed,
+        status: hasPaymentUrl
+            ? BusBookingStatus.awaitingPayment
+            : BusBookingStatus.confirmed,
         ticket: ticket,
       );
     } catch (e) {
       state = state.copyWith(
         status: BusBookingStatus.error,
+        error: e.toString(),
+      );
+    }
+  }
+
+  /// Reads the order's authoritative status after the payment gateway returns.
+  /// Paid → `confirmed` (show the e-ticket). Anything else, including a lookup
+  /// error, → `paymentPending`: the seat is held and the backend auto-cancels
+  /// the order in ~15 minutes if it stays unpaid, so pending is the safe
+  /// resting state rather than a hard error.
+  Future<void> verifyPayment() async {
+    final ticket = state.ticket;
+    if (ticket == null || ticket.orderId.isEmpty) {
+      state = state.copyWith(status: BusBookingStatus.paymentPending);
+      return;
+    }
+
+    state = state.copyWith(status: BusBookingStatus.verifyingPayment);
+    try {
+      final currency =
+          state.searchParams?.currency ?? BusCurrency.defaultCode;
+      final order = await _repo.orderStatus(ticket.orderId, currency: currency);
+      state = state.copyWith(
+        status: order.isConfirmed
+            ? BusBookingStatus.confirmed
+            : BusBookingStatus.paymentPending,
+        error: null,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: BusBookingStatus.paymentPending,
         error: e.toString(),
       );
     }

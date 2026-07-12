@@ -94,6 +94,17 @@ class BusRepositoryImpl implements BusRepository {
     });
   }
 
+  @override
+  Future<BusOrderStatus> orderStatus(
+    String orderId, {
+    required String currency,
+  }) {
+    return _guard(() async {
+      final body = await _api.orderStatus(orderId: orderId, currency: currency);
+      return BusDtoMapper.orderStatusFromEnvelope(body);
+    });
+  }
+
   String _isoDate(DateTime date) {
     final y = date.year.toString().padLeft(4, '0');
     final m = date.month.toString().padLeft(2, '0');
