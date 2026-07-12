@@ -163,4 +163,23 @@ void main() {
 
     expect(find.text('LOGIN returnTo=${AppRoutes.profile}'), findsOneWidget);
   });
+
+  testWidgets('tapping Language opens the language picker sheet',
+      (tester) async {
+    tester.view.physicalSize = const Size(1170, 2532);
+    tester.view.devicePixelRatio = 3.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await pumpProfile(tester);
+
+    final languageTile = find.text('Language');
+    await tester.ensureVisible(languageTile);
+    await tester.pumpAndSettle();
+    await tester.tap(languageTile);
+    await tester.pumpAndSettle();
+
+    expect(find.text('English'), findsOneWidget);
+    expect(find.text('العربية'), findsOneWidget);
+  });
 }

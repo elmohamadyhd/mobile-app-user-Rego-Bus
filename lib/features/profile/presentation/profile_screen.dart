@@ -11,6 +11,7 @@ import 'package:rego/features/auth/domain/entities/auth_user.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/language_picker_sheet.dart';
 import 'package:rego/shared/widgets/ltr_text.dart';
 import 'package:rego/shared/widgets/shell_tab_scroll_view.dart';
 import 'package:rego/shared/widgets/skyline_tab_hero.dart';
@@ -52,7 +53,7 @@ class ProfileScreen extends ConsumerWidget {
                 _ProfileMenuItem(
                   icon: AppIcons.language,
                   label: l10n.profileMenuLanguage,
-                  onTap: () => _showComingSoon(context, l10n),
+                  onTap: () => showLanguagePickerSheet(context),
                 ),
                 _ProfileMenuItem(
                   icon: AppIcons.settings,
