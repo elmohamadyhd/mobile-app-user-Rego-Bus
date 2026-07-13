@@ -6,12 +6,18 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_typography.dart';
 
 class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const BookingAppBar(
-      {super.key, required this.title, this.subtitle, this.action});
+  const BookingAppBar({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.action,
+    this.onBack,
+  });
 
   final String title;
   final String? subtitle;
   final Widget? action;
+  final VoidCallback? onBack;
 
   @override
   Size get preferredSize => Size.fromHeight(subtitle != null ? 68.0 : 56.0);
@@ -32,7 +38,7 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
                   child:
                       const Icon(AppIcons.back, color: AppColors.textPrimary),
                 ),
-                onPressed: () => context.pop(),
+                onPressed: onBack ?? () => context.pop(),
               ),
               Expanded(
                 child: subtitle != null
