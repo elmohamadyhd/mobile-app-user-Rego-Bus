@@ -170,6 +170,46 @@
   "tripResultsError": "Couldn't load trips",
   "tripResultsRetry": "Try again",
   "tripResultsFareLabel": "Fare",
+  "tripResultsNoMatchingTrips": "No trips match your filters",
+  "tripResultsClearFilters": "Clear filters",
+  "tripFilterSheetTitle": "Filter trips",
+  "tripFilterOperators": "Operators",
+  "tripFilterDepartTime": "Departure time",
+  "tripFilterPrice": "Price",
+  "tripFilterClearAll": "Clear all",
+  "tripFilterApply": "Apply",
+  "tripFilterDepartAfter": "After {time}",
+  "@tripFilterDepartAfter": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "tripFilterDepartBefore": "Before {time}",
+  "@tripFilterDepartBefore": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "tripFilterPriceFrom": "From {price} EGP",
+  "@tripFilterPriceFrom": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "tripFilterPriceUpTo": "Up to {price} EGP",
+  "@tripFilterPriceUpTo": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
   "bookingStepRoute": "Route",
   "bookingStepSeat": "Seat",
   "bookingStepConfirm": "Confirm",
@@ -207,7 +247,7 @@
   "confirmPassengerPhone": "Phone",
   "confirmEditComingSoon": "Edit coming soon",
   "confirmPaymentSection": "Payment method",
-  "confirmPaymentWallet": "REGO Wallet",
+  "confirmPaymentWallet": "Wallet",
   "confirmPaymentCard": "Credit / debit card",
   "confirmCardComingSoon": "Card payment coming soon",
   "confirmPriceSection": "Price breakdown",
