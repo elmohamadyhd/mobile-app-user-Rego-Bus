@@ -15,7 +15,10 @@ BusTicket _pendingTicket({String? paymentUrl = 'https://pay.example/1'}) {
     orderId: '42',
     trip: FakeBusRepository.sampleTrip,
     fromStop: FakeBusRepository.sampleTrip.defaultBoardingStop,
-    toStop: FakeBusRepository.sampleTrip.defaultDropoffStop,
+    // `selectTrip` seeds `toStop` from `terminalDropoffStop` (the last
+    // dropoff stop), not `defaultDropoffStop` — match that so the reuse
+    // guard's stop comparison lines up with what `_prepareBooking` sets.
+    toStop: FakeBusRepository.sampleTrip.terminalDropoffStop,
     seats: const ['16'],
     ticketLines: const [],
     total: 'EGP 100',
@@ -241,6 +244,46 @@ void main() {
         container.read(busBookingProvider).status,
         BusBookingStatus.paymentPending,
       );
+    });
+
+    test(
+        'confirmBooking reuses the held ticket for the same trip/stops/seats',
+        () async {
+      final repo = FakeBusRepository(ticketResult: _pendingTicket());
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+
+      await notifier.confirmBooking();
+      expect(repo.createTicketCallCount, 1);
+
+      // Rider backed out of payment and taps "Confirm & pay" again with the
+      // exact same trip/stops/seats — must reuse the held order.
+      await notifier.confirmBooking();
+
+      expect(repo.createTicketCallCount, 1);
+      expect(
+        container.read(busBookingProvider).status,
+        BusBookingStatus.awaitingPayment,
+      );
+    });
+
+    test(
+        'confirmBooking creates a new order when seats changed since the held ticket',
+        () async {
+      final repo = FakeBusRepository(ticketResult: _pendingTicket());
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      await notifier.confirmBooking();
+      expect(repo.createTicketCallCount, 1);
+
+      // Rider goes back, picks a different seat, confirms again.
+      notifier.toggleSeat('16');
+      notifier.toggleSeat('17');
+      await notifier.confirmBooking();
+
+      expect(repo.createTicketCallCount, 2);
     });
   });
 }

@@ -22,6 +22,7 @@ class FakeBusRepository implements BusRepository {
   BusTicket? ticketResult;
   BusOrderStatus? orderStatusResult;
   List<BusLocation>? locationsResult;
+  int createTicketCallCount = 0;
 
   @override
   Future<List<BusLocation>> listLocations() async {
@@ -88,6 +89,7 @@ class FakeBusRepository implements BusRepository {
     required BusStop fromStop,
     required BusStop toStop,
   }) async {
+    createTicketCallCount++;
     return ticketResult ??
         BusTicket(
           bookingRef: '000001',

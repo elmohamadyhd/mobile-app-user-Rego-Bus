@@ -201,6 +201,24 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     state = state.copyWith(paymentMethod: method);
   }
 
+  /// Whether [ticket] already represents a gateway order held for exactly
+  /// this trip/stop-pair/seat selection. If so, `confirmBooking` reuses its
+  /// `payment_url` instead of creating a duplicate temporary booking.
+  bool _ticketReusable(
+    BusTicket ticket,
+    BusTripSummary trip,
+    BusStop from,
+    BusStop to,
+    List<String> seats,
+  ) {
+    if ((ticket.paymentUrl ?? '').isEmpty) return false;
+    if (ticket.trip.id != trip.id) return false;
+    if (ticket.fromStop.locationId != from.locationId) return false;
+    if (ticket.toStop.locationId != to.locationId) return false;
+    return ticket.seats.length == seats.length &&
+        ticket.seats.toSet().containsAll(seats);
+  }
+
   Future<void> confirmBooking() async {
     final trip = state.selectedTrip;
     final params = state.searchParams;
@@ -218,6 +236,13 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
         status: BusBookingStatus.error,
         error: 'No seats selected',
       );
+      return;
+    }
+
+    final heldTicket = state.ticket;
+    if (heldTicket != null &&
+        _ticketReusable(heldTicket, trip, from, to, state.selectedSeats)) {
+      state = state.copyWith(status: BusBookingStatus.awaitingPayment);
       return;
     }
 
