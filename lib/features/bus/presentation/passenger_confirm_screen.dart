@@ -73,8 +73,6 @@ class PassengerConfirmScreen extends ConsumerWidget {
                 children: [
                   _BusTripSummaryCard(state: state, l10n: l10n),
                   const SizedBox(height: AppSpacing.md),
-                  _PassengerSection(state: state, l10n: l10n),
-                  const SizedBox(height: AppSpacing.md),
                   _PaymentSection(state: state, l10n: l10n),
                   const SizedBox(height: AppSpacing.md),
                   _PriceBreakdown(state: state, l10n: l10n),
@@ -310,116 +308,6 @@ class _SeatChip extends StatelessWidget {
         style: AppTypography.caption.copyWith(
           color: AppColors.primary,
           fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
-
-// ── Passenger section ────────────────────────────────────────────────────────
-
-class _PassengerSection extends StatelessWidget {
-  const _PassengerSection({required this.state, required this.l10n});
-  final BusBookingState state;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    const name = 'Ahmed Mohamed';
-    const phone = '+20 10 1234 5678';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.confirmPassengerSection,
-          style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.bgCard,
-            borderRadius: BorderRadius.circular(AppRadius.card),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            children: [
-              _PassengerRow(
-                label: l10n.confirmPassengerName,
-                value: name,
-                icon: AppIcons.user,
-                editLabel: l10n.confirmEditComingSoon,
-              ),
-              const Divider(height: 1, color: AppColors.hairline),
-              _PassengerRow(
-                label: l10n.confirmPassengerPhone,
-                value: phone,
-                icon: AppIcons.phone,
-                editLabel: l10n.confirmEditComingSoon,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PassengerRow extends StatelessWidget {
-  const _PassengerRow({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.editLabel,
-  });
-  final String label;
-  final String value;
-  final IconData icon;
-  final String editLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(editLabel)),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
-          ),
-          child: Row(
-            children: [
-              Icon(icon, size: 18, color: AppColors.primary),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: AppTypography.caption
-                          .copyWith(color: AppColors.textMuted),
-                    ),
-                    Text(
-                      value,
-                      style: AppTypography.body.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(AppIcons.forward,
-                  size: 18, color: AppColors.textMuted),
-            ],
-          ),
         ),
       ),
     );
