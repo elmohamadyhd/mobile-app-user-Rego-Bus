@@ -43,6 +43,7 @@ void main() {
         locationId: '10',
         name: 'Moharam Bek',
         arrivalAt: DateTime(2026, 2, 10, 12, 45),
+        finalPrice: 250,
       );
       final trip = _tripWithStops(
         defaultDrop: first,
@@ -52,6 +53,8 @@ void main() {
       expect(trip.terminalDropoffStop.name, 'Moharam Bek');
       expect(trip.terminalArriveLabel, '12:45');
       expect(trip.terminalDurationLabel, '4h 45m');
+      expect(trip.terminalPriceEgp, 250);
+      expect(trip.priceEgp, 180);
     });
 
     test('terminalDropoffStop falls back to default when list is empty', () {
@@ -67,6 +70,7 @@ void main() {
 
       expect(trip.terminalDropoffStop, drop);
       expect(trip.terminalArriveLabel, '11:30');
+      expect(trip.terminalPriceEgp, 180);
     });
   });
 }

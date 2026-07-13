@@ -157,6 +157,14 @@ class FakeBusRepository implements BusRepository {
         finalPrice: 148.5,
         originalPrice: 150,
       ),
+      BusStop(
+        locationId: '985054',
+        name: 'ميامي',
+        cityId: 2,
+        cityName: 'الاسكندريه',
+        finalPrice: 175,
+        originalPrice: 180,
+      ),
     ],
   );
 

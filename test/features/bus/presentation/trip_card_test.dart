@@ -46,6 +46,7 @@ BusTripSummary _buildTrip({int seats = 6}) {
         locationId: '10',
         name: 'Moharam Bek',
         arrivalAt: DateTime(2026, 2, 10, 12, 45),
+        finalPrice: 250,
       ),
     ],
   );
@@ -103,7 +104,7 @@ void main() {
     await _pumpCard(tester, _buildTrip());
 
     expect(find.textContaining('Go Bus', findRichText: true), findsOneWidget);
-    expect(find.textContaining('180', findRichText: true), findsWidgets);
+    expect(find.textContaining('250', findRichText: true), findsWidgets);
     expect(find.text('Fare'), findsOneWidget);
     expect(find.text('Select'), findsOneWidget);
     expect(find.text('6 seats left'), findsOneWidget);

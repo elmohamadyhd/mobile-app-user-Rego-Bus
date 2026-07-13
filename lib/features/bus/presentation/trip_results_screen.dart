@@ -33,7 +33,7 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
     final list = [...trips];
     switch (_selectedSort) {
       case 1: // Cheapest first
-        list.sort((a, b) => a.priceEgp.compareTo(b.priceEgp));
+        list.sort((a, b) => a.terminalPriceEgp.compareTo(b.terminalPriceEgp));
       case 2: // Most seats first
         list.sort((a, b) => b.seatsLeft.compareTo(a.seatsLeft));
       case 0: // Earliest departure first

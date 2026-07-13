@@ -116,12 +116,13 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
   Future<void> selectTrip(BusTripSummary trip) async {
     // Seed the default pair synchronously so the detail screen can open
     // immediately, then enrich in the background behind a loading state.
+    final terminalDropoff = trip.terminalDropoffStop;
     state = state.copyWith(
       status: BusBookingStatus.loadingDetail,
       selectedTrip: trip,
       fromStop: trip.defaultBoardingStop,
-      toStop: trip.defaultDropoffStop,
-      segmentFare: trip.defaultDropoffStop.finalPrice,
+      toStop: terminalDropoff,
+      segmentFare: terminalDropoff.finalPrice,
       selectedSeats: [],
       seatMap: null,
       error: null,
@@ -132,11 +133,12 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
       final detail = await _repo.tripById(trip.id, currency: currency);
       if (detail.id.isNotEmpty) {
         final merged = trip.mergeEnrichment(detail);
+        final enrichedTo = state.toStop ?? merged.terminalDropoffStop;
         state = state.copyWith(
           selectedTrip: merged,
           fromStop: state.fromStop ?? merged.defaultBoardingStop,
-          toStop: state.toStop ?? merged.defaultDropoffStop,
-          segmentFare: (state.toStop ?? merged.defaultDropoffStop).finalPrice,
+          toStop: enrichedTo,
+          segmentFare: enrichedTo.finalPrice,
         );
       }
     } catch (_) {

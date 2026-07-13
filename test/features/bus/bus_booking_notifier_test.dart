@@ -79,7 +79,7 @@ void main() {
       expect(state.trips, hasLength(1));
     });
 
-    test('selectTrip seeds default stops and segment fare', () async {
+    test('selectTrip seeds terminal drop-off stop and segment fare', () async {
       final repo = FakeBusRepository(
         tripsPage: BusTripsPage(
           trips: [FakeBusRepository.sampleTrip],
@@ -112,8 +112,8 @@ void main() {
 
       final state = container.read(busBookingProvider);
       expect(state.fromStop?.locationId, '985052');
-      expect(state.toStop?.locationId, '985053');
-      expect(state.segmentFare, 148.5);
+      expect(state.toStop?.locationId, '985054');
+      expect(state.segmentFare, 175);
     });
 
     test('selectTrip enters loadingDetail then settles to idle', () async {

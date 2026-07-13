@@ -33,7 +33,7 @@ BusTripSummary _buildTrip() {
     cityId: 2,
     cityName: 'Alexandria',
     arrivalAt: DateTime(2026, 2, 10, 12),
-    finalPrice: 150,
+    finalPrice: 250,
   );
   return BusTripSummary(
     id: 'trip-1',
@@ -88,17 +88,15 @@ void main() {
 
       expect(find.textContaining('Go Bus', findRichText: true), findsWidgets);
       expect(find.text('Trip route'), findsOneWidget);
-      // Ramsis/Sidi Gaber are the selected pair, so they render both in the
-      // header's compact time line and in the RouteTimeline below.
+      // Ramsis/Moharam Bek are the selected pair (last drop-off by default).
       expect(find.text('Ramsis'), findsOneWidget);
-      expect(find.text('Sidi Gaber'), findsOneWidget);
-      // Moharam Bek is the unselected alternate drop-off, shown only in the
-      // RouteTimeline.
       expect(find.text('Moharam Bek'), findsOneWidget);
+      // Sidi Gaber is the unselected alternate drop-off in the RouteTimeline.
+      expect(find.text('Sidi Gaber'), findsOneWidget);
       expect(find.text('Choose seats'), findsOneWidget);
-      // Default segment fare (Sidi Gaber, 180) shown in the timeline row +
+      // Default segment fare (Moharam Bek, 250) shown in the timeline row +
       // footer.
-      expect(find.textContaining('180', findRichText: true), findsWidgets);
+      expect(find.textContaining('250', findRichText: true), findsWidgets);
     },
   );
 
@@ -107,21 +105,21 @@ void main() {
     (tester) async {
       await _pumpDetails(tester, _buildTrip());
 
-      // Sidi Gaber's own row fare + the footer total both read 180.
-      expect(find.textContaining('180', findRichText: true), findsNWidgets(2));
+      // Moharam Bek's own row fare + the footer total both read 250.
+      expect(find.textContaining('250', findRichText: true), findsNWidgets(2));
 
-      final altStop = find.text('Moharam Bek');
+      final altStop = find.text('Sidi Gaber');
       await tester.ensureVisible(altStop);
       await tester.pumpAndSettle();
       // A single tap on a drop-off row selects it directly.
       await tester.tap(altStop);
       await tester.pumpAndSettle();
 
-      // Moharam Bek's own row fare + the new footer total both read 150.
-      expect(find.textContaining('150', findRichText: true), findsNWidgets(2));
-      // Sidi Gaber's row still shows its own fare even though it's no
-      // longer selected — only the footer total moved off 180.
-      expect(find.textContaining('180', findRichText: true), findsOneWidget);
+      // Sidi Gaber's own row fare + the new footer total both read 180.
+      expect(find.textContaining('180', findRichText: true), findsNWidgets(2));
+      // Moharam Bek's row still shows its own fare even though it's no
+      // longer selected — only the footer total moved off 250.
+      expect(find.textContaining('250', findRichText: true), findsOneWidget);
     },
   );
 

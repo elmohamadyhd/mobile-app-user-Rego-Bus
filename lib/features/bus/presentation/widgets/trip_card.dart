@@ -436,7 +436,7 @@ class _FareStub extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: '${trip.priceEgp}',
+                      text: '${trip.terminalPriceEgp}',
                       style: AppTypography.h1.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w800,

@@ -94,6 +94,11 @@ abstract class BusTripSummary with _$BusTripSummary {
     return m == 0 ? '${h}h' : '${h}h ${m}m';
   }
 
+  /// Fare for the last drop-off — used on search cards and cheapest sort.
+  double get terminalFare => terminalDropoffStop.finalPrice;
+
+  int get terminalPriceEgp => terminalFare.round();
+
   int get durationMin {
     final diff = arriveTime.difference(departTime).inMinutes;
     return diff > 0 ? diff : 0;
