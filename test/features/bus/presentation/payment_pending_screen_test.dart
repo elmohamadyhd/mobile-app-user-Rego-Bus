@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:rego/core/router/app_router.dart';
 import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
+import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/payment_pending_screen.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
@@ -89,5 +92,80 @@ void main() {
     expect(find.text('بانتظار الدفع'), findsOneWidget);
     expect(find.text('في انتظار الدفع'), findsOneWidget);
     expect(find.text('أكمل الدفع'), findsOneWidget);
+  });
+
+  testWidgets(
+      'hardware back from the pending screen goes home, not to the route underneath',
+      (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        busRepositoryProvider.overrideWithValue(
+          FakeBusRepository(ticketResult: _pendingTicket()),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(busBookingProvider.notifier);
+    await notifier.searchTrips(
+      BusSearchParams(cityFromId: 1, cityToId: 2, date: DateTime(2026, 7, 10)),
+    );
+    await notifier.selectTrip(FakeBusRepository.sampleTrip);
+    notifier.toggleSeat('16');
+    await notifier.confirmBooking();
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.home,
+      routes: [
+        GoRoute(
+          path: AppRoutes.home,
+          builder: (context, state) => const Scaffold(body: Text('HOME')),
+        ),
+        GoRoute(
+          path: '/confirm',
+          builder: (context, state) => const Scaffold(body: Text('CONFIRM')),
+        ),
+        GoRoute(
+          path: '/pay',
+          builder: (context, state) => const Scaffold(body: Text('PAY')),
+        ),
+        GoRoute(
+          path: BusRoutes.pending,
+          builder: (context, state) => const PaymentPendingScreen(),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Mirrors the real stack: Confirm pushes the payment WebView ('/pay'),
+    // which then pushReplacements itself with the pending screen — Confirm
+    // stays underneath both.
+    router.push('/confirm');
+    await tester.pumpAndSettle();
+    router.push('/pay');
+    await tester.pumpAndSettle();
+    router.pushReplacement(BusRoutes.pending);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Pending payment'), findsOneWidget);
+
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await tester.pumpAndSettle();
+
+    expect(find.text('HOME'), findsOneWidget);
+    expect(find.text('CONFIRM'), findsNothing);
+    expect(container.read(busBookingProvider).ticket, isNull);
   });
 }

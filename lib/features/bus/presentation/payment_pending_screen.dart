@@ -26,33 +26,42 @@ class PaymentPendingScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final ticket = ref.watch(busBookingProvider.select((s) => s.ticket));
 
-    return Scaffold(
-      backgroundColor: AppColors.bgBase,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: AppSpacing.xl),
-              _PendingHero(l10n: l10n),
-              const SizedBox(height: AppSpacing.lg),
-              if (ticket != null) _OrderRecap(ticket: ticket, l10n: l10n),
-              const SizedBox(height: AppSpacing.xl),
-              PrimaryButton(
-                label: l10n.paymentPendingComplete,
-                onPressed: () => context.push(BusRoutes.pay),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              PrimaryButton(
-                label: l10n.paymentPendingBackHome,
-                variant: PrimaryButtonVariant.ghost,
-                onPressed: () {
-                  ref.read(busBookingProvider.notifier).reset();
-                  context.go(AppRoutes.home);
-                },
-              ),
-            ],
+    void goHome() {
+      ref.read(busBookingProvider.notifier).reset();
+      context.go(AppRoutes.home);
+    }
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        goHome();
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.bgBase,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: AppSpacing.xl),
+                _PendingHero(l10n: l10n),
+                const SizedBox(height: AppSpacing.lg),
+                if (ticket != null) _OrderRecap(ticket: ticket, l10n: l10n),
+                const SizedBox(height: AppSpacing.xl),
+                PrimaryButton(
+                  label: l10n.paymentPendingComplete,
+                  onPressed: () => context.push(BusRoutes.pay),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                PrimaryButton(
+                  label: l10n.paymentPendingBackHome,
+                  variant: PrimaryButtonVariant.ghost,
+                  onPressed: goHome,
+                ),
+              ],
+            ),
           ),
         ),
       ),
