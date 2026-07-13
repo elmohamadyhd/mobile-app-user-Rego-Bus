@@ -8,6 +8,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:rego/core/providers/locale_controller.dart';
 import 'package:rego/core/storage/secure_storage.dart';
 import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
@@ -30,6 +31,49 @@ PaymentNavResult classifyPaymentNav(Uri uri) {
   return PaymentNavResult.pending;
 }
 
+/// Shows the "leave payment?" confirmation the rider sees when they try to
+/// back out of the checkout WebView before it's resolved. Returns true only
+/// if they explicitly chose to leave; false (including a dismissed dialog)
+/// means stay on the checkout page.
+Future<bool> confirmLeavePayment(BuildContext context) async {
+  final l10n = AppLocalizations.of(context);
+  final leave = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+      ),
+      title: Text(l10n.paymentLeaveTitle, style: AppTypography.h2),
+      content: Text(
+        l10n.paymentLeaveBody,
+        style: AppTypography.body.copyWith(color: AppColors.textSecondary),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: Text(
+            l10n.paymentLeaveConfirm,
+            style: AppTypography.title.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: Text(
+            l10n.paymentLeaveStay,
+            style: AppTypography.title.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+  return leave ?? false;
+}
+
 /// In-app payment screen: loads the order's gateway checkout URL
 /// (`payment_data.invoice_url`, the MyFatoorah hosted invoice page) in a
 /// WebView. When the gateway redirects back to REGO's success/failure page —
@@ -47,6 +91,7 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
   WebViewController? _controller;
   bool _loading = true;
   bool _verifyTriggered = false;
+  bool _leavePromptOpen = false;
 
   @override
   void initState() {
@@ -121,6 +166,16 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
     await ref.read(busBookingProvider.notifier).verifyPayment();
   }
 
+  Future<void> _handleBackRequest() async {
+    if (_leavePromptOpen) return;
+    _leavePromptOpen = true;
+    final leave = await confirmLeavePayment(context);
+    _leavePromptOpen = false;
+    if (leave) {
+      unawaited(_verify());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -137,32 +192,40 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
         BusBookingStatus.verifyingPayment;
     final controller = _controller;
 
-    return Scaffold(
-      backgroundColor: AppColors.bgBase,
-      appBar: BookingAppBar(
-        title: l10n.paymentTitle,
-        action: TextButton(
-          onPressed: isVerifying ? null : () => unawaited(_verify()),
-          child: Text(
-            l10n.paymentDone,
-            style: AppTypography.body.copyWith(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w700,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        unawaited(_handleBackRequest());
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.bgBase,
+        appBar: BookingAppBar(
+          title: l10n.paymentTitle,
+          onBack: () => unawaited(_handleBackRequest()),
+          action: TextButton(
+            onPressed: isVerifying ? null : () => unawaited(_verify()),
+            child: Text(
+              l10n.paymentDone,
+              style: AppTypography.body.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ),
-      ),
-      body: Stack(
-        children: [
-          if (controller != null)
-            WebViewWidget(controller: controller)
-          else
-            const SizedBox.shrink(),
-          if (controller == null || _loading || isVerifying)
-            _LoadingOverlay(
-              label: isVerifying ? l10n.paymentVerifying : null,
-            ),
-        ],
+        body: Stack(
+          children: [
+            if (controller != null)
+              WebViewWidget(controller: controller)
+            else
+              const SizedBox.shrink(),
+            if (controller == null || _loading || isVerifying)
+              _LoadingOverlay(
+                label: isVerifying ? l10n.paymentVerifying : null,
+              ),
+          ],
+        ),
       ),
     );
   }
