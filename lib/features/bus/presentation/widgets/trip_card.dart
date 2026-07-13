@@ -159,7 +159,8 @@ class _Header extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          _SeatsPill(seatsLeft: trip.seatsLeft, lowSeats: lowSeats, l10n: l10n),
+          // hide number of seats left till it ready from the backend
+          //_SeatsPill(seatsLeft: trip.seatsLeft, lowSeats: lowSeats, l10n: l10n),
         ],
       ),
     );
