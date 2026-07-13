@@ -235,6 +235,11 @@
   "paymentPendingBody": "Your seat is reserved and held for 15 minutes. Complete the payment to confirm your booking — otherwise it will be cancelled automatically.",
   "paymentPendingComplete": "Complete payment",
   "paymentPendingBackHome": "Back to home",
+  "paymentPendingBadge": "Pending payment",
+  "paymentLeaveTitle": "Leave payment?",
+  "paymentLeaveBody": "Your seat is held, but payment isn't finished yet. You can complete it later from your booking.",
+  "paymentLeaveStay": "Stay",
+  "paymentLeaveConfirm": "Leave",
 
   "profileGuest": "Guest",
   "@profileGuest": {

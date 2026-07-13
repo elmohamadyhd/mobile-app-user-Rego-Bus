@@ -173,6 +173,11 @@
   "paymentPendingBody": "مقعدك محجوز لمدة ١٥ دقيقة. أكمل الدفع لتأكيد حجزك، وإلا سيُلغى تلقائياً.",
   "paymentPendingComplete": "أكمل الدفع",
   "paymentPendingBackHome": "العودة للرئيسية",
+  "paymentPendingBadge": "بانتظار الدفع",
+  "paymentLeaveTitle": "مغادرة صفحة الدفع؟",
+  "paymentLeaveBody": "مقعدك لا يزال محجوزاً، لكن الدفع لم يكتمل بعد. يمكنك إكمال الدفع لاحقاً من حجزك.",
+  "paymentLeaveStay": "البقاء",
+  "paymentLeaveConfirm": "مغادرة",
 
   "profileGuest": "زائر",
   "profileMenuTrips": "طلباتي",
