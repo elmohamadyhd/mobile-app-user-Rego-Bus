@@ -7,6 +7,7 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/features/bus/domain/entities/seat_map.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
@@ -55,6 +56,7 @@ class SeatSelectionScreen extends ConsumerWidget {
                       ),
           ),
           _BottomPanel(
+            seatMap: seatMap,
             selectedSeats: selectedSeats,
             totalPrice: totalPrice,
             currency: currency,
@@ -226,6 +228,7 @@ class _SeatMapErrorView extends StatelessWidget {
 
 class _BottomPanel extends StatelessWidget {
   const _BottomPanel({
+    required this.seatMap,
     required this.selectedSeats,
     required this.totalPrice,
     required this.currency,
@@ -233,6 +236,7 @@ class _BottomPanel extends StatelessWidget {
     required this.onContinue,
   });
 
+  final SeatMap? seatMap;
   final List<String> selectedSeats;
   final int totalPrice;
   final String currency;
@@ -241,6 +245,9 @@ class _BottomPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final seatLabels =
+        seatMap?.labelsForSeatIds(selectedSeats) ?? selectedSeats;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.bgElevated,
@@ -288,8 +295,8 @@ class _BottomPanel extends StatelessWidget {
                                 spacing: 6,
                                 runSpacing: 6,
                                 children: [
-                                  for (final seat in selectedSeats)
-                                    _SeatChip(label: seat),
+                                  for (final label in seatLabels)
+                                    _SeatChip(label: label),
                                 ],
                               ),
                       ],

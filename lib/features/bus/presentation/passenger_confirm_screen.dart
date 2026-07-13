@@ -9,6 +9,7 @@ import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/core/utils/date_formatting.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
+import 'package:rego/features/bus/domain/entities/seat_map.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
@@ -100,6 +101,8 @@ class _BusTripSummaryCard extends StatelessWidget {
     final from = state.fromStop;
     final to = state.toStop;
     final seats = state.selectedSeats;
+    final seatLabels =
+        state.seatMap?.labelsForSeatIds(seats) ?? seats;
     final params = state.searchParams;
     final dateLabel = params == null
         ? ''
@@ -209,7 +212,7 @@ class _BusTripSummaryCard extends StatelessWidget {
                   spacing: 6,
                   runSpacing: 6,
                   children: [
-                    for (final seat in seats) _SeatChip(label: seat),
+                    for (final label in seatLabels) _SeatChip(label: label),
                   ],
                 ),
         ],

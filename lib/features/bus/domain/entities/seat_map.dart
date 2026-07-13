@@ -41,3 +41,18 @@ abstract class SeatMap with _$SeatMap {
     required List<SeatMapCell> cells,
   }) = _SeatMap;
 }
+
+/// Resolves internal seat IDs to the same display label used on the grid.
+extension SeatMapLabels on SeatMap {
+  String labelForSeatId(String seatId) {
+    for (final cell in cells) {
+      if (cell.id == seatId) {
+        return cell.seatNo ?? cell.id ?? seatId;
+      }
+    }
+    return seatId;
+  }
+
+  List<String> labelsForSeatIds(Iterable<String> seatIds) =>
+      seatIds.map(labelForSeatId).toList();
+}
