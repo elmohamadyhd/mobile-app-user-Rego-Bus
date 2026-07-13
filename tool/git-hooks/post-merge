@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+# REGO: after a pull/merge that may change dependencies, re-apply the AGP-9
+# pub-cache plugin patch (see tool/README.md). Safe no-op if dependencies
+# aren't fetched yet or `dart` isn't on PATH.
+root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+[ -f "$root/.dart_tool/package_config.json" ] || exit 0
+command -v dart >/dev/null 2>&1 || exit 0
+dart run "$root/tool/patch_android_plugins.dart" || true

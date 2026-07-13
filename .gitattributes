@@ -1,0 +1,5 @@
+# Shell scripts and git hooks must use LF regardless of core.autocrlf, or they
+# fail to execute under sh (a CRLF shebang breaks `#!/usr/bin/env sh`).
+*.sh text eol=lf
+tool/git-hooks/post-merge text eol=lf
+tool/git-hooks/post-checkout text eol=lf

@@ -31,11 +31,20 @@ Full rules → `.cursor/rules/architecture.mdc`
 
 ```bash
 cp .env.example .env          # once — fill in your secrets
-flutter pub get
+./tool/pub-get.sh             # NOT bare `flutter pub get` — see note below (.ps1 on Windows)
 dart run build_runner build --delete-conflicting-outputs   # Freezed / Riverpod codegen
 flutter run
 flutter analyze && flutter test
 ```
+
+> **Android build note:** this project runs on the Flutter 3.44.2 default
+> toolchain (AGP 9.0.1 / Gradle 9.1.0 / Kotlin 2.3.20, `builtInKotlin=false`).
+> `url_launcher_android` ships an AGP-9 Built-in-Kotlin build script that fails
+> to compile under that flag, so it's patched in the pub cache. A bare
+> `flutter pub get` wipes that patch and breaks the Android build. Always use
+> `./tool/pub-get.sh` / `tool/pub-get.ps1`, or run
+> `dart run tool/patch_android_plugins.dart` after any manual `pub get`. Details:
+> [`tool/README.md`](tool/README.md).
 
 ## Adding a feature
 
