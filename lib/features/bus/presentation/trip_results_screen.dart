@@ -18,6 +18,7 @@ import 'package:rego/features/bus/presentation/widgets/active_filter_chips.dart'
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/features/bus/presentation/widgets/trip_card.dart';
+import 'package:rego/features/bus/presentation/widgets/trip_filter_button.dart';
 import 'package:rego/features/bus/presentation/widgets/trip_filter_sheet.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
@@ -51,8 +52,8 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
       backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(
         title: title,
-        action: _FilterButton(
-          hasActiveFilters: _filters.isActive,
+        action: TripFilterButton(
+          filters: _filters,
           onTap: () => _openFilterSheet(context, state.trips),
         ),
       ),
@@ -142,53 +143,6 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
     if (result != null && mounted) {
       setState(() => _filters = result);
     }
-  }
-}
-
-// ── Private widgets ───────────────────────────────────────────────────────────
-
-class _FilterButton extends StatelessWidget {
-  const _FilterButton({
-    required this.onTap,
-    required this.hasActiveFilters,
-  });
-
-  final VoidCallback onTap;
-  final bool hasActiveFilters;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Tooltip(
-      message: l10n.tripResultsFilter,
-      child: Center(
-        child: Material(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-            onTap: onTap,
-            child: Container(
-              decoration: hasActiveFilters
-                  ? BoxDecoration(
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                      border: Border.all(
-                        color: AppColors.secondary,
-                        width: 2,
-                      ),
-                    )
-                  : null,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: const Icon(
-                AppIcons.filter,
-                color: AppColors.onPrimary,
-                size: 16,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
 

@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip_filters.dart';
 
+/// Active filter constraints (one per removable chip).
+int busTripFilterActiveCount(BusTripFilters filters) {
+  return filters.operators.length +
+      (filters.departAfter != null ? 1 : 0) +
+      (filters.departBefore != null ? 1 : 0) +
+      (filters.minPriceEgp != null ? 1 : 0) +
+      (filters.maxPriceEgp != null ? 1 : 0);
+}
+
 /// Sorted, deduplicated operator names from [trips].
 List<String> uniqueOperators(List<BusTripSummary> trips) {
   final names = trips.map((t) => t.operatorName).toSet().toList();

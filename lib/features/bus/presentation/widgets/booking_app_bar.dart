@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
+import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 
 class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -31,6 +32,7 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: SizedBox(
           height: preferredSize.height,
           child: Stack(
+            clipBehavior: Clip.none,
             alignment: Alignment.center,
             children: [
               subtitle != null
@@ -57,24 +59,39 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
                       style: AppTypography.title
                           .copyWith(fontWeight: FontWeight.w700),
                     ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Transform.flip(
-                      flipX: Directionality.of(context) == TextDirection.rtl,
-                      child: const Icon(
-                        AppIcons.back,
-                        color: AppColors.textPrimary,
+              Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: AppSpacing.xs,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Transform.flip(
+                        flipX: Directionality.of(context) == TextDirection.rtl,
+                        child: const Icon(
+                          AppIcons.back,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
+                      onPressed: onBack ?? () => context.pop(),
                     ),
-                    onPressed: onBack ?? () => context.pop(),
-                  ),
-                  const Spacer(),
-                  if (action != null)
-                    action!
-                  else
-                    const SizedBox(width: kMinInteractiveDimension),
-                ],
+                    const Spacer(),
+                    if (action != null)
+                      Padding(
+                        padding: const EdgeInsetsDirectional.only(
+                          top: AppSpacing.xs,
+                          end: AppSpacing.xs,
+                        ),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: action!,
+                        ),
+                      )
+                    else
+                      const SizedBox(width: kMinInteractiveDimension),
+                  ],
+                ),
               ),
             ],
           ),
