@@ -83,6 +83,24 @@ class _PendingHero extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 4,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.secondaryTint,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
+          child: Text(
+            l10n.paymentPendingBadge,
+            style: AppTypography.caption.copyWith(
+              color: AppColors.secondary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           l10n.paymentPendingTitle,
           textAlign: TextAlign.center,

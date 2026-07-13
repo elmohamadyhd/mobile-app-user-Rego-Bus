@@ -69,6 +69,7 @@ void main() {
   testWidgets('shows the 15-minute hold message and both CTAs', (tester) async {
     await _pump(tester);
 
+    expect(find.text('Pending payment'), findsOneWidget);
     expect(find.text('Payment pending'), findsOneWidget);
     expect(find.textContaining('15 minutes'), findsOneWidget);
     expect(find.text('Complete payment'), findsOneWidget);
@@ -85,6 +86,7 @@ void main() {
   testWidgets('renders in Arabic (RTL)', (tester) async {
     await _pump(tester, locale: const Locale('ar'));
 
+    expect(find.text('بانتظار الدفع'), findsOneWidget);
     expect(find.text('في انتظار الدفع'), findsOneWidget);
     expect(find.text('أكمل الدفع'), findsOneWidget);
   });
