@@ -30,43 +30,52 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
         bottom: false,
         child: SizedBox(
           height: preferredSize.height,
-          child: Row(
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              IconButton(
-                icon: Transform.flip(
-                  flipX: Directionality.of(context) == TextDirection.rtl,
-                  child:
-                      const Icon(AppIcons.back, color: AppColors.textPrimary),
-                ),
-                onPressed: onBack ?? () => context.pop(),
-              ),
-              Expanded(
-                child: subtitle != null
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            title,
-                            textAlign: TextAlign.center,
-                            style: AppTypography.title
-                                .copyWith(fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            subtitle!,
-                            textAlign: TextAlign.center,
-                            style: AppTypography.caption
-                                .copyWith(color: AppColors.textMuted),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.title
-                            .copyWith(fontWeight: FontWeight.w700),
+              subtitle != null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.title
+                              .copyWith(fontWeight: FontWeight.w700),
+                        ),
+                        Text(
+                          subtitle!,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.caption
+                              .copyWith(color: AppColors.textMuted),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.title
+                          .copyWith(fontWeight: FontWeight.w700),
+                    ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Transform.flip(
+                      flipX: Directionality.of(context) == TextDirection.rtl,
+                      child: const Icon(
+                        AppIcons.back,
+                        color: AppColors.textPrimary,
                       ),
+                    ),
+                    onPressed: onBack ?? () => context.pop(),
+                  ),
+                  const Spacer(),
+                  if (action != null)
+                    action!
+                  else
+                    const SizedBox(width: kMinInteractiveDimension),
+                ],
               ),
-              SizedBox(width: 48, child: action),
             ],
           ),
         ),

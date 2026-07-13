@@ -8,12 +8,14 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:rego/core/providers/locale_controller.dart';
 import 'package:rego/core/storage/secure_storage.dart';
 import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/primary_button.dart';
 
 /// Terminal outcome signalled by a payment WebView navigation. The gateway's
 /// hosted checkout (MyFatoorah) redirects back to the REGO site at
@@ -36,42 +38,138 @@ PaymentNavResult classifyPaymentNav(Uri uri) {
 /// if they explicitly chose to leave; false (including a dismissed dialog)
 /// means stay on the checkout page.
 Future<bool> confirmLeavePayment(BuildContext context) async {
-  final l10n = AppLocalizations.of(context);
   final leave = await showDialog<bool>(
     context: context,
-    builder: (dialogContext) => AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.card),
-      ),
-      title: Text(l10n.paymentLeaveTitle, style: AppTypography.h2),
-      content: Text(
-        l10n.paymentLeaveBody,
-        style: AppTypography.body.copyWith(color: AppColors.textSecondary),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(dialogContext).pop(true),
-          child: Text(
-            l10n.paymentLeaveConfirm,
-            style: AppTypography.title.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(dialogContext).pop(false),
-          child: Text(
-            l10n.paymentLeaveStay,
-            style: AppTypography.title.copyWith(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
-    ),
+    barrierColor: AppColors.textPrimary.withValues(alpha: 0.45),
+    builder: (dialogContext) => const _LeavePaymentDialog(),
   );
   return leave ?? false;
+}
+
+/// Skyline-styled confirmation shown when the rider tries to back out of the
+/// hosted checkout before it resolves.
+class _LeavePaymentDialog extends StatelessWidget {
+  const _LeavePaymentDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final maxWidth = MediaQuery.sizeOf(context).width * 0.9;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColors.bgElevated,
+            borderRadius: BorderRadius.circular(AppRadius.card),
+            border: Border.all(color: AppColors.border),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.textPrimary.withValues(alpha: 0.1),
+                blurRadius: 32,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.xl,
+              AppSpacing.lg,
+              AppSpacing.lg,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: const BoxDecoration(
+                    color: AppColors.secondaryTint,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    AppIcons.wallet,
+                    color: AppColors.secondary,
+                    size: 36,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryTint,
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                  child: Text(
+                    l10n.paymentPendingBadge,
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.secondary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  l10n.paymentLeaveTitle,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.h2.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  l10n.paymentLeaveBody,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      AppIcons.checkCircle,
+                      size: 16,
+                      color: AppColors.success,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Flexible(
+                      child: Text(
+                        l10n.paymentLeaveReassure,
+                        textAlign: TextAlign.center,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.success,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                PrimaryButton(
+                  label: l10n.paymentLeaveStay,
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                PrimaryButton(
+                  label: l10n.paymentLeaveConfirm,
+                  variant: PrimaryButtonVariant.ghost,
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// In-app payment screen: loads the order's gateway checkout URL
@@ -205,8 +303,15 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
           onBack: () => unawaited(_handleBackRequest()),
           action: TextButton(
             onPressed: isVerifying ? null : () => unawaited(_verify()),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: AppSpacing.sm,
+              ),
+            ),
             child: Text(
               l10n.paymentDone,
+              maxLines: 1,
+              softWrap: false,
               style: AppTypography.body.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w700,

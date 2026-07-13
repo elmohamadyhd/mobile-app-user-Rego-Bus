@@ -176,6 +176,7 @@
   "paymentPendingBadge": "بانتظار الدفع",
   "paymentLeaveTitle": "مغادرة صفحة الدفع؟",
   "paymentLeaveBody": "مقعدك لا يزال محجوزاً، لكن الدفع لم يكتمل بعد. يمكنك إكمال الدفع لاحقاً من حجزك.",
+  "paymentLeaveReassure": "مقعدك يبقى محجوزاً أثناء اتخاذك القرار",
   "paymentLeaveStay": "البقاء",
   "paymentLeaveConfirm": "مغادرة",
 

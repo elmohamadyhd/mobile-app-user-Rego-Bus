@@ -238,6 +238,10 @@
   "paymentPendingBadge": "Pending payment",
   "paymentLeaveTitle": "Leave payment?",
   "paymentLeaveBody": "Your seat is held, but payment isn't finished yet. You can complete it later from your booking.",
+  "paymentLeaveReassure": "Your seat stays reserved while you decide",
+  "@paymentLeaveReassure": {
+    "description": "Reassurance line under the leave-payment dialog body."
+  },
   "paymentLeaveStay": "Stay",
   "paymentLeaveConfirm": "Leave",
 
