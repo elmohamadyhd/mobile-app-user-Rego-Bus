@@ -152,11 +152,11 @@ void main() {
     // Mirrors the real stack: Confirm pushes the payment WebView ('/pay'),
     // which then pushReplacements itself with the pending screen — Confirm
     // stays underneath both.
-    router.push('/confirm');
+    await router.push('/confirm');
     await tester.pumpAndSettle();
-    router.push('/pay');
+    await router.push('/pay');
     await tester.pumpAndSettle();
-    router.pushReplacement(BusRoutes.pending);
+    await router.pushReplacement(BusRoutes.pending);
     await tester.pumpAndSettle();
 
     expect(find.text('Pending payment'), findsOneWidget);

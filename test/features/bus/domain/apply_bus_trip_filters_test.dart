@@ -101,9 +101,9 @@ void main() {
     test('filters by departure time window', () {
       final result = applyBusTripFilters(
         trips,
-        BusTripFilters(
-          departAfter: const TimeOfDay(hour: 9, minute: 0),
-          departBefore: const TimeOfDay(hour: 17, minute: 0),
+        const BusTripFilters(
+          departAfter: TimeOfDay(hour: 9, minute: 0),
+          departBefore: TimeOfDay(hour: 17, minute: 0),
         ),
       );
       expect(result.map((t) => t.id), ['b']);
@@ -112,9 +112,9 @@ void main() {
     test('includes boundary departures in time window', () {
       final result = applyBusTripFilters(
         trips,
-        BusTripFilters(
-          departAfter: const TimeOfDay(hour: 8, minute: 0),
-          departBefore: const TimeOfDay(hour: 18, minute: 0),
+        const BusTripFilters(
+          departAfter: TimeOfDay(hour: 8, minute: 0),
+          departBefore: TimeOfDay(hour: 18, minute: 0),
         ),
       );
       expect(result.length, 3);

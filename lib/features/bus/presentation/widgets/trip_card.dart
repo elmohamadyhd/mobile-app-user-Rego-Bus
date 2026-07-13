@@ -117,7 +117,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool lowSeats = trip.seatsLeft < 3;
+    // final bool lowSeats = trip.seatsLeft < 3;
     return SizedBox(
       height: TripCard._headerHeight,
       child: Row(
@@ -167,40 +167,40 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _SeatsPill extends StatelessWidget {
-  const _SeatsPill({
-    required this.seatsLeft,
-    required this.lowSeats,
-    required this.l10n,
-  });
+// class _SeatsPill extends StatelessWidget {
+//   const _SeatsPill({
+//     required this.seatsLeft,
+//     required this.lowSeats,
+//     required this.l10n,
+//   });
 
-  final int seatsLeft;
-  final bool lowSeats;
-  final AppLocalizations l10n;
+//   final int seatsLeft;
+//   final bool lowSeats;
+//   final AppLocalizations l10n;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: lowSeats
-            ? AppColors.error.withValues(alpha: 0.12)
-            : AppColors.secondaryTint,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-      ),
-      child: Text(
-        l10n.bookingSeatsLeft(seatsLeft),
-        style: AppTypography.caption.copyWith(
-          color: lowSeats ? AppColors.error : AppColors.onSecondary,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsetsDirectional.symmetric(
+//         horizontal: AppSpacing.sm,
+//         vertical: AppSpacing.xs,
+//       ),
+//       decoration: BoxDecoration(
+//         color: lowSeats
+//             ? AppColors.error.withValues(alpha: 0.12)
+//             : AppColors.secondaryTint,
+//         borderRadius: BorderRadius.circular(AppRadius.sm),
+//       ),
+//       child: Text(
+//         l10n.bookingSeatsLeft(seatsLeft),
+//         style: AppTypography.caption.copyWith(
+//           color: lowSeats ? AppColors.error : AppColors.onSecondary,
+//           fontWeight: FontWeight.w700,
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // ── Timeline ──────────────────────────────────────────────────────────────────
 

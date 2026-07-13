@@ -33,11 +33,11 @@ void main() {
       const actionKey = Key('trailing-action');
 
       await tester.pumpWidget(
-        MaterialApp(
+      const  MaterialApp(
           home: Scaffold(
             appBar: BookingAppBar(
               title: 'Title',
-              action: const SizedBox(
+              action:  SizedBox(
                 key: actionKey,
                 width: 48,
                 height: 48,
