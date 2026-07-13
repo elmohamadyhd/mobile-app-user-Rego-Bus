@@ -11,8 +11,8 @@ import 'package:rego/features/bus/domain/entities/seat_map.dart';
 /// what each cell renders.
 const double _cellSize = 36;
 
-/// Bus-body card containing the seat grid: a front-of-bus marker followed by
-/// each row of [SeatMapCell]s. `SeatMapCellKind.space` cells (the aisle) are
+/// Bus-body card containing the seat grid: each row of [SeatMapCell]s.
+/// `SeatMapCellKind.space` cells (the aisle) are rendered as blank filler —
 /// rendered as blank filler — no icon, no fill — so the walkway reads as
 /// genuinely empty space rather than a decorated tile.
 class SeatGrid extends StatelessWidget {
@@ -58,11 +58,6 @@ class SeatGrid extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: _FrontBadge(),
-          ),
-          const SizedBox(height: AppSpacing.lg),
           for (final row in rows) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -89,24 +84,6 @@ class SeatGrid extends StatelessWidget {
   VoidCallback? _tapHandler(SeatMapCell cell) {
     if (cell.kind != SeatMapCellKind.available || cell.id == null) return null;
     return () => onToggle(cell.id!);
-  }
-}
-
-class _FrontBadge extends StatelessWidget {
-  const _FrontBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 34,
-      height: 34,
-      alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        color: AppColors.primaryTint,
-        shape: BoxShape.circle,
-      ),
-      child: const Icon(AppIcons.busFront, color: AppColors.primary, size: 18),
-    );
   }
 }
 

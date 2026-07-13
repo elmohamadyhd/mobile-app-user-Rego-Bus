@@ -44,9 +44,9 @@ void main() {
     (tester) async {
       await _pumpGrid(tester, onToggle: (_) {});
 
-      // Front badge + driver + door + wc = 4 icons. The two aisle (`space`)
-      // cells contribute none — they must stay visually empty.
-      expect(find.byType(Icon), findsNWidgets(4));
+      // Driver + door + wc = 3 icons. The two aisle (`space`) cells contribute
+      // none — they must stay visually empty.
+      expect(find.byType(Icon), findsNWidgets(3));
 
       // Only the three seat cells (2 available + 1 booked) are rendered as
       // InkWell controls (booked is present but disabled); the aisle and
