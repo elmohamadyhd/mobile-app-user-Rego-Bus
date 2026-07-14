@@ -85,6 +85,19 @@ void main() {
   });
 
   testWidgets(
+    'guest can open the Tickets tab and sees a sign-in CTA, not a crash',
+    (tester) async {
+      await pumpApp(tester, testStorage());
+      await continueAsGuest(tester);
+
+      await tester.tap(find.text('Tickets'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign in or create an account'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
     'guest tapping profile sign-in CTA opens Login instead of bouncing to Home',
     (tester) async {
       await pumpApp(tester, testStorage());

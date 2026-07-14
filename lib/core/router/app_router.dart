@@ -17,6 +17,7 @@ import 'package:rego/features/profile/presentation/profile_screen.dart';
 import 'package:rego/features/shell/presentation/coming_soon_screen.dart';
 import 'package:rego/features/shell/presentation/main_shell.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
+import 'package:rego/features/tickets/presentation/tickets_screen.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 // Named route constants so call-sites never use raw strings.
@@ -109,10 +110,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.tickets,
-                builder: (context, state) => ComingSoonScreen(
-                  title: AppLocalizations.of(context).navTickets,
-                  icon: AppIcons.ticket,
-                ),
+                builder: (context, state) => const TicketsScreen(),
               ),
             ],
           ),
