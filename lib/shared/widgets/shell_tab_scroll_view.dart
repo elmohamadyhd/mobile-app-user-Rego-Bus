@@ -12,15 +12,18 @@ class ShellTabScrollView extends StatelessWidget {
     required this.hero,
     required this.children,
     this.cardOverlap = AppSpacing.xxl,
+    this.physics,
   });
 
   final Widget hero;
   final List<Widget> children;
   final double cardOverlap;
+  final ScrollPhysics? physics;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: physics,
       padding: EdgeInsetsDirectional.only(
         bottom: MediaQuery.paddingOf(context).bottom +
             AppSpacing.md +
