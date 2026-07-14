@@ -18,15 +18,19 @@ class TicketsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final isGuest = ref.watch(guestModeProvider).value ?? false;
-    // Guarded: guests never trigger the protected `busOrdersProvider` fetch,
-    // even just to show a count in the hero.
-    final count = isGuest ? null : ref.watch(busOrdersProvider).value?.length;
+    // `guestModeProvider` is async — `.value` is null while it resolves.
+    // Only watch the protected `busOrdersProvider` once it's definitely
+    // `false` (signed in), so a guest never triggers that fetch even
+    // transiently, just to show a count in the hero.
+    final guestModeValue = ref.watch(guestModeProvider).value;
+    final count = guestModeValue == false
+        ? ref.watch(busOrdersProvider).value?.length
+        : null;
 
     return RefreshIndicator(
-      onRefresh: isGuest
-          ? () async {}
-          : () => ref.read(busOrdersProvider.notifier).refresh(),
+      onRefresh: guestModeValue == false
+          ? () => ref.read(busOrdersProvider.notifier).refresh()
+          : () async {},
       child: ShellTabScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         hero: SkylineTabHero(

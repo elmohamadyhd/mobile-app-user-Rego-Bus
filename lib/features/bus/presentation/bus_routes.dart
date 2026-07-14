@@ -38,7 +38,12 @@ List<RouteBase> busRoutes() => [
       ),
       GoRoute(
         path: BusRoutes.pay,
-        builder: (context, state) => const PaymentWebViewScreen(),
+        builder: (context, state) {
+          final extra = state.extra;
+          return PaymentWebViewScreen(
+            args: extra is PaymentFlowArgs ? extra : null,
+          );
+        },
       ),
       GoRoute(
         path: BusRoutes.pending,

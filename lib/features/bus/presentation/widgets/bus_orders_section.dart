@@ -27,17 +27,24 @@ import 'package:rego/shared/widgets/primary_button.dart';
 class BusOrdersSection extends ConsumerWidget {
   const BusOrdersSection({super.key});
 
+  static const _loadingIndicator = Padding(
+    padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
+    child: Center(child: CircularProgressIndicator()),
+  );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isGuest = ref.watch(guestModeProvider).value ?? false;
-    if (isGuest) return const _GuestSignInCard();
+    // `guestModeProvider` is async — while it's still resolving, `.value` is
+    // null. Wait for a definite answer rather than defaulting to "not
+    // guest", so the protected `busOrdersProvider` fetch never fires for a
+    // guest, even on the transient first frame.
+    final guestModeValue = ref.watch(guestModeProvider).value;
+    if (guestModeValue == null) return _loadingIndicator;
+    if (guestModeValue) return const _GuestSignInCard();
 
     final ordersAsync = ref.watch(busOrdersProvider);
     return ordersAsync.when(
-      loading: () => const Padding(
-        padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
-        child: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () => _loadingIndicator,
       error: (error, _) =>
           _ErrorState(onRetry: () => ref.invalidate(busOrdersProvider)),
       data: (orders) =>

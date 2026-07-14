@@ -11,8 +11,10 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:rego/features/bus/presentation/providers/bus_orders_provider.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -177,8 +179,30 @@ class _LeavePaymentDialog extends StatelessWidget {
 /// WebView. When the gateway redirects back to REGO's success/failure page —
 /// or the rider taps "Done" — it asks the notifier to verify the order's real
 /// status, then routes to the e-ticket (paid) or the pending screen.
+enum PaymentFlowMode { booking, resume }
+
+/// Arguments for opening the payment WebView outside the active booking flow
+/// — i.e. "Complete payment" on a pending order in My Tickets. When absent,
+/// the screen falls back to the booking flow's `busBookingProvider` exactly
+/// as before.
+class PaymentFlowArgs {
+  const PaymentFlowArgs({
+    required this.checkoutUrl,
+    required this.orderId,
+    this.mode = PaymentFlowMode.resume,
+  });
+
+  final String checkoutUrl;
+  final String orderId;
+  final PaymentFlowMode mode;
+}
+
 class PaymentWebViewScreen extends ConsumerStatefulWidget {
-  const PaymentWebViewScreen({super.key});
+  const PaymentWebViewScreen({super.key, this.args});
+
+  /// Set when resuming payment on an already-created order from My Tickets,
+  /// rather than as part of an active `busBookingProvider` flow.
+  final PaymentFlowArgs? args;
 
   @override
   ConsumerState<PaymentWebViewScreen> createState() =>
@@ -190,6 +214,7 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
   bool _loading = true;
   bool _verifyTriggered = false;
   bool _leavePromptOpen = false;
+  bool _resumeVerifying = false;
 
   @override
   void initState() {
@@ -198,8 +223,10 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
   }
 
   Future<void> _init() async {
-    final ticket = ref.read(busBookingProvider).ticket;
-    final paymentUrl = ticket?.paymentUrl ?? '';
+    final args = widget.args;
+    final paymentUrl = args != null
+        ? args.checkoutUrl
+        : ref.read(busBookingProvider).ticket?.paymentUrl ?? '';
     if (paymentUrl.isEmpty) {
       // Nothing to pay for — verify immediately (defensive; the confirm screen
       // only routes here when a checkout URL exists).
@@ -261,7 +288,46 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
   Future<void> _verify() async {
     if (_verifyTriggered) return;
     _verifyTriggered = true;
-    await ref.read(busBookingProvider.notifier).verifyPayment();
+
+    final args = widget.args;
+    if (args == null) {
+      await ref.read(busBookingProvider.notifier).verifyPayment();
+      return;
+    }
+    await _verifyResume(args);
+  }
+
+  /// Resume-mode verification: reads the order's status directly (no
+  /// `busBookingProvider` mutation), refreshes the My Tickets list so the
+  /// card reflects the new status, then leaves this screen.
+  Future<void> _verifyResume(PaymentFlowArgs args) async {
+    if (mounted) setState(() => _resumeVerifying = true);
+    var isConfirmed = false;
+    try {
+      final order = await ref.read(busRepositoryProvider).orderStatus(
+            args.orderId,
+            currency: BusCurrency.defaultCode,
+          );
+      isConfirmed = order.isConfirmed;
+    } catch (_) {
+      isConfirmed = false;
+    }
+    ref.invalidate(busOrdersProvider);
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _resumeVerifying = false);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            isConfirmed
+                ? l10n.ticketResumePaidToast
+                : l10n.ticketResumePendingToast,
+          ),
+        ),
+      );
+    if (context.mounted) context.pop();
   }
 
   Future<void> _handleBackRequest() async {
@@ -278,7 +344,10 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
+    final isResume = widget.args != null;
+
     ref.listen<BusBookingState>(busBookingProvider, (prev, next) {
+      if (isResume) return; // resume flow navigates itself in `_verifyResume`.
       if (next.status == BusBookingStatus.confirmed) {
         context.pushReplacement(BusRoutes.ticket);
       } else if (next.status == BusBookingStatus.paymentPending) {
@@ -286,8 +355,10 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
       }
     });
 
-    final isVerifying = ref.watch(busBookingProvider).status ==
-        BusBookingStatus.verifyingPayment;
+    final isVerifying = isResume
+        ? _resumeVerifying
+        : ref.watch(busBookingProvider).status ==
+            BusBookingStatus.verifyingPayment;
     final controller = _controller;
 
     return PopScope(
