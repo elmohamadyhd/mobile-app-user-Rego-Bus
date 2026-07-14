@@ -268,6 +268,34 @@
   "eTicketDownloadUnavailable": "Ticket download isn't available yet",
   "eTicketDownloadFailed": "Couldn't open the ticket. Please try again",
 
+  "ticketsCountLabel": "{count} tickets",
+  "@ticketsCountLabel": {
+    "description": "Order count caption on the My Tickets tab hero.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ticketsEmptyTitle": "No tickets yet",
+  "ticketsEmptyBody": "Your booked trips will show up here.",
+  "ticketsBookCta": "Book a trip",
+  "ticketsError": "Couldn't load your tickets",
+  "ticketStatusPending": "Pending",
+  "ticketStatusConfirmed": "Confirmed",
+  "ticketStatusCancelled": "Cancelled",
+  "ticketStatusUnknown": "Unknown",
+  "ticketActionPay": "Complete payment",
+  "ticketActionCancel": "Cancel",
+  "ticketCancelTitle": "Cancel this ticket?",
+  "ticketCancelBody": "This booking will be cancelled and can't be undone.",
+  "ticketCancelConfirm": "Cancel ticket",
+  "ticketCancelKeep": "Keep it",
+  "ticketCancelSuccess": "Ticket cancelled",
+  "ticketCancelFailed": "Couldn't cancel the ticket. Please try again",
+  "ticketResumePaidToast": "Payment confirmed! Your ticket is ready.",
+  "ticketResumePendingToast": "We couldn't confirm the payment yet. It may take a moment.",
+
   "paymentTitle": "Payment",
   "paymentDone": "Done",
   "paymentVerifying": "Verifying your payment…",
