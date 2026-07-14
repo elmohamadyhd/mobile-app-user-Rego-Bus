@@ -112,7 +112,84 @@ const createTicketEnvelope = {
     'payment_url': 'https://portal.wdenytravel.com/api/v1/buses/orders/1466/pay',
     'cancel_url':
         'https://portal.wdenytravel.com/api/v1/buses/orders/1466/cancel',
-    'total': 'EGP 240.75',
+    'total': 'EGP 240.75',
     'currency': 'EGP',
+  },
+};
+
+/// Real `GET /profile/buses/orders` response (trimmed to mapped fields).
+/// See docs/wadeny-apis.md → Orders > Buses. Second entry has no
+/// `payment_data` at all, to exercise a confirmed order with no checkout URL.
+const busOrdersEnvelope = {
+  'status': 200,
+  'message': 'Bus orders',
+  'errors': <String, dynamic>{},
+  'data': [
+    {
+      'number': '000001475',
+      'id': 1475,
+      'company_data': {
+        'name': 'SuperJet',
+        'avatar': '',
+        'bus_image': '',
+        'pin': '',
+      },
+      'status': 'Pending',
+      'status_code': 'pending',
+      'company_name': 'SuperJet',
+      'category': 'Five stars',
+      'can_be_cancel': true,
+      'is_confirmed': 0,
+      'payment_data': {
+        'status': 'Pending',
+        'status_code': 'pending',
+        'invoice_id': 6956732,
+        'gateway': 'Myfatoorah',
+        'invoice_url': 'https://demo.MyFatoorah.com/KWT/ia/010726954',
+        'data': {'notes': ''},
+      },
+      'invoice_url': 'https://portal.wdenytravel.com/orders/1475/invoice',
+      'tickets': [
+        {'id': 2076, 'seat_number': '1', 'price': '205.00'},
+      ],
+      'date': '2026-07-30',
+      'date_time': '2026-07-30 08:45 AM',
+      'cancel_url':
+          'https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel',
+      'total': 'EGP 219.35',
+      'currency': 'EGP',
+    },
+    {
+      'number': '000001470',
+      'id': 1470,
+      'company_data': {
+        'name': 'SuperJet',
+        'avatar': '',
+        'bus_image': '',
+        'pin': '',
+      },
+      'status': 'Confirmed',
+      'status_code': 'confirmed',
+      'company_name': 'SuperJet',
+      'category': 'VIP',
+      'can_be_cancel': false,
+      'is_confirmed': 1,
+      'invoice_url': 'https://portal.wdenytravel.com/orders/1470/invoice',
+      'tickets': [
+        {'id': 2070, 'seat_number': '2', 'price': '225.00'},
+      ],
+      'date': '2026-07-30',
+      'date_time': '2026-07-30 04:30 AM',
+      'total': 'EGP 240.75',
+      'currency': 'EGP',
+    },
+  ],
+  'pagination': {
+    'total': 2,
+    'lastPage': 1,
+    'perPage': 15,
+    'currentPage': 1,
+    'nextPageUrl': null,
+    'previousPageUrl': null,
   },
 };

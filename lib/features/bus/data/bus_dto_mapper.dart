@@ -1,5 +1,6 @@
 import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/bus/domain/entities/bus_location.dart';
+import 'package:rego/features/bus/domain/entities/bus_order.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
@@ -273,6 +274,91 @@ abstract final class BusDtoMapper {
     if (isConfirmedFlag == 1) return true;
     const paid = {'confirmed', 'paid', 'success', 'completed', 'succeeded'};
     return paid.contains(statusCode.trim().toLowerCase());
+  }
+
+  static List<BusOrder> ordersFromEnvelope(dynamic body) {
+    final envelope = body as Map<String, dynamic>;
+    ensureSuccess(envelope);
+    final data = envelope['data'];
+    if (data is! List) return const [];
+    return data.whereType<Map<String, dynamic>>().map(orderFromJson).toList();
+  }
+
+  static BusOrder orderFromJson(Map<String, dynamic> json) {
+    final companyData = json['company_data'];
+    String? logo;
+    String? companyName;
+    if (companyData is Map<String, dynamic>) {
+      logo = _string(companyData['avatar']);
+      if (logo != null && logo.isEmpty) logo = null;
+      companyName = _string(companyData['name']);
+    }
+
+    final statusCode = _string(json['status_code']) ?? '';
+    final isConfirmedFlag = _int(json['is_confirmed']) ?? 0;
+
+    final ticketsRaw = json['tickets'];
+    final seats = ticketsRaw is List
+        ? ticketsRaw
+            .whereType<Map<String, dynamic>>()
+            .map((t) => _string(t['seat_number']) ?? '')
+            .where((s) => s.isNotEmpty)
+            .toList()
+        : <String>[];
+
+    final paymentData = json['payment_data'];
+    final gatewayCheckoutUrl = paymentData is Map<String, dynamic>
+        ? _string(paymentData['invoice_url'])
+        : null;
+
+    return BusOrder(
+      orderId: _string(json['id']) ?? '',
+      bookingNumber: _string(json['number']) ?? '',
+      operatorName: _string(json['company_name']) ?? companyName ?? '',
+      operatorLogoUrl: logo,
+      category: _string(json['category']) ?? '',
+      statusText: _string(json['status']) ?? '',
+      statusKind: orderStatusKind(statusCode, isConfirmedFlag),
+      dateTimeLabel: _string(json['date_time']) ?? _string(json['date']) ?? '',
+      seats: seats,
+      total: _string(json['total']) ?? '',
+      canCancel: json['can_be_cancel'] == true,
+      gatewayCheckoutUrl:
+          (gatewayCheckoutUrl != null && gatewayCheckoutUrl.isNotEmpty)
+              ? gatewayCheckoutUrl
+              : null,
+      invoiceUrl: _string(json['invoice_url']),
+    );
+  }
+
+  /// Same documented-uncertainty caveat as [isPaidStatus]: only `pending`
+  /// appears in the sample data. `is_confirmed == 1` always wins; unrecognized
+  /// codes fall back to [BusOrderStatusKind.unknown] rather than being
+  /// guessed into a destructive or positive bucket.
+  static BusOrderStatusKind orderStatusKind(
+    String statusCode,
+    int isConfirmedFlag,
+  ) {
+    if (isConfirmedFlag == 1) return BusOrderStatusKind.confirmed;
+    final code = statusCode.trim().toLowerCase();
+    const confirmedCodes = {
+      'confirmed',
+      'paid',
+      'success',
+      'completed',
+      'succeeded',
+    };
+    const cancelledCodes = {
+      'cancelled',
+      'canceled',
+      'expired',
+      'failed',
+      'refunded',
+    };
+    if (confirmedCodes.contains(code)) return BusOrderStatusKind.confirmed;
+    if (cancelledCodes.contains(code)) return BusOrderStatusKind.cancelled;
+    if (code == 'pending') return BusOrderStatusKind.pending;
+    return BusOrderStatusKind.unknown;
   }
 
   static Map<String, dynamic> createTicketBody(BusCreateTicketRequest req) {

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rego/features/bus/data/bus_dto_mapper.dart';
+import 'package:rego/features/bus/domain/entities/bus_order.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 
@@ -139,6 +140,63 @@ void main() {
           ticket.invoiceUrl,
           'https://portal.wdenytravel.com/orders/1466/invoice/download',
         );
+      });
+    });
+
+    group('ordersFromEnvelope', () {
+      test('maps bus orders list with status, seats, and URLs', () {
+        final orders = BusDtoMapper.ordersFromEnvelope(busOrdersEnvelope);
+        expect(orders, hasLength(2));
+
+        final pending = orders.first;
+        expect(pending.orderId, '1475');
+        expect(pending.bookingNumber, '000001475');
+        expect(pending.operatorName, 'SuperJet');
+        expect(pending.category, 'Five stars');
+        expect(pending.statusKind, BusOrderStatusKind.pending);
+        expect(pending.seats, ['1']);
+        expect(pending.total, 'EGP 219.35');
+        expect(pending.canCancel, isTrue);
+        expect(pending.gatewayCheckoutUrl, isNotNull);
+        expect(pending.invoiceUrl, isNotNull);
+      });
+
+      test('confirmed order without payment_data has no checkout url', () {
+        final orders = BusDtoMapper.ordersFromEnvelope(busOrdersEnvelope);
+        final confirmed = orders[1];
+        expect(confirmed.statusKind, BusOrderStatusKind.confirmed);
+        expect(confirmed.canCancel, isFalse);
+        expect(confirmed.gatewayCheckoutUrl, isNull);
+      });
+    });
+
+    group('orderStatusKind', () {
+      test('is_confirmed flag wins regardless of status_code', () {
+        expect(
+          BusDtoMapper.orderStatusKind('pending', 1),
+          BusOrderStatusKind.confirmed,
+        );
+      });
+
+      test('maps known confirmed/cancelled codes', () {
+        expect(BusDtoMapper.orderStatusKind('confirmed', 0),
+            BusOrderStatusKind.confirmed);
+        expect(
+            BusDtoMapper.orderStatusKind('paid', 0), BusOrderStatusKind.confirmed);
+        expect(BusDtoMapper.orderStatusKind('cancelled', 0),
+            BusOrderStatusKind.cancelled);
+        expect(BusDtoMapper.orderStatusKind('expired', 0),
+            BusOrderStatusKind.cancelled);
+      });
+
+      test('pending code with no confirm flag stays pending', () {
+        expect(BusDtoMapper.orderStatusKind('pending', 0),
+            BusOrderStatusKind.pending);
+      });
+
+      test('unrecognized code falls back to unknown', () {
+        expect(BusDtoMapper.orderStatusKind('weird_code', 0),
+            BusOrderStatusKind.unknown);
       });
     });
   });
