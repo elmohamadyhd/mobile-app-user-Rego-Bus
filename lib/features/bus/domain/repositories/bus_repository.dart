@@ -1,4 +1,5 @@
 import 'package:rego/features/bus/domain/entities/bus_location.dart';
+import 'package:rego/features/bus/domain/entities/bus_order.dart';
 import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
@@ -100,4 +101,10 @@ abstract interface class BusRepository {
     String orderId, {
     required String currency,
   });
+
+  /// Lists the signed-in rider's booked bus trips (My Tickets tab).
+  Future<List<BusOrder>> listOrders();
+
+  /// Cancels a cancellable order. Throws [ApiException] on failure.
+  Future<void> cancelOrder(String orderId);
 }

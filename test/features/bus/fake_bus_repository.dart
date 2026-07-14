@@ -1,4 +1,6 @@
+import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/bus/domain/entities/bus_location.dart';
+import 'package:rego/features/bus/domain/entities/bus_order.dart';
 import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
@@ -14,6 +16,7 @@ class FakeBusRepository implements BusRepository {
     this.seatMapResult,
     this.ticketResult,
     this.orderStatusResult,
+    this.ordersResult,
   });
 
   BusTripsPage? tripsPage;
@@ -23,6 +26,11 @@ class FakeBusRepository implements BusRepository {
   BusOrderStatus? orderStatusResult;
   List<BusLocation>? locationsResult;
   int createTicketCallCount = 0;
+  List<BusOrder>? ordersResult;
+  int listOrdersCallCount = 0;
+  bool listOrdersShouldThrow = false;
+  List<String> cancelOrderCalls = [];
+  bool cancelOrderShouldThrow = false;
 
   @override
   Future<List<BusLocation>> listLocations() async {
@@ -116,6 +124,23 @@ class FakeBusRepository implements BusRepository {
           statusCode: 'pending',
           isConfirmed: false,
         );
+  }
+
+  @override
+  Future<List<BusOrder>> listOrders() async {
+    listOrdersCallCount++;
+    if (listOrdersShouldThrow) {
+      throw const ApiException('Failed to load orders', statusCode: 500);
+    }
+    return ordersResult ?? const [];
+  }
+
+  @override
+  Future<void> cancelOrder(String orderId) async {
+    cancelOrderCalls.add(orderId);
+    if (cancelOrderShouldThrow) {
+      throw const ApiException('Cannot cancel', statusCode: 422);
+    }
   }
 
   static final sampleTrip = BusTripSummary(

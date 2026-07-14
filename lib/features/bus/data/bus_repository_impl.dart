@@ -4,6 +4,7 @@ import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/bus/data/bus_api.dart';
 import 'package:rego/features/bus/data/bus_dto_mapper.dart';
 import 'package:rego/features/bus/domain/entities/bus_location.dart';
+import 'package:rego/features/bus/domain/entities/bus_order.dart';
 import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
@@ -102,6 +103,22 @@ class BusRepositoryImpl implements BusRepository {
     return _guard(() async {
       final body = await _api.orderStatus(orderId: orderId, currency: currency);
       return BusDtoMapper.orderStatusFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<List<BusOrder>> listOrders() {
+    return _guard(() async {
+      final body = await _api.listOrders();
+      return BusDtoMapper.ordersFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<void> cancelOrder(String orderId) {
+    return _guard(() async {
+      final body = await _api.cancelOrder(orderId);
+      BusDtoMapper.ensureSuccess(body as Map<String, dynamic>);
     });
   }
 
