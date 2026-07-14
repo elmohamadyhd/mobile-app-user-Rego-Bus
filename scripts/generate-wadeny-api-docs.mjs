@@ -4,19 +4,21 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const collectionPath = path.join(
+const defaultCollectionPath = path.join(
   root,
-  "api postman collection",
-  "Wadeny.postman_collection.....v2.json",
+  "docs",
+  "Wadeny.postman_collection.json",
 );
 const outPath = path.join(root, "docs", "wadeny-apis.md");
+let collectionPath = defaultCollectionPath;
 const POSTMAN_COLLECTION_ID =
   "30997029-5734dbd8-5584-4709-b10d-677d91cc01aa";
 
 function parseArgs() {
   const args = process.argv.slice(2);
   let source = "postman";
-  let responses = "auth";
+  let responses = "auth,buses,profile";
+  let collection = defaultCollectionPath;
   for (const arg of args) {
     if (arg.startsWith("--source=")) {
       source = arg.slice("--source=".length);
@@ -24,7 +26,12 @@ function parseArgs() {
     if (arg.startsWith("--responses=")) {
       responses = arg.slice("--responses=".length);
     }
+    if (arg.startsWith("--collection=")) {
+      const raw = arg.slice("--collection=".length);
+      collection = path.isAbsolute(raw) ? raw : path.join(root, raw);
+    }
   }
+  collectionPath = collection;
   return { source, responses: parseResponsesMode(responses) };
 }
 
@@ -168,7 +175,7 @@ function redactTokens(value) {
       if (k === "api_token" && typeof v === "string") {
         out[k] = "<redacted>";
       } else if (
-        (k === "invoice_url" || k === "payment_url") &&
+        (k === "invoice_url" || k === "payment_url" || k === "link") &&
         typeof v === "string"
       ) {
         out[k] = v.replace(/\/[^/]+$/, "/…");
@@ -286,6 +293,10 @@ function scenarioLabel(code, parsed, rawBody) {
     if (message.toLowerCase().includes("order details")) {
       return "Order details";
     }
+    if (message === "Wallet") return "Wallet balance";
+    if (message === "Payment link") return "Payment link";
+    if (message === "Bus orders") return "Bus orders list";
+    if (message === "Bus order") return "Bus order details";
     if (parsed?.data?.api_token) return "Success — user data";
     if (
       message.toLowerCase().includes("logged in") ||
@@ -326,6 +337,7 @@ function scenarioLabel(code, parsed, rawBody) {
   if (keys.includes("email")) return "Email already taken";
   if (keys.includes("mobile")) return "Mobile already taken";
   if (keys.includes("password")) return "Password confirmation mismatch";
+  if (message === "Bus order not found") return "Bus order not found";
   if (code === 404) return "Record not found";
 
   const short =
@@ -631,7 +643,7 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
   md.push("# Wadeny API Reference (v1)");
   md.push("");
   md.push(
-    "> Generated from [`Wadeny.postman_collection.....v2.json`](../api%20postman%20collection/Wadeny.postman_collection.....v2.json)",
+    "> Generated from [`Wadeny.postman_collection.json`](Wadeny.postman_collection.json)",
   );
   md.push("");
   md.push("## Overview");
@@ -723,7 +735,7 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
     '| Currencies | Named "Currencies" but URL is `/flights/iata?search=CAI` — likely copy-paste error |',
   );
   md.push(
-    "| Profile → Orders → Flights → Show | Same URL as List (`/profile/orders/flights`) — Show may need `/{id}` |",
+    "| Profile → Wallet / Orders (GET) | Postman copies form-data bodies from other requests — real API expects no body on these GET calls |",
   );
   md.push(
     "| Buses saved examples | Some `originalRequest` URLs still point to legacy `/api/transports/*` paths — response bodies are valid; request snapshots are stale |",
@@ -740,7 +752,7 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
   );
   md.push("");
   md.push(
-    "Saved responses documented under Auth and Buses (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.",
+    "Saved responses documented under Auth, Profile, and Buses (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.",
   );
   md.push("");
 
@@ -766,7 +778,7 @@ async function main() {
 
   baseUrl =
     (data.variable || []).find((v) => v.key === "url")?.value ||
-    "https://app.telefreik.com";
+    "https://portal.wdenytravel.com/api/v1";
   const collectionAuth = data.auth?.type === "bearer";
 
   const apis = [];
@@ -785,7 +797,13 @@ async function main() {
   const busResponses = apis
     .filter((a) => a.section === "Buses" && shouldDocumentResponses(a, responses))
     .reduce((n, a) => n + a.responses.length, 0);
+  const profileResponses = apis
+    .filter(
+      (a) => a.section === "Profile" && shouldDocumentResponses(a, responses),
+    )
+    .reduce((n, a) => n + a.responses.length, 0);
   console.log(`Auth saved responses documented: ${authResponses}`);
+  console.log(`Profile saved responses documented: ${profileResponses}`);
   console.log(`Buses saved responses documented: ${busResponses}`);
 }
 

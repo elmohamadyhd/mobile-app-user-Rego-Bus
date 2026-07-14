@@ -1,6 +1,6 @@
 # Wadeny API Reference (v1)
 
-> Generated from [`Wadeny.postman_collection.....v2.json`](../api%20postman%20collection/Wadeny.postman_collection.....v2.json)
+> Generated from [`Wadeny.postman_collection.json`](Wadeny.postman_collection.json)
 
 ## Overview
 
@@ -10,8 +10,8 @@
 | **Collection** | Wadeny |
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
-| **Total requests** | 60 |
-| **Documented saved responses** | 46 |
+| **Total requests** | 64 |
+| **Documented saved responses** | 67 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -51,10 +51,15 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `GET` | `/private/search` | Search |
 | `GET` | `/profile` | Show profile |
 | `GET` | `/profile/address-book` | List |
+| `GET` | `/profile/buses/orders` | List |
+| `GET` | `/profile/buses/orders/:id` | Show |
+| `GET` | `/profile/flights/orders` | List |
+| `GET` | `/profile/flights/orders/:id` | Show |
 | `GET` | `/profile/notifications` | List |
-| `GET` | `/profile/orders/flights` | List |
+| `GET` | `/profile/private/orders` | List |
+| `GET` | `/profile/private/orders/:id` | Show |
 | `GET` | `/profile/tickets` | Tickets list |
-| `GET` | `/profile/tickets/5` | Show ticket |
+| `GET` | `/profile/tickets/10` | Show ticket |
 | `GET` | `/profile/tickets/6/replies` | List |
 | `GET` | `/profile/wallet` | List transactions |
 | `GET` | `/settings` | Settings |
@@ -87,7 +92,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 ## Table of contents
 
 - [Auth](#auth) (8 requests)
-- [Profile](#profile) (21 requests)
+- [Profile](#profile) (25 requests)
 - [Content](#content) (12 requests)
 - [Flights](#flights) (8 requests)
 - [Private](#private) (3 requests)
@@ -695,18 +700,22 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | 7 | `GET` | `/profile/tickets/6/replies` | List |
 | 8 | `POST` | `/profile/tickets/6/replies` | Create |
 | 9 | `GET` | `/profile/tickets` | Tickets list |
-| 10 | `GET` | `/profile/tickets/5` | Show ticket |
+| 10 | `GET` | `/profile/tickets/10` | Show ticket |
 | 11 | `POST` | `/profile/tickets` | Create Ticket |
 | 12 | `GET` | `/profile/wallet` | List transactions |
 | 13 | `POST` | `/profile/wallet/:amount/charge` | Charge |
-| 14 | `GET` | `/profile/orders/flights` | List |
-| 15 | `GET` | `/profile/orders/flights` | Show |
-| 16 | `GET` | `/profile` | Show profile |
-| 17 | `POST` | `/profile` | Update profile |
-| 18 | `PUT` | `/profile/firebase/token` | Update Token |
-| 19 | `POST` | `/profile/verify-alt-phone` | Verify Alt phone |
-| 20 | `POST` | `/profile/update-password` | Update password |
-| 21 | `DELETE` | `/profile` | Delete account |
+| 14 | `GET` | `/profile/flights/orders` | List |
+| 15 | `GET` | `/profile/flights/orders/:id` | Show |
+| 16 | `GET` | `/profile/buses/orders` | List |
+| 17 | `GET` | `/profile/buses/orders/:id` | Show |
+| 18 | `GET` | `/profile/private/orders` | List |
+| 19 | `GET` | `/profile/private/orders/:id` | Show |
+| 20 | `GET` | `/profile` | Show profile |
+| 21 | `POST` | `/profile` | Update profile |
+| 22 | `PUT` | `/profile/firebase/token` | Update Token |
+| 23 | `POST` | `/profile/verify-alt-phone` | Verify Alt phone |
+| 24 | `POST` | `/profile/update-password` | Update password |
+| 25 | `DELETE` | `/profile` | Delete account |
 
 #### addresses
 
@@ -726,6 +735,77 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `401` | Unauthenticated | ar | — |
+| `200` | Empty results | ar | — |
+| `200` | Customer addresses list | ar | — |
+
+#### 401 — Unauthenticated (ar)
+
+```json
+{
+  "status": 401,
+  "message": "Unauthenticated",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### 200 — Empty results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Customer addresses list",
+  "errors": {},
+  "data": [],
+  "pagination": {
+    "total": 0,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
+#### 200 — Customer addresses list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Customer addresses list",
+  "errors": {},
+  "data": [
+    {
+      "id": 22,
+      "city": null,
+      "name": "محرب بيك",
+      "phone": "1554052685",
+      "notes": "Quasi quisquam tenetur sint quas. Fugit quisquam pariatur rerum. Nulla sit mollitia. Quis dolores dolore eligendi similique magnam numquam sint ea aliquid. Eveniet possimus vitae.",
+      "whatsapp_share_link": "https://api.whatsapp.com/send?text=%E2%80%8F%E2%80%8Ehttps%3A%2F%2Fwww.google.com%2Fmaps%2Fdir%2F%3Fapi%3D1%26destination%3D24.2222%2C46.5555",
+      "map_location": {
+        "lat": 24.2222,
+        "lng": 46.5555,
+        "address_name": "محرم بيك شارع المطافي عماره عشره"
+      }
+    }
+  ],
+  "pagination": {
+    "total": 1,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
 
 ### Create
 
@@ -757,6 +837,67 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Created | ar | — |
+| `400` | حقل الاسم مطلوب. (×3) | ar | `name`, `map_location`, `map_location.lat`, `map_location.lng`, `map_location.address_name` |
+| `400` | حقل map location.lat مطلوب. | ar | `map_location.lat` |
+
+#### 200 — Created (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Created",
+  "errors": {},
+  "data": {
+    "id": 22,
+    "city": null,
+    "name": "محرب بيك",
+    "phone": "1554052685",
+    "notes": "Quasi quisquam tenetur sint quas. Fugit quisquam pariatur rerum. Nulla sit mollitia. Quis dolores dolore eligendi similique magnam numquam sint ea aliquid. Eveniet possimus vitae.",
+    "whatsapp_share_link": "https://api.whatsapp.com/send?text=%E2%80%8F%E2%80%8Ehttps%3A%2F%2Fwww.google.com%2Fmaps%2Fdir%2F%3Fapi%3D1%26destination%3D24.2222%2C46.5555",
+    "map_location": {
+      "lat": 24.2222,
+      "lng": 46.5555,
+      "address_name": "محرم بيك شارع المطافي عماره عشره"
+    }
+  }
+}
+```
+
+#### 400 — حقل الاسم مطلوب. (ar)
+
+```json
+{
+  "status": 400,
+  "message": "حقل الاسم مطلوب.",
+  "errors": {
+    "name": "حقل الاسم مطلوب.",
+    "map_location": "حقل map location مطلوب.",
+    "map_location.lat": "حقل map location.lat مطلوب.",
+    "map_location.lng": "حقل map location.lng مطلوب.",
+    "map_location.address_name": "حقل map location.address name مطلوب."
+  },
+  "data": {}
+}
+```
+
+#### 400 — حقل map location.lat مطلوب. (ar)
+
+```json
+{
+  "status": 400,
+  "message": "حقل map location.lat مطلوب.",
+  "errors": {
+    "map_location.lat": "حقل map location.lat مطلوب."
+  },
+  "data": {}
+}
+```
 
 ### Update
 
@@ -791,6 +932,89 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Updated | ar | — |
+| `200` | Updated | ar | — |
+| `400` | حقل الاسم مطلوب. | ar | `name`, `map_location`, `map_location.lat`, `map_location.lng`, `map_location.address_name` |
+| `404` | Record not found | ar | — |
+
+#### 200 — Updated (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Updated",
+  "errors": {},
+  "data": {
+    "id": 14,
+    "city": null,
+    "name": "Miss Elisa Reichert",
+    "phone": "1090510796",
+    "notes": "et nisi non",
+    "whatsapp_share_link": "https://api.whatsapp.com/send?text=%E2%80%8F%E2%80%8Ehttps%3A%2F%2Fwww.google.com%2Fmaps%2Fdir%2F%3Fapi%3D1%26destination%3D31.04472075614%2C31.379182285063",
+    "map_location": {
+      "lat": 31.04472075613956,
+      "lng": 31.379182285062797,
+      "address_name": "2716 Willms Route"
+    }
+  }
+}
+```
+
+#### 200 — Updated (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Updated",
+  "errors": {},
+  "data": {
+    "id": 22,
+    "city": null,
+    "name": "Emanuel Lowe",
+    "phone": "1554052685",
+    "notes": "Eaque odio odio dignissimos. Corporis sunt et doloremque nesciunt enim ipsam minima et non. Ut eos in. Ipsum corporis sed quam at aut vel voluptatem et soluta. Consequatur labore itaque cumque non ut qui magni mollitia. Odio autem a ut.",
+    "whatsapp_share_link": "https://api.whatsapp.com/send?text=%E2%80%8F%E2%80%8Ehttps%3A%2F%2Fwww.google.com%2Fmaps%2Fdir%2F%3Fapi%3D1%26destination%3D31.04472075614%2C31.379182285063",
+    "map_location": {
+      "lat": 31.04472075613956,
+      "lng": 31.379182285062797,
+      "address_name": "6358 Ike Skyway"
+    }
+  }
+}
+```
+
+#### 400 — حقل الاسم مطلوب. (ar)
+
+```json
+{
+  "status": 400,
+  "message": "حقل الاسم مطلوب.",
+  "errors": {
+    "name": "حقل الاسم مطلوب.",
+    "map_location": "حقل map location مطلوب.",
+    "map_location.lat": "حقل map location.lat مطلوب.",
+    "map_location.lng": "حقل map location.lng مطلوب.",
+    "map_location.address_name": "حقل map location.address name مطلوب."
+  },
+  "data": {}
+}
+```
+
+#### 404 — Record not found (ar)
+
+```json
+{
+  "status": 404,
+  "message": "This record can't be found",
+  "errors": {},
+  "data": {}
+}
+```
+
 ### Delete
 
 | | |
@@ -807,6 +1031,35 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `404` | Record not found | ar | — |
+| `200` | Deleted | ar | — |
+
+#### 404 — Record not found (ar)
+
+```json
+{
+  "status": 404,
+  "message": "This record can't be found",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### 200 — Deleted (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Deleted",
+  "errors": {},
+  "data": {}
+}
+```
 
 #### Notifications
 
@@ -827,6 +1080,50 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Notification list | ar | — |
+
+#### 200 — Notification list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Notification list",
+  "errors": {},
+  "data": [
+    {
+      "id": "f2ddd3f1-97f7-4797-a016-e5f31c29572c",
+      "title": "تهانئ",
+      "description": "تم توثيق حسابك بنجاح",
+      "created_date": "2026-07-02 12:48:02",
+      "formatted_date": "2026-07-02 12:48 pm",
+      "data": {},
+      "read_at": "2026-07-02T10:56:45.000000Z"
+    },
+    {
+      "id": "44fe3341-a5f2-4681-b166-d558fe48087d",
+      "title": "تهانئ",
+      "description": "تم توثيق حسابك بنجاح",
+      "created_date": "2026-07-02 12:46:05",
+      "formatted_date": "2026-07-02 12:46 pm",
+      "data": {},
+      "read_at": "2026-07-02T10:56:45.000000Z"
+    }
+  ],
+  "pagination": {
+    "total": 2,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
 ### Delete
 
 | | |
@@ -843,6 +1140,23 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Notification has been deleted | ar | — |
+
+#### 200 — Notification has been deleted (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Notification has been deleted",
+  "errors": {},
+  "data": {}
+}
+```
 
 #### Tickets > Replies
 
@@ -903,13 +1217,47 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Tickets list | ar | — |
+
+#### 200 — Tickets list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Tickets list",
+  "errors": {},
+  "data": [
+    {
+      "id": 2,
+      "title": "missing button",
+      "description": "missing button on anything",
+      "status": "Opened",
+      "section": "App Issues",
+      "created_at": "2026-07-12 08:38 PM"
+    }
+  ],
+  "pagination": {
+    "total": 1,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
 ### Show ticket
 
 | | |
 |---|---|
 | **Method** | `GET` |
-| **Path** | `/profile/tickets/5` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/tickets/5` |
+| **Path** | `/profile/tickets/10` |
+| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/tickets/10` |
 | **Auth** | Bearer token required |
 | **Folder** | Tickets |
 
@@ -960,6 +1308,36 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Wallet balance | ar | — |
+
+#### 200 — Wallet balance (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Wallet",
+  "errors": {},
+  "data": [
+    {
+      "id": 79,
+      "balance": "25.00",
+      "transactions": [
+        {
+          "id": 86,
+          "description": "تم إضافة 25 جنيه لمحفظتك ترحيبًا بك معنا. ",
+          "type": "deposit",
+          "amount": "25.00"
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### Charge
 
 | | |
@@ -979,6 +1357,25 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Payment link | ar | — |
+
+#### 200 — Payment link (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Payment link",
+  "errors": {},
+  "data": {
+    "link": "https://demo.MyFatoorah.com/KWT/ia/…"
+  }
+}
+```
+
 #### Orders > Flights
 
 ### List
@@ -986,8 +1383,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | | |
 |---|---|
 | **Method** | `GET` |
-| **Path** | `/profile/orders/flights` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/orders/flights` |
+| **Path** | `/profile/flights/orders` |
+| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/flights/orders` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Flights |
 
@@ -1005,10 +1402,361 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | | |
 |---|---|
 | **Method** | `GET` |
-| **Path** | `/profile/orders/flights` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/orders/flights` |
+| **Path** | `/profile/flights/orders/:id` |
+| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/flights/orders/:id` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Flights |
+
+**Body (form-data):** `file`, `message`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
+#### Orders > Buses
+
+### List
+
+| | |
+|---|---|
+| **Method** | `GET` |
+| **Path** | `/profile/buses/orders` |
+| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/buses/orders` |
+| **Auth** | Bearer token required |
+| **Folder** | Orders > Buses |
+
+**Body (form-data):** `file`, `message`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Bus orders list | ar | — |
+
+#### 200 — Bus orders list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Bus orders",
+  "errors": {},
+  "data": [
+    {
+      "number": "000001475",
+      "id": 1475,
+      "trip_id": "145261",
+      "gateway_order_id": "5077099",
+      "parent_order_id": null,
+      "company_data": {
+        "name": "SuperJet",
+        "avatar": "",
+        "bus_image": "",
+        "pin": ""
+      },
+      "status": "Pending",
+      "status_code": "pending",
+      "gateway_id": "SuperJet",
+      "company_name": "SuperJet",
+      "category": "Five stars",
+      "can_be_cancel": true,
+      "trip_type": "Buses",
+      "is_confirmed": 0,
+      "review": null,
+      "can_review": false,
+      "payment_data": {
+        "status": "Pending",
+        "status_code": "pending",
+        "invoice_id": 6956732,
+        "gateway": "Myfatoorah",
+        "invoice_url": "https://demo.MyFatoorah.com/KWT/ia/…",
+        "data": {
+          "notes": ""
+        }
+      },
+      "invoice_url": "https://portal.wdenytravel.com/orders/1475/invoice/…",
+      "station_from": null,
+      "station_to": null,
+      "tickets": [
+        {
+          "id": 2076,
+          "seat_number": "1",
+          "price": "205.00"
+        }
+      ],
+      "date": "2026-07-30",
+      "date_time": "2026-07-30 08:45 AM",
+      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/…",
+      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel",
+      "original_tickets_totals": "EGP 205.00",
+      "discount": "EGP 0.00",
+      "wallet_discount": "EGP 0.00",
+      "tickets_totals_after_discount": "EGP 205.00",
+      "payment_fees": "EGP 14.35",
+      "total": "EGP 219.35",
+      "currency": "EGP"
+    },
+    {
+      "number": "000001472",
+      "id": 1472,
+      "trip_id": "145658",
+      "gateway_order_id": "5062716",
+      "parent_order_id": null,
+      "company_data": {
+        "name": "SuperJet",
+        "avatar": "",
+        "bus_image": "",
+        "pin": ""
+      },
+      "status": "Pending",
+      "status_code": "pending",
+      "gateway_id": "SuperJet",
+      "company_name": "SuperJet",
+      "category": "VIP",
+      "can_be_cancel": true,
+      "trip_type": "Buses",
+      "is_confirmed": 0,
+      "review": null,
+      "can_review": false,
+      "payment_data": {
+        "status": "Pending",
+        "status_code": "pending",
+        "invoice_id": 6952164,
+        "gateway": "Myfatoorah",
+        "invoice_url": "https://demo.MyFatoorah.com/KWT/ia/…",
+        "data": {
+          "notes": ""
+        }
+      },
+      "invoice_url": "https://portal.wdenytravel.com/orders/1472/invoice/…",
+      "station_from": null,
+      "station_to": null,
+      "tickets": [
+        {
+          "id": 2072,
+          "seat_number": "4",
+          "price": "225.00"
+        }
+      ],
+      "date": "2026-07-30",
+      "date_time": "2026-07-30 04:30 AM",
+      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1472/…",
+      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1472/cancel",
+      "original_tickets_totals": "EGP 225.00",
+      "discount": "EGP 0.00",
+      "wallet_discount": "EGP 0.00",
+      "tickets_totals_after_discount": "EGP 225.00",
+      "payment_fees": "EGP 15.75",
+      "total": "EGP 240.75",
+      "currency": "EGP"
+    },
+    {
+      "number": "000001470",
+      "id": 1470,
+      "trip_id": "145658",
+      "gateway_order_id": "5062449",
+      "parent_order_id": null,
+      "company_data": {
+        "name": "SuperJet",
+        "avatar": "",
+        "bus_image": "",
+        "pin": ""
+      },
+      "status": "Pending",
+      "status_code": "pending",
+      "gateway_id": "SuperJet",
+      "company_name": "SuperJet",
+      "category": "VIP",
+      "can_be_cancel": true,
+      "trip_type": "Buses",
+      "is_confirmed": 0,
+      "review": null,
+      "can_review": false,
+      "payment_data": {
+        "status": "Pending",
+        "status_code": "pending",
+        "invoice_id": 6952142,
+        "gateway": "Myfatoorah",
+        "invoice_url": "https://demo.MyFatoorah.com/KWT/ia/…",
+        "data": {
+          "notes": ""
+        }
+      },
+      "invoice_url": "https://portal.wdenytravel.com/orders/1470/invoice/…",
+      "station_from": null,
+      "station_to": null,
+      "tickets": [
+        {
+          "id": 2070,
+          "seat_number": "10",
+          "price": "225.00"
+        }
+      ],
+      "date": "2026-07-30",
+      "date_time": "2026-07-30 04:30 AM",
+      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1470/…",
+      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1470/cancel",
+      "original_tickets_totals": "EGP 225.00",
+      "discount": "EGP 0.00",
+      "wallet_discount": "EGP 0.00",
+      "tickets_totals_after_discount": "EGP 225.00",
+      "payment_fees": "EGP 15.75",
+      "total": "EGP 240.75",
+      "currency": "EGP"
+    },
+    "…10 more items"
+  ],
+  "pagination": {
+    "total": 13,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
+### Show
+
+| | |
+|---|---|
+| **Method** | `GET` |
+| **Path** | `/profile/buses/orders/:id` |
+| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/buses/orders/:id` |
+| **Auth** | Bearer token required |
+| **Folder** | Orders > Buses |
+
+**Body (form-data):** `file`, `message`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Bus order details | ar | — |
+| `404` | Bus order not found | ar | — |
+
+#### 200 — Bus order details (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Bus order",
+  "errors": {},
+  "data": {
+    "number": "000001475",
+    "id": 1475,
+    "trip_id": "145261",
+    "gateway_order_id": "5077099",
+    "parent_order_id": null,
+    "company_data": {
+      "name": "SuperJet",
+      "avatar": "",
+      "bus_image": "",
+      "pin": ""
+    },
+    "status": "Pending",
+    "status_code": "pending",
+    "gateway_id": "SuperJet",
+    "company_name": "SuperJet",
+    "category": "Five stars",
+    "can_be_cancel": true,
+    "trip_type": "Buses",
+    "is_confirmed": 0,
+    "review": null,
+    "can_review": false,
+    "payment_data": {
+      "status": "Pending",
+      "status_code": "pending",
+      "invoice_id": 6956732,
+      "gateway": "Myfatoorah",
+      "invoice_url": "https://demo.MyFatoorah.com/KWT/ia/…",
+      "data": {
+        "notes": ""
+      }
+    },
+    "invoice_url": "https://portal.wdenytravel.com/orders/1475/invoice/…",
+    "station_from": null,
+    "station_to": null,
+    "tickets": [
+      {
+        "id": 2076,
+        "seat_number": "1",
+        "price": "205.00"
+      }
+    ],
+    "date": "2026-07-30",
+    "date_time": "2026-07-30 08:45 AM",
+    "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/…",
+    "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel",
+    "original_tickets_totals": "EGP 205.00",
+    "discount": "EGP 0.00",
+    "wallet_discount": "EGP 0.00",
+    "tickets_totals_after_discount": "EGP 205.00",
+    "payment_fees": "EGP 14.35",
+    "total": "EGP 219.35",
+    "currency": "EGP"
+  }
+}
+```
+
+#### 404 — Bus order not found (ar)
+
+```json
+{
+  "status": 404,
+  "message": "Bus order not found",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### Orders > Private
+
+### List
+
+| | |
+|---|---|
+| **Method** | `GET` |
+| **Path** | `/profile/private/orders` |
+| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/private/orders` |
+| **Auth** | Bearer token required |
+| **Folder** | Orders > Private |
+
+**Body (form-data):** `file`, `message`
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
+### Show
+
+| | |
+|---|---|
+| **Method** | `GET` |
+| **Path** | `/profile/private/orders/:id` |
+| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/private/orders/:id` |
+| **Auth** | Bearer token required |
+| **Folder** | Orders > Private |
 
 **Body (form-data):** `file`, `message`
 
@@ -1135,6 +1883,35 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 | `firebase_token` | AhMeDs |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Account deleted | ar | — |
+| `401` | Unauthenticated | ar | — |
+
+#### 200 — Account deleted (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Account deleted",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### 401 — Unauthenticated (ar)
+
+```json
+{
+  "status": 401,
+  "message": "Unauthenticated",
+  "errors": {},
+  "data": {}
+}
+```
 
 ## Content
 
@@ -1858,7 +2635,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
-| `200` | Locations list | ar | — |
+| `200` | Locations list (×2) | ar | — |
 | `200` | Empty results | en | — |
 | `200` | Locations list | en | — |
 
@@ -1949,39 +2726,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
-| `200` | Locations list | ar | — |
 | `200` | stations list | ar | — |
-
-#### 200 — Locations list (ar)
-
-```json
-{
-  "status": 200,
-  "message": "Locations list",
-  "errors": {},
-  "data": [
-    {
-      "id": 1,
-      "name": "القاهره",
-      "name_ar": "القاهره",
-      "name_en": "Cairo"
-    },
-    {
-      "id": 2,
-      "name": "الاسكندريه",
-      "name_ar": "الاسكندريه",
-      "name_en": "Alexandria"
-    },
-    {
-      "id": 4,
-      "name": "الغردقه",
-      "name_ar": "الغردقه",
-      "name_en": "Hurghada"
-    },
-    "…48 more items"
-  ]
-}
-```
 
 #### 200 — stations list (ar)
 
@@ -2994,7 +3739,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/trips/236510` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/trips/236510` |
+| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/trips/236510?currency=EGP` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -3003,6 +3748,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |-----------|---------|
 | `page` | 1 |
 | `accept` |  |
+| `currency` | EGP |
 
 **Headers:**
 
@@ -3688,11 +4434,11 @@ The following inconsistencies exist in the Postman collection and may not reflec
 | Content → New Request | No URL configured (empty request) |
 | Private → Show Trip Details | URL points to `/flights/airports/search` instead of a private trip endpoint |
 | Currencies | Named "Currencies" but URL is `/flights/iata?search=CAI` — likely copy-paste error |
-| Profile → Orders → Flights → Show | Same URL as List (`/profile/orders/flights`) — Show may need `/{id}` |
+| Profile → Wallet / Orders (GET) | Postman copies form-data bodies from other requests — real API expects no body on these GET calls |
 | Buses saved examples | Some `originalRequest` URLs still point to legacy `/api/transports/*` paths — response bodies are valid; request snapshots are stale |
 | Buses → Create Ticket (500) | Known backend bug in `PayMobPayAction` (`Undefined array key "url"`) — not a client contract |
 | Buses → Search details (404 HTML) | Saved example returned an HTML 404 page — likely captured against a removed trip ID |
 
 Nested items under Flights → Search (One Way, Round Trip, Multi City) and under Buses folders are **saved response examples**, not separate API endpoints. They all call the same endpoint as their parent request.
 
-Saved responses documented under Auth and Buses (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.
+Saved responses documented under Auth, Profile, and Buses (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.
