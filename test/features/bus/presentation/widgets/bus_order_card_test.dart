@@ -9,6 +9,8 @@ import 'package:rego/l10n/app_localizations.dart';
 BusOrder _order({
   BusOrderStatusKind statusKind = BusOrderStatusKind.pending,
   bool canCancel = true,
+  String? cancelUrl =
+      'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
   String? gatewayCheckoutUrl = 'https://demo.MyFatoorah.com/pay',
   String? invoiceUrl = 'https://portal.wdenytravel.com/orders/1475/invoice',
   String? pickupStopLabel = 'Cairo Main Station',
@@ -30,6 +32,7 @@ BusOrder _order({
     ],
     total: 'EGP 219.35',
     canCancel: canCancel,
+    cancelUrl: cancelUrl,
     gatewayCheckoutUrl: gatewayCheckoutUrl,
     invoiceUrl: invoiceUrl,
     fare: const BusOrderFare(
@@ -47,6 +50,7 @@ BusOrder _order({
 Future<void> _pumpCard(
   WidgetTester tester,
   BusOrder order, {
+  VoidCallback? onTap,
   VoidCallback? onPay,
   VoidCallback? onOpenETicket,
   VoidCallback? onCancel,
@@ -59,6 +63,7 @@ Future<void> _pumpCard(
       home: Scaffold(
         body: BusOrderCard(
           order: order,
+          onTap: onTap ?? () {},
           onPay: onPay ?? () {},
           onOpenETicket: onOpenETicket ?? () {},
           onCancel: onCancel ?? () {},
@@ -126,11 +131,45 @@ void main() {
     expect(tapped, 1);
   });
 
+  testWidgets('hides Cancel when canCancel is true but cancelUrl is absent',
+      (tester) async {
+    await _pumpCard(tester, _order(canCancel: true, cancelUrl: null));
+
+    expect(find.text('Cancel'), findsNothing);
+    expect(find.text('Complete payment'), findsOneWidget);
+  });
+
   testWidgets('order with no invoice hides the download action',
       (tester) async {
     await _pumpCard(tester, _order(invoiceUrl: null, canCancel: false));
 
     expect(find.text('Download'), findsNothing);
     expect(find.text('Complete payment'), findsOneWidget);
+  });
+
+  testWidgets('tapping the card body invokes onTap', (tester) async {
+    var tapped = 0;
+    await _pumpCard(tester, _order(), onTap: () => tapped++);
+
+    await tester.tap(find.text('SuperJet'));
+    await tester.pump();
+    expect(tapped, 1);
+  });
+
+  testWidgets('tapping Complete payment does not also invoke onTap',
+      (tester) async {
+    var cardTapped = 0;
+    var payTapped = 0;
+    await _pumpCard(
+      tester,
+      _order(),
+      onTap: () => cardTapped++,
+      onPay: () => payTapped++,
+    );
+
+    await tester.tap(find.text('Complete payment'));
+    await tester.pump();
+    expect(payTapped, 1);
+    expect(cardTapped, 0);
   });
 }

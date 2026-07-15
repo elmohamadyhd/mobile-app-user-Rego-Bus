@@ -18,12 +18,14 @@ class BusOrderCard extends StatelessWidget {
   const BusOrderCard({
     super.key,
     required this.order,
+    required this.onTap,
     required this.onPay,
     required this.onOpenETicket,
     required this.onCancel,
   });
 
   final BusOrder order;
+  final VoidCallback onTap;
   final VoidCallback onPay;
   final VoidCallback onOpenETicket;
   final VoidCallback onCancel;
@@ -57,111 +59,114 @@ class BusOrderCard extends StatelessWidget {
         color: AppColors.bgCard,
         shape: shape,
         clipBehavior: Clip.antiAlias,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      OperatorMark(
-                        name: order.operatorName,
-                        logoUrl: order.operatorLogoUrl,
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Text(
-                          order.operatorName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.title.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      OrderStatusBadge(statusKind: order.statusKind),
-                    ],
-                  ),
-                  if (order.dateTimeLabel.trim().isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.sm),
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Icon(
-                          AppIcons.calendar,
-                          size: 16,
-                          color: AppColors.textMuted,
+                        OperatorMark(
+                          name: order.operatorName,
+                          logoUrl: order.operatorLogoUrl,
                         ),
-                        const SizedBox(width: AppSpacing.xs),
+                        const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: Text(
-                            order.dateTimeLabel,
-                            style: AppTypography.body.copyWith(
+                            order.operatorName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.title.copyWith(
+                              fontWeight: FontWeight.w800,
                               color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
+                        const SizedBox(width: AppSpacing.sm),
+                        OrderStatusBadge(statusKind: order.statusKind),
                       ],
                     ),
-                  ],
-                  const SizedBox(height: AppSpacing.sm),
-                  if (_hasLabel(order.pickupStopLabel))
+                    if (order.dateTimeLabel.trim().isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Row(
+                        children: [
+                          const Icon(
+                            AppIcons.calendar,
+                            size: 16,
+                            color: AppColors.textMuted,
+                          ),
+                          const SizedBox(width: AppSpacing.xs),
+                          Expanded(
+                            child: Text(
+                              order.dateTimeLabel,
+                              style: AppTypography.body.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.sm),
+                    if (_hasLabel(order.pickupStopLabel))
+                      OrderInfoRow(
+                        label: l10n.eTicketFrom,
+                        value: order.pickupStopLabel!,
+                      ),
+                    if (_hasLabel(order.pickupStopLabel) &&
+                        _hasLabel(order.dropoffStopLabel))
+                      const SizedBox(height: AppSpacing.xs),
+                    if (_hasLabel(order.dropoffStopLabel))
+                      OrderInfoRow(
+                        label: l10n.eTicketTo,
+                        value: order.dropoffStopLabel!,
+                      ),
+                    if (_hasLabel(order.pickupStopLabel) ||
+                        _hasLabel(order.dropoffStopLabel))
+                      const SizedBox(height: AppSpacing.xs),
+                    if (order.bookingNumber.isNotEmpty) ...[
+                      OrderInfoRow(
+                        label: l10n.eTicketRef,
+                        value: '#${order.bookingNumber}',
+                        valueLtr: true,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                    ],
                     OrderInfoRow(
-                      label: l10n.eTicketFrom,
-                      value: order.pickupStopLabel!,
-                    ),
-                  if (_hasLabel(order.pickupStopLabel) &&
-                      _hasLabel(order.dropoffStopLabel))
-                    const SizedBox(height: AppSpacing.xs),
-                  if (_hasLabel(order.dropoffStopLabel))
-                    OrderInfoRow(
-                      label: l10n.eTicketTo,
-                      value: order.dropoffStopLabel!,
-                    ),
-                  if (_hasLabel(order.pickupStopLabel) ||
-                      _hasLabel(order.dropoffStopLabel))
-                    const SizedBox(height: AppSpacing.xs),
-                  if (order.bookingNumber.isNotEmpty) ...[
-                    OrderInfoRow(
-                      label: l10n.eTicketRef,
-                      value: '#${order.bookingNumber}',
+                      label: l10n.tripResultsFareLabel,
+                      value: order.total,
                       valueLtr: true,
                     ),
-                    const SizedBox(height: AppSpacing.xs),
                   ],
-                  OrderInfoRow(
-                    label: l10n.tripResultsFareLabel,
-                    value: order.total,
-                    valueLtr: true,
-                  ),
-                ],
-              ),
-            ),
-            if (stubHeight > 0)
-              SizedBox(
-                height: stubHeight,
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(
-                    AppSpacing.md,
-                    0,
-                    AppSpacing.md,
-                    AppSpacing.sm,
-                  ),
-                  child: _OrderActions(
-                    order: order,
-                    onPay: onPay,
-                    onOpenETicket: onOpenETicket,
-                    onCancel: onCancel,
-                  ),
                 ),
               ),
-          ],
+              if (stubHeight > 0)
+                SizedBox(
+                  height: stubHeight,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      AppSpacing.md,
+                      0,
+                      AppSpacing.md,
+                      AppSpacing.sm,
+                    ),
+                    child: _OrderActions(
+                      order: order,
+                      onPay: onPay,
+                      onOpenETicket: onOpenETicket,
+                      onCancel: onCancel,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -171,7 +176,8 @@ class BusOrderCard extends StatelessWidget {
     final showPay = order.statusKind == BusOrderStatusKind.pending &&
         (order.gatewayCheckoutUrl ?? '').isNotEmpty;
     final showETicket = (order.invoiceUrl ?? '').isNotEmpty;
-    final showCancel = order.canCancel;
+    final showCancel =
+        order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
     final hasSecondary = showETicket || showCancel;
     if (!showPay && !hasSecondary) return 0;
 
@@ -205,7 +211,8 @@ class _OrderActions extends StatelessWidget {
     final showPay = order.statusKind == BusOrderStatusKind.pending &&
         (order.gatewayCheckoutUrl ?? '').isNotEmpty;
     final showETicket = (order.invoiceUrl ?? '').isNotEmpty;
-    final showCancel = order.canCancel;
+    final showCancel =
+        order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
 
     if (!showPay && !showETicket && !showCancel) {
       return const SizedBox.shrink();
