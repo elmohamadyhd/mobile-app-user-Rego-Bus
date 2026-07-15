@@ -18,6 +18,7 @@ import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/payment_webview_screen.dart';
 import 'package:rego/features/bus/presentation/providers/bus_orders_provider.dart';
 import 'package:rego/features/bus/presentation/widgets/bus_order_card.dart';
+import 'package:rego/features/bus/presentation/widgets/bus_order_detail_sheet.dart';
 import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
@@ -360,6 +361,7 @@ class _OrdersList extends ConsumerWidget {
         for (final order in orders)
           BusOrderCard(
             order: order,
+            onTap: () => showBusOrderDetailSheet(context, order),
             onPay: () => context.push(
               BusRoutes.pay,
               extra: PaymentFlowArgs(
