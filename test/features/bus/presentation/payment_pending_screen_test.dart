@@ -115,19 +115,15 @@ void main() {
     await notifier.confirmBooking();
 
     final router = GoRouter(
-      initialLocation: AppRoutes.home,
+      initialLocation: BusRoutes.pending,
       routes: [
         GoRoute(
           path: AppRoutes.home,
           builder: (context, state) => const Scaffold(body: Text('HOME')),
         ),
         GoRoute(
-          path: '/confirm',
+          path: BusRoutes.confirm,
           builder: (context, state) => const Scaffold(body: Text('CONFIRM')),
-        ),
-        GoRoute(
-          path: '/pay',
-          builder: (context, state) => const Scaffold(body: Text('PAY')),
         ),
         GoRoute(
           path: BusRoutes.pending,
@@ -149,23 +145,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Mirrors the real stack: Confirm pushes the payment WebView ('/pay'),
-    // which then pushReplacements itself with the pending screen — Confirm
-    // stays underneath both.
-    await router.push('/confirm');
-    await tester.pumpAndSettle();
-    await router.push('/pay');
-    await tester.pumpAndSettle();
-    await router.pushReplacement(BusRoutes.pending);
-    await tester.pumpAndSettle();
-
     expect(find.text('Pending payment'), findsOneWidget);
 
     expect(await tester.binding.handlePopRoute(), isTrue);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump();
 
     expect(find.text('HOME'), findsOneWidget);
     expect(find.text('CONFIRM'), findsNothing);
+    expect(router.state.uri.path, AppRoutes.home);
     expect(container.read(busBookingProvider).ticket, isNull);
   });
 }

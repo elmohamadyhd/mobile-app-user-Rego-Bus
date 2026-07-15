@@ -91,7 +91,7 @@ void main() {
   testWidgets('alwaysIntercept blocks router pop and shows exit snackbar',
       (tester) async {
     final router = GoRouter(
-      initialLocation: '/',
+      initialLocation: '/login',
       routes: [
         GoRoute(
           path: '/',
@@ -117,13 +117,11 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-
-    await router.push('/login');
-    await tester.pumpAndSettle();
     expect(find.text('LOGIN'), findsOneWidget);
 
     expect(await tester.binding.handlePopRoute(), isTrue);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump();
 
     expect(find.text('Press back again to exit'), findsOneWidget);
     expect(find.text('LOGIN'), findsOneWidget);

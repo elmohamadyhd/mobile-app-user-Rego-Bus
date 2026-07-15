@@ -27,8 +27,8 @@ class PaymentPendingScreen extends ConsumerWidget {
     final ticket = ref.watch(busBookingProvider.select((s) => s.ticket));
 
     void goHome() {
-      ref.read(busBookingProvider.notifier).reset();
       context.go(AppRoutes.home);
+      Future.microtask(() => ref.read(busBookingProvider.notifier).reset());
     }
 
     return PopScope(

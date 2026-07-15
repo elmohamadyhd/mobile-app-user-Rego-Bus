@@ -51,9 +51,9 @@ void main() {
     expect(find.text('Seat'), findsOneWidget);
     expect(find.text('Confirm'), findsOneWidget);
 
-    // Chosen stops from FakeBusRepository.sampleTrip's default pair.
+    // Boarding default + terminal drop-off seeded by selectTrip.
     expect(find.text('القللي'), findsOneWidget);
-    expect(find.text('محرم بك'), findsOneWidget);
+    expect(find.text('ميامي'), findsOneWidget);
     // Selected seat chip.
     expect(find.text('16'), findsOneWidget);
     // Trip date recap.

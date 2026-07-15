@@ -107,14 +107,16 @@ void main() {
     expect(find.textContaining('250', findRichText: true), findsWidgets);
     expect(find.text('Fare'), findsOneWidget);
     expect(find.text('Select'), findsOneWidget);
-    expect(find.text('6 seats left'), findsOneWidget);
+    // Seats pill is hidden until the backend count is reliable.
+    expect(find.text('6 seats left'), findsNothing);
     // Alternate boarding/drop-off stations collapse to a "+1" hint.
     expect(find.textContaining('+1', findRichText: true), findsWidgets);
   });
 
-  testWidgets('low seat count still renders the pill', (tester) async {
+  testWidgets('hides the seats-left pill until backend data is ready',
+      (tester) async {
     await _pumpCard(tester, _buildTrip(seats: 2));
-    expect(find.text('2 seats left'), findsOneWidget);
+    expect(find.text('2 seats left'), findsNothing);
   });
 
   testWidgets('tapping the card invokes onTap', (tester) async {
