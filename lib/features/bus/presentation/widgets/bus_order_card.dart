@@ -30,7 +30,8 @@ class BusOrderCard extends StatelessWidget {
   final VoidCallback onOpenETicket;
   final VoidCallback onCancel;
 
-  static const double _secondaryActionHeight = 40;
+  static const double _cardActionHeight = 40;
+  static const double _cardActionGap = AppSpacing.sm;
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +154,7 @@ class BusOrderCard extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(
                       AppSpacing.md,
-                      0,
+                      AppSpacing.xs,
                       AppSpacing.md,
                       AppSpacing.sm,
                     ),
@@ -181,10 +182,10 @@ class BusOrderCard extends StatelessWidget {
     final hasSecondary = showETicket || showCancel;
     if (!showPay && !hasSecondary) return 0;
 
-    var height = AppSpacing.sm * 2;
-    if (showPay) height += 54;
-    if (showPay && hasSecondary) height += AppSpacing.xs;
-    if (hasSecondary) height += _secondaryActionHeight;
+    var height = AppSpacing.xs + AppSpacing.sm;
+    if (showPay) height += _cardActionHeight;
+    if (showPay && hasSecondary) height += _cardActionGap;
+    if (hasSecondary) height += _cardActionHeight;
     return height;
   }
 
@@ -226,55 +227,73 @@ class _OrderActions extends StatelessWidget {
           PrimaryButton(
             label: l10n.ticketActionPay,
             onPressed: onPay,
+            compact: true,
           ),
         if (showPay && (showETicket || showCancel))
-          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: BusOrderCard._cardActionGap),
         if (showETicket || showCancel)
           Row(
             children: [
               if (showETicket)
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: _CardOutlinedAction(
                     onPressed: onOpenETicket,
-                    icon: const Icon(AppIcons.download, size: 18),
-                    label: Text(l10n.eTicketDownload),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(color: AppColors.border),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.button),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppSpacing.xs,
-                      ),
-                    ),
+                    icon: AppIcons.download,
+                    label: l10n.eTicketDownload,
+                    foregroundColor: AppColors.primary,
+                    borderColor: AppColors.border,
                   ),
                 ),
               if (showETicket && showCancel)
                 const SizedBox(width: AppSpacing.sm),
               if (showCancel)
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: _CardOutlinedAction(
                     onPressed: onCancel,
-                    icon: const Icon(AppIcons.close, size: 18),
-                    label: Text(l10n.ticketActionCancel),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                      side: BorderSide(
-                        color: AppColors.error.withValues(alpha: 0.4),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.button),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppSpacing.xs,
-                      ),
-                    ),
+                    icon: AppIcons.close,
+                    label: l10n.ticketActionCancel,
+                    foregroundColor: AppColors.error,
+                    borderColor: AppColors.error.withValues(alpha: 0.4),
                   ),
                 ),
             ],
           ),
       ],
+    );
+  }
+}
+
+class _CardOutlinedAction extends StatelessWidget {
+  const _CardOutlinedAction({
+    required this.onPressed,
+    required this.icon,
+    required this.label,
+    required this.foregroundColor,
+    required this.borderColor,
+  });
+
+  final VoidCallback onPressed;
+  final IconData icon;
+  final String label;
+  final Color foregroundColor;
+  final Color borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: foregroundColor,
+        minimumSize: const Size.fromHeight(BusOrderCard._cardActionHeight),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        side: BorderSide(color: borderColor),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.button),
+        ),
+        padding: EdgeInsets.zero,
+      ),
     );
   }
 }

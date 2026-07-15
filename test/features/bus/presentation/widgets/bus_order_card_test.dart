@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/features/bus/domain/entities/bus_order.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/presentation/widgets/bus_order_card.dart';
@@ -171,5 +172,16 @@ void main() {
     await tester.pump();
     expect(payTapped, 1);
     expect(cardTapped, 0);
+  });
+
+  testWidgets('pay and download buttons have at least sm vertical gap',
+      (tester) async {
+    await _pumpCard(tester, _order());
+
+    final payRect = tester.getRect(find.text('Complete payment'));
+    final downloadRect = tester.getRect(find.text('Download'));
+    final gap = downloadRect.top - payRect.bottom;
+
+    expect(gap, greaterThanOrEqualTo(AppSpacing.sm));
   });
 }

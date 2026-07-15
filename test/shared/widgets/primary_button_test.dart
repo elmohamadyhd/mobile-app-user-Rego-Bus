@@ -62,4 +62,34 @@ void main() {
     final text = tester.widget<Text>(find.text('Continue as a guest'));
     expect(text.style?.color, AppColors.onPrimary);
   });
+
+  testWidgets('compact variant is 40px tall with no glow', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PrimaryButton(
+            label: 'Complete payment',
+            compact: true,
+            onPressed: () {},
+          ),
+        ),
+      ),
+    );
+
+    final decoratedBox = tester.widget<DecoratedBox>(
+      find.descendant(
+        of: find.byType(PrimaryButton),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
+    expect(decoratedBox.decoration, isA<BoxDecoration>());
+    final decoration = decoratedBox.decoration! as BoxDecoration;
+    expect(decoration.boxShadow, isNull);
+
+    final containerFinder = find.descendant(
+      of: find.byType(PrimaryButton),
+      matching: find.byType(Container),
+    );
+    expect(tester.getSize(containerFinder).height, 40);
+  });
 }

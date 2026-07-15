@@ -19,12 +19,16 @@ class PrimaryButton extends StatelessWidget {
     this.onPressed,
     this.loading = false,
     this.variant = PrimaryButtonVariant.primary,
+    this.compact = false,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final bool loading;
   final PrimaryButtonVariant variant;
+
+  /// Card-stub sizing: 40 px tall, no glow — keeps stacked actions compact.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -41,22 +45,24 @@ class PrimaryButton extends StatelessWidget {
             ? AppColors.onSecondary
             : AppColors.onPrimary;
     final radius = BorderRadius.circular(AppRadius.input);
+    final showGlow = !isGhost && !compact;
+    final height = compact ? 40.0 : 54.0;
 
     return Opacity(
       opacity: enabled ? 1 : 0.6,
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: radius,
-          boxShadow: isGhost
-              ? null
-              : [
+          boxShadow: showGlow
+              ? [
                   BoxShadow(
                     color: bg.withValues(alpha: 0.45),
                     blurRadius: 26,
                     spreadRadius: -10,
                     offset: const Offset(0, 14),
                   ),
-                ],
+                ]
+              : null,
         ),
         child: Material(
           color: bg,
@@ -65,7 +71,7 @@ class PrimaryButton extends StatelessWidget {
             borderRadius: radius,
             onTap: enabled ? onPressed : null,
             child: Container(
-              height: 54,
+              height: height,
               width: double.infinity,
               alignment: Alignment.center,
               decoration: isGhost
@@ -88,6 +94,7 @@ class PrimaryButton extends StatelessWidget {
                       style: AppTypography.title.copyWith(
                         color: fg,
                         fontWeight: FontWeight.w700,
+                        fontSize: compact ? 15 : null,
                       ),
                     ),
             ),
