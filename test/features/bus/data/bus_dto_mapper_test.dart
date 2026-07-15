@@ -155,6 +155,8 @@ void main() {
         expect(pending.category, 'Five stars');
         expect(pending.statusKind, BusOrderStatusKind.pending);
         expect(pending.seats, ['1']);
+        expect(pending.pickupStopLabel, 'Cairo Main Station');
+        expect(pending.dropoffStopLabel, 'Alexandria Terminal');
         expect(pending.total, 'EGP 219.35');
         expect(pending.canCancel, isTrue);
         expect(pending.gatewayCheckoutUrl, isNotNull);
@@ -165,6 +167,8 @@ void main() {
         final orders = BusDtoMapper.ordersFromEnvelope(busOrdersEnvelope);
         final confirmed = orders[1];
         expect(confirmed.statusKind, BusOrderStatusKind.confirmed);
+        expect(confirmed.pickupStopLabel, isNull);
+        expect(confirmed.dropoffStopLabel, isNull);
         expect(confirmed.canCancel, isFalse);
         expect(confirmed.gatewayCheckoutUrl, isNull);
       });

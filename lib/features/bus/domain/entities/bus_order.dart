@@ -22,6 +22,8 @@ abstract class BusOrder with _$BusOrder {
     required String statusText,
     required BusOrderStatusKind statusKind,
     required String dateTimeLabel,
+    String? pickupStopLabel,
+    String? dropoffStopLabel,
     required List<String> seats,
     required String total,
     required bool canCancel,

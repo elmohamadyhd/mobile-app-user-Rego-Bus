@@ -10,6 +10,8 @@ BusOrder _order({
   bool canCancel = true,
   String? gatewayCheckoutUrl = 'https://demo.MyFatoorah.com/pay',
   String? invoiceUrl = 'https://portal.wdenytravel.com/orders/1475/invoice',
+  String? pickupStopLabel = 'Cairo Main Station',
+  String? dropoffStopLabel = 'Alexandria Terminal',
 }) {
   return BusOrder(
     orderId: '1475',
@@ -19,6 +21,8 @@ BusOrder _order({
     statusText: 'Pending',
     statusKind: statusKind,
     dateTimeLabel: '2026-07-30 08:45 AM',
+    pickupStopLabel: pickupStopLabel,
+    dropoffStopLabel: dropoffStopLabel,
     seats: const ['1', '2'],
     total: 'EGP 219.35',
     canCancel: canCancel,
@@ -53,12 +57,26 @@ Future<void> _pumpCard(
 }
 
 void main() {
-  testWidgets('renders operator, category, seats and total', (tester) async {
+  testWidgets('renders operator, route stops, ref and total', (tester) async {
     await _pumpCard(tester, _order());
 
     expect(find.text('SuperJet'), findsOneWidget);
-    expect(find.text('Five stars'), findsOneWidget);
-    expect(find.text('1, 2'), findsOneWidget);
+    expect(find.text('Cairo Main Station'), findsOneWidget);
+    expect(find.text('Alexandria Terminal'), findsOneWidget);
+    expect(find.text('#000001475'), findsOneWidget);
+    expect(find.text('EGP 219.35'), findsOneWidget);
+    expect(find.text('Five stars'), findsNothing);
+    expect(find.text('1, 2'), findsNothing);
+  });
+
+  testWidgets('hides stop rows when station labels are absent', (tester) async {
+    await _pumpCard(
+      tester,
+      _order(pickupStopLabel: null, dropoffStopLabel: null),
+    );
+
+    expect(find.text('From'), findsNothing);
+    expect(find.text('To'), findsNothing);
     expect(find.text('EGP 219.35'), findsOneWidget);
   });
 

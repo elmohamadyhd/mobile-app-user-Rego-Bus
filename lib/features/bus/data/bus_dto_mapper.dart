@@ -311,6 +311,9 @@ abstract final class BusDtoMapper {
         ? _string(paymentData['invoice_url'])
         : null;
 
+    final pickupStopLabel = _stationName(json['station_from']);
+    final dropoffStopLabel = _stationName(json['station_to']);
+
     return BusOrder(
       orderId: _string(json['id']) ?? '',
       bookingNumber: _string(json['number']) ?? '',
@@ -320,6 +323,8 @@ abstract final class BusDtoMapper {
       statusText: _string(json['status']) ?? '',
       statusKind: orderStatusKind(statusCode, isConfirmedFlag),
       dateTimeLabel: _string(json['date_time']) ?? _string(json['date']) ?? '',
+      pickupStopLabel: pickupStopLabel,
+      dropoffStopLabel: dropoffStopLabel,
       seats: seats,
       total: _string(json['total']) ?? '',
       canCancel: json['can_be_cancel'] == true,
@@ -410,6 +415,13 @@ abstract final class BusDtoMapper {
     if (value == null) return null;
     if (value is String) return value;
     return value.toString();
+  }
+
+  static String? _stationName(dynamic value) {
+    if (value is! Map<String, dynamic>) return null;
+    final name = _string(value['name']);
+    if (name == null || name.trim().isEmpty) return null;
+    return name;
   }
 
   static DateTime? _parseDateTime(String? primary, String? fallbackDate) {

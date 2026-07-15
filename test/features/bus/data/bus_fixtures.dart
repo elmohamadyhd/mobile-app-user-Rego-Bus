@@ -149,6 +149,14 @@ const busOrdersEnvelope = {
         'data': {'notes': ''},
       },
       'invoice_url': 'https://portal.wdenytravel.com/orders/1475/invoice',
+      'station_from': {
+        'id': 1,
+        'name': 'Cairo Main Station',
+      },
+      'station_to': {
+        'id': 5,
+        'name': 'Alexandria Terminal',
+      },
       'tickets': [
         {'id': 2076, 'seat_number': '1', 'price': '205.00'},
       ],

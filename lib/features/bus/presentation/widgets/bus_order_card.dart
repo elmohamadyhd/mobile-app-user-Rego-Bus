@@ -5,12 +5,15 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_order.dart';
+import 'package:rego/features/bus/presentation/widgets/operator_mark.dart';
 import 'package:rego/features/bus/presentation/widgets/order_status_badge.dart';
+import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/widgets/ltr_text.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
-/// Card for one [BusOrder] in the My Tickets list: operator identity, status
-/// badge, key details, and the contextual pay/e-ticket/cancel actions.
+/// Card for one [BusOrder] in the My Tickets list: operator identity, route
+/// stops, status, key details, and contextual pay/e-ticket/cancel actions.
 class BusOrderCard extends StatelessWidget {
   const BusOrderCard({
     super.key,
@@ -25,169 +28,202 @@ class BusOrderCard extends StatelessWidget {
   final VoidCallback onOpenETicket;
   final VoidCallback onCancel;
 
+  static const double _secondaryActionHeight = 40;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final seatsJoined = order.seats.join(', ');
+    final stubHeight = _stubHeightFor(order);
+    final shape = TicketBorder(
+      radius: AppRadius.card,
+      notchRadius: 10,
+      notchOffsetFromBottom: stubHeight > 0 ? stubHeight : 1,
+      dashColor: AppColors.border,
+    );
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
-      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(AppRadius.card),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
+            color: AppColors.primaryDark.withValues(alpha: 0.16),
+            blurRadius: 32,
+            spreadRadius: -14,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _OrderAvatar(
-                name: order.operatorName,
-                logoUrl: order.operatorLogoUrl,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      order.operatorName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.title.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+      child: Material(
+        color: AppColors.bgCard,
+        shape: shape,
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      OperatorMark(
+                        name: order.operatorName,
+                        logoUrl: order.operatorLogoUrl,
                       ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          order.operatorName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.title.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      OrderStatusBadge(statusKind: order.statusKind),
+                    ],
+                  ),
+                  if (order.dateTimeLabel.trim().isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        const Icon(
+                          AppIcons.calendar,
+                          size: 16,
+                          color: AppColors.textMuted,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Expanded(
+                          child: Text(
+                            order.dateTimeLabel,
+                            style: AppTypography.body.copyWith(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    if (order.category.trim().isNotEmpty)
-                      Text(
-                        order.category,
-                        style: AppTypography.caption
-                            .copyWith(color: AppColors.textMuted),
-                      ),
                   ],
+                  const SizedBox(height: AppSpacing.sm),
+                  if (_hasLabel(order.pickupStopLabel))
+                    _InfoRow(
+                      label: l10n.eTicketFrom,
+                      value: order.pickupStopLabel!,
+                    ),
+                  if (_hasLabel(order.pickupStopLabel) &&
+                      _hasLabel(order.dropoffStopLabel))
+                    const SizedBox(height: AppSpacing.xs),
+                  if (_hasLabel(order.dropoffStopLabel))
+                    _InfoRow(
+                      label: l10n.eTicketTo,
+                      value: order.dropoffStopLabel!,
+                    ),
+                  if (_hasLabel(order.pickupStopLabel) ||
+                      _hasLabel(order.dropoffStopLabel))
+                    const SizedBox(height: AppSpacing.xs),
+                  if (order.bookingNumber.isNotEmpty) ...[
+                    _InfoRow(
+                      label: l10n.eTicketRef,
+                      value: '#${order.bookingNumber}',
+                      valueLtr: true,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                  ],
+                  _InfoRow(
+                    label: l10n.tripResultsFareLabel,
+                    value: order.total,
+                    valueLtr: true,
+                  ),
+                ],
+              ),
+            ),
+            if (stubHeight > 0)
+              SizedBox(
+                height: stubHeight,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    AppSpacing.md,
+                    0,
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                  ),
+                  child: _OrderActions(
+                    order: order,
+                    onPay: onPay,
+                    onOpenETicket: onOpenETicket,
+                    onCancel: onCancel,
+                  ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
-              OrderStatusBadge(statusKind: order.statusKind),
-            ],
-          ),
-          if (order.dateTimeLabel.trim().isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.sm),
-            Row(
-              children: [
-                const Icon(AppIcons.calendar,
-                    size: 14, color: AppColors.textMuted),
-                const SizedBox(width: AppSpacing.xs),
-                Text(
-                  order.dateTimeLabel,
-                  style: AppTypography.caption
-                      .copyWith(color: AppColors.textMuted),
-                ),
-              ],
-            ),
           ],
-          const SizedBox(height: AppSpacing.md),
-          const Divider(color: AppColors.hairline, height: 1),
-          const SizedBox(height: AppSpacing.md),
-          if (order.bookingNumber.isNotEmpty)
-            _InfoRow(label: l10n.eTicketRef, value: '#${order.bookingNumber}'),
-          if (seatsJoined.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.xs),
-            _InfoRow(label: l10n.eTicketSeats, value: seatsJoined),
-          ],
-          const SizedBox(height: AppSpacing.xs),
-          _InfoRow(label: l10n.tripResultsFareLabel, value: order.total),
-          _OrderActions(
-            order: order,
-            onPay: onPay,
-            onOpenETicket: onOpenETicket,
-            onCancel: onCancel,
-          ),
-        ],
+        ),
       ),
     );
   }
+
+  static double _stubHeightFor(BusOrder order) {
+    final showPay = order.statusKind == BusOrderStatusKind.pending &&
+        (order.gatewayCheckoutUrl ?? '').isNotEmpty;
+    final showETicket = (order.invoiceUrl ?? '').isNotEmpty;
+    final showCancel = order.canCancel;
+    final hasSecondary = showETicket || showCancel;
+    if (!showPay && !hasSecondary) return 0;
+
+    var height = AppSpacing.sm * 2;
+    if (showPay) height += 54;
+    if (showPay && hasSecondary) height += AppSpacing.xs;
+    if (hasSecondary) height += _secondaryActionHeight;
+    return height;
+  }
+
+  static bool _hasLabel(String? value) =>
+      value != null && value.trim().isNotEmpty;
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    this.valueLtr = false,
+  });
 
   final String label;
   final String value;
+  final bool valueLtr;
 
   @override
   Widget build(BuildContext context) {
+    final valueStyle = AppTypography.body.copyWith(
+      color: AppColors.textPrimary,
+      fontWeight: FontWeight.w600,
+    );
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style:
-                AppTypography.body.copyWith(color: AppColors.textSecondary)),
-        const Spacer(),
         Text(
-          value,
-          style: AppTypography.body.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
+          label,
+          style: AppTypography.body.copyWith(color: AppColors.textSecondary),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: valueLtr
+                ? LtrText(value, style: valueStyle, textAlign: TextAlign.end)
+                : Text(
+                    value,
+                    textAlign: TextAlign.end,
+                    style: valueStyle,
+                  ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class _OrderAvatar extends StatelessWidget {
-  const _OrderAvatar({required this.name, required this.logoUrl});
-
-  final String name;
-  final String? logoUrl;
-
-  static const double _size = 42;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasLogo = logoUrl != null && logoUrl!.isNotEmpty;
-    return Container(
-      width: _size,
-      height: _size,
-      clipBehavior: Clip.antiAlias,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.primaryTint,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      child: hasLogo
-          ? Image.network(
-              logoUrl!,
-              width: _size,
-              height: _size,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _initials(),
-            )
-          : _initials(),
-    );
-  }
-
-  Widget _initials() {
-    final trimmed = name.trim();
-    final code =
-        trimmed.isNotEmpty ? trimmed.substring(0, 1).toUpperCase() : '?';
-    return Text(
-      code,
-      style: AppTypography.body.copyWith(
-        color: AppColors.primary,
-        fontWeight: FontWeight.w800,
-        fontSize: _size * 0.31,
-      ),
     );
   }
 }
@@ -217,62 +253,63 @@ class _OrderActions extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (showPay)
-            PrimaryButton(label: l10n.ticketActionPay, onPressed: onPay),
-          if (showPay && (showETicket || showCancel))
-            const SizedBox(height: AppSpacing.sm),
-          if (showETicket || showCancel)
-            Row(
-              children: [
-                if (showETicket)
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: onOpenETicket,
-                      icon: const Icon(AppIcons.download, size: 18),
-                      label: Text(l10n.eTicketDownload),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: const BorderSide(color: AppColors.border),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppRadius.button),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: AppSpacing.sm),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showPay)
+          PrimaryButton(
+            label: l10n.ticketActionPay,
+            onPressed: onPay,
+          ),
+        if (showPay && (showETicket || showCancel))
+          const SizedBox(height: AppSpacing.xs),
+        if (showETicket || showCancel)
+          Row(
+            children: [
+              if (showETicket)
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: onOpenETicket,
+                    icon: const Icon(AppIcons.download, size: 18),
+                    label: Text(l10n.eTicketDownload),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      side: const BorderSide(color: AppColors.border),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.button),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.xs,
                       ),
                     ),
                   ),
-                if (showETicket && showCancel)
-                  const SizedBox(width: AppSpacing.sm),
-                if (showCancel)
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: onCancel,
-                      icon: const Icon(AppIcons.close, size: 18),
-                      label: Text(l10n.ticketActionCancel),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.error,
-                        side: BorderSide(
-                          color: AppColors.error.withValues(alpha: 0.4),
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppRadius.button),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: AppSpacing.sm),
+                ),
+              if (showETicket && showCancel)
+                const SizedBox(width: AppSpacing.sm),
+              if (showCancel)
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: onCancel,
+                    icon: const Icon(AppIcons.close, size: 18),
+                    label: Text(l10n.ticketActionCancel),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                      side: BorderSide(
+                        color: AppColors.error.withValues(alpha: 0.4),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.button),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.xs,
                       ),
                     ),
                   ),
-              ],
-            ),
-        ],
-      ),
+                ),
+            ],
+          ),
+      ],
     );
   }
 }

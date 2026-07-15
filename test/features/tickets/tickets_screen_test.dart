@@ -35,6 +35,8 @@ BusOrder _pendingOrder() => const BusOrder(
       statusText: 'Pending',
       statusKind: BusOrderStatusKind.pending,
       dateTimeLabel: '2026-07-30 08:45 AM',
+      pickupStopLabel: 'Cairo Main Station',
+      dropoffStopLabel: 'Alexandria Terminal',
       seats: ['1'],
       total: 'EGP 219.35',
       canCancel: true,
@@ -87,6 +89,7 @@ void main() {
     );
 
     expect(find.text('SuperJet'), findsOneWidget);
+    expect(find.text('Bus tickets'), findsOneWidget);
     expect(find.text('1 tickets'), findsOneWidget);
   });
 

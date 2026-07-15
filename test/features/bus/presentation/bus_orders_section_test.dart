@@ -88,6 +88,7 @@ void main() {
       repo: FakeBusRepository(ordersResult: [_order()]),
     );
 
+    expect(find.text('Bus tickets'), findsOneWidget);
     expect(find.byType(BusOrderCard), findsOneWidget);
     expect(find.text('SuperJet'), findsOneWidget);
   });

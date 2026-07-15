@@ -181,6 +181,7 @@
   "ticketsCountLabel": "{count} تذكرة",
   "ticketsEmptyTitle": "لا توجد تذاكر بعد",
   "ticketsEmptyBody": "ستظهر رحلاتك المحجوزة هنا.",
+  "ticketsSectionBus": "تذاكر الحافلات",
   "ticketsBookCta": "احجز رحلة",
   "ticketsError": "تعذّر تحميل تذاكرك",
   "ticketStatusPending": "قيد الانتظار",

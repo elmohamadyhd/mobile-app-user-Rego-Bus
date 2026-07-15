@@ -279,6 +279,10 @@
   },
   "ticketsEmptyTitle": "No tickets yet",
   "ticketsEmptyBody": "Your booked trips will show up here.",
+  "ticketsSectionBus": "Bus tickets",
+  "@ticketsSectionBus": {
+    "description": "Section header above bus order cards on the My Tickets tab."
+  },
   "ticketsBookCta": "Book a trip",
   "ticketsError": "Couldn't load your tickets",
   "ticketStatusPending": "Pending",
