@@ -253,15 +253,23 @@ its own:
   intercepted by `PopScope`, same as the bus screen — plus a "Done" trailing
   action) wrapping a `WebViewController` with the same `NavigationDelegate`
   shape as the bus screen.
-- A local `_classifyPaymentNav(Uri)` — same `success-payment` /
-  `failed-payment` path-segment logic, copied rather than imported. It's a
-  five-line pure function; the cost of duplication is trivial next to the cost
-  of a `features/wallet → features/bus` import that would make wallet
-  undeletable without touching bus.
-- A local, wallet-styled leave-confirmation dialog (private widget in the same
-  file, mirroring how `_LeavePaymentDialog` is private to
-  `payment_webview_screen.dart` today) shown when the rider tries to back out
-  before the payment resolves.
+- A local top-level `classifyWalletPaymentNav(Uri) → WalletPaymentNavResult` —
+  same `success-payment` / `failed-payment` path-segment logic as the bus
+  feature's `classifyPaymentNav`/`PaymentNavResult`, copied rather than
+  imported, and named distinctly to avoid any confusion with the bus copy when
+  searching the codebase. Public (not underscore-prefixed), matching the bus
+  original — both are top-level functions in their screen file, public
+  specifically so a same-directory test file can call them directly (Dart
+  privacy is per-file, so a private function couldn't be unit-tested from a
+  separate test file at all). It's a five-line pure function; the cost of
+  duplication is trivial next to the cost of a `features/wallet →
+  features/bus` import that would make wallet undeletable without touching bus.
+- A local top-level `confirmLeaveWalletPayment(BuildContext) → Future<bool>` +
+  private `_WalletLeavePaymentDialog` widget, mirroring the bus feature's
+  public `confirmLeavePayment` + private `_LeavePaymentDialog` split (public
+  function for the same testability reason above; the dialog widget itself
+  has no reason to be public). Shown when the rider tries to back out before
+  the payment resolves.
 
 The accepted tradeoff, matching prior decisions in this codebase: if the bus
 team later tightens `classifyPaymentNav`'s redirect detection, the wallet copy
@@ -355,9 +363,10 @@ New keys in `app_en.arb` / `app_ar.arb` (existing `navWallet` /
 - `wallet_dto_mapper` unit tests: empty `data` list → zero-balance wallet;
   string→double parsing for balance/amount; each `type` string → enum branch
   including unknown fallback; `created_at` present/absent/malformed.
-- `_classifyPaymentNav` unit test in the wallet slice (same cases as the bus
-  feature's existing test for its copy: success path, failed path, anything
-  else → pending) — small but not free, since it's now a separate copy.
+- `classifyWalletPaymentNav` unit test in the wallet slice (same cases as the
+  bus feature's existing test for its copy: success path, failed path,
+  anything else → pending) — small but not free, since it's now a separate
+  copy.
 - Widget-level smoke test for `WalletScreen` loading/data/empty/error states
   via `walletProvider` overrides, matching existing provider-override test
   patterns in the bus feature.
