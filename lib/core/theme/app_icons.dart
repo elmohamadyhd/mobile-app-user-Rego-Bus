@@ -44,6 +44,8 @@ abstract final class AppIcons {
 
   // ── Misc ─────────────────────────────────────────────────────────────────
   static const IconData wallet = TablerIcons.wallet;
+  static const IconData walletDeposit = TablerIcons.arrowDownLeft;
+  static const IconData walletWithdraw = TablerIcons.arrowUpRight;
   static const IconData ticket = TablerIcons.ticket;
   static const IconData search = TablerIcons.search;
 
