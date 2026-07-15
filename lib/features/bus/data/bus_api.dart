@@ -98,13 +98,13 @@ class BusApi {
 
   /// Cancels a cancellable bus order.
   ///
-  /// `GET /buses/orders/{id}/cancel` — only call when the order has
+  /// `POST /buses/orders/{id}/cancel` — only call when the order has
   /// `can_be_cancel == true` and a non-empty `cancel_url`.
   static String cancelOrderPath(String orderId) =>
       '/buses/orders/$orderId/cancel';
 
   Future<dynamic> cancelOrder(String orderId) async {
-    final res = await _dio.get(cancelOrderPath(orderId));
+    final res = await _dio.post(cancelOrderPath(orderId));
     return res.data;
   }
 }
