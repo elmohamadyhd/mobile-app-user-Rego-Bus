@@ -10,7 +10,7 @@
 | **Collection** | Wadeny |
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
-| **Total requests** | 64 |
+| **Total requests** | 65 |
 | **Documented saved responses** | 67 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
@@ -71,7 +71,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `POST` | `/auth/send-otp` | OTP Send |
 | `POST` | `/auth/validate-otp` | Validate OTP |
 | `POST` | `/auth/verify-otp` | OTP Verification |
-| `POST` | `/buses/trips/236510/create-ticket` | Create Ticket |
+| `POST` | `/buses/trips/236437/create-ticket` | Create Ticket |
 | `POST` | `/contact` | Contact us |
 | `POST` | `/flights/:offer_id` | Pending Trip |
 | `POST` | `/flights/:offer_id/confirm` | Confirm Order |
@@ -96,7 +96,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 - [Content](#content) (12 requests)
 - [Flights](#flights) (8 requests)
 - [Private](#private) (3 requests)
-- [Buses](#buses) (7 requests)
+- [Buses](#buses) (8 requests)
 - [Currencies](#currencies) (1 requests)
 - [Collection issues](#collection-issues)
 
@@ -564,7 +564,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 ```json
 {
-  "mobile": 1554052685,
+  "mobile": 1276586027,
   "phonecode": 20
 }
 ```
@@ -1348,8 +1348,6 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | **Auth** | Bearer token required |
 | **Folder** | Wallet |
 
-**Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`, `password`, `password_confirmation`
-
 **Headers:**
 
 | Header | Value |
@@ -1361,7 +1359,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
-| `200` | Payment link | ar | — |
+| `200` | Payment link (×2) | ar | — |
 
 #### 200 — Payment link (ar)
 
@@ -1495,8 +1493,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
       ],
       "date": "2026-07-30",
       "date_time": "2026-07-30 08:45 AM",
-      "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1475/…",
-      "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1475/cancel",
+      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/…",
+      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel",
       "original_tickets_totals": "EGP 205.00",
       "discount": "EGP 0.00",
       "wallet_discount": "EGP 0.00",
@@ -1549,8 +1547,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
       ],
       "date": "2026-07-30",
       "date_time": "2026-07-30 04:30 AM",
-      "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1472/…",
-      "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1472/cancel",
+      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1472/…",
+      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1472/cancel",
       "original_tickets_totals": "EGP 225.00",
       "discount": "EGP 0.00",
       "wallet_discount": "EGP 0.00",
@@ -1603,8 +1601,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
       ],
       "date": "2026-07-30",
       "date_time": "2026-07-30 04:30 AM",
-      "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1470/…",
-      "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1470/cancel",
+      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1470/…",
+      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1470/cancel",
       "original_tickets_totals": "EGP 225.00",
       "discount": "EGP 0.00",
       "wallet_discount": "EGP 0.00",
@@ -1635,8 +1633,6 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | **Full URL** | `https://demo.safaria.travel/api/v1/profile/buses/orders/:id` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Buses |
-
-**Body (form-data):** `file`, `message`
 
 **Headers:**
 
@@ -1703,8 +1699,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
     ],
     "date": "2026-07-30",
     "date_time": "2026-07-30 08:45 AM",
-    "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1475/…",
-    "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1475/cancel",
+    "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/…",
+    "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel",
     "original_tickets_totals": "EGP 205.00",
     "discount": "EGP 0.00",
     "wallet_discount": "EGP 0.00",
@@ -2589,7 +2585,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | 4 | `GET` | `/buses/trips` | Search trips |
 | 5 | `GET` | `/buses/trips/236510` | Search details |
 | 6 | `GET` | `/buses/trips/236510/seats` | Seats |
-| 7 | `POST` | `/buses/trips/236510/create-ticket` | Create Ticket |
+| 7 | `POST` | `/buses/trips/236437/create-ticket` | Create Ticket |
+| 8 | `GET` | `—` | cancel |
 
 ### Response envelope
 
@@ -2615,14 +2612,8 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/locations` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/buses/locations?term=اكتو` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/locations` |
 | **Auth** | Bearer token required |
-
-**Query parameters:**
-
-| Parameter | Example |
-|-----------|---------|
-| `term` | اكتو |
 
 **Headers:**
 
@@ -2803,7 +2794,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
     "lastPage": 10,
     "perPage": 15,
     "currentPage": 1,
-    "nextPageUrl": "https://demo.safaria.travel/api/v1/buses/stations?page=2",
+    "nextPageUrl": "https://portal.wdenytravel.com/api/v1/buses/stations?page=2",
     "previousPageUrl": null
   }
 }
@@ -2877,7 +2868,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/trips` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips?city_from=1&city_to=2&date=2026-07-10&page=1&currency=EGP` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips?city_from=1&city_to=2&date=2026-07-29&page=1&currency=EGP` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2886,7 +2877,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |-----------|---------|
 | `city_from` | 1 |
 | `city_to` | 2 |
-| `date` | 2026-07-10 |
+| `date` | 2026-07-29 |
 | `page` | 1 |
 | `page` | 2 |
 | `currency` | EGP |
@@ -3423,7 +3414,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
     "lastPage": 3,
     "perPage": 15,
     "currentPage": 1,
-    "nextPageUrl": "https://demo.safaria.travel/api/v1/buses/trips?page=2",
+    "nextPageUrl": "https://portal.wdenytravel.com/api/v1/buses/trips?page=2",
     "previousPageUrl": null
   }
 }
@@ -3727,7 +3718,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
     "lastPage": 3,
     "perPage": 15,
     "currentPage": 1,
-    "nextPageUrl": "https://demo.safaria.travel/api/v1/buses/trips?page=2",
+    "nextPageUrl": "https://portal.wdenytravel.com/api/v1/buses/trips?page=2",
     "previousPageUrl": null
   }
 }
@@ -4137,8 +4128,8 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 | | |
 |---|---|
 | **Method** | `POST` |
-| **Path** | `/buses/trips/236510/create-ticket` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/236510/create-ticket` |
+| **Path** | `/buses/trips/236437/create-ticket` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/236437/create-ticket` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -4147,13 +4138,13 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 {
   "from_city_id": 1,
   "to_city_id": 2,
-  "from_location_id": "46",
+  "from_location_id": "50",
   "to_location_id": "22",
-  "date": "2026-07-10",
+  "date": "2026-07-29",
   "seats": [
     {
-      "seat_type_id": "16",
-      "seat_id": "16"
+      "seat_type_id": "3",
+      "seat_id": "3"
     }
   ],
   "payment_method": "myfatoorah",
@@ -4303,8 +4294,8 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
     ],
     "date": "2026-07-10",
     "date_time": "2026-07-10 12:01 AM",
-    "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1454/…",
-    "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1454/cancel",
+    "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1454/…",
+    "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1454/cancel",
     "original_tickets_totals": "EGP 19.56",
     "discount": "EGP 0.00",
     "wallet_discount": "EGP 0.00",
@@ -4384,8 +4375,8 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
     ],
     "date": "2026-07-10",
     "date_time": "2026-07-10 12:01 AM",
-    "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1455/…",
-    "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1455/cancel",
+    "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1455/…",
+    "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1455/cancel",
     "original_tickets_totals": "EGP 280.00",
     "discount": "EGP 0.00",
     "wallet_discount": "EGP 0.00",
@@ -4396,6 +4387,22 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
   }
 }
 ```
+
+### cancel
+
+| | |
+|---|---|
+| **Method** | `GET` |
+| **Path** | `*(not configured)*` |
+| **Full URL** | `*(not configured)*` |
+| **Auth** | Bearer token required |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ## Currencies
 
