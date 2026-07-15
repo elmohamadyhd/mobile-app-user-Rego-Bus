@@ -268,13 +268,20 @@ abstract final class BusDtoMapper {
 
   /// Whether an order's status represents a completed/paid booking.
   ///
-  /// ⚠️ Backend dependency: the exact set of "paid" status codes isn't
-  /// documented — samples only show `"pending"`. We treat `is_confirmed == 1`
-  /// or any of the common success codes as paid. Adjust here once the backend
-  /// confirms its vocabulary.
+  /// `in_processing` ("In Processing") is a confirmed Wadeny booking — the
+  /// operator is issuing the ticket, but payment/booking already succeeded —
+  /// not an unpaid/pending order. `is_confirmed == 1` or any of the success
+  /// codes also count as paid.
   static bool isPaidStatus(String statusCode, int isConfirmedFlag) {
     if (isConfirmedFlag == 1) return true;
-    const paid = {'confirmed', 'paid', 'success', 'completed', 'succeeded'};
+    const paid = {
+      'confirmed',
+      'paid',
+      'success',
+      'completed',
+      'succeeded',
+      'in_processing',
+    };
     return paid.contains(statusCode.trim().toLowerCase());
   }
 
@@ -340,6 +347,7 @@ abstract final class BusDtoMapper {
       ticketLines: ticketLinesFromJson(json['tickets']),
       total: _string(json['total']) ?? '',
       canCancel: json['can_be_cancel'] == true,
+      cancelUrl: _string(json['cancel_url']),
       gatewayCheckoutUrl:
           (gatewayCheckoutUrl != null && gatewayCheckoutUrl.isNotEmpty)
               ? gatewayCheckoutUrl
@@ -364,10 +372,10 @@ abstract final class BusDtoMapper {
     );
   }
 
-  /// Same documented-uncertainty caveat as [isPaidStatus]: only `pending`
-  /// appears in the sample data. `is_confirmed == 1` always wins; unrecognized
-  /// codes fall back to [BusOrderStatusKind.unknown] rather than being
-  /// guessed into a destructive or positive bucket.
+  /// `is_confirmed == 1` always wins. Unrecognized codes fall back to
+  /// [BusOrderStatusKind.unknown] rather than being guessed into a
+  /// destructive or positive bucket — see [isPaidStatus] for the `paid` set,
+  /// which must stay in sync with `confirmedCodes` below.
   static BusOrderStatusKind orderStatusKind(
     String statusCode,
     int isConfirmedFlag,
@@ -380,6 +388,7 @@ abstract final class BusDtoMapper {
       'success',
       'completed',
       'succeeded',
+      'in_processing',
     };
     const cancelledCodes = {
       'cancelled',

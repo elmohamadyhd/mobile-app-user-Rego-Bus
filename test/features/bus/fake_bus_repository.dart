@@ -222,6 +222,7 @@ class FakeBusRepository implements BusRepository {
     ticketLines: [BusTicketLine(id: 2076, seatNumber: '1', price: '205.00')],
     total: 'EGP 219.35',
     canCancel: true,
+    cancelUrl: 'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
     gatewayCheckoutUrl: 'https://demo.MyFatoorah.com/pay',
     invoiceUrl: 'https://portal.wdenytravel.com/orders/1475/invoice',
     fare: BusOrderFare(

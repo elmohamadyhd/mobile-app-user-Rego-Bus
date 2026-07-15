@@ -26,6 +26,9 @@ BusOrder _order({
     ],
     total: 'EGP 219.35',
     canCancel: canCancel,
+    cancelUrl: canCancel
+        ? 'https://demo.safaria.travel/api/v1/buses/orders/$orderId/cancel'
+        : null,
     gatewayCheckoutUrl: 'https://demo.MyFatoorah.com/pay',
     invoiceUrl: 'https://portal.wdenytravel.com/orders/1475/invoice',
     fare: const BusOrderFare(

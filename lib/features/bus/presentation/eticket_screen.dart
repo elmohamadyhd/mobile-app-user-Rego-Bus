@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:rego/core/router/app_router.dart';
@@ -11,8 +12,12 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
+import 'package:rego/core/utils/responsive.dart';
+import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
+import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
@@ -29,20 +34,66 @@ class BusTicketScreen extends ConsumerWidget {
       );
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.bgBase,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _HeroSection(ticket: ticket),
-            _BoardingPassCard(ticket: ticket),
-            _ActionButtons(ticket: ticket),
-            _BackHomeButton(onPressed: () {
-              ref.read(busBookingProvider.notifier).reset();
-              context.go(AppRoutes.home);
-            }),
-            const SizedBox(height: AppSpacing.lg),
-          ],
+    void goHome() {
+      context.go(AppRoutes.home);
+      ref.read(busBookingProvider.notifier).reset();
+    }
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        goHome();
+      },
+      child: Scaffold(
+        body: DecoratedBox(
+          decoration: const BoxDecoration(gradient: AppColors.heroGradient),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsetsDirectional.only(
+                bottom: AppSpacing.lg,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: AppBreakpoints.maxContentWidth,
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: AppSpacing.lg),
+                      const _HeroSection(),
+                      Transform.translate(
+                        offset: const Offset(0, -AppSpacing.lg),
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: AppSpacing.lg,
+                          ),
+                          child: _BoardingPassCard(ticket: ticket),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: _ActionButtons(ticket: ticket),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: PrimaryButton(
+                          label:
+                              AppLocalizations.of(context).eTicketBackHome,
+                          onPressed: goHome,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -52,57 +103,61 @@ class BusTicketScreen extends ConsumerWidget {
 // ── Hero section ─────────────────────────────────────────────────────────────
 
 class _HeroSection extends StatelessWidget {
-  const _HeroSection({required this.ticket});
-  final BusTicket ticket;
+  const _HeroSection();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(
-        top: 64,
-        bottom: 48,
-        left: AppSpacing.lg,
-        right: AppSpacing.lg,
-      ),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1D6FF2),
-            AppColors.primaryDark,
-            AppColors.primaryDeep
-          ],
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: AppSpacing.lg),
       child: Column(
         children: [
           Container(
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: AppColors.onHero,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.25),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            child: const Icon(
-              AppIcons.checkCircle,
-              color: Colors.white,
-              size: 40,
+            child: Center(
+              child: Container(
+                width: 52,
+                height: 52,
+                decoration: const BoxDecoration(
+                  color: AppColors.success,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  AppIcons.checkCircle,
+                  color: AppColors.onHero,
+                  size: 28,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             l10n.eTicketConfirmed,
-            style: AppTypography.h1.copyWith(color: Colors.white),
+            textAlign: TextAlign.center,
+            style: AppTypography.h1.copyWith(color: AppColors.onHero),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             l10n.eTicketSubtitle,
-            style: AppTypography.body.copyWith(color: Colors.white70),
+            textAlign: TextAlign.center,
+            style: AppTypography.body.copyWith(
+              color: AppColors.onHero.withValues(alpha: 0.82),
+            ),
           ),
+          const SizedBox(height: AppSpacing.xl),
         ],
       ),
     );
@@ -113,85 +168,309 @@ class _HeroSection extends StatelessWidget {
 
 class _BoardingPassCard extends StatelessWidget {
   const _BoardingPassCard({required this.ticket});
+
   final BusTicket ticket;
+
+  static const double _qrStubHeight = 168;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final detail = ticket.trip;
-    final fromStop = ticket.fromStop;
-    final toStop = ticket.toStop;
+    final trip = ticket.trip;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final dateLabel = DateFormat.yMMMd(locale).format(trip.dateTime);
+    final seatsJoined =
+        ticket.seats.isNotEmpty ? ticket.seats.join(', ') : '-';
+    final departTime = _stopTimeLabel(ticket.fromStop, trip.departTime);
+    final arriveTime = _stopTimeLabel(ticket.toStop, trip.arriveTime);
 
-    final departTime = detail.departLabel;
-    final seatsJoined = ticket.seats.join(', ');
+    const shape = TicketBorder(
+      radius: AppRadius.card,
+      notchRadius: 12,
+      notchOffsetFromBottom: _qrStubHeight,
+      dashColor: AppColors.hairline,
+    );
 
-    return Container(
-      margin: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return Material(
+      color: AppColors.bgCard,
+      shape: shape,
+      elevation: 12,
+      shadowColor: Colors.black.withValues(alpha: 0.35),
+      clipBehavior: Clip.antiAlias,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.md,
+            ),
+            child: Row(
               children: [
-                _TicketRow(label: l10n.eTicketFrom, value: fromStop.name),
-                const SizedBox(height: AppSpacing.sm),
-                _TicketRow(label: l10n.eTicketTo, value: toStop.name),
-                const SizedBox(height: AppSpacing.sm),
-                _TicketRow(label: l10n.eTicketDate, value: departTime),
-                const SizedBox(height: AppSpacing.sm),
-                _TicketRow(
-                  label: l10n.eTicketSeats,
-                  value: seatsJoined.isNotEmpty ? seatsJoined : '-',
+                OperatorAvatar(trip: trip, size: 38),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: trip.operatorName,
+                              style: AppTypography.title.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            if (trip.serviceClass.trim().isNotEmpty)
+                              TextSpan(
+                                text: '  ·  ${trip.serviceClass}',
+                                style: AppTypography.caption.copyWith(
+                                  color: AppColors.textMuted,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                          ],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        l10n.eTicketBoardingPass,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.sm),
-                _TicketRow(label: l10n.eTicketRef, value: ticket.bookingRef),
               ],
             ),
           ),
-          const Divider(color: AppColors.hairline, height: 1),
           Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: AppSpacing.lg,
+            ),
+            child: _RouteTimeline(
+              departTime: departTime,
+              arriveTime: arriveTime,
+              fromName: ticket.fromStop.name,
+              toName: ticket.toStop.name,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Padding(
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: AppSpacing.lg,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _MetaCell(
+                    label: l10n.eTicketDate,
+                    value: dateLabel,
+                  ),
+                ),
+                Expanded(
+                  child: _MetaCell(
+                    label: l10n.eTicketSeats,
+                    value: seatsJoined,
+                    align: TextAlign.center,
+                  ),
+                ),
+                Expanded(
+                  child: _MetaCell(
+                    label: l10n.eTicketRef,
+                    value: ticket.bookingRef,
+                    align: TextAlign.end,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: _qrStubHeight,
             child: Center(
-              child: _QrPlaceholder(bookingRef: ticket.bookingRef),
+              child: _QrPlaceholder(ticket: ticket),
             ),
           ),
         ],
       ),
     );
   }
+
+  static String _stopTimeLabel(BusStop stop, DateTime fallback) {
+    final dt = stop.arrivalAt ?? fallback;
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
 }
 
-class _TicketRow extends StatelessWidget {
-  const _TicketRow({required this.label, required this.value});
-  final String label;
-  final String value;
+class _RouteTimeline extends StatelessWidget {
+  const _RouteTimeline({
+    required this.departTime,
+    required this.arriveTime,
+    required this.fromName,
+    required this.toName,
+  });
+
+  final String departTime;
+  final String arriveTime;
+  final String fromName;
+  final String toName;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: _TimeCell(
+                time: departTime,
+                alignment: AlignmentDirectional.centerStart,
+              ),
+            ),
+            const Expanded(
+              flex: 2,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                child: _ConnectorLine(),
+              ),
+            ),
+            Expanded(
+              child: _TimeCell(
+                time: arriveTime,
+                alignment: AlignmentDirectional.centerEnd,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                fromName,
+                textAlign: TextAlign.start,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ),
+            const Expanded(flex: 2, child: SizedBox.shrink()),
+            Expanded(
+              child: Text(
+                toName,
+                textAlign: TextAlign.end,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _TimeCell extends StatelessWidget {
+  const _TimeCell({required this.time, required this.alignment});
+
+  final String time;
+  final AlignmentGeometry alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: alignment,
+      child: Text(
+        time,
+        style: AppTypography.h2.copyWith(
+          fontWeight: FontWeight.w900,
+          color: AppColors.textPrimary,
+        ),
+      ),
+    );
+  }
+}
+
+class _ConnectorLine extends StatelessWidget {
+  const _ConnectorLine();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(
+          AppIcons.bus,
+          color: AppColors.primary,
+          size: 20,
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Row(
+          children: [
+            _dot(AppColors.primary),
+            const Expanded(child: Divider(color: AppColors.hairline, height: 1)),
+            _dot(AppColors.secondary),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _dot(Color color) => Container(
+        width: 7,
+        height: 7,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      );
+}
+
+class _MetaCell extends StatelessWidget {
+  const _MetaCell({
+    required this.label,
+    required this.value,
+    this.align = TextAlign.start,
+  });
+
+  final String label;
+  final String value;
+  final TextAlign align;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: align == TextAlign.end
+          ? CrossAxisAlignment.end
+          : align == TextAlign.center
+              ? CrossAxisAlignment.center
+              : CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: AppTypography.body.copyWith(color: AppColors.textSecondary),
+          textAlign: align,
+          style: AppTypography.caption.copyWith(color: AppColors.textMuted),
         ),
-        const Spacer(),
+        const SizedBox(height: 2),
         Text(
           value,
+          textAlign: align,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: AppTypography.body.copyWith(
             color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w800,
           ),
         ),
       ],
@@ -200,28 +479,56 @@ class _TicketRow extends StatelessWidget {
 }
 
 class _QrPlaceholder extends StatelessWidget {
-  const _QrPlaceholder({required this.bookingRef});
-  final String bookingRef;
+  const _QrPlaceholder({required this.ticket});
+
+  final BusTicket ticket;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 140,
-      height: 140,
+      padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.hairline, width: 2),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        color: AppColors.bgElevated,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(AppIcons.ticket, color: AppColors.textMuted, size: 32),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           Text(
-            bookingRef,
-            style: AppTypography.caption.copyWith(color: AppColors.textMuted),
+            ticket.bookingRef,
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
+            ),
             textAlign: TextAlign.center,
           ),
+          if (ticket.trip.operatorName.trim().isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              ticket.trip.operatorName,
+              style: AppTypography.overline.copyWith(
+                color: AppColors.textMuted,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          if (ticket.total.trim().isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              ticket.total,
+              style: AppTypography.caption.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ],
       ),
     );
@@ -232,11 +539,9 @@ class _QrPlaceholder extends StatelessWidget {
 
 class _ActionButtons extends StatelessWidget {
   const _ActionButtons({required this.ticket});
+
   final BusTicket ticket;
 
-  /// Opens the e-ticket PDF (`invoice_url`) in an external browser/PDF
-  /// viewer. There's no in-app download UI, so handing off to the OS is the
-  /// simplest reliable path to "download" on both Android and iOS.
   Future<void> _downloadTicket(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     final invoiceUrl = ticket.invoiceUrl ?? '';
@@ -266,68 +571,84 @@ class _ActionButtons extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Expanded(
-            child: OutlinedButton.icon(
-              onPressed: () => unawaited(_downloadTicket(context)),
-              icon: const Icon(AppIcons.download),
-              label: Text(l10n.eTicketDownload),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.button),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              ),
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: _GradientActionButton(
+            onPressed: () => unawaited(_downloadTicket(context)),
+            icon: AppIcons.download,
+            label: l10n.eTicketDownload,
+            filled: true,
           ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: OutlinedButton.icon(
-              onPressed: showComingSoon,
-              icon: const Icon(AppIcons.share),
-              label: Text(l10n.eTicketShare),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: const BorderSide(color: AppColors.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.button),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              ),
-            ),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: _GradientActionButton(
+            onPressed: showComingSoon,
+            icon: AppIcons.share,
+            label: l10n.eTicketShare,
+            filled: false,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-// ── Back to home button ───────────────────────────────────────────────────────
+class _GradientActionButton extends StatelessWidget {
+  const _GradientActionButton({
+    required this.onPressed,
+    required this.icon,
+    required this.label,
+    required this.filled,
+  });
 
-class _BackHomeButton extends StatelessWidget {
-  const _BackHomeButton({required this.onPressed});
   final VoidCallback onPressed;
+  final IconData icon;
+  final String label;
+  final bool filled;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final fg = filled ? AppColors.primary : AppColors.onHero;
+    final bg = filled ? AppColors.onHero : Colors.transparent;
+    final border = filled
+        ? BorderSide.none
+        : BorderSide(color: AppColors.onHero.withValues(alpha: 0.35));
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.lg,
-        AppSpacing.lg,
-        0,
-      ),
-      child: PrimaryButton(
-        label: l10n.eTicketBackHome,
-        onPressed: onPressed,
+    return Material(
+      color: bg,
+      borderRadius: BorderRadius.circular(AppRadius.button),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(AppRadius.button),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.button),
+            border: Border.fromBorderSide(border),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: fg, size: 18),
+                const SizedBox(width: AppSpacing.xs),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: AppTypography.title.copyWith(
+                      color: fg,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

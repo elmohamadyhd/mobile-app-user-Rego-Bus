@@ -41,6 +41,9 @@ void main() {
       expect(BusDtoMapper.isPaidStatus('PAID', 0), isTrue);
       expect(BusDtoMapper.isPaidStatus('success', 0), isTrue);
       expect(BusDtoMapper.isPaidStatus('failed', 0), isFalse);
+      // "In Processing" is a confirmed Wadeny booking (operator issuing the
+      // ticket), not an unpaid order.
+      expect(BusDtoMapper.isPaidStatus('in_processing', 0), isTrue);
     });
 
     test('orderStatusFromEnvelope reads a pending order', () {
@@ -161,6 +164,10 @@ void main() {
         expect(pending.dropoffStopLabel, 'Alexandria Terminal');
         expect(pending.total, 'EGP 219.35');
         expect(pending.canCancel, isTrue);
+        expect(
+          pending.cancelUrl,
+          'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
+        );
         expect(pending.gatewayCheckoutUrl, isNotNull);
         expect(pending.invoiceUrl, isNotNull);
       });
@@ -172,6 +179,7 @@ void main() {
         expect(confirmed.pickupStopLabel, isNull);
         expect(confirmed.dropoffStopLabel, isNull);
         expect(confirmed.canCancel, isFalse);
+        expect(confirmed.cancelUrl, isNull);
         expect(confirmed.gatewayCheckoutUrl, isNull);
       });
     });
@@ -202,6 +210,10 @@ void main() {
         expect(order.tripId, '145261');
         expect(order.gatewayOrderId, '5077099');
         expect(order.tripType, 'Buses');
+        expect(
+          order.cancelUrl,
+          'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
+        );
       });
 
       test('throws ApiException for the documented not-found envelope', () {
@@ -229,6 +241,8 @@ void main() {
             BusOrderStatusKind.cancelled);
         expect(BusDtoMapper.orderStatusKind('expired', 0),
             BusOrderStatusKind.cancelled);
+        expect(BusDtoMapper.orderStatusKind('in_processing', 0),
+            BusOrderStatusKind.confirmed);
       });
 
       test('pending code with no confirm flag stays pending', () {

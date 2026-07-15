@@ -256,6 +256,10 @@
 
   "eTicketConfirmed": "Booking confirmed!",
   "eTicketSubtitle": "Your ticket is ready",
+  "eTicketBoardingPass": "Boarding pass",
+  "@eTicketBoardingPass": {
+    "description": "Subtitle under the operator name on the confirmed e-ticket card."
+  },
   "eTicketFrom": "From",
   "eTicketTo": "To",
   "eTicketDate": "Date",

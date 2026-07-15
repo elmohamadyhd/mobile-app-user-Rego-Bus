@@ -166,6 +166,7 @@
 
   "eTicketConfirmed": "تم تأكيد الحجز!",
   "eTicketSubtitle": "تذكرتك جاهزة",
+  "eTicketBoardingPass": "تذكرة صعود",
   "eTicketFrom": "من",
   "eTicketTo": "إلى",
   "eTicketDate": "التاريخ",

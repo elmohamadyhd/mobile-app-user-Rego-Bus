@@ -96,15 +96,15 @@ class BusApi {
     return res.data;
   }
 
-  /// ⚠️ Backend dependency: cancel endpoint path/method inferred from the
-  /// `cancel_url` field returned alongside orders (e.g.
-  /// `.../buses/orders/{id}/cancel`) — not separately documented in the
-  /// Wadeny API reference.
+  /// Cancels a cancellable bus order.
+  ///
+  /// `GET /buses/orders/{id}/cancel` — only call when the order has
+  /// `can_be_cancel == true` and a non-empty `cancel_url`.
   static String cancelOrderPath(String orderId) =>
       '/buses/orders/$orderId/cancel';
 
   Future<dynamic> cancelOrder(String orderId) async {
-    final res = await _dio.post(cancelOrderPath(orderId));
+    final res = await _dio.get(cancelOrderPath(orderId));
     return res.data;
   }
 }

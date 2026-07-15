@@ -47,6 +47,7 @@ abstract class BusOrder with _$BusOrder {
     required List<BusTicketLine> ticketLines,
     required String total,
     required bool canCancel,
+    String? cancelUrl,
     String? gatewayCheckoutUrl,
     String? invoiceUrl,
     required BusOrderFare fare,
