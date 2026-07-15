@@ -300,6 +300,31 @@
   "ticketResumePaidToast": "Payment confirmed! Your ticket is ready.",
   "ticketResumePendingToast": "We couldn't confirm the payment yet. It may take a moment.",
 
+  "orderDetailTitle": "Order details",
+  "orderDetailRouteSection": "Route",
+  "orderDetailFareSection": "Fare breakdown",
+  "orderDetailSubtotal": "Subtotal",
+  "orderDetailDiscount": "Discount",
+  "orderDetailWalletDiscount": "Wallet discount",
+  "orderDetailAfterDiscount": "Total after discount",
+  "orderDetailFees": "Payment fees",
+  "orderDetailSeatLabel": "Seat {number}",
+  "@orderDetailSeatLabel": {
+    "description": "Per-seat price row label in the order detail sheet.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "orderDetailPaymentProvider": "Payment provider",
+  "orderDetailPaymentStatus": "Payment status",
+  "orderDetailInvoiceId": "Invoice ID",
+  "orderDetailReferenceSection": "Reference details",
+  "orderDetailTripId": "Trip ID",
+  "orderDetailGatewayOrderId": "Gateway order ID",
+  "orderDetailTripType": "Trip type",
+
   "paymentTitle": "Payment",
   "paymentDone": "Done",
   "paymentVerifying": "Verifying your payment…",
