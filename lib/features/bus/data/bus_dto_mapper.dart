@@ -190,6 +190,17 @@ abstract final class BusDtoMapper {
     };
   }
 
+  static List<BusTicketLine> ticketLinesFromJson(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw.whereType<Map<String, dynamic>>().map((t) {
+      return BusTicketLine(
+        id: _int(t['id']) ?? 0,
+        seatNumber: _string(t['seat_number']) ?? '',
+        price: _string(t['price']) ?? '0',
+      );
+    }).toList();
+  }
+
   static BusTicket ticketFromEnvelope({
     required dynamic body,
     required BusTripSummary trip,
@@ -201,16 +212,7 @@ abstract final class BusDtoMapper {
     ensureSuccess(envelope);
     final data = envelope['data'] as Map<String, dynamic>? ?? {};
 
-    final ticketsRaw = data['tickets'];
-    final lines = ticketsRaw is List
-        ? ticketsRaw.whereType<Map<String, dynamic>>().map((t) {
-            return BusTicketLine(
-              id: _int(t['id']) ?? 0,
-              seatNumber: _string(t['seat_number']) ?? '',
-              price: _string(t['price']) ?? '0',
-            );
-          }).toList()
-        : <BusTicketLine>[];
+    final lines = ticketLinesFromJson(data['tickets']);
 
     final number = _string(data['number']) ?? _string(data['id']) ?? '';
 
@@ -284,6 +286,18 @@ abstract final class BusDtoMapper {
     return data.whereType<Map<String, dynamic>>().map(orderFromJson).toList();
   }
 
+  /// Maps `GET /profile/buses/orders/:id` — the Show endpoint returns the
+  /// exact same object shape as one element of the List endpoint's `data[]`,
+  /// so this delegates to the same [orderFromJson] used by
+  /// [ordersFromEnvelope].
+  static BusOrder orderFromEnvelope(dynamic body) {
+    final envelope = body as Map<String, dynamic>;
+    ensureSuccess(envelope);
+    final data = envelope['data'];
+    if (data is Map<String, dynamic>) return orderFromJson(data);
+    return orderFromJson(const <String, dynamic>{});
+  }
+
   static BusOrder orderFromJson(Map<String, dynamic> json) {
     final companyData = json['company_data'];
     String? logo;
@@ -297,19 +311,17 @@ abstract final class BusDtoMapper {
     final statusCode = _string(json['status_code']) ?? '';
     final isConfirmedFlag = _int(json['is_confirmed']) ?? 0;
 
-    final ticketsRaw = json['tickets'];
-    final seats = ticketsRaw is List
-        ? ticketsRaw
-            .whereType<Map<String, dynamic>>()
-            .map((t) => _string(t['seat_number']) ?? '')
-            .where((s) => s.isNotEmpty)
-            .toList()
-        : <String>[];
-
     final paymentData = json['payment_data'];
-    final gatewayCheckoutUrl = paymentData is Map<String, dynamic>
-        ? _string(paymentData['invoice_url'])
-        : null;
+    String? gatewayCheckoutUrl;
+    String? paymentGateway;
+    String? paymentStatusText;
+    String? paymentInvoiceId;
+    if (paymentData is Map<String, dynamic>) {
+      gatewayCheckoutUrl = _string(paymentData['invoice_url']);
+      paymentGateway = _string(paymentData['gateway']);
+      paymentStatusText = _string(paymentData['status']);
+      paymentInvoiceId = _string(paymentData['invoice_id']);
+    }
 
     final pickupStopLabel = _stationName(json['station_from']);
     final dropoffStopLabel = _stationName(json['station_to']);
@@ -325,7 +337,7 @@ abstract final class BusDtoMapper {
       dateTimeLabel: _string(json['date_time']) ?? _string(json['date']) ?? '',
       pickupStopLabel: pickupStopLabel,
       dropoffStopLabel: dropoffStopLabel,
-      seats: seats,
+      ticketLines: ticketLinesFromJson(json['tickets']),
       total: _string(json['total']) ?? '',
       canCancel: json['can_be_cancel'] == true,
       gatewayCheckoutUrl:
@@ -333,6 +345,22 @@ abstract final class BusDtoMapper {
               ? gatewayCheckoutUrl
               : null,
       invoiceUrl: _string(json['invoice_url']),
+      fare: BusOrderFare(
+        originalTicketsTotal: _string(json['original_tickets_totals']) ?? '',
+        discount: _string(json['discount']) ?? '',
+        walletDiscount: _string(json['wallet_discount']) ?? '',
+        ticketsTotalAfterDiscount:
+            _string(json['tickets_totals_after_discount']) ?? '',
+        paymentFees: _string(json['payment_fees']) ?? '',
+        total: _string(json['total']) ?? '',
+        currency: _string(json['currency']) ?? '',
+      ),
+      paymentGateway: paymentGateway,
+      paymentStatusText: paymentStatusText,
+      paymentInvoiceId: paymentInvoiceId,
+      tripId: _string(json['trip_id']),
+      gatewayOrderId: _string(json['gateway_order_id']),
+      tripType: _string(json['trip_type']),
     );
   }
 

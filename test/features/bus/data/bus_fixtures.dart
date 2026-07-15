@@ -201,3 +201,74 @@ const busOrdersEnvelope = {
     'previousPageUrl': null,
   },
 };
+
+/// Real `GET /profile/buses/orders/:id` response for order 1475 — see
+/// docs/wadeny-apis.md → Orders > Buses > Show. Field-for-field identical to
+/// the matching element in `busOrdersEnvelope.data[]`, plus the fare
+/// breakdown / payment / identifier fields the list fixture above omits.
+const busOrderShowEnvelope = {
+  'status': 200,
+  'message': 'Bus order',
+  'errors': <String, dynamic>{},
+  'data': {
+    'number': '000001475',
+    'id': 1475,
+    'trip_id': '145261',
+    'gateway_order_id': '5077099',
+    'parent_order_id': null,
+    'company_data': {
+      'name': 'SuperJet',
+      'avatar': '',
+      'bus_image': '',
+      'pin': '',
+    },
+    'status': 'Pending',
+    'status_code': 'pending',
+    'gateway_id': 'SuperJet',
+    'company_name': 'SuperJet',
+    'category': 'Five stars',
+    'can_be_cancel': true,
+    'trip_type': 'Buses',
+    'is_confirmed': 0,
+    'review': null,
+    'can_review': false,
+    'payment_data': {
+      'status': 'Pending',
+      'status_code': 'pending',
+      'invoice_id': 6956732,
+      'gateway': 'Myfatoorah',
+      'invoice_url': 'https://demo.MyFatoorah.com/KWT/ia/010726954',
+      'data': {'notes': ''},
+    },
+    'invoice_url': 'https://portal.wdenytravel.com/orders/1475/invoice',
+    'station_from': null,
+    'station_to': null,
+    'tickets': [
+      {'id': 2076, 'seat_number': '1', 'price': '205.00'},
+    ],
+    'date': '2026-07-30',
+    'date_time': '2026-07-30 08:45 AM',
+    'payment_url': 'https://demo.safaria.travel/api/v1/buses/orders/1475/pay',
+    'cancel_url':
+        'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
+    'original_tickets_totals': 'EGP 205.00',
+    'discount': 'EGP 0.00',
+    'wallet_discount': 'EGP 0.00',
+    'tickets_totals_after_discount': 'EGP 205.00',
+    'payment_fees': 'EGP 14.35',
+    'total': 'EGP 219.35',
+    'currency': 'EGP',
+  },
+};
+
+/// Real 404 for an unknown/foreign order id — docs/wadeny-apis.md → Orders >
+/// Buses > Show. In production Dio throws before the mapper ever sees this
+/// body (see `bus_api.dart` — no `validateStatus` override, so a real HTTP
+/// 404 raises `DioException` first); this fixture exercises `orderFromEnvelope`
+/// / `ensureSuccess`'s own defensive contract directly.
+const busOrderNotFoundEnvelope = {
+  'status': 404,
+  'message': 'Bus order not found',
+  'errors': <String, dynamic>{},
+  'data': <String, dynamic>{},
+};

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/bus/data/bus_dto_mapper.dart';
 import 'package:rego/features/bus/domain/entities/bus_order.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
@@ -154,7 +155,8 @@ void main() {
         expect(pending.operatorName, 'SuperJet');
         expect(pending.category, 'Five stars');
         expect(pending.statusKind, BusOrderStatusKind.pending);
-        expect(pending.seats, ['1']);
+        expect(pending.ticketLines, hasLength(1));
+        expect(pending.ticketLines.first.seatNumber, '1');
         expect(pending.pickupStopLabel, 'Cairo Main Station');
         expect(pending.dropoffStopLabel, 'Alexandria Terminal');
         expect(pending.total, 'EGP 219.35');
@@ -171,6 +173,42 @@ void main() {
         expect(confirmed.dropoffStopLabel, isNull);
         expect(confirmed.canCancel, isFalse);
         expect(confirmed.gatewayCheckoutUrl, isNull);
+      });
+    });
+
+    group('orderFromEnvelope', () {
+      test('maps the full Show response including fare, seats, and payment',
+          () {
+        final order = BusDtoMapper.orderFromEnvelope(busOrderShowEnvelope);
+
+        expect(order.orderId, '1475');
+        expect(order.bookingNumber, '000001475');
+        expect(order.operatorName, 'SuperJet');
+        expect(order.category, 'Five stars');
+        expect(order.statusKind, BusOrderStatusKind.pending);
+        expect(order.ticketLines, hasLength(1));
+        expect(order.ticketLines.first.seatNumber, '1');
+        expect(order.ticketLines.first.price, '205.00');
+        expect(order.fare.originalTicketsTotal, 'EGP 205.00');
+        expect(order.fare.discount, 'EGP 0.00');
+        expect(order.fare.walletDiscount, 'EGP 0.00');
+        expect(order.fare.ticketsTotalAfterDiscount, 'EGP 205.00');
+        expect(order.fare.paymentFees, 'EGP 14.35');
+        expect(order.fare.total, 'EGP 219.35');
+        expect(order.fare.currency, 'EGP');
+        expect(order.paymentGateway, 'Myfatoorah');
+        expect(order.paymentStatusText, 'Pending');
+        expect(order.paymentInvoiceId, '6956732');
+        expect(order.tripId, '145261');
+        expect(order.gatewayOrderId, '5077099');
+        expect(order.tripType, 'Buses');
+      });
+
+      test('throws ApiException for the documented not-found envelope', () {
+        expect(
+          () => BusDtoMapper.orderFromEnvelope(busOrderNotFoundEnvelope),
+          throwsA(isA<ApiException>()),
+        );
       });
     });
 

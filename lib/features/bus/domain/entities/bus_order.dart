@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 
 part 'bus_order.freezed.dart';
 
@@ -8,9 +9,28 @@ part 'bus_order.freezed.dart';
 /// than being guessed into a destructive/positive bucket.
 enum BusOrderStatusKind { pending, confirmed, cancelled, unknown }
 
-/// One booked bus trip from `GET /profile/buses/orders` — the "My Tickets"
-/// list-item shape. Distinct from [BusTicket] (the post-booking confirmation
-/// entity) and `BusOrderStatus` (the payment-verify result).
+/// The fare breakdown carried by every bus order (List and Show endpoints
+/// return the same fields). All money fields are preformatted strings (e.g.
+/// `"EGP 205.00"`), matching every other money field in this codebase — no
+/// numeric parsing, no new currency-formatting logic.
+@freezed
+abstract class BusOrderFare with _$BusOrderFare {
+  const factory BusOrderFare({
+    required String originalTicketsTotal,
+    required String discount,
+    required String walletDiscount,
+    required String ticketsTotalAfterDiscount,
+    required String paymentFees,
+    required String total,
+    required String currency,
+  }) = _BusOrderFare;
+}
+
+/// One booked bus trip from `GET /profile/buses/orders` (list) or
+/// `GET /profile/buses/orders/:id` (show) — both endpoints return this same
+/// shape, mapped by the same `BusDtoMapper.orderFromJson`. Distinct from
+/// [BusTicket] (the post-booking confirmation entity) and `BusOrderStatus`
+/// (the payment-verify result).
 @freezed
 abstract class BusOrder with _$BusOrder {
   const factory BusOrder({
@@ -24,10 +44,17 @@ abstract class BusOrder with _$BusOrder {
     required String dateTimeLabel,
     String? pickupStopLabel,
     String? dropoffStopLabel,
-    required List<String> seats,
+    required List<BusTicketLine> ticketLines,
     required String total,
     required bool canCancel,
     String? gatewayCheckoutUrl,
     String? invoiceUrl,
+    required BusOrderFare fare,
+    String? paymentGateway,
+    String? paymentStatusText,
+    String? paymentInvoiceId,
+    String? tripId,
+    String? gatewayOrderId,
+    String? tripType,
   }) = _BusOrder;
 }
