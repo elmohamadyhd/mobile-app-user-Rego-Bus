@@ -422,6 +422,29 @@
     "description": "Snackbar shown when a profile menu row is not yet implemented."
   },
 
+  "walletTitle": "My Wallet",
+  "walletBalanceLabel": "Available balance",
+  "walletTopUpCta": "Top up",
+  "walletHistoryTitle": "Recent activity",
+  "walletEmptyTitle": "No activity yet",
+  "walletEmptyBody": "Your wallet transactions will show up here.",
+  "walletError": "Couldn't load your wallet",
+  "walletTopUpTitle": "Top up wallet",
+  "walletTopUpAmountLabel": "Enter amount",
+  "walletTopUpSubmit": "Top up {amount} EGP",
+  "@walletTopUpSubmit": {
+    "description": "Submit button on the wallet top-up screen, e.g. \"Top up 200 EGP\".",
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "walletTopUpInvalidAmount": "Enter an amount greater than zero",
+  "walletPaymentSuccessToast": "Wallet topped up successfully",
+  "walletPaymentFailedToast": "Payment failed. Please try again",
+  "walletPaymentPendingToast": "We couldn't confirm the payment yet. It may take a moment",
+
   "pressBackAgainToExit": "Press back again to exit",
   "@pressBackAgainToExit": {
     "description": "Snackbar shown on the first back press when the user must press back again to leave the app."

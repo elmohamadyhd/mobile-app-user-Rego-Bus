@@ -254,5 +254,20 @@
   "profileLogoutConfirm": "تسجيل الخروج",
   "profileComingSoon": "قريباً",
 
+  "walletTitle": "محفظتي",
+  "walletBalanceLabel": "الرصيد المتاح",
+  "walletTopUpCta": "شحن الرصيد",
+  "walletHistoryTitle": "آخر العمليات",
+  "walletEmptyTitle": "لا توجد عمليات بعد",
+  "walletEmptyBody": "ستظهر عمليات محفظتك هنا.",
+  "walletError": "تعذر تحميل المحفظة",
+  "walletTopUpTitle": "شحن المحفظة",
+  "walletTopUpAmountLabel": "أدخل المبلغ",
+  "walletTopUpSubmit": "شحن {amount} جنيه",
+  "walletTopUpInvalidAmount": "أدخل مبلغاً أكبر من صفر",
+  "walletPaymentSuccessToast": "تم شحن المحفظة بنجاح",
+  "walletPaymentFailedToast": "فشلت عملية الدفع، حاول مرة أخرى",
+  "walletPaymentPendingToast": "لم نتمكن من تأكيد الدفع بعد، قد يستغرق الأمر بعض الوقت",
+
   "pressBackAgainToExit": "اضغط رجوع مرة أخرى للخروج"
 }
