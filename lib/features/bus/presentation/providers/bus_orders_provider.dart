@@ -35,3 +35,11 @@ final busOrdersProvider =
     AsyncNotifierProvider<BusOrdersNotifier, List<BusOrder>>(
   BusOrdersNotifier.new,
 );
+
+/// Fetches one order by id for the order detail sheet. `autoDispose` because
+/// it's sheet-scoped (unlike the tab-lifetime `busOrdersProvider`) — closing
+/// the sheet frees it, and reopening always re-fetches fresh.
+final busOrderDetailProvider =
+    FutureProvider.autoDispose.family<BusOrder, String>(
+  (ref, orderId) => ref.read(busRepositoryProvider).orderById(orderId),
+);
