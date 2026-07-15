@@ -90,6 +90,7 @@ lib/features/wallet/
     ├── providers/
     │   └── wallet_providers.dart
     └── widgets/
+        ├── wallet_app_bar.dart
         ├── wallet_balance_card.dart
         └── wallet_transaction_tile.dart
 ```
@@ -220,7 +221,8 @@ class WalletApi {
 
 ## Top-up flow
 
-`wallet_topup_screen.dart`: amount entry field + 50/100/200/500 quick-pick chips
+`wallet_topup_screen.dart`: `Scaffold` with `WalletAppBar` (see Screen chrome
+above), body holds an amount entry field + 50/100/200/500 quick-pick chips
 (visual only — the design's chips, no new component needed beyond a simple
 `ChoiceChip`-style row) + a submit button reading
 `l10n.walletTopUpCta(amount)` (e.g. "Top up 200 EGP").
@@ -247,8 +249,10 @@ scoped and approved (a wallet-owned screen, not a wallet screen that reaches
 into `features/bus`). Concretely, `wallet_payment_webview_screen.dart` defines
 its own:
 
-- `WebViewController` setup with the same `NavigationDelegate` shape as the bus
-  screen.
+- `Scaffold` + `WalletAppBar` (title, no back-arrow default action — back is
+  intercepted by `PopScope`, same as the bus screen — plus a "Done" trailing
+  action) wrapping a `WebViewController` with the same `NavigationDelegate`
+  shape as the bus screen.
 - A local `_classifyPaymentNav(Uri)` — same `success-payment` /
   `failed-payment` path-segment logic, copied rather than imported. It's a
   five-line pure function; the cost of duplication is trivial next to the cost
@@ -304,14 +308,27 @@ final walletProvider = AsyncNotifierProvider<WalletNotifier, Wallet>(WalletNotif
 Plain (non-autoDispose) `AsyncNotifier`, matching `busOrdersProvider` — state
 should survive the rider navigating away and back within a session.
 
-`wallet_screen.dart` — `ShellTabScrollView`-style layout (reused directly; it's
-a generic hero+cards scaffold, not bus-specific) with:
+**Screen chrome.** The wallet screens are pushed full-screen routes with a back
+arrow — not shell-tab bodies — so `ShellTabScrollView` / `SkylineTabHero`
+(no back button by design; built for the persistent Home/Tickets/Profile tabs)
+don't fit here. The bus feature's `BookingAppBar` is the right *shape* (title,
+back arrow, optional trailing action) but it lives in
+`features/bus/presentation/widgets/` and is only ever imported by bus screens
+— it's bus-owned infrastructure, not a shared widget under `lib/shared/`.
+Wallet gets its own small equivalent, `wallet/presentation/widgets/wallet_app_bar.dart`
+(title + back + optional trailing action; no subtitle variant — wallet never
+needs one). All three wallet screens use it inside a plain `Scaffold` with
+`backgroundColor: AppColors.bgBase`, matching the bus feature's own pushed
+screens (`trip_details_screen.dart`, `passenger_confirm_screen.dart`, etc.).
+
+`wallet_screen.dart` body:
 - `WalletBalanceCard` — balance, currency, "Top up" CTA → `WalletRoutes.topUp`.
 - Transaction list — `WalletTransactionTile` per entry (icon by type, description,
   signed amount, date when present).
 - Empty state when `transactions.isEmpty` (new account / no activity yet).
 - Standard `AsyncValue` loading/error handling (spinner / retry), matching how
-  `busOrdersProvider` is consumed elsewhere.
+  `busOrdersProvider` is consumed elsewhere (e.g. `BusOrdersSection`'s
+  `.when(loading:, error:, data:)`).
 
 ## Localization
 
