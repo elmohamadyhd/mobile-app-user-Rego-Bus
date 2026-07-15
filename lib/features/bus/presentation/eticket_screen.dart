@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
@@ -19,6 +18,7 @@ import 'package:rego/features/bus/presentation/providers/bus_booking_providers.d
 import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/providers/ticket_pdf_providers.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 class BusTicketScreen extends ConsumerWidget {
@@ -511,27 +511,30 @@ class _PriceStub extends StatelessWidget {
 
 // ── Action buttons row ────────────────────────────────────────────────────────
 
-class _ActionButtons extends StatelessWidget {
+class _ActionButtons extends ConsumerStatefulWidget {
   const _ActionButtons({required this.ticket});
 
   final BusTicket ticket;
 
-  Future<void> _downloadTicket(BuildContext context) async {
-    final l10n = AppLocalizations.of(context);
-    final invoiceUrl = ticket.invoiceUrl ?? '';
-    final uri = invoiceUrl.isEmpty ? null : Uri.tryParse(invoiceUrl);
-    if (uri == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.eTicketDownloadUnavailable)),
-      );
-      return;
-    }
+  @override
+  ConsumerState<_ActionButtons> createState() => _ActionButtonsState();
+}
 
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.eTicketDownloadFailed)),
+class _ActionButtonsState extends ConsumerState<_ActionButtons> {
+  bool _downloading = false;
+
+  Future<void> _downloadTicket() async {
+    if (_downloading) return;
+    setState(() => _downloading = true);
+    try {
+      await downloadTicketPdf(
+        ref,
+        context,
+        invoiceUrl: widget.ticket.invoiceUrl ?? '',
+        bookingRef: widget.ticket.bookingRef,
       );
+    } finally {
+      if (mounted) setState(() => _downloading = false);
     }
   }
 
@@ -549,10 +552,11 @@ class _ActionButtons extends StatelessWidget {
       children: [
         Expanded(
           child: _GradientActionButton(
-            onPressed: () => unawaited(_downloadTicket(context)),
+            onPressed: _downloading ? null : _downloadTicket,
             icon: AppIcons.download,
             label: l10n.eTicketDownload,
             filled: true,
+            loading: _downloading,
           ),
         ),
         const SizedBox(width: AppSpacing.md),
@@ -575,12 +579,14 @@ class _GradientActionButton extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.filled,
+    this.loading = false,
   });
 
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final IconData icon;
   final String label;
   final bool filled;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -594,7 +600,7 @@ class _GradientActionButton extends StatelessWidget {
       color: bg,
       borderRadius: BorderRadius.circular(AppRadius.button),
       child: InkWell(
-        onTap: onPressed,
+        onTap: loading ? null : onPressed,
         borderRadius: BorderRadius.circular(AppRadius.button),
         child: Ink(
           decoration: BoxDecoration(
@@ -606,7 +612,17 @@ class _GradientActionButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, color: fg, size: 18),
+                if (loading)
+                  SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: fg,
+                    ),
+                  )
+                else
+                  Icon(icon, color: fg, size: 18),
                 const SizedBox(width: AppSpacing.xs),
                 Flexible(
                   child: Text(

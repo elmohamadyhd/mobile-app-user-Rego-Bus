@@ -270,7 +270,11 @@
   "eTicketBackHome": "Back to home",
   "eTicketComingSoon": "Coming soon",
   "eTicketDownloadUnavailable": "Ticket download isn't available yet",
-  "eTicketDownloadFailed": "Couldn't open the ticket. Please try again",
+  "eTicketDownloadFailed": "Couldn't download the ticket. Please try again",
+  "eTicketDownloadSuccess": "Ticket saved",
+  "@eTicketDownloadSuccess": {
+    "description": "Snackbar after the e-ticket PDF is saved to the device."
+  },
 
   "ticketsCountLabel": "{count} tickets",
   "@ticketsCountLabel": {

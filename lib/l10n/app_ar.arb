@@ -177,7 +177,8 @@
   "eTicketBackHome": "العودة للرئيسية",
   "eTicketComingSoon": "قريباً",
   "eTicketDownloadUnavailable": "تحميل التذكرة غير متاح حالياً",
-  "eTicketDownloadFailed": "تعذر فتح التذكرة، حاول مرة أخرى",
+  "eTicketDownloadFailed": "تعذر تحميل التذكرة، حاول مرة أخرى",
+  "eTicketDownloadSuccess": "تم حفظ التذكرة",
 
   "ticketsCountLabel": "{count} تذكرة",
   "ticketsEmptyTitle": "لا توجد تذاكر بعد",

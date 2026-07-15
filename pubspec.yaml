@@ -49,6 +49,9 @@ dependencies:
   # Opens the e-ticket PDF (invoice_url) in an external browser/PDF viewer
   url_launcher: ^6.3.1
 
+  # Opens a downloaded ticket PDF in the native viewer
+  open_filex: ^4.7.0
+
   # Native splash hold until Flutter paints the matching first frame.
   flutter_native_splash: ^2.4.6
   shimmer: ^3.0.0

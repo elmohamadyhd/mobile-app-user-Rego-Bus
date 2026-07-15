@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:rego/core/router/app_router.dart';
 import 'package:rego/core/theme/app_colors.dart';
@@ -21,6 +20,7 @@ import 'package:rego/features/bus/presentation/widgets/bus_order_card.dart';
 import 'package:rego/features/bus/presentation/widgets/bus_order_detail_sheet.dart';
 import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/providers/ticket_pdf_providers.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 /// The bus-owned section dropped into the "My Tickets" tab shell
@@ -369,30 +369,19 @@ class _OrdersList extends ConsumerWidget {
                 orderId: order.orderId,
               ),
             ),
-            onOpenETicket: () =>
-                unawaited(_openETicket(context, order.invoiceUrl ?? '')),
+            onOpenETicket: () => unawaited(
+              downloadTicketPdf(
+                ref,
+                context,
+                invoiceUrl: order.invoiceUrl ?? '',
+                bookingRef: order.bookingNumber,
+              ),
+            ),
             onCancel: () =>
                 unawaited(_confirmCancel(context, ref, order.orderId)),
           ),
       ],
     );
-  }
-}
-
-Future<void> _openETicket(BuildContext context, String invoiceUrl) async {
-  final l10n = AppLocalizations.of(context);
-  final uri = invoiceUrl.isEmpty ? null : Uri.tryParse(invoiceUrl);
-  if (uri == null) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l10n.eTicketDownloadUnavailable)));
-    return;
-  }
-  final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-  if (!launched && context.mounted) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l10n.eTicketDownloadFailed)));
   }
 }
 

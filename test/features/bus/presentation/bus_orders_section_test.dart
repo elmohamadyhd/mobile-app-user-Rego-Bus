@@ -11,6 +11,7 @@ import 'package:rego/features/bus/presentation/providers/bus_booking_providers.d
 import 'package:rego/features/bus/presentation/widgets/bus_order_card.dart';
 import 'package:rego/features/bus/presentation/widgets/bus_orders_section.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/providers/ticket_pdf_providers.dart';
 
 import '../fake_bus_repository.dart';
 
@@ -125,5 +126,53 @@ void main() {
 
     expect(find.text("Couldn't load your tickets"), findsOneWidget);
     expect(find.text('Try again'), findsOneWidget);
+  });
+
+  testWidgets('download invokes the in-app PDF downloader', (tester) async {
+    var called = false;
+    String? capturedUrl;
+    String? capturedRef;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sessionControllerProvider.overrideWith(
+            () => _FakeSessionController(const AuthSession(token: 't')),
+          ),
+          guestModeProvider.overrideWith(() => _FakeGuestController(false)),
+          busRepositoryProvider.overrideWithValue(
+            FakeBusRepository(ordersResult: [_order()]),
+          ),
+          ticketPdfDownloadProvider.overrideWith(
+            (ref) => ({
+              required String invoiceUrl,
+              required String bookingRef,
+            }) async {
+              called = true;
+              capturedUrl = invoiceUrl;
+              capturedRef = bookingRef;
+            },
+          ),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: AppTheme.light(),
+          locale: const Locale('en'),
+          home: const Scaffold(body: BusOrdersSection()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Download'));
+    await tester.pumpAndSettle();
+
+    expect(called, isTrue);
+    expect(
+      capturedUrl,
+      'https://portal.wdenytravel.com/orders/1475/invoice',
+    );
+    expect(capturedRef, '000001475');
   });
 }

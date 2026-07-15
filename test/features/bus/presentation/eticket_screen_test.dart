@@ -10,6 +10,7 @@ import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/eticket_screen.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/providers/ticket_pdf_providers.dart';
 
 import '../fake_bus_repository.dart';
 
@@ -156,5 +157,63 @@ void main() {
 
     expect(find.text('HOME'), findsOneWidget);
     expect(container.read(busBookingProvider).ticket, isNull);
+  });
+
+  testWidgets('download invokes the in-app PDF downloader', (tester) async {
+    var called = false;
+    String? capturedUrl;
+    String? capturedRef;
+
+    final container = ProviderContainer(
+      overrides: [
+        busRepositoryProvider.overrideWithValue(
+          FakeBusRepository(ticketResult: _confirmedTicket()),
+        ),
+        ticketPdfDownloadProvider.overrideWith(
+          (ref) => ({
+            required String invoiceUrl,
+            required String bookingRef,
+          }) async {
+            called = true;
+            capturedUrl = invoiceUrl;
+            capturedRef = bookingRef;
+          },
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(busBookingProvider.notifier);
+    await notifier.searchTrips(
+      BusSearchParams(cityFromId: 1, cityToId: 2, date: DateTime(2026, 7, 15)),
+    );
+    await notifier.selectTrip(FakeBusRepository.sampleTrip);
+    notifier.toggleSeat('23');
+    await notifier.confirmBooking();
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          home: const BusTicketScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Download'),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Download'));
+    await tester.pumpAndSettle();
+
+    expect(called, isTrue);
+    expect(capturedUrl, 'https://example.com/ticket.pdf');
+    expect(capturedRef, '000001457');
   });
 }
