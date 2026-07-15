@@ -83,7 +83,7 @@ void main() {
       ),
     );
     expect(decoratedBox.decoration, isA<BoxDecoration>());
-    final decoration = decoratedBox.decoration! as BoxDecoration;
+    final decoration = decoratedBox.decoration as BoxDecoration;
     expect(decoration.boxShadow, isNull);
 
     final containerFinder = find.descendant(
