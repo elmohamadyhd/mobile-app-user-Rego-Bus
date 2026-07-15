@@ -267,6 +267,19 @@
   "eTicketRef": "Booking ref.",
   "eTicketDownload": "Download",
   "eTicketShare": "Share",
+  "eTicketShareSubject": "REGO bus ticket — {bookingRef}",
+  "@eTicketShareSubject": {
+    "description": "Subject line when sharing an e-ticket PDF.",
+    "placeholders": {
+      "bookingRef": {
+        "type": "String"
+      }
+    }
+  },
+  "eTicketShareSuccess": "Ticket ready to share",
+  "@eTicketShareSuccess": {
+    "description": "Snackbar after the share sheet opens with the e-ticket PDF."
+  },
   "eTicketBackHome": "Back to home",
   "eTicketComingSoon": "Coming soon",
   "eTicketDownloadUnavailable": "Ticket download isn't available yet",

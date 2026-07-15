@@ -52,6 +52,9 @@ dependencies:
   # Opens a downloaded ticket PDF in the native viewer
   open_filex: ^4.7.0
 
+  # Native share sheet for e-ticket PDFs
+  share_plus: ^10.1.4
+
   # Native splash hold until Flutter paints the matching first frame.
   flutter_native_splash: ^2.4.6
   shimmer: ^3.0.0

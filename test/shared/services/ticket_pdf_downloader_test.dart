@@ -71,6 +71,40 @@ void main() {
       expect(openedPath!, contains('rego-ticket-000001457.pdf'));
     });
 
+    test('downloads and shares the saved file', () async {
+      final adapter = _RecordingAdapter();
+      final dio = Dio()..httpClientAdapter = adapter;
+      final storage = SecureStorage(
+        storage: InMemorySecureStorage({'auth_token': 'test-token'}),
+      );
+      String? sharedPath;
+      String? sharedSubject;
+
+      final tempDir =
+          await Directory.systemTemp.createTemp('rego_ticket_share_test');
+
+      await TicketPdfDownloader.downloadAndShare(
+        dio: dio,
+        storage: storage,
+        localeCode: 'ar',
+        invoiceUrl: 'https://portal.example.com/orders/1/invoice/download',
+        bookingRef: '000001457',
+        shareSubject: 'REGO bus ticket — 000001457',
+        savePathResolver: (ref) async =>
+            p.join(tempDir.path, 'rego-ticket-$ref.pdf'),
+        shareFile: (path, {required String shareSubject}) async {
+          sharedPath = path;
+          sharedSubject = shareSubject;
+        },
+      );
+
+      expect(adapter.lastOptions?.uri.toString(),
+          'https://portal.example.com/orders/1/invoice/download');
+      expect(sharedPath, isNotNull);
+      expect(sharedPath!, contains('rego-ticket-000001457.pdf'));
+      expect(sharedSubject, 'REGO bus ticket — 000001457');
+    });
+
     test('throws invalidUrl when invoiceUrl is empty', () async {
       final dio = Dio()..httpClientAdapter = _RecordingAdapter();
 

@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:rego/core/storage/secure_storage.dart';
 
@@ -11,6 +12,7 @@ enum TicketPdfDownloadFailure {
   invalidUrl,
   downloadFailed,
   openFailed,
+  shareFailed,
 }
 
 final class TicketPdfDownloadException implements Exception {
@@ -25,18 +27,20 @@ final class TicketPdfDownloadException implements Exception {
 
 typedef TicketPdfFileOpener = Future<OpenResult> Function(String path);
 typedef TicketPdfSavePathResolver = Future<String> Function(String bookingRef);
+typedef TicketPdfFileSharer = Future<void> Function(
+  String path, {
+  required String shareSubject,
+});
 
-/// Downloads an e-ticket PDF from [invoiceUrl] and opens it in the native
-/// viewer. Auth headers mirror [dioProvider]'s interceptor so portal URLs work
-/// without handing off to a browser.
+/// Downloads an e-ticket PDF from [invoiceUrl] with auth headers that mirror
+/// [dioProvider]'s interceptor so portal URLs work without a browser handoff.
 abstract final class TicketPdfDownloader {
-  static Future<void> downloadAndOpen({
+  static Future<String> downloadToFile({
     required Dio dio,
     required SecureStorage storage,
     required String localeCode,
     required String invoiceUrl,
     required String bookingRef,
-    TicketPdfFileOpener? openFile,
     TicketPdfSavePathResolver? savePathResolver,
   }) async {
     final uri = invoiceUrl.trim().isEmpty ? null : Uri.tryParse(invoiceUrl);
@@ -73,12 +77,69 @@ abstract final class TicketPdfDownloader {
       );
     }
 
+    return savePath;
+  }
+
+  static Future<void> downloadAndOpen({
+    required Dio dio,
+    required SecureStorage storage,
+    required String localeCode,
+    required String invoiceUrl,
+    required String bookingRef,
+    TicketPdfFileOpener? openFile,
+    TicketPdfSavePathResolver? savePathResolver,
+  }) async {
+    final savePath = await downloadToFile(
+      dio: dio,
+      storage: storage,
+      localeCode: localeCode,
+      invoiceUrl: invoiceUrl,
+      bookingRef: bookingRef,
+      savePathResolver: savePathResolver,
+    );
+
     final opener = openFile ?? OpenFilex.open;
     final result = await opener(savePath);
     if (result.type != ResultType.done) {
       throw TicketPdfDownloadException(
         TicketPdfDownloadFailure.openFailed,
         cause: result.message,
+      );
+    }
+  }
+
+  static Future<void> downloadAndShare({
+    required Dio dio,
+    required SecureStorage storage,
+    required String localeCode,
+    required String invoiceUrl,
+    required String bookingRef,
+    required String shareSubject,
+    TicketPdfSavePathResolver? savePathResolver,
+    TicketPdfFileSharer? shareFile,
+  }) async {
+    final savePath = await downloadToFile(
+      dio: dio,
+      storage: storage,
+      localeCode: localeCode,
+      invoiceUrl: invoiceUrl,
+      bookingRef: bookingRef,
+      savePathResolver: savePathResolver,
+    );
+
+    try {
+      final sharer = shareFile ??
+          (String path, {required String shareSubject}) {
+            return Share.shareXFiles(
+              [XFile(path)],
+              subject: shareSubject,
+            );
+          };
+      await sharer(savePath, shareSubject: shareSubject);
+    } catch (e) {
+      throw TicketPdfDownloadException(
+        TicketPdfDownloadFailure.shareFailed,
+        cause: e,
       );
     }
   }

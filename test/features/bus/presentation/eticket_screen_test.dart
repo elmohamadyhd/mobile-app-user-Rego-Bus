@@ -194,11 +194,11 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const BusTicketScreen(),
+          locale: Locale('en'),
+          home: BusTicketScreen(),
         ),
       ),
     );
@@ -215,5 +215,67 @@ void main() {
     expect(called, isTrue);
     expect(capturedUrl, 'https://example.com/ticket.pdf');
     expect(capturedRef, '000001457');
+  });
+
+  testWidgets('share invokes the in-app PDF sharer', (tester) async {
+    var called = false;
+    String? capturedUrl;
+    String? capturedRef;
+    String? capturedSubject;
+
+    final container = ProviderContainer(
+      overrides: [
+        busRepositoryProvider.overrideWithValue(
+          FakeBusRepository(ticketResult: _confirmedTicket()),
+        ),
+        ticketPdfShareProvider.overrideWith(
+          (ref) => ({
+            required String invoiceUrl,
+            required String bookingRef,
+            required String shareSubject,
+          }) async {
+            called = true;
+            capturedUrl = invoiceUrl;
+            capturedRef = bookingRef;
+            capturedSubject = shareSubject;
+          },
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(busBookingProvider.notifier);
+    await notifier.searchTrips(
+      BusSearchParams(cityFromId: 1, cityToId: 2, date: DateTime(2026, 7, 15)),
+    );
+    await notifier.selectTrip(FakeBusRepository.sampleTrip);
+    notifier.toggleSeat('23');
+    await notifier.confirmBooking();
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: BusTicketScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Share'),
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Share'));
+    await tester.pumpAndSettle();
+
+    expect(called, isTrue);
+    expect(capturedUrl, 'https://example.com/ticket.pdf');
+    expect(capturedRef, '000001457');
+    expect(capturedSubject, 'REGO bus ticket — 000001457');
   });
 }

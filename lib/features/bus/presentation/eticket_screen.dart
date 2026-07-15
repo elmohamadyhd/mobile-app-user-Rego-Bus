@@ -522,9 +522,10 @@ class _ActionButtons extends ConsumerStatefulWidget {
 
 class _ActionButtonsState extends ConsumerState<_ActionButtons> {
   bool _downloading = false;
+  bool _sharing = false;
 
   Future<void> _downloadTicket() async {
-    if (_downloading) return;
+    if (_downloading || _sharing) return;
     setState(() => _downloading = true);
     try {
       await downloadTicketPdf(
@@ -538,21 +539,31 @@ class _ActionButtonsState extends ConsumerState<_ActionButtons> {
     }
   }
 
+  Future<void> _shareTicket() async {
+    if (_downloading || _sharing) return;
+    setState(() => _sharing = true);
+    try {
+      await shareTicketPdf(
+        ref,
+        context,
+        invoiceUrl: widget.ticket.invoiceUrl ?? '',
+        bookingRef: widget.ticket.bookingRef,
+      );
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-
-    void showComingSoon() {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.eTicketComingSoon)),
-      );
-    }
+    final busy = _downloading || _sharing;
 
     return Row(
       children: [
         Expanded(
           child: _GradientActionButton(
-            onPressed: _downloading ? null : _downloadTicket,
+            onPressed: busy ? null : _downloadTicket,
             icon: AppIcons.download,
             label: l10n.eTicketDownload,
             filled: true,
@@ -562,10 +573,11 @@ class _ActionButtonsState extends ConsumerState<_ActionButtons> {
         const SizedBox(width: AppSpacing.md),
         Expanded(
           child: _GradientActionButton(
-            onPressed: showComingSoon,
+            onPressed: busy ? null : _shareTicket,
             icon: AppIcons.share,
             label: l10n.eTicketShare,
             filled: false,
+            loading: _sharing,
           ),
         ),
       ],
