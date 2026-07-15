@@ -114,10 +114,7 @@ class FakeBusRepository implements BusRepository {
   }
 
   @override
-  Future<BusOrderStatus> orderStatus(
-    String orderId, {
-    required String currency,
-  }) async {
+  Future<BusOrderStatus> orderStatus(String orderId) async {
     return orderStatusResult ??
         BusOrderStatus(
           orderId: orderId,

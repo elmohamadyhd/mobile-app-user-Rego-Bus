@@ -299,8 +299,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
 
     state = state.copyWith(status: BusBookingStatus.verifyingPayment);
     try {
-      final currency = state.searchParams?.currency ?? BusCurrency.defaultCode;
-      final order = await _repo.orderStatus(ticket.orderId, currency: currency);
+      final order = await _repo.orderStatus(ticket.orderId);
       state = state.copyWith(
         status: order.isConfirmed
             ? BusBookingStatus.confirmed

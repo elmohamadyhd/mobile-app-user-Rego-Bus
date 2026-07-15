@@ -75,23 +75,14 @@ class BusApi {
   }
 
   /// Order-status lookup used to verify payment after the gateway returns.
-  ///
-  /// ⚠️ Backend dependency: this GET is not yet documented in the Wadeny API
-  /// reference — only `/buses/orders/{id}/pay` and `/cancel` appear (as values
-  /// inside the create-ticket response body). We call the bare resource path
-  /// here, which is conventional for that URL shape; if the backend returns
-  /// 404, payment verification degrades to "pending" (seat stays held). The
-  /// path lives in one place so it's trivial to correct once confirmed.
-  static String orderStatusPath(String orderId) => '/buses/orders/$orderId';
+  /// Same resource `GET /profile/buses/orders/{id}` used by the order-detail
+  /// sheet — documented in the Wadeny API reference with `is_confirmed` /
+  /// `status_code` in the response.
+  static String orderStatusPath(String orderId) =>
+      '/profile/buses/orders/$orderId';
 
-  Future<dynamic> orderStatus({
-    required String orderId,
-    required String currency,
-  }) async {
-    final res = await _dio.get(
-      orderStatusPath(orderId),
-      queryParameters: {'currency': currency},
-    );
+  Future<dynamic> orderStatus({required String orderId}) async {
+    final res = await _dio.get(orderStatusPath(orderId));
     return res.data;
   }
 
@@ -103,7 +94,7 @@ class BusApi {
   /// ⚠️ Backend dependency: cancel endpoint path/method inferred from the
   /// `cancel_url` field returned alongside orders (e.g.
   /// `.../buses/orders/{id}/cancel`) — not separately documented in the
-  /// Wadeny API reference. Same caveat as [orderStatusPath].
+  /// Wadeny API reference.
   static String cancelOrderPath(String orderId) =>
       '/buses/orders/$orderId/cancel';
 

@@ -97,10 +97,7 @@ abstract interface class BusRepository {
   /// Reads the current payment/booking status for an order created by
   /// [createTicket]. Used to verify the rider actually paid after the gateway
   /// hands control back to the app.
-  Future<BusOrderStatus> orderStatus(
-    String orderId, {
-    required String currency,
-  });
+  Future<BusOrderStatus> orderStatus(String orderId);
 
   /// Lists the signed-in rider's booked bus trips (My Tickets tab).
   Future<List<BusOrder>> listOrders();

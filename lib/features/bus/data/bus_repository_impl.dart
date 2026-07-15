@@ -96,12 +96,9 @@ class BusRepositoryImpl implements BusRepository {
   }
 
   @override
-  Future<BusOrderStatus> orderStatus(
-    String orderId, {
-    required String currency,
-  }) {
+  Future<BusOrderStatus> orderStatus(String orderId) {
     return _guard(() async {
-      final body = await _api.orderStatus(orderId: orderId, currency: currency);
+      final body = await _api.orderStatus(orderId: orderId);
       return BusDtoMapper.orderStatusFromEnvelope(body);
     });
   }

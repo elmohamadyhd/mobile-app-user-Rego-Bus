@@ -11,7 +11,6 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/providers/bus_orders_provider.dart';
@@ -304,10 +303,8 @@ class _PaymentWebViewScreenState extends ConsumerState<PaymentWebViewScreen> {
     if (mounted) setState(() => _resumeVerifying = true);
     var isConfirmed = false;
     try {
-      final order = await ref.read(busRepositoryProvider).orderStatus(
-            args.orderId,
-            currency: BusCurrency.defaultCode,
-          );
+      final order =
+          await ref.read(busRepositoryProvider).orderStatus(args.orderId);
       isConfirmed = order.isConfirmed;
     } catch (_) {
       isConfirmed = false;
