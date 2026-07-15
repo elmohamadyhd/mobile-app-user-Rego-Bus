@@ -6,6 +6,7 @@ import 'package:rego/core/theme/app_theme.dart';
 import 'package:rego/features/auth/domain/entities/auth_session.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/bus/domain/entities/bus_order.dart';
+import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/bus_order_card.dart';
 import 'package:rego/features/bus/presentation/widgets/bus_orders_section.dart';
@@ -35,11 +36,20 @@ BusOrder _order() => const BusOrder(
       statusText: 'Pending',
       statusKind: BusOrderStatusKind.pending,
       dateTimeLabel: '2026-07-30 08:45 AM',
-      seats: ['1'],
+      ticketLines: [BusTicketLine(id: 2076, seatNumber: '1', price: '205.00')],
       total: 'EGP 219.35',
       canCancel: true,
       gatewayCheckoutUrl: 'https://demo.MyFatoorah.com/pay',
       invoiceUrl: 'https://portal.wdenytravel.com/orders/1475/invoice',
+      fare: BusOrderFare(
+        originalTicketsTotal: 'EGP 205.00',
+        discount: 'EGP 0.00',
+        walletDiscount: 'EGP 0.00',
+        ticketsTotalAfterDiscount: 'EGP 205.00',
+        paymentFees: 'EGP 14.35',
+        total: 'EGP 219.35',
+        currency: 'EGP',
+      ),
     );
 
 Future<void> _pumpSection(

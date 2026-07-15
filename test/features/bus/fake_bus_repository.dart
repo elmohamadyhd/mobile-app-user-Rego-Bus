@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:rego/core/network/api_exception.dart';
 import 'package:rego/features/bus/domain/entities/bus_location.dart';
 import 'package:rego/features/bus/domain/entities/bus_order.dart';
@@ -17,6 +19,7 @@ class FakeBusRepository implements BusRepository {
     this.ticketResult,
     this.orderStatusResult,
     this.ordersResult,
+    this.orderByIdResult,
   });
 
   BusTripsPage? tripsPage;
@@ -31,6 +34,10 @@ class FakeBusRepository implements BusRepository {
   bool listOrdersShouldThrow = false;
   List<String> cancelOrderCalls = [];
   bool cancelOrderShouldThrow = false;
+  BusOrder? orderByIdResult;
+  Completer<BusOrder>? orderByIdCompleter;
+  bool orderByIdShouldThrow = false;
+  List<String> orderByIdCalls = [];
 
   @override
   Future<List<BusLocation>> listLocations() async {
@@ -140,6 +147,16 @@ class FakeBusRepository implements BusRepository {
     }
   }
 
+  @override
+  Future<BusOrder> orderById(String orderId) async {
+    orderByIdCalls.add(orderId);
+    if (orderByIdCompleter != null) return orderByIdCompleter!.future;
+    if (orderByIdShouldThrow) {
+      throw const ApiException('Order not found', statusCode: 404);
+    }
+    return orderByIdResult ?? sampleOrder;
+  }
+
   static final sampleTrip = BusTripSummary(
     id: '290545',
     gatewayId: 'Tazcara',
@@ -190,6 +207,38 @@ class FakeBusRepository implements BusRepository {
         originalPrice: 180,
       ),
     ],
+  );
+
+  static const sampleOrder = BusOrder(
+    orderId: '1475',
+    bookingNumber: '000001475',
+    operatorName: 'SuperJet',
+    category: 'Five stars',
+    statusText: 'Pending',
+    statusKind: BusOrderStatusKind.pending,
+    dateTimeLabel: '2026-07-30 08:45 AM',
+    pickupStopLabel: 'Cairo Main Station',
+    dropoffStopLabel: 'Alexandria Terminal',
+    ticketLines: [BusTicketLine(id: 2076, seatNumber: '1', price: '205.00')],
+    total: 'EGP 219.35',
+    canCancel: true,
+    gatewayCheckoutUrl: 'https://demo.MyFatoorah.com/pay',
+    invoiceUrl: 'https://portal.wdenytravel.com/orders/1475/invoice',
+    fare: BusOrderFare(
+      originalTicketsTotal: 'EGP 205.00',
+      discount: 'EGP 0.00',
+      walletDiscount: 'EGP 0.00',
+      ticketsTotalAfterDiscount: 'EGP 205.00',
+      paymentFees: 'EGP 14.35',
+      total: 'EGP 219.35',
+      currency: 'EGP',
+    ),
+    paymentGateway: 'Myfatoorah',
+    paymentStatusText: 'Pending',
+    paymentInvoiceId: '6956732',
+    tripId: '145261',
+    gatewayOrderId: '5077099',
+    tripType: 'Buses',
   );
 
   static const sampleSeatMap = SeatMap(

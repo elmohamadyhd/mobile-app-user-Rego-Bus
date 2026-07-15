@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:rego/features/bus/domain/entities/bus_order.dart';
+import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/providers/bus_orders_provider.dart';
 
@@ -20,11 +21,22 @@ BusOrder _order({
     statusText: 'Pending',
     statusKind: statusKind,
     dateTimeLabel: '2026-07-30 08:45 AM',
-    seats: const ['1'],
+    ticketLines: const [
+      BusTicketLine(id: 2076, seatNumber: '1', price: '205.00'),
+    ],
     total: 'EGP 219.35',
     canCancel: canCancel,
     gatewayCheckoutUrl: 'https://demo.MyFatoorah.com/pay',
     invoiceUrl: 'https://portal.wdenytravel.com/orders/1475/invoice',
+    fare: const BusOrderFare(
+      originalTicketsTotal: 'EGP 205.00',
+      discount: 'EGP 0.00',
+      walletDiscount: 'EGP 0.00',
+      ticketsTotalAfterDiscount: 'EGP 205.00',
+      paymentFees: 'EGP 14.35',
+      total: 'EGP 219.35',
+      currency: 'EGP',
+    ),
   );
 }
 

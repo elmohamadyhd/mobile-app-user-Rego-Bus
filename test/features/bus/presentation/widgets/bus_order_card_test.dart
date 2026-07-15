@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:rego/features/bus/domain/entities/bus_order.dart';
+import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/presentation/widgets/bus_order_card.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
@@ -23,11 +24,23 @@ BusOrder _order({
     dateTimeLabel: '2026-07-30 08:45 AM',
     pickupStopLabel: pickupStopLabel,
     dropoffStopLabel: dropoffStopLabel,
-    seats: const ['1', '2'],
+    ticketLines: const [
+      BusTicketLine(id: 2076, seatNumber: '1', price: '110.00'),
+      BusTicketLine(id: 2077, seatNumber: '2', price: '109.35'),
+    ],
     total: 'EGP 219.35',
     canCancel: canCancel,
     gatewayCheckoutUrl: gatewayCheckoutUrl,
     invoiceUrl: invoiceUrl,
+    fare: const BusOrderFare(
+      originalTicketsTotal: 'EGP 205.00',
+      discount: 'EGP 0.00',
+      walletDiscount: 'EGP 0.00',
+      ticketsTotalAfterDiscount: 'EGP 205.00',
+      paymentFees: 'EGP 14.35',
+      total: 'EGP 219.35',
+      currency: 'EGP',
+    ),
   );
 }
 
