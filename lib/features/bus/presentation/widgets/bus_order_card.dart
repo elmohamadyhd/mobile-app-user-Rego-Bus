@@ -6,10 +6,10 @@ import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_order.dart';
 import 'package:rego/features/bus/presentation/widgets/operator_mark.dart';
+import 'package:rego/features/bus/presentation/widgets/order_info_row.dart';
 import 'package:rego/features/bus/presentation/widgets/order_status_badge.dart';
 import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/ltr_text.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 /// Card for one [BusOrder] in the My Tickets list: operator identity, route
@@ -112,7 +112,7 @@ class BusOrderCard extends StatelessWidget {
                   ],
                   const SizedBox(height: AppSpacing.sm),
                   if (_hasLabel(order.pickupStopLabel))
-                    _InfoRow(
+                    OrderInfoRow(
                       label: l10n.eTicketFrom,
                       value: order.pickupStopLabel!,
                     ),
@@ -120,7 +120,7 @@ class BusOrderCard extends StatelessWidget {
                       _hasLabel(order.dropoffStopLabel))
                     const SizedBox(height: AppSpacing.xs),
                   if (_hasLabel(order.dropoffStopLabel))
-                    _InfoRow(
+                    OrderInfoRow(
                       label: l10n.eTicketTo,
                       value: order.dropoffStopLabel!,
                     ),
@@ -128,14 +128,14 @@ class BusOrderCard extends StatelessWidget {
                       _hasLabel(order.dropoffStopLabel))
                     const SizedBox(height: AppSpacing.xs),
                   if (order.bookingNumber.isNotEmpty) ...[
-                    _InfoRow(
+                    OrderInfoRow(
                       label: l10n.eTicketRef,
                       value: '#${order.bookingNumber}',
                       valueLtr: true,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                   ],
-                  _InfoRow(
+                  OrderInfoRow(
                     label: l10n.tripResultsFareLabel,
                     value: order.total,
                     valueLtr: true,
@@ -184,48 +184,6 @@ class BusOrderCard extends StatelessWidget {
 
   static bool _hasLabel(String? value) =>
       value != null && value.trim().isNotEmpty;
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.label,
-    required this.value,
-    this.valueLtr = false,
-  });
-
-  final String label;
-  final String value;
-  final bool valueLtr;
-
-  @override
-  Widget build(BuildContext context) {
-    final valueStyle = AppTypography.body.copyWith(
-      color: AppColors.textPrimary,
-      fontWeight: FontWeight.w600,
-    );
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: AppTypography.body.copyWith(color: AppColors.textSecondary),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: valueLtr
-                ? LtrText(value, style: valueStyle, textAlign: TextAlign.end)
-                : Text(
-                    value,
-                    textAlign: TextAlign.end,
-                    style: valueStyle,
-                  ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class _OrderActions extends StatelessWidget {
