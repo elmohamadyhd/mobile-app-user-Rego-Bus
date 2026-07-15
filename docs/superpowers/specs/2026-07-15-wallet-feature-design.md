@@ -224,8 +224,10 @@ class WalletApi {
 `wallet_topup_screen.dart`: `Scaffold` with `WalletAppBar` (see Screen chrome
 above), body holds an amount entry field + 50/100/200/500 quick-pick chips
 (visual only — the design's chips, no new component needed beyond a simple
-`ChoiceChip`-style row) + a submit button reading
-`l10n.walletTopUpCta(amount)` (e.g. "Top up 200 EGP").
+`ChoiceChip`-style row) + a submit button reading `l10n.walletTopUpSubmit(amount)`
+(e.g. "Top up 200 EGP") — distinct from `walletTopUpCta`, the plain
+non-parameterized "Top up" label on the balance card's button that opens this
+screen in the first place.
 
 **Amount is restricted to positive whole numbers.** `POST
 /profile/wallet/:amount/charge` puts the amount directly in the URL path;
@@ -344,10 +346,12 @@ New keys in `app_en.arb` / `app_ar.arb` (existing `navWallet` /
 `profileMenuWallet` are reused as-is):
 
 `walletTitle`, `walletBalanceLabel`, `walletTopUpCta`, `walletHistoryTitle`,
-`walletEmptyTitle`, `walletEmptyBody`, `walletTopUpTitle`,
+`walletEmptyTitle`, `walletEmptyBody`, `walletError`, `walletTopUpTitle`,
 `walletTopUpAmountLabel`, `walletTopUpSubmit`, `walletTopUpInvalidAmount`,
 `walletPaymentSuccessToast`, `walletPaymentFailedToast`,
-`walletPaymentPendingToast`.
+`walletPaymentPendingToast`. The error state's retry button reuses the
+existing generic `l10n.tripResultsRetry` ("Try again") rather than adding a
+duplicate key.
 
 ## Error handling
 
