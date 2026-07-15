@@ -10,6 +10,7 @@ import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/auth/domain/entities/auth_user.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
+import 'package:rego/features/wallet/presentation/wallet_routes.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/language_picker_sheet.dart';
 import 'package:rego/shared/widgets/ltr_text.dart';
@@ -48,7 +49,14 @@ class ProfileScreen extends ConsumerWidget {
                 _ProfileMenuItem(
                   icon: AppIcons.wallet,
                   label: l10n.profileMenuWallet,
-                  onTap: () => _showComingSoon(context, l10n),
+                  onTap: () => isGuest
+                      ? context.go(
+                          AppRoutes.login,
+                          extra: const AuthGateArgs(
+                            returnTo: WalletRoutes.wallet,
+                          ),
+                        )
+                      : context.push(WalletRoutes.wallet),
                 ),
                 _ProfileMenuItem(
                   icon: AppIcons.language,

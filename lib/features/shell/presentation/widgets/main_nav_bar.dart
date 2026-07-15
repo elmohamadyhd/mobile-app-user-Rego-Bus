@@ -60,7 +60,6 @@ class MainNavBar extends StatelessWidget {
     final destinations = <(IconData, String)>[
       (AppIcons.home, l10n.navHome),
       (AppIcons.ticket, l10n.navTickets),
-      (AppIcons.wallet, l10n.navWallet),
       (AppIcons.user, l10n.navProfile),
     ];
 

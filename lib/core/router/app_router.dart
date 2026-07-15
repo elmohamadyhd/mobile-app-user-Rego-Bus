@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/forgot_password_screen.dart';
 import 'package:rego/features/auth/presentation/login_screen.dart';
@@ -14,11 +13,10 @@ import 'package:rego/features/auth/presentation/register_screen.dart';
 import 'package:rego/features/auth/presentation/splash_screen.dart';
 import 'package:rego/features/home/presentation/home_screen.dart';
 import 'package:rego/features/profile/presentation/profile_screen.dart';
-import 'package:rego/features/shell/presentation/coming_soon_screen.dart';
 import 'package:rego/features/shell/presentation/main_shell.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/tickets/presentation/tickets_screen.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/features/wallet/presentation/wallet_routes.dart';
 
 // Named route constants so call-sites never use raw strings.
 abstract final class AppRoutes {
@@ -31,7 +29,6 @@ abstract final class AppRoutes {
   static const newPassword = '/new-password';
   static const home = '/';
   static const tickets = '/tickets';
-  static const wallet = '/wallet';
   static const profile = '/profile';
 }
 
@@ -117,17 +114,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppRoutes.wallet,
-                builder: (context, state) => ComingSoonScreen(
-                  title: AppLocalizations.of(context).navWallet,
-                  icon: AppIcons.wallet,
-                ),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
                 path: AppRoutes.profile,
                 builder: (context, state) => const ProfileScreen(),
               ),
@@ -136,6 +122,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       ...busRoutes(),
+      ...walletRoutes(),
     ],
   );
 });

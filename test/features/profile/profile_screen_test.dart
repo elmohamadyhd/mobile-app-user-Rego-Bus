@@ -10,6 +10,7 @@ import 'package:rego/features/auth/domain/entities/auth_user.dart';
 import 'package:rego/features/auth/presentation/auth_flow_args.dart';
 import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
 import 'package:rego/features/profile/presentation/profile_screen.dart';
+import 'package:rego/features/wallet/presentation/wallet_routes.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 class _FakeSessionController extends SessionController {
@@ -181,5 +182,112 @@ void main() {
 
     expect(find.text('English'), findsOneWidget);
     expect(find.text('العربية'), findsOneWidget);
+  });
+
+  testWidgets('tapping Wallet pushes the wallet screen for a signed-in user',
+      (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        sessionControllerProvider.overrideWith(
+          () => _FakeSessionController(session),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.profile,
+      routes: [
+        GoRoute(
+          path: AppRoutes.profile,
+          builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: WalletRoutes.wallet,
+          builder: (context, state) => const Text('WALLET'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final walletTile = find.text('Wallet');
+    await tester.ensureVisible(walletTile);
+    await tester.pumpAndSettle();
+    await tester.tap(walletTile);
+    await tester.pumpAndSettle();
+
+    expect(find.text('WALLET'), findsOneWidget);
+  });
+
+  testWidgets('tapping Wallet as a guest opens Login with returnTo the wallet',
+      (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        sessionControllerProvider.overrideWith(
+          () => _FakeSessionController(null),
+        ),
+        guestModeProvider.overrideWith(() => _FakeGuestController(true)),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.profile,
+      routes: [
+        GoRoute(
+          path: AppRoutes.profile,
+          builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) {
+            final args = state.extra;
+            return Text(
+              args is AuthGateArgs
+                  ? 'LOGIN returnTo=${args.returnTo}'
+                  : 'LOGIN no gate args',
+            );
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final walletTile = find.text('Wallet');
+    await tester.ensureVisible(walletTile);
+    await tester.pumpAndSettle();
+    await tester.tap(walletTile);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('LOGIN returnTo=${WalletRoutes.wallet}'),
+      findsOneWidget,
+    );
   });
 }

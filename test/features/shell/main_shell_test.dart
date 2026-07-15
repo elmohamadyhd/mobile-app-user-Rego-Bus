@@ -22,7 +22,6 @@ void main() {
           branches: [
             StatefulShellBranch(routes: [branch('/')]),
             StatefulShellBranch(routes: [branch('/tickets')]),
-            StatefulShellBranch(routes: [branch('/wallet')]),
             StatefulShellBranch(routes: [branch('/profile')]),
           ],
         ),
@@ -56,9 +55,9 @@ void main() {
     final router = buildRouter();
     await pumpShell(tester, router);
 
-    await tester.tap(find.text('Wallet'));
+    await tester.tap(find.text('Tickets'));
     await tester.pumpAndSettle();
-    expect(currentLocation(router), '/wallet');
+    expect(currentLocation(router), '/tickets');
 
     await tester.tap(find.text('Profile'));
     await tester.pumpAndSettle();
@@ -73,9 +72,9 @@ void main() {
     final router = buildRouter();
     await pumpShell(tester, router);
 
-    await tester.tap(find.text('Wallet'));
+    await tester.tap(find.text('Tickets'));
     await tester.pumpAndSettle();
-    expect(currentLocation(router), '/wallet');
+    expect(currentLocation(router), '/tickets');
 
     expect(await tester.binding.handlePopRoute(), isTrue);
     await tester.pumpAndSettle();
