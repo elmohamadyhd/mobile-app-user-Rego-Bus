@@ -30,13 +30,17 @@ class BusTicketScreen extends ConsumerWidget {
 
     if (ticket == null) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        backgroundColor: AppColors.primaryDeep,
+        body: DecoratedBox(
+          decoration: BoxDecoration(gradient: AppColors.heroGradient),
+          child: Center(child: CircularProgressIndicator()),
+        ),
       );
     }
 
     void goHome() {
       context.go(AppRoutes.home);
-      ref.read(busBookingProvider.notifier).reset();
+      Future.microtask(() => ref.read(busBookingProvider.notifier).reset());
     }
 
     return PopScope(
@@ -46,49 +50,54 @@ class BusTicketScreen extends ConsumerWidget {
         goHome();
       },
       child: Scaffold(
-        body: DecoratedBox(
-          decoration: const BoxDecoration(gradient: AppColors.heroGradient),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsetsDirectional.only(
-                bottom: AppSpacing.lg,
-              ),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: AppBreakpoints.maxContentWidth,
-                  ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: AppSpacing.lg),
-                      const _HeroSection(),
-                      Transform.translate(
-                        offset: const Offset(0, -AppSpacing.lg),
-                        child: Padding(
+        backgroundColor: AppColors.primaryDeep,
+        body: SizedBox.expand(
+          child: DecoratedBox(
+            decoration: const BoxDecoration(gradient: AppColors.heroGradient),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsetsDirectional.only(
+                  bottom: AppSpacing.lg,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: AppBreakpoints.maxContentWidth,
+                      minHeight: MediaQuery.sizeOf(context).height -
+                          MediaQuery.paddingOf(context).vertical,
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: AppSpacing.lg),
+                        const _HeroSection(),
+                        Transform.translate(
+                          offset: const Offset(0, -AppSpacing.lg),
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: AppSpacing.lg,
+                            ),
+                            child: _BoardingPassCard(ticket: ticket),
+                          ),
+                        ),
+                        Padding(
                           padding: const EdgeInsetsDirectional.symmetric(
                             horizontal: AppSpacing.lg,
                           ),
-                          child: _BoardingPassCard(ticket: ticket),
+                          child: _ActionButtons(ticket: ticket),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: AppSpacing.lg,
+                        const SizedBox(height: AppSpacing.md),
+                        Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: AppSpacing.lg,
+                          ),
+                          child: PrimaryButton(
+                            label:
+                                AppLocalizations.of(context).eTicketBackHome,
+                            onPressed: goHome,
+                          ),
                         ),
-                        child: _ActionButtons(ticket: ticket),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: AppSpacing.lg,
-                        ),
-                        child: PrimaryButton(
-                          label:
-                              AppLocalizations.of(context).eTicketBackHome,
-                          onPressed: goHome,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -117,7 +126,7 @@ class _HeroSection extends StatelessWidget {
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color: AppColors.onHero,
+              color: AppColors.success,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -138,7 +147,7 @@ class _HeroSection extends StatelessWidget {
                 child: const Icon(
                   AppIcons.checkCircle,
                   color: AppColors.onHero,
-                  size: 28,
+                  size: 48,
                 ),
               ),
             ),
@@ -171,7 +180,7 @@ class _BoardingPassCard extends StatelessWidget {
 
   final BusTicket ticket;
 
-  static const double _qrStubHeight = 168;
+  static const double _priceStubHeight = 88;
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +196,7 @@ class _BoardingPassCard extends StatelessWidget {
     const shape = TicketBorder(
       radius: AppRadius.card,
       notchRadius: 12,
-      notchOffsetFromBottom: _qrStubHeight,
+      notchOffsetFromBottom: _priceStubHeight,
       dashColor: AppColors.hairline,
     );
 
@@ -293,9 +302,9 @@ class _BoardingPassCard extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: _qrStubHeight,
+            height: _priceStubHeight,
             child: Center(
-              child: _QrPlaceholder(ticket: ticket),
+              child: _PriceStub(total: ticket.total),
             ),
           ),
         ],
@@ -478,59 +487,24 @@ class _MetaCell extends StatelessWidget {
   }
 }
 
-class _QrPlaceholder extends StatelessWidget {
-  const _QrPlaceholder({required this.ticket});
+class _PriceStub extends StatelessWidget {
+  const _PriceStub({required this.total});
 
-  final BusTicket ticket;
+  final String total;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 140,
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.hairline, width: 2),
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        color: AppColors.bgElevated,
+    if (total.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Text(
+      total,
+      style: AppTypography.h2.copyWith(
+        color: AppColors.primary,
+        fontWeight: FontWeight.w900,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(AppIcons.ticket, color: AppColors.textMuted, size: 32),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            ticket.bookingRef,
-            style: AppTypography.caption.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          if (ticket.trip.operatorName.trim().isNotEmpty) ...[
-            const SizedBox(height: 2),
-            Text(
-              ticket.trip.operatorName,
-              style: AppTypography.overline.copyWith(
-                color: AppColors.textMuted,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-          if (ticket.total.trim().isNotEmpty) ...[
-            const SizedBox(height: 2),
-            Text(
-              ticket.total,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ],
-      ),
+      textAlign: TextAlign.center,
     );
   }
 }
