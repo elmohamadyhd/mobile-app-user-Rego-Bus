@@ -30,7 +30,7 @@ void main() {
       PaymentNavResult.pending,
     );
     expect(
-      classify('https://portal.wdenytravel.com/api/v1/buses/orders/1466/pay'),
+      classify('https://demo.safaria.travel/api/v1/buses/orders/1466/pay'),
       PaymentNavResult.pending,
     );
   });

@@ -6,7 +6,7 @@
 
 | Property | Value |
 |----------|-------|
-| **Base URL** | `https://portal.wdenytravel.com/api/v1` |
+| **Base URL** | `https://demo.safaria.travel/api/v1` |
 | **Collection** | Wadeny |
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
@@ -138,7 +138,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/auth/login` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/auth/login` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/auth/login` |
 | **Auth** | No (public) |
 
 **Body (form-data):** `phonecode`, `mobile`, `password`
@@ -275,7 +275,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/auth/register` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/auth/register` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/auth/register` |
 | **Auth** | No (public) |
 
 **Body (form-data):** `email`, `mobile`, `phonecode`, `name`, `password`, `password_confirmation`, `firebase_token`
@@ -353,7 +353,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/auth/verify-otp` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/auth/verify-otp` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/auth/verify-otp` |
 | **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`, `code`
@@ -412,7 +412,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/auth/resend-otp` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/auth/resend-otp` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/auth/resend-otp` |
 | **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`
@@ -460,7 +460,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/auth/send-otp` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/auth/send-otp` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/auth/send-otp` |
 | **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`
@@ -508,7 +508,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/auth/validate-otp` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/auth/validate-otp` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/auth/validate-otp` |
 | **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`, `code`
@@ -557,7 +557,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/auth/forget-password` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/auth/forget-password` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/auth/forget-password` |
 | **Auth** | No (public) |
 
 **Body (JSON):**
@@ -614,7 +614,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/auth/reset-password` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/auth/reset-password` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/auth/reset-password` |
 | **Auth** | No (public) |
 
 **Body (form-data):** `mobile`, `phonecode`, `code`, `password`, `password_confirmation`
@@ -725,7 +725,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/address-book` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/address-book` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/address-book` |
 | **Auth** | Bearer token required |
 | **Folder** | addresses |
 
@@ -813,7 +813,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/profile/address-book` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/address-book` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/address-book` |
 | **Auth** | Bearer token required |
 | **Folder** | addresses |
 
@@ -905,7 +905,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `PUT` |
 | **Path** | `/profile/address-book/22` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/address-book/22` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/address-book/22` |
 | **Auth** | Bearer token required |
 | **Folder** | addresses |
 
@@ -1021,7 +1021,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `DELETE` |
 | **Path** | `/profile/address-book/12` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/address-book/12` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/address-book/12` |
 | **Auth** | Bearer token required |
 | **Folder** | addresses |
 
@@ -1069,7 +1069,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/notifications` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/notifications` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/notifications` |
 | **Auth** | Bearer token required |
 | **Folder** | Notifications |
 
@@ -1130,7 +1130,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `DELETE` |
 | **Path** | `/profile/notifications` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/notifications` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/notifications` |
 | **Auth** | Bearer token required |
 | **Folder** | Notifications |
 
@@ -1166,7 +1166,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/tickets/6/replies` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/tickets/6/replies` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/tickets/6/replies` |
 | **Auth** | Bearer token required |
 | **Folder** | Tickets > Replies |
 
@@ -1185,7 +1185,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/profile/tickets/6/replies` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/tickets/6/replies` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/tickets/6/replies` |
 | **Auth** | Bearer token required |
 | **Folder** | Tickets > Replies |
 
@@ -1206,7 +1206,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/tickets` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/tickets` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/tickets` |
 | **Auth** | Bearer token required |
 | **Folder** | Tickets |
 
@@ -1257,7 +1257,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/tickets/10` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/tickets/10` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/tickets/10` |
 | **Auth** | Bearer token required |
 | **Folder** | Tickets |
 
@@ -1274,7 +1274,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/profile/tickets` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/tickets` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/tickets` |
 | **Auth** | Bearer token required |
 | **Folder** | Tickets |
 
@@ -1295,7 +1295,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/wallet` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/wallet` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/wallet` |
 | **Auth** | Bearer token required |
 | **Folder** | Wallet |
 
@@ -1344,7 +1344,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/profile/wallet/:amount/charge` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/wallet/:amount/charge` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/wallet/:amount/charge` |
 | **Auth** | Bearer token required |
 | **Folder** | Wallet |
 
@@ -1384,7 +1384,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/flights/orders` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/flights/orders` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/flights/orders` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Flights |
 
@@ -1403,7 +1403,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/flights/orders/:id` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/flights/orders/:id` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/flights/orders/:id` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Flights |
 
@@ -1424,7 +1424,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/buses/orders` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/buses/orders` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/buses/orders` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Buses |
 
@@ -1495,8 +1495,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
       ],
       "date": "2026-07-30",
       "date_time": "2026-07-30 08:45 AM",
-      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/…",
-      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel",
+      "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1475/…",
+      "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1475/cancel",
       "original_tickets_totals": "EGP 205.00",
       "discount": "EGP 0.00",
       "wallet_discount": "EGP 0.00",
@@ -1549,8 +1549,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
       ],
       "date": "2026-07-30",
       "date_time": "2026-07-30 04:30 AM",
-      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1472/…",
-      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1472/cancel",
+      "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1472/…",
+      "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1472/cancel",
       "original_tickets_totals": "EGP 225.00",
       "discount": "EGP 0.00",
       "wallet_discount": "EGP 0.00",
@@ -1603,8 +1603,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
       ],
       "date": "2026-07-30",
       "date_time": "2026-07-30 04:30 AM",
-      "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1470/…",
-      "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1470/cancel",
+      "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1470/…",
+      "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1470/cancel",
       "original_tickets_totals": "EGP 225.00",
       "discount": "EGP 0.00",
       "wallet_discount": "EGP 0.00",
@@ -1632,7 +1632,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/buses/orders/:id` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/buses/orders/:id` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/buses/orders/:id` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Buses |
 
@@ -1703,8 +1703,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
     ],
     "date": "2026-07-30",
     "date_time": "2026-07-30 08:45 AM",
-    "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/…",
-    "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel",
+    "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1475/…",
+    "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1475/cancel",
     "original_tickets_totals": "EGP 205.00",
     "discount": "EGP 0.00",
     "wallet_discount": "EGP 0.00",
@@ -1735,7 +1735,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/private/orders` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/private/orders` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/private/orders` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Private |
 
@@ -1754,7 +1754,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile/private/orders/:id` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/private/orders/:id` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/private/orders/:id` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Private |
 
@@ -1773,7 +1773,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/profile` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile` |
 | **Auth** | Bearer token required |
 
 **Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`
@@ -1791,7 +1791,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/profile` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile` |
 | **Auth** | Bearer token required |
 
 **Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`
@@ -1809,7 +1809,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `PUT` |
 | **Path** | `/profile/firebase/token` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/firebase/token` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/firebase/token` |
 | **Auth** | Bearer token required |
 
 **Body (form-data):** 
@@ -1827,7 +1827,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/profile/verify-alt-phone` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/verify-alt-phone` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/verify-alt-phone` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -1853,7 +1853,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/profile/update-password` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile/update-password` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/update-password` |
 | **Auth** | Bearer token required |
 
 **Body (form-data):** `current_password`, `new_password`, `new_password_confirmation`
@@ -1871,7 +1871,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `DELETE` |
 | **Path** | `/profile` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/profile` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile` |
 | **Auth** | Bearer token required |
 
 **Body (form-data):** 
@@ -1938,7 +1938,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/posts` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/posts?category_id=1` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/posts?category_id=1` |
 | **Auth** | Bearer token required |
 | **Folder** | Posts |
 
@@ -1973,7 +1973,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/posts/:slug` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/posts/:slug` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/posts/:slug` |
 | **Auth** | Bearer token required |
 | **Folder** | Posts |
 
@@ -2001,7 +2001,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/posts/categories` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/posts/categories` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/posts/categories` |
 | **Auth** | Bearer token required |
 | **Folder** | Posts |
 
@@ -2029,7 +2029,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/banners` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/banners` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/banners` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2056,7 +2056,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/faq` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/faq` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/faq` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2083,7 +2083,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/partners` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/partners` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/partners` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2110,7 +2110,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/contact` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/contact` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/contact` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2137,7 +2137,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/pages` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/pages` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/pages` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2159,7 +2159,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/pages/sy-s-lkhsosy` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/pages/sy-s-lkhsosy` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/pages/sy-s-lkhsosy` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2186,7 +2186,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/countries` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/countries` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/countries` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2213,7 +2213,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/settings` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/settings` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/settings` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2269,7 +2269,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/iata` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/iata?search=CAI` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/iata?search=CAI` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2291,7 +2291,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/airports/search` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/airports/search?term=دبي` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/airports/search?term=دبي` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2313,7 +2313,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/flights/search` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/search` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/search` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2350,7 +2350,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/flights/:offer_id/confirm` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/:offer_id/confirm` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id/confirm` |
 | **Auth** | Bearer token required |
 
 **Headers:**
@@ -2366,7 +2366,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/:offer_id/bundles` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/:offer_id/bundles?=` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id/bundles?=` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2388,7 +2388,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/flights/:offer_id/passengers` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/:offer_id/passengers` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id/passengers` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2433,7 +2433,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/flights/:offer_id/hold` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/:offer_id/hold` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id/hold` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2462,7 +2462,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/flights/:offer_id` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/:offer_id` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2501,7 +2501,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/private/search` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/private/search?from_latitude=30.0314696&from_longitude=31.2612288&to_latitude=31.182972882989525&to_longitude=29.894801258559188&rounded=false` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/private/search?from_latitude=30.0314696&from_longitude=31.2612288&to_latitude=31.182972882989525&to_longitude=29.894801258559188&rounded=false` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2527,7 +2527,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/airports/search` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/airports/search?term=دبي` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/airports/search?term=دبي` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2549,7 +2549,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/private/orders` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/private/orders` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/private/orders` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -2615,7 +2615,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/locations` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/locations?term=اكتو` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/locations?term=اكتو` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2705,7 +2705,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/stations` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/stations` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/stations` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2803,7 +2803,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
     "lastPage": 10,
     "perPage": 15,
     "currentPage": 1,
-    "nextPageUrl": "https://portal.wdenytravel.com/api/v1/buses/stations?page=2",
+    "nextPageUrl": "https://demo.safaria.travel/api/v1/buses/stations?page=2",
     "previousPageUrl": null
   }
 }
@@ -2815,7 +2815,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/carriers` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/carriers` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/carriers` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -2877,7 +2877,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/trips` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/trips?city_from=1&city_to=2&date=2026-07-10&page=1&currency=EGP` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips?city_from=1&city_to=2&date=2026-07-10&page=1&currency=EGP` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -3423,7 +3423,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
     "lastPage": 3,
     "perPage": 15,
     "currentPage": 1,
-    "nextPageUrl": "https://portal.wdenytravel.com/api/v1/buses/trips?page=2",
+    "nextPageUrl": "https://demo.safaria.travel/api/v1/buses/trips?page=2",
     "previousPageUrl": null
   }
 }
@@ -3727,7 +3727,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
     "lastPage": 3,
     "perPage": 15,
     "currentPage": 1,
-    "nextPageUrl": "https://portal.wdenytravel.com/api/v1/buses/trips?page=2",
+    "nextPageUrl": "https://demo.safaria.travel/api/v1/buses/trips?page=2",
     "previousPageUrl": null
   }
 }
@@ -3739,7 +3739,7 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/trips/236510` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/trips/236510?currency=EGP` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/236510?currency=EGP` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -4011,7 +4011,7 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/buses/trips/236510/seats` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/trips/236510/seats?from_city_id=1&to_city_id=2&from_location_id=46&to_location_id=22&date=2026-07-10` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/236510/seats?from_city_id=1&to_city_id=2&from_location_id=46&to_location_id=22&date=2026-07-10` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -4138,7 +4138,7 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 |---|---|
 | **Method** | `POST` |
 | **Path** | `/buses/trips/236510/create-ticket` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/buses/trips/236510/create-ticket` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/236510/create-ticket` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
@@ -4303,8 +4303,8 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
     ],
     "date": "2026-07-10",
     "date_time": "2026-07-10 12:01 AM",
-    "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1454/…",
-    "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1454/cancel",
+    "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1454/…",
+    "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1454/cancel",
     "original_tickets_totals": "EGP 19.56",
     "discount": "EGP 0.00",
     "wallet_discount": "EGP 0.00",
@@ -4384,8 +4384,8 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
     ],
     "date": "2026-07-10",
     "date_time": "2026-07-10 12:01 AM",
-    "payment_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1455/…",
-    "cancel_url": "https://portal.wdenytravel.com/api/v1/buses/orders/1455/cancel",
+    "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1455/…",
+    "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1455/cancel",
     "original_tickets_totals": "EGP 280.00",
     "discount": "EGP 0.00",
     "wallet_discount": "EGP 0.00",
@@ -4409,7 +4409,7 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/iata` |
-| **Full URL** | `https://portal.wdenytravel.com/api/v1/flights/iata` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/iata` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**

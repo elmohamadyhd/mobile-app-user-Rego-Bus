@@ -53,7 +53,7 @@ void main() {
           'is_confirmed': 0,
           'total': 'EGP 20.93',
           'payment_url':
-              'https://portal.wdenytravel.com/api/v1/buses/orders/1454/pay',
+              'https://demo.safaria.travel/api/v1/buses/orders/1454/pay',
         },
       });
 
@@ -115,7 +115,7 @@ void main() {
         expect(ticket.total, contains('240.75'));
         expect(
           ticket.cancelUrl,
-          'https://portal.wdenytravel.com/api/v1/buses/orders/1466/cancel',
+          'https://demo.safaria.travel/api/v1/buses/orders/1466/cancel',
         );
         expect(ticket.ticketLines, hasLength(1));
         expect(ticket.ticketLines.first.seatNumber, '14');
@@ -127,14 +127,14 @@ void main() {
           'data': <String, dynamic>{
             'id': 1466,
             'payment_url':
-                'https://portal.wdenytravel.com/api/v1/buses/orders/1466/pay',
+                'https://demo.safaria.travel/api/v1/buses/orders/1466/pay',
             'invoice_url':
                 'https://portal.wdenytravel.com/orders/1466/invoice/download',
           },
         });
         expect(
           ticket.paymentUrl,
-          'https://portal.wdenytravel.com/api/v1/buses/orders/1466/pay',
+          'https://demo.safaria.travel/api/v1/buses/orders/1466/pay',
         );
         expect(
           ticket.invoiceUrl,

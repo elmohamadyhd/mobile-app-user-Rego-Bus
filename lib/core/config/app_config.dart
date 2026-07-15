@@ -6,7 +6,7 @@ abstract final class AppConfig {
   /// Wadeny backend base URL. Future environments only swap this value
   /// (via `.env`); call-sites never hardcode hosts.
   static String get apiBaseUrl =>
-      dotenv.env['API_BASE_URL'] ?? 'https://portal.wdenytravel.com/api/v1';
+      dotenv.env['API_BASE_URL'] ?? 'https://demo.safaria.travel/api/v1';
 
   /// Optional static API key (unused by the auth flow, which authenticates
   /// per-user via Sanctum bearer tokens). Kept for non-auth integrations.

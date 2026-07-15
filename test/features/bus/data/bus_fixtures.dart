@@ -109,9 +109,9 @@ const createTicketEnvelope = {
     ],
     'date': '2026-07-30',
     'date_time': '2026-07-30 04:30 AM',
-    'payment_url': 'https://portal.wdenytravel.com/api/v1/buses/orders/1466/pay',
+    'payment_url': 'https://demo.safaria.travel/api/v1/buses/orders/1466/pay',
     'cancel_url':
-        'https://portal.wdenytravel.com/api/v1/buses/orders/1466/cancel',
+        'https://demo.safaria.travel/api/v1/buses/orders/1466/cancel',
     'total': 'EGP 240.75',
     'currency': 'EGP',
   },
@@ -163,7 +163,7 @@ const busOrdersEnvelope = {
       'date': '2026-07-30',
       'date_time': '2026-07-30 08:45 AM',
       'cancel_url':
-          'https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel',
+          'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
       'total': 'EGP 219.35',
       'currency': 'EGP',
     },

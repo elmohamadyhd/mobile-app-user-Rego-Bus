@@ -778,7 +778,7 @@ async function main() {
 
   baseUrl =
     (data.variable || []).find((v) => v.key === "url")?.value ||
-    "https://portal.wdenytravel.com/api/v1";
+    "https://demo.safaria.travel/api/v1";
   const collectionAuth = data.auth?.type === "bearer";
 
   const apis = [];

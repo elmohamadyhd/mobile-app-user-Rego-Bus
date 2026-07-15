@@ -131,7 +131,7 @@ const busOrdersEnvelope = {
       'date': '2026-07-30',
       'date_time': '2026-07-30 08:45 AM',
       'cancel_url':
-          'https://portal.wdenytravel.com/api/v1/buses/orders/1475/cancel',
+          'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
       'total': 'EGP 219.35',
       'currency': 'EGP',
     },
