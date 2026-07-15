@@ -102,6 +102,11 @@ abstract interface class BusRepository {
   /// Lists the signed-in rider's booked bus trips (My Tickets tab).
   Future<List<BusOrder>> listOrders();
 
+  /// Fetches a single order by id (My Tickets detail sheet). Returns the
+  /// same shape as one element of [listOrders] — see
+  /// `BusDtoMapper.orderFromJson`.
+  Future<BusOrder> orderById(String orderId);
+
   /// Cancels a cancellable order. Throws [ApiException] on failure.
   Future<void> cancelOrder(String orderId);
 }

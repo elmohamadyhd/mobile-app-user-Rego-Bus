@@ -112,6 +112,14 @@ class BusRepositoryImpl implements BusRepository {
   }
 
   @override
+  Future<BusOrder> orderById(String orderId) {
+    return _guard(() async {
+      final body = await _api.orderById(orderId);
+      return BusDtoMapper.orderFromEnvelope(body);
+    });
+  }
+
+  @override
   Future<void> cancelOrder(String orderId) {
     return _guard(() async {
       final body = await _api.cancelOrder(orderId);

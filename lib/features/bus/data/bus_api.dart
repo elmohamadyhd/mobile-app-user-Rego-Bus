@@ -91,6 +91,11 @@ class BusApi {
     return res.data;
   }
 
+  Future<dynamic> orderById(String orderId) async {
+    final res = await _dio.get('/profile/buses/orders/$orderId');
+    return res.data;
+  }
+
   /// ⚠️ Backend dependency: cancel endpoint path/method inferred from the
   /// `cancel_url` field returned alongside orders (e.g.
   /// `.../buses/orders/{id}/cancel`) — not separately documented in the
