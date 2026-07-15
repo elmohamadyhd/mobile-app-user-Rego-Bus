@@ -160,10 +160,12 @@ New file: `features/bus/presentation/widgets/bus_order_detail_sheet.dart`.
   card becomes tappable; the existing pay/e-ticket/cancel buttons keep their
   own tap targets via their `Material`/`InkWell` — tapping a button does not
   also open the sheet).
-- `DraggableScrollableSheet`-backed (content is long enough, with everything
-  mappable in scope, that it needs to scroll), initial size ~0.6, max ~0.85,
-  rounded-top `AppRadius.card`, drag handle — matching the existing
-  `trip_filter_sheet.dart` sheet pattern in this codebase.
+- `showModalBottomSheet` + `ConstrainedBox(maxHeight: 0.85 * screen height)` +
+  `SingleChildScrollView`, rounded-top `AppRadius.sheet` — this is the one
+  sheet pattern already used at every `showModalBottomSheet` call site in
+  this codebase (`trip_filter_sheet.dart`, `bus_city_picker.dart`,
+  `guest_gate_sheet.dart`, others), so this follows it rather than
+  introducing `DraggableScrollableSheet` as a one-off.
 - Sections, top to bottom:
   1. **Header** — `OperatorMark` + operator name + `category` chip +
      `OrderStatusBadge` (reused from the card).
