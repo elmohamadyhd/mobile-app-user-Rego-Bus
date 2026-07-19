@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:rego/core/storage/secure_storage.dart';
 import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
@@ -11,6 +12,7 @@ import 'package:rego/features/bus/presentation/widgets/trip_route_map_fab.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
+import '../../../support/in_memory_secure_storage.dart';
 
 BusTripSummary _buildTrip() {
   final board = BusStop(
@@ -67,11 +69,17 @@ Future<ProviderContainer> _pumpDetails(
   WidgetTester tester,
   BusTripSummary trip, {
   Locale locale = const Locale('en'),
+  bool coachSeen = true,
 }) async {
+  final storage = SecureStorage(storage: InMemorySecureStorage({}));
+  if (coachSeen) {
+    await storage.setTripDetailsCoachSeen();
+  }
   final container = ProviderContainer(
     overrides: [
       busRepositoryProvider
           .overrideWithValue(FakeBusRepository(tripByIdResult: trip)),
+      secureStorageProvider.overrideWithValue(storage),
     ],
   );
   addTearDown(container.dispose);
@@ -277,4 +285,113 @@ void main() {
       '30.06,31.24|31.16,29.9',
     );
   });
+
+  group('coach tour', () {
+    testWidgets('does not show coach when already seen', (tester) async {
+      await _pumpDetails(tester, _buildTrip(), coachSeen: true);
+      await tester.pump(const Duration(milliseconds: 400));
+
+      expect(find.text('Choose your stops'), findsNothing);
+    });
+
+    testWidgets('shows first coach step when not seen', (tester) async {
+      await _pumpDetails(tester, _buildTrip(), coachSeen: false);
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose your stops'), findsOneWidget);
+      expect(find.text('Skip'), findsOneWidget);
+    });
+
+    testWidgets('skip marks coach seen and dismisses overlay', (tester) async {
+      final container = await _pumpDetails(
+        tester,
+        _buildTrip(),
+        coachSeen: false,
+      );
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.text('Skip'));
+      await tester.tap(find.text('Skip'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose your stops'), findsNothing);
+      expect(
+        await container.read(secureStorageProvider).tripDetailsCoachSeen(),
+        isTrue,
+      );
+    });
+
+    testWidgets('advances through all three coach steps', (tester) async {
+      await _pumpDetails(tester, _buildTrip(), coachSeen: false);
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose your stops'), findsOneWidget);
+
+      await _tapCoachPrimary(tester);
+      expect(find.text('View the full route'), findsOneWidget);
+
+      await _tapCoachPrimary(tester);
+      expect(find.text('View a stop on the map'), findsOneWidget);
+
+      await _tapCoachPrimary(tester, label: 'Got it');
+      await tester.pumpAndSettle();
+      expect(find.text('View a stop on the map'), findsNothing);
+    });
+
+    testWidgets('shows help button when coach already seen', (tester) async {
+      await _pumpDetails(tester, _buildTrip(), coachSeen: true);
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(AppIcons.help), findsOneWidget);
+    });
+
+    testWidgets('tap help restarts the coach tour', (tester) async {
+      await _pumpDetails(tester, _buildTrip(), coachSeen: true);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose your stops'), findsNothing);
+
+      await tester.tap(
+        find.ancestor(
+          of: find.byIcon(AppIcons.help),
+          matching: find.byType(IconButton),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose your stops'), findsOneWidget);
+    });
+
+    testWidgets('help button is disabled while coach is showing', (tester) async {
+      await _pumpDetails(tester, _buildTrip(), coachSeen: false);
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose your stops'), findsOneWidget);
+
+      final helpButton = tester.widget<IconButton>(
+        find.ancestor(
+          of: find.byIcon(AppIcons.help),
+          matching: find.byType(IconButton),
+        ),
+      );
+      expect(helpButton.onPressed, isNull);
+    });
+  });
+}
+
+Future<void> _tapCoachPrimary(
+  WidgetTester tester, {
+  String label = 'Next',
+}) async {
+  final button = find.widgetWithText(FilledButton, label);
+  await tester.ensureVisible(button);
+  await tester.tap(button);
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 100));
 }

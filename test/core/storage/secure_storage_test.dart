@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rego/core/storage/secure_storage.dart';
 import 'package:rego/core/utils/device_token.dart';
 
+import '../../support/in_memory_secure_storage.dart';
+
 void main() {
   final uuidV4Pattern = RegExp(
     r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
@@ -55,6 +57,26 @@ void main() {
 
       expect(await storage.isGuestMode(), isFalse);
       expect(memoryStore.containsKey('guest_mode'), isFalse);
+    });
+  });
+
+  group('trip details coach', () {
+    test('tripDetailsCoachSeen is false when nothing is stored', () async {
+      final storage = SecureStorage(
+        storage: InMemorySecureStorage({}),
+      );
+      expect(await storage.tripDetailsCoachSeen(), isFalse);
+    });
+
+    test('setTripDetailsCoachSeen persists true', () async {
+      final memoryStore = <String, String>{};
+      final storage =
+          SecureStorage(storage: InMemorySecureStorage(memoryStore));
+
+      await storage.setTripDetailsCoachSeen();
+
+      expect(await storage.tripDetailsCoachSeen(), isTrue);
+      expect(memoryStore['trip_details_coach_seen'], 'true');
     });
   });
 }

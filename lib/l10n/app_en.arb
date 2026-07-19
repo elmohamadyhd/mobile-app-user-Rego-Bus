@@ -218,7 +218,50 @@
   "tripDetailAmenities": "Amenities",
   "tripDetailTotalPrice": "Total price",
   "tripDetailFareLabel": "Fare",
-  "tripDetailFareLiveHint": "Updates with the stops you pick",
+  "tripDetailFareLiveHint": "Tap a stop to change it — price updates live",
+  "@tripDetailFareLiveHint": {
+    "description": "Caption below the route timeline on trip details"
+  },
+  "tripDetailCoachSkip": "Skip",
+  "@tripDetailCoachSkip": {
+    "description": "Skip the one-time trip-details coach tour"
+  },
+  "tripDetailCoachNext": "Next",
+  "@tripDetailCoachNext": {
+    "description": "Advance to the next coach step on trip details"
+  },
+  "tripDetailCoachDone": "Got it",
+  "@tripDetailCoachDone": {
+    "description": "Finish the trip-details coach tour"
+  },
+  "tripDetailCoachReplay": "Show trip guide",
+  "@tripDetailCoachReplay": {
+    "description": "Replay the trip-details coach tour from the app bar"
+  },
+  "tripDetailCoachStep1Title": "Choose your stops",
+  "@tripDetailCoachStep1Title": {
+    "description": "Coach step 1 title on trip details"
+  },
+  "tripDetailCoachStep1Body": "Tap a boarding or drop-off stop to change where you get on and off. The price updates instantly.",
+  "@tripDetailCoachStep1Body": {
+    "description": "Coach step 1 body on trip details"
+  },
+  "tripDetailCoachStep2Title": "View the full route",
+  "@tripDetailCoachStep2Title": {
+    "description": "Coach step 2 title on trip details"
+  },
+  "tripDetailCoachStep2Body": "Open Google Maps to see every stop on this trip as one route.",
+  "@tripDetailCoachStep2Body": {
+    "description": "Coach step 2 body on trip details"
+  },
+  "tripDetailCoachStep3Title": "View a stop on the map",
+  "@tripDetailCoachStep3Title": {
+    "description": "Coach step 3 title on trip details"
+  },
+  "tripDetailCoachStep3Body": "Long press any stop to open just that location in Google Maps.",
+  "@tripDetailCoachStep3Body": {
+    "description": "Coach step 3 body on trip details"
+  },
   "tripDetailRouteSection": "Trip route",
   "tripDetailBoardAt": "Board at",
   "tripDetailDropOffAt": "Drop off at",

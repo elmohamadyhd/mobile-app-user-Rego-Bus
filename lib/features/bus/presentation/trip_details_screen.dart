@@ -19,15 +19,26 @@ import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:rego/features/bus/presentation/widgets/route_timeline.dart';
+import 'package:rego/features/bus/presentation/widgets/trip_details_coach.dart';
 import 'package:rego/features/bus/presentation/widgets/trip_route_map_fab.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
-class BusTripDetailsScreen extends ConsumerWidget {
+class BusTripDetailsScreen extends ConsumerStatefulWidget {
   const BusTripDetailsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BusTripDetailsScreen> createState() =>
+      _BusTripDetailsScreenState();
+}
+
+class _BusTripDetailsScreenState extends ConsumerState<BusTripDetailsScreen> {
+  final _firstBoardingRowKey = GlobalKey();
+  final _dropOffRowKey = GlobalKey();
+  final _mapButtonKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(busBookingProvider);
     final trip = state.selectedTrip;
@@ -50,68 +61,93 @@ class BusTripDetailsScreen extends ConsumerWidget {
     final fare = state.segmentFare.round();
     final isLoadingSeats = state.status == BusBookingStatus.loadingSeats;
 
-    return Scaffold(
-      backgroundColor: AppColors.bgBase,
-      appBar: BookingAppBar(
-        title: l10n.tripDetailTitle,
-        subtitle: _routeLabel(state, fromStop, toStop),
-      ),
-      bottomNavigationBar: _PriceFooter(
-        priceEgp: fare,
-        currency: trip.currency,
-        l10n: l10n,
-        loading: isLoadingSeats,
-        onChooseSeats:
-            isLoadingSeats ? null : () => _onChooseSeats(context, ref),
-      ),
-      // The screen's one job is choosing stops: a compact identity header
-      // confirms this is the right trip, then the route timeline (the
-      // screen's focus) drives stop selection and the live fare.
-      body: Column(
-        children: [
-          const BookingStepBar(current: BusBookingStep.route),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _TripHeaderCard(
-                      trip: trip, fromStop: fromStop, toStop: toStop),
-                  const SizedBox(height: AppSpacing.lg),
-                  RouteTimeline(
-                    boardingStops: trip.boardingStops,
-                    dropoffStops: trip.dropoffStops,
-                    selectedFrom: fromStop,
-                    selectedTo: toStop,
-                    currency: trip.currency,
-                    onBoardSelected: (stop) => ref
-                        .read(busBookingProvider.notifier)
-                        .setStops(from: stop, to: toStop),
-                    onDropoffSelected: (stop) => ref
-                        .read(busBookingProvider.notifier)
-                        .setStops(from: fromStop, to: stop),
-                    headerTrailing: TripRouteMapFab(
-                      boardingStops: trip.boardingStops,
-                      dropoffStops: trip.dropoffStops,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Text(
-                      l10n.tripDetailFareLiveHint,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+    return TripDetailsCoachHost(
+      tripLoaded: true,
+      firstBoardingRowKey: _firstBoardingRowKey,
+      dropOffRowKey: _dropOffRowKey,
+      mapButtonKey: _mapButtonKey,
+      child: Scaffold(
+        backgroundColor: AppColors.bgBase,
+        appBar: BookingAppBar(
+          title: l10n.tripDetailTitle,
+          subtitle: _routeLabel(state, fromStop, toStop),
+          action: Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(AppIcons.help, color: AppColors.textPrimary),
+              tooltip: l10n.tripDetailCoachReplay,
+              onPressed: TripDetailsCoachScope.isShowingOf(context)
+                  ? null
+                  : TripDetailsCoachScope.replayOf(context),
             ),
           ),
-        ],
+        ),
+        bottomNavigationBar: _PriceFooter(
+          priceEgp: fare,
+          currency: trip.currency,
+          l10n: l10n,
+          loading: isLoadingSeats,
+          onChooseSeats:
+              isLoadingSeats ? null : () => _onChooseSeats(context, ref),
+        ),
+        // The screen's one job is choosing stops: a compact identity header
+        // confirms this is the right trip, then the route timeline (the
+        // screen's focus) drives stop selection and the live fare.
+        body: Column(
+          children: [
+            const BookingStepBar(current: BusBookingStep.route),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _TripHeaderCard(
+                        trip: trip, fromStop: fromStop, toStop: toStop),
+                    const SizedBox(height: AppSpacing.lg),
+                    RouteTimeline(
+                      boardingStops: trip.boardingStops,
+                      dropoffStops: trip.dropoffStops,
+                      selectedFrom: fromStop,
+                      selectedTo: toStop,
+                      currency: trip.currency,
+                      onBoardSelected: (stop) => ref
+                          .read(busBookingProvider.notifier)
+                          .setStops(from: stop, to: toStop),
+                      onDropoffSelected: (stop) => ref
+                          .read(busBookingProvider.notifier)
+                          .setStops(from: fromStop, to: stop),
+                      firstBoardingRowKey: _firstBoardingRowKey,
+                      dropOffRowKey: _dropOffRowKey,
+                      headerTrailing: TripRouteMapFab(
+                        coachKey: _mapButtonKey,
+                        boardingStops: trip.boardingStops,
+                        dropoffStops: trip.dropoffStops,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Builder(
+                      builder: (context) {
+                        if (TripDetailsCoachActiveScope.of(context)) {
+                          return const SizedBox.shrink();
+                        }
+                        return SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            l10n.tripDetailFareLiveHint,
+                            textAlign: TextAlign.center,
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.textMuted,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

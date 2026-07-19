@@ -18,11 +18,13 @@ class TripRouteMapFab extends StatelessWidget {
     required this.boardingStops,
     required this.dropoffStops,
     this.launchUrl = launchExternalUrl,
+    this.coachKey,
   });
 
   final List<BusStop> boardingStops;
   final List<BusStop> dropoffStops;
   final ExternalUrlLauncher launchUrl;
+  final GlobalKey? coachKey;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class TripRouteMapFab extends StatelessWidget {
       child: Tooltip(
         message: l10n.tripDetailOpenMapsLabel,
         child: Material(
+          key: coachKey,
           color: AppColors.primary,
           shape: const CircleBorder(),
           elevation: 2,

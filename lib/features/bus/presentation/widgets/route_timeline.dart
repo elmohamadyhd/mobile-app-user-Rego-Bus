@@ -24,6 +24,8 @@ class RouteTimeline extends StatelessWidget {
     required this.onBoardSelected,
     required this.onDropoffSelected,
     this.headerTrailing,
+    this.firstBoardingRowKey,
+    this.dropOffRowKey,
   });
 
   final List<BusStop> boardingStops;
@@ -34,6 +36,8 @@ class RouteTimeline extends StatelessWidget {
   final ValueChanged<BusStop> onBoardSelected;
   final ValueChanged<BusStop> onDropoffSelected;
   final Widget? headerTrailing;
+  final GlobalKey? firstBoardingRowKey;
+  final GlobalKey? dropOffRowKey;
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +67,8 @@ class RouteTimeline extends StatelessWidget {
                 Expanded(
                   child: Text(
                     l10n.tripDetailRouteSection,
-                    style:
-                        AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+                    style: AppTypography.title
+                        .copyWith(fontWeight: FontWeight.w700),
                   ),
                 ),
                 if (headerTrailing != null) headerTrailing!,
@@ -75,6 +79,7 @@ class RouteTimeline extends StatelessWidget {
                 label: l10n.tripDetailBoardAt, color: AppColors.primary),
             for (var i = 0; i < board.length; i++)
               _TimelineRow(
+                coachKey: i == 0 ? firstBoardingRowKey : null,
                 stop: board[i],
                 accent: AppColors.primary,
                 isSelected: board[i].locationId == selectedFrom.locationId,
@@ -90,6 +95,7 @@ class RouteTimeline extends StatelessWidget {
             ),
             for (var i = 0; i < drop.length; i++)
               _TimelineRow(
+                coachKey: i == 0 ? dropOffRowKey : null,
                 stop: drop[i],
                 accent: AppColors.secondary,
                 isSelected: drop[i].locationId == selectedTo.locationId,
@@ -137,6 +143,7 @@ class _TimelineRow extends StatelessWidget {
     required this.showLine,
     required this.onTap,
     this.fareLabel,
+    this.coachKey,
   });
 
   final BusStop stop;
@@ -147,6 +154,7 @@ class _TimelineRow extends StatelessWidget {
   final bool showLine;
   final String? fareLabel;
   final VoidCallback onTap;
+  final GlobalKey? coachKey;
 
   String? _formatTime(DateTime? dt) {
     if (dt == null) return null;
@@ -164,6 +172,7 @@ class _TimelineRow extends StatelessWidget {
         : (isDimmed ? AppColors.textMuted : AppColors.textPrimary);
 
     return Semantics(
+      key: coachKey,
       hint: l10n.tripDetailOpenMapsStopHint,
       child: InkWell(
         onTap: onTap,
@@ -173,114 +182,114 @@ class _TimelineRow extends StatelessWidget {
         },
         borderRadius: BorderRadius.circular(AppRadius.sm),
         child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Column(
-                children: [
-                  Container(
-                    width: isSelected ? 14 : 10,
-                    height: isSelected ? 14 : 10,
-                    decoration: BoxDecoration(
-                      color: isSelected ? accent : AppColors.bgElevated,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isSelected
-                            ? accent
-                            : (isDimmed ? AppColors.hairline : accent),
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                  if (showLine)
-                    Expanded(
-                      child: Container(
-                        width: 2,
-                        color: isSelected
-                            ? accent.withValues(alpha: 0.4)
-                            : AppColors.hairline,
-                        margin: const EdgeInsets.symmetric(vertical: 2),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    stop.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTypography.body.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: textColor,
-                                    ),
-                                  ),
-                                ),
-                                if (isSelected) ...[
-                                  const SizedBox(width: AppSpacing.sm),
-                                  _SelectedPill(
-                                    label: selectedPill,
-                                    color: accent,
-                                  ),
-                                ],
-                              ],
-                            ),
-                            Text(
-                              stop.cityName,
-                              style: AppTypography.caption.copyWith(
-                                color: isDimmed
-                                    ? AppColors.textMuted
-                                    : AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      width: isSelected ? 14 : 10,
+                      height: isSelected ? 14 : 10,
+                      decoration: BoxDecoration(
+                        color: isSelected ? accent : AppColors.bgElevated,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected
+                              ? accent
+                              : (isDimmed ? AppColors.hairline : accent),
+                          width: 2,
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          if (time != null)
-                            Text(
-                              time,
-                              style: AppTypography.caption.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: isDimmed
-                                    ? AppColors.textMuted
-                                    : AppColors.textSecondary,
-                              ),
-                            ),
-                          if (fareLabel != null)
-                            Text(
-                              fareLabel!,
-                              style: AppTypography.caption.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textMuted,
-                              ),
-                            ),
-                        ],
+                    ),
+                    if (showLine)
+                      Expanded(
+                        child: Container(
+                          width: 2,
+                          color: isSelected
+                              ? accent.withValues(alpha: 0.4)
+                              : AppColors.hairline,
+                          margin: const EdgeInsets.symmetric(vertical: 2),
+                        ),
                       ),
-                    ],
+                  ],
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      stop.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTypography.body.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: textColor,
+                                      ),
+                                    ),
+                                  ),
+                                  if (isSelected) ...[
+                                    const SizedBox(width: AppSpacing.sm),
+                                    _SelectedPill(
+                                      label: selectedPill,
+                                      color: accent,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              Text(
+                                stop.cityName,
+                                style: AppTypography.caption.copyWith(
+                                  color: isDimmed
+                                      ? AppColors.textMuted
+                                      : AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            if (time != null)
+                              Text(
+                                time,
+                                style: AppTypography.caption.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: isDimmed
+                                      ? AppColors.textMuted
+                                      : AppColors.textSecondary,
+                                ),
+                              ),
+                            if (fareLabel != null)
+                              Text(
+                                fareLabel!,
+                                style: AppTypography.caption.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

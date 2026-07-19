@@ -7,7 +7,8 @@ final secureStorageProvider = Provider<SecureStorage>((ref) => SecureStorage());
 
 /// Thin wrapper over [FlutterSecureStorage] for the handful of keys the app
 /// persists across launches: the auth token, a cached user blob, the
-/// "onboarding seen" flag, an optional locale override, and a device token.
+/// "onboarding seen" flag, an optional locale override, a device token, and
+/// the trip-details coach flag.
 /// A legacy guest-mode key may still be cleared on launch.
 class SecureStorage {
   SecureStorage({
@@ -31,6 +32,7 @@ class SecureStorage {
   static const _kToken = 'auth_token';
   static const _kUser = 'auth_user';
   static const _kOnboardingSeen = 'onboarding_seen';
+  static const _kTripDetailsCoachSeen = 'trip_details_coach_seen';
   static const _kLocaleOverride = 'locale_override';
   static const _kDeviceToken = 'device_token';
   static const _kGuestMode = 'guest_mode';
@@ -52,6 +54,11 @@ class SecureStorage {
       (await _storage.read(key: _kOnboardingSeen)) == 'true';
   Future<void> setOnboardingSeen() =>
       _storage.write(key: _kOnboardingSeen, value: 'true');
+
+  Future<bool> tripDetailsCoachSeen() async =>
+      (await _storage.read(key: _kTripDetailsCoachSeen)) == 'true';
+  Future<void> setTripDetailsCoachSeen() =>
+      _storage.write(key: _kTripDetailsCoachSeen, value: 'true');
 
   Future<String?> readLocaleOverride() async {
     if (_memoryLocaleStore != null) {
