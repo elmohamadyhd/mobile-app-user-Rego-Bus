@@ -80,9 +80,10 @@ abstract final class BusDtoMapper {
 
     final companyData = json['company_data'];
     String? logo;
+    String? busImageUrl;
     if (companyData is Map<String, dynamic>) {
-      logo = _string(companyData['avatar']);
-      if (logo != null && logo.isEmpty) logo = null;
+      logo = _nonEmptyUrl(companyData['avatar']);
+      busImageUrl = _nonEmptyUrl(companyData['bus_image']);
     }
 
     return BusTripSummary(
@@ -94,6 +95,7 @@ abstract final class BusDtoMapper {
               : null) ??
           '',
       operatorLogoUrl: logo,
+      busImageUrl: busImageUrl,
       category: _string(json['category']) ?? '',
       dateTime: _parseDateTime(
             _string(json['date_time']),
@@ -455,6 +457,11 @@ abstract final class BusDtoMapper {
     if (value == null) return null;
     if (value is String) return value;
     return value.toString();
+  }
+
+  static String? _nonEmptyUrl(dynamic value) {
+    final url = _string(value);
+    return (url != null && url.isNotEmpty) ? url : null;
   }
 
   static String? _stationName(dynamic value) {

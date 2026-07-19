@@ -167,6 +167,9 @@
   "seatSelectionNoSeats": "لم يتم تحديد مقاعد",
   "seatSelectionSeatsLabel": "المقاعد",
   "seatSelectionTotal": "الإجمالي",
+  "seatSelectionBusImagesLabel": "عرض صور الحافلة",
+  "seatSelectionBusImagesTitle": "صور الحافلة",
+  "seatSelectionBusImagesError": "تعذّر تحميل الصورة",
 
   "confirmTitle": "تأكيد الحجز",
   "confirmBook": "تأكيد والدفع",

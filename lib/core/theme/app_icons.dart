@@ -34,6 +34,7 @@ abstract final class AppIcons {
   // ── Travel / domain ──────────────────────────────────────────────────────
   static const IconData bus = TablerIcons.bus;
   static const IconData busFront = TablerIcons.steeringWheel;
+  static const IconData photo = TablerIcons.photo;
   static const IconData private = TablerIcons.diamond;
   static const IconData flight = TablerIcons.plane;
   static const IconData transfer = TablerIcons.car;

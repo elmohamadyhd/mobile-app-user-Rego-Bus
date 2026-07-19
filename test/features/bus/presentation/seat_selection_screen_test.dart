@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/domain/entities/seat_map.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/seat_selection_screen.dart';
+import 'package:rego/features/bus/presentation/widgets/bus_images_fab.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
@@ -98,4 +100,76 @@ void main() {
       expect(find.text('9387818'), findsNothing);
     },
   );
+
+  testWidgets('hides bus images FAB when trip has no bus image', (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        busRepositoryProvider.overrideWithValue(FakeBusRepository()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: SeatSelectionScreen(),
+        ),
+      ),
+    );
+
+    await container
+        .read(busBookingProvider.notifier)
+        .selectTrip(FakeBusRepository.sampleTrip);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(BusImagesFab), findsNothing);
+  });
+
+  testWidgets('shows bus images FAB and sheet when trip has bus image',
+      (tester) async {
+    final tripWithImage = FakeBusRepository.sampleTrip.copyWith(
+      busImageUrl: 'https://example.com/bus.jpeg',
+    );
+    final container = ProviderContainer(
+      overrides: [
+        busRepositoryProvider.overrideWithValue(FakeBusRepository()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
+          home: SeatSelectionScreen(),
+        ),
+      ),
+    );
+
+    await container.read(busBookingProvider.notifier).searchTrips(
+          BusSearchParams(
+            cityFromId: 1,
+            cityToId: 2,
+            date: DateTime(2026, 2, 10),
+          ),
+        );
+    await container.read(busBookingProvider.notifier).selectTrip(tripWithImage);
+    await container.read(busBookingProvider.notifier).loadSeats();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(BusImagesFab), findsOneWidget);
+    expect(find.byIcon(AppIcons.eye), findsOneWidget);
+
+    await tester.tap(find.byType(BusImagesFab));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bus photos'), findsOneWidget);
+  });
 }

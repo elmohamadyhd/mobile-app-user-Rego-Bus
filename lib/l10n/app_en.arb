@@ -330,6 +330,18 @@
   "seatSelectionNoSeats": "No seats selected",
   "seatSelectionSeatsLabel": "Seats",
   "seatSelectionTotal": "Total",
+  "seatSelectionBusImagesLabel": "View bus photos",
+  "@seatSelectionBusImagesLabel": {
+    "description": "Accessibility label for the bus photos FAB on seat selection."
+  },
+  "seatSelectionBusImagesTitle": "Bus photos",
+  "@seatSelectionBusImagesTitle": {
+    "description": "Title of the bottom sheet showing bus photos."
+  },
+  "seatSelectionBusImagesError": "Could not load image",
+  "@seatSelectionBusImagesError": {
+    "description": "Shown when a bus photo fails to load in the bottom sheet."
+  },
 
   "confirmTitle": "Confirm booking",
   "confirmBook": "Confirm & pay",

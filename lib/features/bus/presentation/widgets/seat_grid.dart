@@ -5,6 +5,7 @@ import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/seat_map.dart';
+import 'package:rego/features/bus/presentation/widgets/bus_images_fab.dart';
 
 /// Shared square size for every grid cell — seats, icon markers (driver,
 /// door, WC), and blank aisle fillers — so rows stay aligned regardless of
@@ -21,11 +22,13 @@ class SeatGrid extends StatelessWidget {
     required this.seatMap,
     required this.selectedSeats,
     required this.onToggle,
+    this.busImageUrl,
   });
 
   final SeatMap seatMap;
   final List<String> selectedSeats;
   final ValueChanged<String> onToggle;
+  final String? busImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -56,26 +59,42 @@ class SeatGrid extends StatelessWidget {
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.xl,
       ),
-      child: Column(
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          for (final row in rows) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+          Padding(
+            padding: EdgeInsets.only(
+              top: busImageUrl != null ? AppSpacing.xxl : 0,
+            ),
+            child: Column(
               children: [
-                for (final cell in row)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: _SeatCellView(
-                      cell: cell,
-                      selected:
-                          cell.id != null && selectedSeats.contains(cell.id),
-                      onTap: _tapHandler(cell),
-                    ),
+                for (final row in rows) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (final cell in row)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: _SeatCellView(
+                            cell: cell,
+                            selected: cell.id != null &&
+                                selectedSeats.contains(cell.id),
+                            onTap: _tapHandler(cell),
+                          ),
+                        ),
+                    ],
                   ),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
               ],
             ),
-            const SizedBox(height: AppSpacing.sm),
-          ],
+          ),
+          if (busImageUrl != null)
+            PositionedDirectional(
+              top: 0,
+              end: 0,
+              child: BusImagesFab(imageUrl: busImageUrl!),
+            ),
         ],
       ),
     );

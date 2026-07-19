@@ -19,6 +19,29 @@ void main() {
       expect(trip.dropoffStops, hasLength(1));
       expect(trip.defaultDropoffStop.finalPrice, 148.5);
       expect(trip.priceEgp, 149);
+      expect(trip.busImageUrl, isNull);
+    });
+
+    test('maps company_data.bus_image to busImageUrl when non-empty', () {
+      final envelope = Map<String, dynamic>.from(tripsSearchEnvelope);
+      final data = List<Map<String, dynamic>>.from(
+        envelope['data'] as List,
+      );
+      final tripJson = Map<String, dynamic>.from(data.first);
+      tripJson['company_data'] = {
+        'name': 'النورس للنقل البري',
+        'avatar': 'https://example.com/avatar.png',
+        'bus_image': 'https://example.com/bus.jpeg',
+        'pin': '',
+      };
+      data[0] = tripJson;
+      envelope['data'] = data;
+
+      final trip = BusDtoMapper.tripsPageFromEnvelope(envelope).trips.first;
+      expect(
+        trip.busImageUrl,
+        'https://example.com/bus.jpeg',
+      );
     });
 
     test('mergeEnrichment keeps cached stops when detail stations are empty',

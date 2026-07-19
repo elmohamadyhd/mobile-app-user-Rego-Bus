@@ -28,6 +28,7 @@ class SeatSelectionScreen extends ConsumerWidget {
     final isLoading = state.status == BusBookingStatus.loadingSeats;
     final totalPrice = (state.segmentFare * selectedSeats.length).round();
     final currency = state.selectedTrip?.currency ?? 'EGP';
+    final busImageUrl = state.selectedTrip?.busImageUrl;
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
@@ -49,6 +50,7 @@ class SeatSelectionScreen extends ConsumerWidget {
                         child: SeatGrid(
                           seatMap: seatMap,
                           selectedSeats: selectedSeats,
+                          busImageUrl: busImageUrl,
                           onToggle: (id) => ref
                               .read(busBookingProvider.notifier)
                               .toggleSeat(id),

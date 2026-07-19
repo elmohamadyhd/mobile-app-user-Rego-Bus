@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
+import 'package:rego/core/theme/app_icons.dart';
 import 'package:rego/features/bus/domain/entities/seat_map.dart';
+import 'package:rego/features/bus/presentation/widgets/bus_images_fab.dart';
 import 'package:rego/features/bus/presentation/widgets/seat_grid.dart';
+import 'package:rego/l10n/app_localizations.dart';
 
 SeatMap _buildSeatMap() {
   const salon = SeatSalon(id: 1, name: 'Express', rows: 2, columns: 4);
@@ -86,5 +89,28 @@ void main() {
 
     final text = tester.widget<Text>(find.text('A1'));
     expect(text.style?.color, AppColors.onPrimary);
+  });
+
+  testWidgets('shows bus images FAB when busImageUrl is provided', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: Scaffold(
+          body: SeatGrid(
+            seatMap: _buildSeatMap(),
+            selectedSeats: const [],
+            busImageUrl: 'https://example.com/bus.jpeg',
+            onToggle: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(BusImagesFab), findsOneWidget);
+    expect(find.byIcon(AppIcons.eye), findsOneWidget);
   });
 }
