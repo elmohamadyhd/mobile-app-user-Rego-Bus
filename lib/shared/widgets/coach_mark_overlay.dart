@@ -331,13 +331,6 @@ class _SpotlightPainter extends CustomPainter {
       overlay,
       Paint()..color = Colors.black.withValues(alpha: 0.5),
     );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(spotlightRect, Radius.circular(radius)),
-      Paint()
-        ..color = AppColors.primary
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
-    );
   }
 
   @override
