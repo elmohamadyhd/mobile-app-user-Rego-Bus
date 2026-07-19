@@ -7,6 +7,7 @@ import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/trip_details_screen.dart';
+import 'package:rego/features/bus/presentation/widgets/trip_route_map_fab.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
@@ -18,6 +19,17 @@ BusTripSummary _buildTrip() {
     cityId: 1,
     cityName: 'Cairo',
     arrivalAt: DateTime(2026, 2, 10, 8),
+    latitude: 30.06,
+    longitude: 31.24,
+  );
+  final boardAlt = BusStop(
+    locationId: 'b2',
+    name: 'Sekka Club',
+    cityId: 1,
+    cityName: 'Cairo',
+    arrivalAt: DateTime(2026, 2, 10, 7, 45),
+    latitude: 30.05,
+    longitude: 31.23,
   );
   final dropDefault = BusStop(
     locationId: 'd1',
@@ -46,7 +58,7 @@ BusTripSummary _buildTrip() {
     priceStartWith: 180,
     defaultBoardingStop: board,
     defaultDropoffStop: dropDefault,
-    boardingStops: [board],
+    boardingStops: [boardAlt, board],
     dropoffStops: [dropDefault, dropAlt],
   );
 }
@@ -143,5 +155,126 @@ void main() {
 
     expect(find.text('مسار الرحلة'), findsOneWidget); // Trip route
     expect(find.text('اختر المقاعد'), findsOneWidget); // Choose seats
+  });
+
+  testWidgets('shows the map FAB on the route card', (tester) async {
+    await _pumpDetails(tester, _buildTrip());
+
+    expect(find.byIcon(AppIcons.map), findsOneWidget);
+  });
+
+  testWidgets('tapping the map FAB shows the Google Maps confirmation dialog',
+      (tester) async {
+    await _pumpDetails(tester, _buildTrip());
+
+    final fab = find.byIcon(AppIcons.map);
+    await tester.ensureVisible(fab);
+    await tester.pumpAndSettle();
+    await tester.tap(fab);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Open in Google Maps?'), findsOneWidget);
+    expect(
+      find.text(
+        "You'll leave REGO. Google Maps will show the full trip route "
+        'through every stop on this journey.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('cancelling the Google Maps dialog stays on trip details',
+      (tester) async {
+    await _pumpDetails(tester, _buildTrip());
+
+    final fab = find.byIcon(AppIcons.map);
+    await tester.ensureVisible(fab);
+    await tester.pumpAndSettle();
+    await tester.tap(fab);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Open in Google Maps?'), findsNothing);
+    expect(find.text('Trip route'), findsOneWidget);
+  });
+
+  testWidgets('confirming the dialog invokes the external launcher', (
+    tester,
+  ) async {
+    Uri? launchedUri;
+    final boarding = [
+      BusStop(
+        locationId: 'b1',
+        name: 'Sekka Club',
+        cityId: 1,
+        cityName: 'Cairo',
+        arrivalAt: DateTime(2026, 2, 10, 7, 45),
+        latitude: 30.05,
+        longitude: 31.23,
+      ),
+      BusStop(
+        locationId: 'b2',
+        name: 'Ramsis',
+        cityId: 1,
+        cityName: 'Cairo',
+        arrivalAt: DateTime(2026, 2, 10, 8),
+        latitude: 30.06,
+        longitude: 31.24,
+      ),
+    ];
+    final dropoff = [
+      BusStop(
+        locationId: 'd1',
+        name: 'Sidi Gaber',
+        cityId: 2,
+        cityName: 'Alexandria',
+        arrivalAt: DateTime(2026, 2, 10, 11, 30),
+        latitude: 31.16,
+        longitude: 29.90,
+      ),
+      BusStop(
+        locationId: 'd2',
+        name: 'Moharam Bek',
+        cityId: 2,
+        cityName: 'Alexandria',
+        arrivalAt: DateTime(2026, 2, 10, 12),
+        latitude: 31.17,
+        longitude: 29.91,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: Scaffold(
+          body: TripRouteMapFab(
+            boardingStops: boarding,
+            dropoffStops: dropoff,
+            launchUrl: (uri) async {
+              launchedUri = uri;
+              return true;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(AppIcons.map));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Open Google Maps'));
+    await tester.pumpAndSettle();
+
+    expect(launchedUri, isNotNull);
+    expect(launchedUri!.host, 'www.google.com');
+    expect(launchedUri!.queryParameters['origin'], '30.05,31.23');
+    expect(launchedUri!.queryParameters['destination'], '31.17,29.91');
+    expect(
+      launchedUri!.queryParameters['waypoints'],
+      '30.06,31.24|31.16,29.9',
+    );
   });
 }

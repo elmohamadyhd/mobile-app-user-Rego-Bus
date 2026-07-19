@@ -131,6 +131,8 @@ abstract final class BusDtoMapper {
       arrivalAt: _parseDateTime(_string(json['arrival_at']), null),
       finalPrice: _double(json['final_price']) ?? 0,
       originalPrice: _double(json['original_price']) ?? 0,
+      latitude: _double(json['latitude']),
+      longitude: _double(json['longitude']),
     );
   }
 

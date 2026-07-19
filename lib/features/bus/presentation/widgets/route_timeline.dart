@@ -4,6 +4,7 @@ import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
+import 'package:rego/features/bus/domain/utils/order_trip_route_stops.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 /// Vertical route timeline split into two labeled, single-tap zones: board
@@ -22,6 +23,7 @@ class RouteTimeline extends StatelessWidget {
     required this.currency,
     required this.onBoardSelected,
     required this.onDropoffSelected,
+    this.headerTrailing,
   });
 
   final List<BusStop> boardingStops;
@@ -31,22 +33,19 @@ class RouteTimeline extends StatelessWidget {
   final String currency;
   final ValueChanged<BusStop> onBoardSelected;
   final ValueChanged<BusStop> onDropoffSelected;
-
-  /// Nulls sort first — a missing `arrivalAt` is treated as the
-  /// earliest/base time (same convention used across the bus feature), so
-  /// the default stop isn't buried at the end of its zone.
-  static int _byArrival(BusStop a, BusStop b) {
-    if (a.arrivalAt == null && b.arrivalAt == null) return 0;
-    if (a.arrivalAt == null) return -1;
-    if (b.arrivalAt == null) return 1;
-    return a.arrivalAt!.compareTo(b.arrivalAt!);
-  }
+  final Widget? headerTrailing;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final board = [...boardingStops]..sort(_byArrival);
-    final drop = [...dropoffStops]..sort(_byArrival);
+    final board = orderTripRouteStops(
+      boardingStops: boardingStops,
+      dropoffStops: const [],
+    );
+    final drop = orderTripRouteStops(
+      boardingStops: const [],
+      dropoffStops: dropoffStops,
+    );
 
     return Material(
       color: AppColors.bgElevated,
@@ -58,9 +57,18 @@ class RouteTimeline extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.tripDetailRouteSection,
-              style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.tripDetailRouteSection,
+                    style:
+                        AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                if (headerTrailing != null) headerTrailing!,
+              ],
             ),
             const SizedBox(height: AppSpacing.md),
             _ZoneHeader(

@@ -19,6 +19,7 @@ import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:rego/features/bus/presentation/widgets/route_timeline.dart';
+import 'package:rego/features/bus/presentation/widgets/trip_route_map_fab.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
@@ -90,6 +91,10 @@ class BusTripDetailsScreen extends ConsumerWidget {
                     onDropoffSelected: (stop) => ref
                         .read(busBookingProvider.notifier)
                         .setStops(from: fromStop, to: stop),
+                    headerTrailing: TripRouteMapFab(
+                      boardingStops: trip.boardingStops,
+                      dropoffStops: trip.dropoffStops,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   SizedBox(

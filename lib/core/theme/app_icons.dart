@@ -40,6 +40,7 @@ abstract final class AppIcons {
   static const IconData train = TablerIcons.train;
   static const IconData locationFrom = TablerIcons.currentLocation;
   static const IconData locationTo = TablerIcons.mapPin;
+  static const IconData map = TablerIcons.map;
   static const IconData swap = TablerIcons.arrowsDownUp;
 
   // ── Misc ─────────────────────────────────────────────────────────────────

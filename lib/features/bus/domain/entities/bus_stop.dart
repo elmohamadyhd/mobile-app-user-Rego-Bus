@@ -12,6 +12,8 @@ abstract class BusStop with _$BusStop {
     DateTime? arrivalAt,
     @Default(0) double finalPrice,
     @Default(0) double originalPrice,
+    double? latitude,
+    double? longitude,
   }) = _BusStop;
 
   const BusStop._();

@@ -224,6 +224,39 @@
   "tripDetailDropOffAt": "Drop off at",
   "tripDetailBoardHere": "Board here",
   "tripDetailDropOffHere": "Drop off",
+  "tripDetailOpenMapsLabel": "View route on map",
+  "@tripDetailOpenMapsLabel": {
+    "description": "Accessibility label for the map FAB on trip details."
+  },
+  "tripDetailOpenMapsTitle": "Open in Google Maps?",
+  "@tripDetailOpenMapsTitle": {
+    "description": "Title of the dialog before opening Google Maps."
+  },
+  "tripDetailOpenMapsBody": "You'll leave REGO. Google Maps will show the full trip route through every stop on this journey.",
+  "@tripDetailOpenMapsBody": {
+    "description": "Body of the dialog before opening Google Maps."
+  },
+  "tripDetailOpenMapsStopsTruncated": "Google Maps supports up to 11 stops. {count} stops were left out.",
+  "@tripDetailOpenMapsStopsTruncated": {
+    "description": "Snackbar when the trip has more stops than Google Maps URLs allow.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripDetailOpenMapsConfirm": "Open Google Maps",
+  "@tripDetailOpenMapsConfirm": {
+    "description": "Primary action to open Google Maps from the trip details dialog."
+  },
+  "tripDetailOpenMapsCancel": "Cancel",
+  "@tripDetailOpenMapsCancel": {
+    "description": "Dismisses the Google Maps confirmation dialog."
+  },
+  "tripDetailOpenMapsFailed": "Couldn't open Google Maps",
+  "@tripDetailOpenMapsFailed": {
+    "description": "Snackbar when Google Maps could not be opened."
+  },
   "amenityWifi": "Wi-Fi",
   "amenityAC": "A/C",
   "amenitySockets": "Sockets",
