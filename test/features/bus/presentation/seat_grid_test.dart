@@ -113,4 +113,85 @@ void main() {
     expect(find.byType(BusImagesFab), findsOneWidget);
     expect(find.byIcon(AppIcons.eye), findsOneWidget);
   });
+
+  testWidgets('ltr salon keeps driver left when app locale is Arabic', (
+    tester,
+  ) async {
+    const seatMap = SeatMap(
+      salon: SeatSalon(
+        id: 1,
+        name: 'Express',
+        rows: 2,
+        columns: 5,
+        direction: 'ltr',
+      ),
+      cells: [
+        SeatMapCell(kind: SeatMapCellKind.driver),
+        SeatMapCell(kind: SeatMapCellKind.space),
+        SeatMapCell(kind: SeatMapCellKind.space),
+        SeatMapCell(kind: SeatMapCellKind.space),
+        SeatMapCell(kind: SeatMapCellKind.space),
+        SeatMapCell(kind: SeatMapCellKind.available, id: '1', seatNo: '1'),
+        SeatMapCell(kind: SeatMapCellKind.available, id: '2', seatNo: '2'),
+        SeatMapCell(kind: SeatMapCellKind.space),
+        SeatMapCell(kind: SeatMapCellKind.available, id: '3', seatNo: '3'),
+        SeatMapCell(kind: SeatMapCellKind.available, id: '4', seatNo: '4'),
+      ],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ar'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SeatGrid(
+            seatMap: seatMap,
+            selectedSeats: const [],
+            onToggle: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final driverDx = tester.getTopLeft(find.byIcon(AppIcons.busFront)).dx;
+    final seat1Dx = tester.getTopLeft(find.text('1')).dx;
+    expect(driverDx, lessThan(seat1Dx));
+  });
+
+  testWidgets('rtl salon places seat 1 left of seat 2 on screen', (
+    tester,
+  ) async {
+    const seatMap = SeatMap(
+      salon: SeatSalon(
+        id: 1,
+        name: 'Express',
+        rows: 1,
+        columns: 4,
+        direction: 'rtl',
+      ),
+      cells: [
+        SeatMapCell(kind: SeatMapCellKind.space),
+        SeatMapCell(kind: SeatMapCellKind.available, id: '2', seatNo: '2'),
+        SeatMapCell(kind: SeatMapCellKind.space),
+        SeatMapCell(kind: SeatMapCellKind.available, id: '1', seatNo: '1'),
+      ],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SeatGrid(
+            seatMap: seatMap,
+            selectedSeats: const [],
+            onToggle: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final seat1Dx = tester.getTopLeft(find.text('1')).dx;
+    final seat2Dx = tester.getTopLeft(find.text('2')).dx;
+    expect(seat1Dx, lessThan(seat2Dx));
+  });
 }

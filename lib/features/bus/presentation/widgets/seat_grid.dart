@@ -41,6 +41,10 @@ class SeatGrid extends StatelessWidget {
       rows.add(seatMap.cells.sublist(i, end));
     }
 
+    final salonRtl = seatMap.salon.direction.toLowerCase() == 'rtl';
+    final rowDirection =
+        salonRtl ? TextDirection.rtl : TextDirection.ltr;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -66,27 +70,30 @@ class SeatGrid extends StatelessWidget {
             padding: EdgeInsets.only(
               top: busImageUrl != null ? AppSpacing.xxl : 0,
             ),
-            child: Column(
-              children: [
-                for (final row in rows) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      for (final cell in row)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: _SeatCellView(
-                            cell: cell,
-                            selected: cell.id != null &&
-                                selectedSeats.contains(cell.id),
-                            onTap: _tapHandler(cell),
+            child: Directionality(
+              textDirection: rowDirection,
+              child: Column(
+                children: [
+                  for (final row in rows) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (final cell in row)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: _SeatCellView(
+                              cell: cell,
+                              selected: cell.id != null &&
+                                  selectedSeats.contains(cell.id),
+                              onTap: _tapHandler(cell),
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           if (busImageUrl != null)

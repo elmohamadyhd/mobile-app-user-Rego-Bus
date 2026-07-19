@@ -45,3 +45,5 @@ lib/generated_plugin_registrant.dart
 # Superpowers brainstorming (visual companion, mockups)
 .superpowers/
 *.log
+dummy data/*
+
