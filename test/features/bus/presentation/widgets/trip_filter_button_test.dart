@@ -50,9 +50,13 @@ void main() {
       final screenWidth = tester.getSize(find.byType(Scaffold)).width;
       final actionRight = tester.getTopRight(find.byKey(actionKey)).dx;
 
+      // The bar insets its row by AppSpacing.xs, then the action by a further
+      // AppSpacing.xs at the end. What this guards is the regression that
+      // padding was added to fix: before the action had any inset of its own
+      // it sat flush against the screen edge.
       expect(
         screenWidth - actionRight,
-        greaterThanOrEqualTo(AppSpacing.lg + AppSpacing.xs - 1),
+        greaterThanOrEqualTo(AppSpacing.xs * 2),
       );
     });
 

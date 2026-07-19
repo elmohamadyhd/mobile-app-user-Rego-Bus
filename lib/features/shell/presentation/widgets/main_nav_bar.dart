@@ -7,31 +7,36 @@ import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 // ── Nav-bar geometry (matches the Skyline design canvas) ─────────────────────
-const double _barRadius = 32;
-const double _orbSize = 48;
-const double _orbIconSize = 24;
-const double _iconSlotHeight = 38;
-const double _navIconSize = 20;
-
-/// How far the active orb floats above the bar. Also the height of the
-/// transparent, still-tappable zone reserved above the bar so the raised orb
-/// stays inside its item's hit-test box.
-const double _orbLift = 18;
+const double _barRadius = 28;
+const double _navIconSize = 22;
 
 const double _barPadH =
     AppSpacing.sm; // horizontal inset of items from the edge
-const double _barPadV = AppSpacing.xs; // vertical breathing room inside the bar
+const double _barPadV = 10; // vertical breathing room inside the bar
 const double _labelGap = AppSpacing.xxs; // gap between icon and label
 
+/// The active tile is inset from the bar edge by *less* than [_barPadV], so it
+/// wraps the icon/label column with a hair of padding instead of clipping it.
+const double _tileInsetV = 6;
+const double _tileInsetH = 6;
+const double _tileRadius = 18;
+
+/// Inactive icons sit fractionally smaller than the active one — enough to read
+/// as "less present", far too little to read as a different icon size.
+const double _inactiveIconScale = 0.94;
+
 /// Labels never scale past this — a nav bar must stay one line at any system
-/// font size. Icons and the orb keep a fixed footprint regardless.
+/// font size. Icons keep a fixed footprint regardless.
 const double _maxLabelScale = 1.3;
 
-const Duration _navAnim = Duration(milliseconds: 220);
+const Duration _navAnim = Duration(milliseconds: 280);
+const Curve _navCurve = Curves.easeOutCubic;
 const Color _barShadowColor = Color(0x1A000000); // 10% black, soft upward lift
 
-/// The app's primary bottom navigation — a floating, rounded "Skyline" pill
-/// with a raised orb marking the active tab.
+/// The app's primary bottom navigation — a floating, rounded "Skyline" bar of
+/// equal, always-labelled segments. The active segment is marked by a soft
+/// blue tint tile that *glides* between segments rather than blinking, while
+/// the icon and label cross-fade to brand blue on the same curve.
 ///
 /// This is a **controlled** component: it renders [currentIndex] and reports
 /// taps through [onDestinationSelected] (fired for every tap, including the
@@ -39,9 +44,11 @@ const Color _barShadowColor = Color(0x1A000000); // 10% black, soft upward lift
 /// state and no navigation policy — the host (e.g. the shell scaffold) decides
 /// what a tap does.
 ///
-/// Robust by construction: full-height equal-width hit targets that include the
-/// floating orb, theme-driven colours (light/dark), clamped label scaling,
-/// ellipsised labels, RTL-safe layout, and merged tab semantics.
+/// Robust by construction: full-height equal-width hit targets, theme-driven
+/// colours (light/dark), clamped label scaling, ellipsised labels, RTL-safe
+/// layout, and merged tab semantics. The indicator is sized as a fraction of
+/// the bar rather than a measured width, so the destination count is the only
+/// thing that has to change to add a tab.
 class MainNavBar extends StatelessWidget {
   const MainNavBar({
     super.key,
@@ -63,53 +70,93 @@ class MainNavBar extends StatelessWidget {
       (AppIcons.user, l10n.navProfile),
     ];
 
+    final selected = currentIndex.clamp(0, destinations.length - 1);
+
     return MediaQuery.withClampedTextScaling(
       maxScaleFactor: _maxLabelScale,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // The visible bar occupies everything below the orb-lift zone, so the
-          // raised orb can float over the content above it.
-          Positioned(
-            top: _orbLift,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: barColor,
-                borderRadius: BorderRadius.circular(_barRadius),
-                boxShadow: const [
-                  BoxShadow(
-                    color: _barShadowColor,
-                    blurRadius: 20,
-                    offset: Offset(0, -4),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: barColor,
+          borderRadius: BorderRadius.circular(_barRadius),
+          boxShadow: const [
+            BoxShadow(
+              color: _barShadowColor,
+              blurRadius: 20,
+              offset: Offset(0, -4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: _barPadH),
+          child: Stack(
+            children: [
+              // The sliding tint tile, under the items. Stretched over the row
+              // by Positioned.fill, so it inherits the row's measured height.
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: _tileInsetV),
+                  child: _ActiveTile(
+                    index: selected,
+                    count: destinations.length,
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          // Full-height tap targets over the bar; orb-lift zone included.
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: _barPadH),
-            child: Material(
-              type: MaterialType.transparency,
-              child: Row(
-                children: [
-                  for (var i = 0; i < destinations.length; i++)
-                    Expanded(
-                      child: _NavItem(
-                        icon: destinations[i].$1,
-                        label: destinations[i].$2,
-                        active: i == currentIndex,
-                        onTap: () => onDestinationSelected(i),
+              Material(
+                type: MaterialType.transparency,
+                child: Row(
+                  children: [
+                    for (var i = 0; i < destinations.length; i++)
+                      Expanded(
+                        child: _NavItem(
+                          icon: destinations[i].$1,
+                          label: destinations[i].$2,
+                          active: i == selected,
+                          onTap: () => onDestinationSelected(i),
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The soft blue tile behind the active segment. Slides between segments on
+/// [AlignmentDirectional], which mirrors under RTL for free — index 0 aligns
+/// to the *start* edge, which is the right-hand side in Arabic, matching the
+/// [Row] that lays the items out.
+class _ActiveTile extends StatelessWidget {
+  const _ActiveTile({required this.index, required this.count});
+
+  final int index;
+  final int count;
+
+  /// Maps segment [index] onto the -1..1 alignment axis. An [Align] child of
+  /// width `1/count` lands on segment `i` when `x = 2i/(count - 1) - 1`.
+  double get _alignX => count < 2 ? 0 : (index * 2 / (count - 1)) - 1;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedAlign(
+      alignment: AlignmentDirectional(_alignX, 0),
+      duration: _navAnim,
+      curve: _navCurve,
+      child: FractionallySizedBox(
+        widthFactor: 1 / count,
+        heightFactor: 1,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: _tileInsetH),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.primaryTint,
+              borderRadius: BorderRadius.circular(_tileRadius),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -140,46 +187,37 @@ class _NavItem extends StatelessWidget {
           onTap: onTap,
           splashFactory: NoSplash.splashFactory,
           overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          // Top padding reserves the transparent orb-lift zone as tappable, so
-          // the raised orb sits inside this InkWell's hit box.
+          borderRadius: BorderRadius.circular(_tileRadius),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              0,
-              _orbLift + _barPadV,
-              0,
-              _barPadV,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: _barPadV),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: _orbSize,
-                  height: _iconSlotHeight,
-                  child: Center(
-                    child: active
-                        ? Transform.translate(
-                            offset: const Offset(0, -_orbLift),
-                            child: TweenAnimationBuilder<double>(
-                              tween: Tween(begin: 0.85, end: 1),
-                              duration: _navAnim,
-                              curve: Curves.easeOutBack,
-                              builder: (_, scale, child) =>
-                                  Transform.scale(scale: scale, child: child),
-                              child: _NavActiveOrb(icon: icon),
-                            ),
-                          )
-                        : Icon(
-                            icon,
-                            color: AppColors.textMuted,
-                            size: _navIconSize,
-                          ),
+                // One driver for both the icon tint and its scale, so they
+                // resolve together with the tile arriving underneath.
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: active ? 1 : 0),
+                  duration: _navAnim,
+                  curve: _navCurve,
+                  builder: (context, t, _) => Transform.scale(
+                    scale:
+                        _inactiveIconScale + (1 - _inactiveIconScale) * t,
+                    child: Icon(
+                      icon,
+                      size: _navIconSize,
+                      color: Color.lerp(
+                        AppColors.textMuted,
+                        AppColors.primary,
+                        t,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: _labelGap),
                 AnimatedDefaultTextStyle(
                   duration: _navAnim,
+                  curve: _navCurve,
                   style: AppTypography.overline.copyWith(
                     color: active ? AppColors.primary : AppColors.textMuted,
                     fontWeight: active ? FontWeight.w700 : FontWeight.w400,
@@ -196,33 +234,6 @@ class _NavItem extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _NavActiveOrb extends StatelessWidget {
-  const _NavActiveOrb({required this.icon});
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: _orbSize,
-      height: _orbSize,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.primary,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.6),
-            blurRadius: 14,
-            spreadRadius: -4,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Icon(icon, color: AppColors.onPrimary, size: _orbIconSize),
     );
   }
 }

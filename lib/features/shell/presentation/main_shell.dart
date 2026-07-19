@@ -5,7 +5,7 @@ import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/features/shell/presentation/widgets/main_nav_bar.dart';
 import 'package:rego/shared/widgets/double_back_to_exit.dart';
 
-/// Root scaffold for the signed-in experience. Hosts the four primary tabs in
+/// Root scaffold for the signed-in experience. Hosts the three primary tabs in
 /// an [IndexedStack] (per-tab state preserved) with [MainNavBar] as the shared
 /// bottom navigation. Full-screen flows (booking, auth) live on the root
 /// navigator above this shell and therefore hide the bar.
