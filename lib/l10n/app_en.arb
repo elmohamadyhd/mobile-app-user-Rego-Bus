@@ -257,6 +257,23 @@
   "@tripDetailOpenMapsFailed": {
     "description": "Snackbar when Google Maps could not be opened."
   },
+  "tripDetailOpenMapsStopTitle": "View {stopName} on Google Maps?",
+  "@tripDetailOpenMapsStopTitle": {
+    "description": "Title of the dialog before opening a single stop in Google Maps.",
+    "placeholders": {
+      "stopName": {
+        "type": "String"
+      }
+    }
+  },
+  "tripDetailOpenMapsStopBody": "You'll leave REGO and see this stop on Google Maps.",
+  "@tripDetailOpenMapsStopBody": {
+    "description": "Body of the dialog before opening a single stop in Google Maps."
+  },
+  "tripDetailOpenMapsStopHint": "Long press to view on map",
+  "@tripDetailOpenMapsStopHint": {
+    "description": "Accessibility hint for long-pressing a route stop row."
+  },
   "amenityWifi": "Wi-Fi",
   "amenityAC": "A/C",
   "amenitySockets": "Sockets",

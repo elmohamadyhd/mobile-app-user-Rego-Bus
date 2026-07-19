@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:rego/core/theme/app_colors.dart';
 import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/utils/order_trip_route_stops.dart';
+import 'package:rego/features/bus/presentation/widgets/open_stop_in_google_maps.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 /// Vertical route timeline split into two labeled, single-tap zones: board
 /// candidates (origin city) on top, drop-off candidates (destination city)
-/// below. Replaces the winding-road picker — a single tap on a row in its
-/// zone both focuses and selects it (no long-press / role menu), and
-/// drop-off rows show their own fare so the fare-per-stop relationship stays
-/// visible while choosing.
+/// below. A single tap on a row in its zone both focuses and selects it;
+/// long-press opens that stop in Google Maps.
 class RouteTimeline extends StatelessWidget {
   const RouteTimeline({
     super.key,
@@ -157,15 +157,22 @@ class _TimelineRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final time = _formatTime(stop.arrivalAt);
     final textColor = isSelected
         ? accent
         : (isDimmed ? AppColors.textMuted : AppColors.textPrimary);
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.sm),
-      child: Padding(
+    return Semantics(
+      hint: l10n.tripDetailOpenMapsStopHint,
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: () {
+          HapticFeedback.mediumImpact();
+          confirmAndOpenStopInGoogleMaps(context, stop: stop);
+        },
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: IntrinsicHeight(
           child: Row(
@@ -273,6 +280,7 @@ class _TimelineRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

@@ -173,4 +173,40 @@ void main() {
     expect(find.text('تصعد من'), findsOneWidget);
     expect(find.text('تنزل في'), findsOneWidget);
   });
+
+  testWidgets('long press on a stop shows the stop-specific confirmation dialog',
+      (tester) async {
+    await _pump(
+      tester,
+      from: _board1,
+      to: _drop1,
+      onBoard: (_) {},
+      onDrop: (_) {},
+    );
+
+    await tester.longPress(find.text('Zayed'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('View Zayed on Google Maps?'), findsOneWidget);
+    expect(
+      find.text("You'll leave REGO and see this stop on Google Maps."),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('long press does not fire onBoardSelected', (tester) async {
+    var boardTapped = false;
+    await _pump(
+      tester,
+      from: _board1,
+      to: _drop1,
+      onBoard: (_) => boardTapped = true,
+      onDrop: (_) {},
+    );
+
+    await tester.longPress(find.text('Zayed'));
+    await tester.pumpAndSettle();
+
+    expect(boardTapped, isFalse);
+  });
 }

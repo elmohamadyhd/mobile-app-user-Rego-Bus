@@ -75,6 +75,19 @@ GoogleMapsRouteResult buildGoogleMapsDirectionsUrl({
   );
 }
 
+/// Builds a Google Maps search URL that pins a single [stop] on the map.
+Uri buildGoogleMapsSearchUrl(BusStop stop) {
+  return Uri(
+    scheme: 'https',
+    host: 'www.google.com',
+    path: '/maps/search/',
+    queryParameters: {
+      'api': '1',
+      'query': _encodeStop(stop),
+    },
+  );
+}
+
 String _encodeStop(BusStop stop) {
   final lat = stop.latitude;
   final lng = stop.longitude;

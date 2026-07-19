@@ -93,4 +93,27 @@ void main() {
     expect(result.uri.queryParameters['waypoints']!.split('|'), hasLength(9));
     expect(result.truncatedStopCount, 2);
   });
+
+  test('search URL uses coordinates when available', () {
+    final uri = buildGoogleMapsSearchUrl(
+      _stop(
+        name: 'Moharam Bek',
+        cityName: 'Alexandria',
+        latitude: 31.178158,
+        longitude: 29.915599,
+      ),
+    );
+
+    expect(uri.path, '/maps/search/');
+    expect(uri.queryParameters['api'], '1');
+    expect(uri.queryParameters['query'], '31.178158,29.915599');
+  });
+
+  test('search URL falls back to stop name and city', () {
+    final uri = buildGoogleMapsSearchUrl(
+      _stop(name: 'Ramsis', cityName: 'Cairo'),
+    );
+
+    expect(uri.queryParameters['query'], 'Ramsis, Cairo');
+  });
 }

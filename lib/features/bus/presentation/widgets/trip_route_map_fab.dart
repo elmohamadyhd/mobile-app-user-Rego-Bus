@@ -10,8 +10,6 @@ import 'package:rego/features/bus/domain/entities/bus_stop.dart';
 import 'package:rego/features/bus/domain/utils/order_trip_route_stops.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
-typedef ExternalUrlLauncher = Future<bool> Function(Uri uri);
-
 /// Compact map action on the trip route card header — confirms, then opens
 /// Google Maps.
 class TripRouteMapFab extends StatelessWidget {
