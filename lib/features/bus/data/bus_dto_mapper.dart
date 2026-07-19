@@ -6,6 +6,7 @@ import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
 import 'package:rego/features/bus/domain/entities/bus_trip.dart';
 import 'package:rego/features/bus/domain/entities/seat_map.dart';
 import 'package:rego/features/bus/domain/repositories/bus_repository.dart';
+import 'package:rego/features/bus/domain/seat_map_normalizer.dart';
 
 abstract final class BusDtoMapper {
   static void ensureSuccess(Map<String, dynamic> envelope) {
@@ -167,7 +168,7 @@ abstract final class BusDtoMapper {
             .toList()
         : <SeatMapCell>[];
 
-    return SeatMap(salon: salon, cells: cells);
+    return SeatMapNormalizer.normalize(SeatMap(salon: salon, cells: cells));
   }
 
   static SeatMapCell seatCellFromJson(Map<String, dynamic> json) {
