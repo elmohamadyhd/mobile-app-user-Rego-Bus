@@ -76,7 +76,7 @@ Future<void> _pumpTickets(
         supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.light(),
         locale: const Locale('en'),
-        home: const TicketsScreen(),
+        home: const Scaffold(body: TicketsScreen()),
       ),
     ),
   );
@@ -100,8 +100,26 @@ void main() {
     );
 
     expect(find.text('SuperJet'), findsOneWidget);
-    expect(find.text('Bus tickets'), findsOneWidget);
+    expect(find.text('Bus'), findsOneWidget);
+    expect(find.text('Private'), findsOneWidget);
+    expect(find.text('Flight'), findsOneWidget);
+    expect(find.text('Train'), findsOneWidget);
     expect(find.text('1 tickets'), findsOneWidget);
+  });
+
+  testWidgets('tapping a non-bus tab shows coming soon snackbar', (tester) async {
+    await _pumpTickets(
+      tester,
+      isGuest: false,
+      repo: FakeBusRepository(ordersResult: [_pendingOrder()]),
+    );
+
+    await tester.tap(find.text('Flight'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text('Coming soon'), findsOneWidget);
+    expect(find.text('SuperJet'), findsOneWidget);
   });
 
   testWidgets('empty list shows the empty state with a Book a trip CTA',

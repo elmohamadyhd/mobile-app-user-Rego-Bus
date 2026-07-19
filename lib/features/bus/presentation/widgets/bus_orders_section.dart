@@ -314,39 +314,6 @@ class _OrderCardSkeleton extends StatelessWidget {
   }
 }
 
-class _BusSectionHeader extends StatelessWidget {
-  const _BusSectionHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primaryTint,
-              borderRadius: BorderRadius.circular(AppRadius.md),
-            ),
-            child: const Icon(AppIcons.bus, size: 22, color: AppColors.primary),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Text(
-            l10n.ticketsSectionBus,
-            style: AppTypography.title.copyWith(
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _OrdersList extends ConsumerWidget {
   const _OrdersList({required this.orders});
 
@@ -357,7 +324,6 @@ class _OrdersList extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const _BusSectionHeader(),
         for (final order in orders)
           BusOrderCard(
             order: order,

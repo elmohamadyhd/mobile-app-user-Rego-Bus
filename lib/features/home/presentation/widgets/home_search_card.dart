@@ -17,6 +17,7 @@ import 'package:rego/features/bus/presentation/widgets/bus_city_picker.dart';
 import 'package:rego/features/home/presentation/widgets/home_flight_class_picker.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:rego/shared/widgets/transport_mode_tab_bar.dart';
 
 enum TripType { oneWay, roundTrip }
 
@@ -30,7 +31,7 @@ class HomeSearchCard extends ConsumerStatefulWidget {
   final int selectedTab;
   final ValueChanged<int> onTabChanged;
 
-  static const int flightTabIndex = 2;
+  static const int flightTabIndex = TransportModeTabBar.flightTabIndex;
 
   @override
   ConsumerState<HomeSearchCard> createState() => _HomeSearchCardState();
@@ -179,12 +180,6 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final tabs = [
-      (l10n.homeTabBus, AppIcons.bus),
-      (l10n.homeTabPrivate, AppIcons.private),
-      (l10n.homeTabFlight, AppIcons.flight),
-      (l10n.homeTabTrain, AppIcons.train),
-    ];
     final isRoundTrip = _tripType == TripType.roundTrip;
     final showFlightClass = widget.selectedTab == HomeSearchCard.flightTabIndex;
 
@@ -205,38 +200,21 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: AppColors.bgBase,
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-            ),
-            child: Row(
-              children: List.generate(tabs.length, (i) {
-                final (label, icon) = tabs[i];
-                final active = widget.selectedTab == i;
-                return Expanded(
-                  child: _TransportTab(
-                    label: label,
-                    icon: icon,
-                    active: active,
-                    onTap: () {
-                      widget.onTabChanged(i);
-                      if (i != 0) {
-                        ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(
-                            SnackBar(
-                              content: Text(l10n.homeComingSoon),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                      }
-                    },
-                  ),
-                );
-              }),
-            ),
+          TransportModeTabBar(
+            selectedIndex: widget.selectedTab,
+            onChanged: (i) {
+              widget.onTabChanged(i);
+              if (i != TransportModeTabBar.busTabIndex) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.homeComingSoon),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+              }
+            },
           ),
           const SizedBox(height: 12),
           _TripTypeToggle(
@@ -565,55 +543,6 @@ class _ClassField extends StatelessWidget {
                 AppIcons.chevronDown,
                 color: AppColors.textMuted,
                 size: 20,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _TransportTab extends StatelessWidget {
-  const _TransportTab({
-    required this.label,
-    required this.icon,
-    required this.active,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final bool active;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: active ? Colors.white : Colors.transparent,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      elevation: active ? 1 : 0,
-      shadowColor: const Color(0x1A000000),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 19,
-                color: active ? AppColors.primary : AppColors.textMuted,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: AppTypography.overline.copyWith(
-                  color: active ? AppColors.textPrimary : AppColors.textMuted,
-                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                ),
               ),
             ],
           ),
