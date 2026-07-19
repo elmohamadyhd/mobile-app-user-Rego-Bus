@@ -375,6 +375,9 @@
   },
   "confirmPriceSection": "Price breakdown",
   "confirmPricePerSeat": "Price per seat",
+  "confirmPriceSubtotal": "Subtotal",
+  "confirmPriceWalletApplied": "Wallet",
+  "confirmPricePayByCard": "Pay by card",
   "confirmTotal": "Total",
 
   "eTicketConfirmed": "Booking confirmed!",

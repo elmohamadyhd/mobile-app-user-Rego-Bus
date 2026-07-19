@@ -119,10 +119,33 @@ void main() {
       find.text('25.00 EGP from wallet; pay 150.00 EGP by card'),
       findsOneWidget,
     );
+    expect(find.text('Subtotal'), findsOneWidget);
+    expect(find.text('175 EGP'), findsNWidgets(2));
+    expect(find.text('−25.00 EGP'), findsOneWidget);
+    expect(find.text('Pay by card'), findsOneWidget);
+    expect(find.text('150.00 EGP'), findsNWidgets(2));
     expect(
       tester.widget<PrimaryButton>(find.byType(PrimaryButton)).onPressed,
       isNotNull,
     );
+  });
+
+  testWidgets('card payment hides wallet rows in price breakdown', (tester) async {
+    await _pumpConfirm(
+      tester,
+      walletRepo: FakeWalletRepository(
+        walletResult: const Wallet(
+          id: 1,
+          balance: 25,
+          currency: 'EGP',
+          transactions: [],
+        ),
+      ),
+    );
+
+    expect(find.text('Subtotal'), findsNothing);
+    expect(find.text('Pay by card'), findsNothing);
+    expect(find.text('−25.00 EGP'), findsNothing);
   });
 
   testWidgets('shows partial-pay hint in Arabic', (tester) async {
@@ -147,6 +170,8 @@ void main() {
       find.text('25.00 EGP من المحفظة؛ ادفع 150.00 EGP بالبطاقة'),
       findsOneWidget,
     );
+    expect(find.text('المجموع الفرعي'), findsOneWidget);
+    expect(find.text('الدفع بالبطاقة'), findsOneWidget);
   });
 
   testWidgets('shows wallet balance in Arabic', (tester) async {

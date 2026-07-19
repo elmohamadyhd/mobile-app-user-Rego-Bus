@@ -188,6 +188,9 @@
   "confirmWalletPartialPay": "{walletAmount} {currency} من المحفظة؛ ادفع {remainingAmount} {currency} بالبطاقة",
   "confirmPriceSection": "تفاصيل السعر",
   "confirmPricePerSeat": "سعر المقعد",
+  "confirmPriceSubtotal": "المجموع الفرعي",
+  "confirmPriceWalletApplied": "المحفظة",
+  "confirmPricePayByCard": "الدفع بالبطاقة",
   "confirmTotal": "الإجمالي",
 
   "eTicketConfirmed": "تم تأكيد الحجز!",

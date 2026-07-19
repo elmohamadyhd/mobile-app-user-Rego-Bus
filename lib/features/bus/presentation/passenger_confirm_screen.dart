@@ -21,6 +21,40 @@ import 'package:rego/shared/widgets/primary_button.dart';
 int _bookingTotalEgp(BusBookingState state) =>
     state.segmentFare.round() * state.selectedSeats.length;
 
+class _WalletPaymentSplit {
+  const _WalletPaymentSplit({
+    required this.subtotal,
+    required this.walletApplied,
+    required this.cardRemainder,
+    required this.currency,
+  });
+
+  final int subtotal;
+  final double walletApplied;
+  final double cardRemainder;
+  final String currency;
+
+  bool get isPartial => cardRemainder > 0;
+}
+
+_WalletPaymentSplit? _walletSplit({
+  required PaymentMethod method,
+  required double? balance,
+  required String? currency,
+  required int subtotal,
+}) {
+  if (method != PaymentMethod.wallet || balance == null || currency == null) {
+    return null;
+  }
+  final walletApplied = balance < subtotal ? balance : subtotal.toDouble();
+  return _WalletPaymentSplit(
+    subtotal: subtotal,
+    walletApplied: walletApplied,
+    cardRemainder: subtotal - walletApplied,
+    currency: currency,
+  );
+}
+
 class PassengerConfirmScreen extends ConsumerWidget {
   const PassengerConfirmScreen({super.key});
 
@@ -342,6 +376,14 @@ class _PaymentSection extends ConsumerWidget {
     final isWallet = state.paymentMethod == PaymentMethod.wallet;
     final walletAsync = ref.watch(walletProvider);
     final bookingTotal = _bookingTotalEgp(state);
+    final split = walletAsync.hasValue
+        ? _walletSplit(
+            method: state.paymentMethod,
+            balance: walletAsync.value!.balance,
+            currency: walletAsync.value!.currency,
+            subtotal: bookingTotal,
+          )
+        : null;
 
     String? walletSubtitle;
     if (walletAsync.isLoading) {
@@ -350,14 +392,10 @@ class _PaymentSection extends ConsumerWidget {
       walletSubtitle = l10n.walletError;
     } else if (walletAsync.hasValue) {
       final wallet = walletAsync.value!;
-      final walletApplied = wallet.balance < bookingTotal
-          ? wallet.balance
-          : bookingTotal.toDouble();
-      final remaining = bookingTotal - walletApplied;
-      if (isWallet && remaining > 0) {
+      if (isWallet && split != null && split.isPartial) {
         walletSubtitle = l10n.confirmWalletPartialPay(
-          walletApplied.toStringAsFixed(2),
-          remaining.toStringAsFixed(2),
+          split.walletApplied.toStringAsFixed(2),
+          split.cardRemainder.toStringAsFixed(2),
           wallet.currency,
         );
       } else {
@@ -484,16 +522,89 @@ class _PaymentOption extends StatelessWidget {
 
 // ── Price breakdown ──────────────────────────────────────────────────────────
 
-class _PriceBreakdown extends StatelessWidget {
+class _PriceBreakdown extends ConsumerWidget {
   const _PriceBreakdown({required this.state, required this.l10n});
   final BusBookingState state;
   final AppLocalizations l10n;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final pricePerSeat = state.segmentFare.round();
     final seatCount = state.selectedSeats.length;
-    final total = pricePerSeat * seatCount;
+    final subtotal = pricePerSeat * seatCount;
+    final walletAsync = ref.watch(walletProvider);
+    final split = walletAsync.hasValue
+        ? _walletSplit(
+            method: state.paymentMethod,
+            balance: walletAsync.value!.balance,
+            currency: walletAsync.value!.currency,
+            subtotal: subtotal,
+          )
+        : null;
+
+    final priceRows = <Widget>[
+      _PriceRow(
+        label: l10n.confirmPricePerSeat,
+        value: '$pricePerSeat EGP',
+        bold: false,
+      ),
+      const SizedBox(height: AppSpacing.sm),
+      _PriceRow(
+        label: l10n.seatSelectionSeatsLabel,
+        value: '$seatCount',
+        bold: false,
+      ),
+    ];
+
+    if (split != null) {
+      final currency = split.currency;
+      priceRows.addAll([
+        const SizedBox(height: AppSpacing.sm),
+        const Divider(color: AppColors.hairline),
+        const SizedBox(height: AppSpacing.sm),
+        _PriceRow(
+          label: l10n.confirmPriceSubtotal,
+          value: '${split.subtotal} $currency',
+          bold: false,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _PriceRow(
+          label: l10n.confirmPriceWalletApplied,
+          value: '−${split.walletApplied.toStringAsFixed(2)} $currency',
+          bold: false,
+          valueColor: AppColors.success,
+        ),
+        if (split.isPartial) ...[
+          const SizedBox(height: AppSpacing.sm),
+          _PriceRow(
+            label: l10n.confirmPricePayByCard,
+            value: '${split.cardRemainder.toStringAsFixed(2)} $currency',
+            bold: false,
+          ),
+        ],
+        const SizedBox(height: AppSpacing.sm),
+        const Divider(color: AppColors.hairline),
+        const SizedBox(height: AppSpacing.sm),
+        _PriceRow(
+          label: l10n.confirmTotal,
+          value: '${split.cardRemainder.toStringAsFixed(2)} $currency',
+          bold: true,
+          valueColor: AppColors.primary,
+        ),
+      ]);
+    } else {
+      priceRows.addAll([
+        const SizedBox(height: AppSpacing.sm),
+        const Divider(color: AppColors.hairline),
+        const SizedBox(height: AppSpacing.sm),
+        _PriceRow(
+          label: l10n.confirmTotal,
+          value: '$subtotal EGP',
+          bold: true,
+          valueColor: AppColors.primary,
+        ),
+      ]);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -510,30 +621,7 @@ class _PriceBreakdown extends StatelessWidget {
             border: Border.all(color: AppColors.border),
           ),
           padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            children: [
-              _PriceRow(
-                label: l10n.confirmPricePerSeat,
-                value: '$pricePerSeat EGP',
-                bold: false,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              _PriceRow(
-                label: l10n.seatSelectionSeatsLabel,
-                value: '$seatCount',
-                bold: false,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              const Divider(color: AppColors.hairline),
-              const SizedBox(height: AppSpacing.sm),
-              _PriceRow(
-                label: l10n.confirmTotal,
-                value: '$total EGP',
-                bold: true,
-                valueColor: AppColors.primary,
-              ),
-            ],
-          ),
+          child: Column(children: priceRows),
         ),
       ],
     );
