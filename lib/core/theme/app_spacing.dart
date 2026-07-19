@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Spacing scale (multiples of 4 px).
 abstract final class AppSpacing {
+  static const double xxs = 2;
   static const double xs = 4;
   static const double sm = 8;
   static const double md = 16;
@@ -16,6 +17,8 @@ abstract final class AppSpacing {
 
 /// Corner radii. Skyline uses soft, generous rounding — 24 px cards.
 abstract final class AppRadius {
+  static const double xxs = 2;
+  static const double xs = 4;
   static const double sm = 8;
   static const double md = 12;
   static const double lg = 16;

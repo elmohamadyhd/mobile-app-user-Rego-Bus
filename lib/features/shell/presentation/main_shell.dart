@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:rego/core/theme/app_spacing.dart';
 import 'package:rego/features/shell/presentation/widgets/main_nav_bar.dart';
 import 'package:rego/shared/widgets/double_back_to_exit.dart';
 
@@ -40,7 +41,12 @@ class MainShell extends StatelessWidget {
           color: Colors.transparent,
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(14, 0, 14, 16),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                14,
+                0,
+                14,
+                AppSpacing.lg,
+              ),
               child: MainNavBar(
                 currentIndex: navigationShell.currentIndex,
                 onDestinationSelected: _onDestinationSelected,

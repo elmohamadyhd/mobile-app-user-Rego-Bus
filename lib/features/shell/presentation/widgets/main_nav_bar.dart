@@ -7,11 +7,11 @@ import 'package:rego/core/theme/app_typography.dart';
 import 'package:rego/l10n/app_localizations.dart';
 
 // ── Nav-bar geometry (matches the Skyline design canvas) ─────────────────────
-const double _barRadius = 40;
-const double _orbSize = 56;
-const double _orbIconSize = 28;
-const double _iconSlotHeight = 44;
-const double _navIconSize = 22;
+const double _barRadius = 32;
+const double _orbSize = 48;
+const double _orbIconSize = 24;
+const double _iconSlotHeight = 38;
+const double _navIconSize = 20;
 
 /// How far the active orb floats above the bar. Also the height of the
 /// transparent, still-tappable zone reserved above the bar so the raised orb
@@ -20,8 +20,8 @@ const double _orbLift = 18;
 
 const double _barPadH =
     AppSpacing.sm; // horizontal inset of items from the edge
-const double _barPadV = AppSpacing.sm; // vertical breathing room inside the bar
-const double _labelGap = AppSpacing.xs; // gap between icon and label
+const double _barPadV = AppSpacing.xs; // vertical breathing room inside the bar
+const double _labelGap = AppSpacing.xxs; // gap between icon and label
 
 /// Labels never scale past this — a nav bar must stay one line at any system
 /// font size. Icons and the orb keep a fixed footprint regardless.
@@ -216,9 +216,9 @@ class _NavActiveOrb extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.6),
-            blurRadius: 18,
+            blurRadius: 14,
             spreadRadius: -4,
-            offset: const Offset(0, 10),
+            offset: const Offset(0, 6),
           ),
         ],
       ),

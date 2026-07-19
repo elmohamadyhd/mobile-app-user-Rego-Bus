@@ -35,6 +35,13 @@ void main() {
     expect(find.text('Profile'), findsOneWidget);
   });
 
+  testWidgets('stays within the slim nav height budget', (tester) async {
+    await tester.pumpWidget(wrap(currentIndex: 1, onSelected: (_) {}));
+    await tester.pumpAndSettle();
+
+    expect(tester.getSize(find.byType(MainNavBar)).height, lessThanOrEqualTo(82));
+  });
+
   testWidgets('tapping a destination reports its index', (tester) async {
     int? tapped;
     await tester.pumpWidget(
