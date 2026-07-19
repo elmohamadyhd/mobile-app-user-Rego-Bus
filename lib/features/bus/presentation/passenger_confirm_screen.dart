@@ -14,8 +14,12 @@ import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
+import 'package:rego/features/wallet/presentation/providers/wallet_providers.dart';
 import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
+
+int _bookingTotalEgp(BusBookingState state) =>
+    state.segmentFare.round() * state.selectedSeats.length;
 
 class PassengerConfirmScreen extends ConsumerWidget {
   const PassengerConfirmScreen({super.key});
@@ -27,10 +31,15 @@ class PassengerConfirmScreen extends ConsumerWidget {
     // Side-effect navigation via ref.listen — never call context.go inside build.
     ref.listen<BusBookingState>(busBookingProvider, (prev, next) {
       if (next.status == BusBookingStatus.awaitingPayment) {
+        if (next.paymentMethod == PaymentMethod.wallet) {
+          ref.read(walletProvider.notifier).refresh();
+        }
         // Order created (pending) with a gateway payment_url — go pay.
         context.push(BusRoutes.pay);
       } else if (next.status == BusBookingStatus.confirmed) {
-        // Fallback path: order had no payment_url and was confirmed directly.
+        if (next.paymentMethod == PaymentMethod.wallet) {
+          ref.read(walletProvider.notifier).refresh();
+        }
         context.go(BusRoutes.ticket);
       } else if (next.status == BusBookingStatus.error && next.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -330,6 +339,34 @@ class _PaymentSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isVisa = state.paymentMethod == PaymentMethod.visa;
+    final isWallet = state.paymentMethod == PaymentMethod.wallet;
+    final walletAsync = ref.watch(walletProvider);
+    final bookingTotal = _bookingTotalEgp(state);
+
+    String? walletSubtitle;
+    if (walletAsync.isLoading) {
+      walletSubtitle = '…';
+    } else if (walletAsync.hasError) {
+      walletSubtitle = l10n.walletError;
+    } else if (walletAsync.hasValue) {
+      final wallet = walletAsync.value!;
+      final walletApplied = wallet.balance < bookingTotal
+          ? wallet.balance
+          : bookingTotal.toDouble();
+      final remaining = bookingTotal - walletApplied;
+      if (isWallet && remaining > 0) {
+        walletSubtitle = l10n.confirmWalletPartialPay(
+          walletApplied.toStringAsFixed(2),
+          remaining.toStringAsFixed(2),
+          wallet.currency,
+        );
+      } else {
+        walletSubtitle = l10n.confirmPaymentWalletBalance(
+          wallet.balance.toStringAsFixed(2),
+          wallet.currency,
+        );
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,10 +390,13 @@ class _PaymentSection extends ConsumerWidget {
         _PaymentOption(
           icon: AppIcons.wallet,
           label: l10n.confirmPaymentWallet,
-          selected: false,
-          enabled: false,
-          subtitle: l10n.confirmCardComingSoon,
-          onTap: () {},
+          selected: isWallet,
+          subtitle: walletSubtitle,
+          onTap: () {
+            ref
+                .read(busBookingProvider.notifier)
+                .setPaymentMethod(PaymentMethod.wallet);
+          },
         ),
       ],
     );
@@ -369,7 +409,6 @@ class _PaymentOption extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
-    this.enabled = true,
     this.subtitle,
   });
 
@@ -377,34 +416,24 @@ class _PaymentOption extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
-  final bool enabled;
   final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
-    final bg = !enabled
-        ? AppColors.bgBase
-        : selected
-            ? AppColors.primary
-            : AppColors.bgCard;
-    final fg = !enabled
-        ? AppColors.textMuted
-        : selected
-            ? AppColors.onPrimary
-            : AppColors.textPrimary;
-    final iconColor = !enabled
-        ? AppColors.textMuted
-        : selected
-            ? AppColors.onPrimary
-            : AppColors.primary;
+    final bg = selected ? AppColors.primary : AppColors.bgCard;
+    final fg = selected ? AppColors.onPrimary : AppColors.textPrimary;
+    final iconColor = selected ? AppColors.onPrimary : AppColors.primary;
     final borderColor = selected ? AppColors.primary : AppColors.border;
+    final subtitleColor = selected
+        ? AppColors.onPrimary.withValues(alpha: 0.85)
+        : AppColors.textMuted;
 
     return Material(
       color: bg,
       borderRadius: BorderRadius.circular(AppRadius.md),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: enabled ? onTap : null,
+        onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.md),
@@ -433,7 +462,7 @@ class _PaymentOption extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: AppTypography.caption.copyWith(
-                          color: AppColors.textMuted,
+                          color: subtitleColor,
                         ),
                       ),
                   ],

@@ -355,6 +355,24 @@
   "confirmPaymentWallet": "Wallet",
   "confirmPaymentCard": "Credit / debit card",
   "confirmCardComingSoon": "Card payment coming soon",
+  "confirmPaymentWalletBalance": "{amount} {currency} available",
+  "@confirmPaymentWalletBalance": {
+    "description": "Wallet balance subtitle on the booking confirm payment row.",
+    "placeholders": {
+      "amount": { "type": "String" },
+      "currency": { "type": "String" }
+    }
+  },
+  "confirmWalletInsufficient": "Insufficient wallet balance",
+  "confirmWalletPartialPay": "{walletAmount} {currency} from wallet; pay {remainingAmount} {currency} by card",
+  "@confirmWalletPartialPay": {
+    "description": "Preview when wallet balance only covers part of the booking total.",
+    "placeholders": {
+      "walletAmount": { "type": "String" },
+      "remainingAmount": { "type": "String" },
+      "currency": { "type": "String" }
+    }
+  },
   "confirmPriceSection": "Price breakdown",
   "confirmPricePerSeat": "Price per seat",
   "confirmTotal": "Total",

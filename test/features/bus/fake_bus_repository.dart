@@ -29,6 +29,7 @@ class FakeBusRepository implements BusRepository {
   BusOrderStatus? orderStatusResult;
   List<BusLocation>? locationsResult;
   int createTicketCallCount = 0;
+  BusCreateTicketRequest? lastCreateTicketRequest;
   List<BusOrder>? ordersResult;
   int listOrdersCallCount = 0;
   bool listOrdersShouldThrow = false;
@@ -105,6 +106,7 @@ class FakeBusRepository implements BusRepository {
     required BusStop toStop,
   }) async {
     createTicketCallCount++;
+    lastCreateTicketRequest = request;
     return ticketResult ??
         BusTicket(
           bookingRef: '000001',

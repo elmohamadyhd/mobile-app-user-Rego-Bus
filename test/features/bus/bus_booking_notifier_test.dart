@@ -172,6 +172,111 @@ void main() {
       expect(container.read(busBookingProvider).selectedSeats, isEmpty);
     });
 
+    test('setPaymentMethod wallet updates state', () async {
+      final container = makeContainer(FakeBusRepository());
+      final notifier = container.read(busBookingProvider.notifier);
+
+      notifier.setPaymentMethod(PaymentMethod.wallet);
+
+      expect(
+        container.read(busBookingProvider).paymentMethod,
+        PaymentMethod.wallet,
+      );
+    });
+
+    test('confirmBooking with wallet sends payment_method wallet', () async {
+      final repo = FakeBusRepository(
+        ticketResult: _pendingTicket(paymentUrl: null).copyWith(
+          statusCode: 'confirmed',
+        ),
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      notifier.setPaymentMethod(PaymentMethod.wallet);
+
+      await notifier.confirmBooking();
+
+      expect(repo.lastCreateTicketRequest?.paymentMethod, 'wallet');
+      expect(
+        container.read(busBookingProvider).status,
+        BusBookingStatus.confirmed,
+      );
+    });
+
+    test(
+        'confirmBooking with wallet and confirmed status confirms even with payment_url',
+        () async {
+      final repo = FakeBusRepository(
+        ticketResult: _pendingTicket().copyWith(statusCode: 'confirmed'),
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      notifier.setPaymentMethod(PaymentMethod.wallet);
+
+      await notifier.confirmBooking();
+
+      expect(
+        container.read(busBookingProvider).status,
+        BusBookingStatus.confirmed,
+      );
+    });
+
+    test('confirmBooking with wallet and payment_url awaits payment', () async {
+      final repo = FakeBusRepository(ticketResult: _pendingTicket());
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      notifier.setPaymentMethod(PaymentMethod.wallet);
+
+      await notifier.confirmBooking();
+
+      final state = container.read(busBookingProvider);
+      expect(state.status, BusBookingStatus.awaitingPayment);
+      expect(state.ticket?.paymentUrl, isNotNull);
+    });
+
+    test(
+        'confirmBooking with wallet pending order without payment_url stays paymentPending',
+        () async {
+      final repo = FakeBusRepository(
+        ticketResult: _pendingTicket(paymentUrl: null),
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      notifier.setPaymentMethod(PaymentMethod.wallet);
+
+      await notifier.confirmBooking();
+
+      expect(
+        container.read(busBookingProvider).status,
+        BusBookingStatus.paymentPending,
+      );
+    });
+
+    test(
+        'confirmBooking reuses held wallet ticket for the same trip/stops/seats',
+        () async {
+      final repo = FakeBusRepository(ticketResult: _pendingTicket());
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      notifier.setPaymentMethod(PaymentMethod.wallet);
+
+      await notifier.confirmBooking();
+      expect(repo.createTicketCallCount, 1);
+
+      await notifier.confirmBooking();
+
+      expect(repo.createTicketCallCount, 1);
+      expect(
+        container.read(busBookingProvider).status,
+        BusBookingStatus.awaitingPayment,
+      );
+    });
+
     test('confirmBooking with a payment_url awaits payment (not confirmed)',
         () async {
       final repo = FakeBusRepository(ticketResult: _pendingTicket());

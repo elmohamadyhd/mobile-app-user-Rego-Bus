@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rego/core/network/dio_client.dart';
 import 'package:rego/core/utils/date_formatting.dart';
 import 'package:rego/features/bus/data/bus_api.dart';
+import 'package:rego/features/bus/data/bus_dto_mapper.dart';
 import 'package:rego/features/bus/data/bus_repository_impl.dart';
 import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/domain/entities/bus_stop.dart';
@@ -197,9 +198,21 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
   }
 
   void setPaymentMethod(PaymentMethod method) {
-    if (method == PaymentMethod.wallet) return;
-    state = state.copyWith(paymentMethod: method);
+    if (method == state.paymentMethod) return;
+    final resetStatus = state.status == BusBookingStatus.awaitingPayment
+        ? BusBookingStatus.idle
+        : state.status;
+    state = state.copyWith(
+      paymentMethod: method,
+      ticket: null,
+      status: resetStatus,
+    );
   }
+
+  String _apiPaymentMethod(PaymentMethod method) => switch (method) {
+        PaymentMethod.visa => 'myfatoorah',
+        PaymentMethod.wallet => 'wallet',
+      };
 
   /// Whether [ticket] already represents a gateway order held for exactly
   /// this trip/stop-pair/seat selection. If so, `confirmBooking` reuses its
@@ -257,6 +270,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
           toLocationId: to.locationId,
           date: toIsoDate(params.date),
           currency: params.currency,
+          paymentMethod: _apiPaymentMethod(state.paymentMethod),
           seats: state.selectedSeats
               .map((id) => BusSeatSelection(seatId: id, seatTypeId: id))
               .toList(),
@@ -265,16 +279,8 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
         fromStop: from,
         toStop: to,
       );
-      // The order is created in a `pending` state with a gateway payment_url.
-      // Hand off to the payment WebView; the booking is only `confirmed` once
-      // `verifyPayment` reads back a paid status. If no payment_url came back
-      // (unexpected for the card path), fall through to confirmed so the rider
-      // isn't stranded.
-      final hasPaymentUrl = (ticket.paymentUrl ?? '').isNotEmpty;
       state = state.copyWith(
-        status: hasPaymentUrl
-            ? BusBookingStatus.awaitingPayment
-            : BusBookingStatus.confirmed,
+        status: _statusAfterCreateTicket(ticket, state.paymentMethod),
         ticket: ticket,
       );
     } catch (e) {
@@ -283,6 +289,23 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
         error: e.toString(),
       );
     }
+  }
+
+  BusBookingStatus _statusAfterCreateTicket(
+    BusTicket ticket,
+    PaymentMethod paymentMethod,
+  ) {
+    if (BusDtoMapper.isPaidStatus(ticket.statusCode ?? '', 0)) {
+      return BusBookingStatus.confirmed;
+    }
+    if ((ticket.paymentUrl ?? '').isNotEmpty) {
+      return BusBookingStatus.awaitingPayment;
+    }
+    // Unexpected for the card path — don't strand the rider without a checkout URL.
+    if (paymentMethod == PaymentMethod.visa) {
+      return BusBookingStatus.confirmed;
+    }
+    return BusBookingStatus.paymentPending;
   }
 
   /// Reads the order's authoritative status after the payment gateway returns.
