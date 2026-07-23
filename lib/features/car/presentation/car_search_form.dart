@@ -19,7 +19,16 @@ import 'package:rego/shared/models/trip_type.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 class CarSearchForm extends ConsumerStatefulWidget {
-  const CarSearchForm({super.key});
+  const CarSearchForm({
+    super.key,
+    @visibleForTesting this.initialFrom,
+    @visibleForTesting this.initialTo,
+  });
+
+  @visibleForTesting
+  final CarPlace? initialFrom;
+  @visibleForTesting
+  final CarPlace? initialTo;
 
   @override
   ConsumerState<CarSearchForm> createState() => _CarSearchFormState();
@@ -34,6 +43,13 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
   bool _searching = false;
 
   static const _maxBookingDays = 90;
+
+  @override
+  void initState() {
+    super.initState();
+    _from = widget.initialFrom;
+    _to = widget.initialTo;
+  }
 
   void _swapFields() {
     setState(() {

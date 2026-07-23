@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'package:rego/core/places/google_maps_capabilities.dart';
 import 'package:rego/core/places/place_prediction.dart';
 import 'package:rego/core/places/places_client.dart';
 import 'package:rego/core/places/places_providers.dart';
@@ -21,9 +22,14 @@ import 'package:rego/l10n/app_localizations.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 
 class CarPlacePickerScreen extends ConsumerStatefulWidget {
-  const CarPlacePickerScreen({super.key, required this.args});
+  const CarPlacePickerScreen({
+    super.key,
+    required this.args,
+    @visibleForTesting this.onPickedForTest,
+  });
 
   final CarPlacePickerArgs args;
+  final void Function(CarPlace place)? onPickedForTest;
 
   @override
   ConsumerState<CarPlacePickerScreen> createState() =>
@@ -54,6 +60,10 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
   bool _searching = false;
   String? _errorMessage;
   bool _locating = false;
+  int _draftVersion = 0;
+  bool _ignoreMapEvents = false;
+  bool _mapCreated = false;
+  Timer? _mapCreateTimeout;
 
   bool get _isSearching => _query.text.trim().length >= 2;
 
@@ -76,6 +86,13 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      if (GoogleMapsCapabilities.mapRenderingAvailable) {
+        _mapCreateTimeout = Timer(const Duration(seconds: 3), () {
+          if (!mounted || _mapCreated) return;
+          GoogleMapsCapabilities.markMapUnavailable();
+          setState(() {});
+        });
+      }
       if (initial == null && widget.args.showUseMyLocation) {
         unawaited(_centerOnMyLocation(silent: true));
       } else if (_draft?.label.isEmpty ?? false) {
@@ -90,6 +107,7 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
     _focusNode.removeListener(_onSearchFocusChanged);
     _searchDebounce?.cancel();
     _geocodeDebounce?.cancel();
+    _mapCreateTimeout?.cancel();
     _query.dispose();
     _focusNode.dispose();
     _sheetController.dispose();
@@ -146,31 +164,63 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
 
   void _newSessionToken() => _sessionToken = PlacesClient.newSessionToken();
 
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    _mapCreated = true;
+    _mapCreateTimeout?.cancel();
+  }
+
+  void _setDraft(CarPlace place) {
+    setState(() {
+      _draft = place;
+      _draftVersion++;
+      _center = LatLng(place.latitude, place.longitude);
+    });
+  }
+
   Future<void> _animateTo(LatLng target) async {
+    if (!GoogleMapsCapabilities.mapRenderingAvailable) return;
+    _ignoreMapEvents = true;
     _center = target;
-    await _mapController?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: target, zoom: 15),
-      ),
-    );
+    try {
+      await _mapController
+          ?.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(target: target, zoom: 15),
+            ),
+          )
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {
+      // Map unavailable or animation failed — draft coords already set.
+    } finally {
+      if (mounted) {
+        setState(() => _ignoreMapEvents = false);
+      }
+    }
   }
 
   Future<void> _reverseGeocode() async {
+    if (_ignoreMapEvents) return;
     final client = ref.read(placesClientProvider);
     if (!client.isConfigured) return;
     final locale = Localizations.localeOf(context).languageCode;
+    final versionAtStart = _draftVersion;
     try {
       final place = await client.reverseGeocode(
         latitude: _center.latitude,
         longitude: _center.longitude,
         languageCode: locale,
       );
-      if (!mounted) return;
-      setState(() => _draft = place);
+      if (!mounted || _ignoreMapEvents || versionAtStart != _draftVersion) {
+        return;
+      }
+      _setDraft(place);
     } catch (_) {
-      if (!mounted) return;
-      setState(
-        () => _draft = CarPlace(
+      if (!mounted || _ignoreMapEvents || versionAtStart != _draftVersion) {
+        return;
+      }
+      _setDraft(
+        CarPlace(
           latitude: _center.latitude,
           longitude: _center.longitude,
           label: '',
@@ -180,6 +230,20 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
   }
 
   void _onCameraIdle() {
+    if (_ignoreMapEvents || !GoogleMapsCapabilities.mapRenderingAvailable) {
+      return;
+    }
+    final draft = _draft;
+    if (draft != null &&
+        draft.sameCoordinates(
+          CarPlace(
+            latitude: _center.latitude,
+            longitude: _center.longitude,
+            label: '',
+          ),
+        )) {
+      return;
+    }
     _geocodeDebounce?.cancel();
     _geocodeDebounce =
         Timer(const Duration(milliseconds: 400), _reverseGeocode);
@@ -242,12 +306,15 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
       _newSessionToken();
       _query.clear();
       _focusNode.unfocus();
+      _geocodeDebounce?.cancel();
+      _geocodeDebounce = null;
       setState(() {
         _predictions = [];
-        _draft = place;
-        _center = LatLng(place.latitude, place.longitude);
       });
-      await _animateTo(_center);
+      _setDraft(place);
+      if (GoogleMapsCapabilities.mapRenderingAvailable) {
+        await _animateTo(LatLng(place.latitude, place.longitude));
+      }
     } catch (_) {
       if (!mounted) return;
       setState(
@@ -271,8 +338,18 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
       }
       final position = await Geolocator.getCurrentPosition();
       if (!mounted) return;
-      _center = LatLng(position.latitude, position.longitude);
-      await _animateTo(_center);
+      final gps = LatLng(position.latitude, position.longitude);
+      _center = gps;
+      _setDraft(
+        CarPlace(
+          latitude: gps.latitude,
+          longitude: gps.longitude,
+          label: _draft?.label ?? '',
+        ),
+      );
+      if (GoogleMapsCapabilities.mapRenderingAvailable) {
+        await _animateTo(gps);
+      }
       await _reverseGeocode();
     } catch (_) {
       if (!silent && mounted) {
@@ -283,50 +360,118 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
     }
   }
 
-  void _confirm() {
-    final draft = _draft;
-    if (draft == null) return;
-    context.pop(
-      CarPlace(
-        latitude: _center.latitude,
-        longitude: _center.longitude,
-        label: draft.label,
-      ),
-    );
+  Future<void> _confirm() async {
+    if (_draft == null) return;
+    await _flushPendingGeocode();
+    if (!mounted || _draft == null) return;
+    widget.onPickedForTest?.call(_draft!);
+    if (!mounted) return;
+    context.pop(_draft!);
   }
+
+  Future<void> _flushPendingGeocode() async {
+    if (_geocodeDebounce == null) return;
+    _geocodeDebounce?.cancel();
+    _geocodeDebounce = null;
+    if (_ignoreMapEvents) return;
+    await _reverseGeocode();
+  }
+
+  void _onConfirmPressed() => unawaited(_confirm());
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
     final keyboardVisible = keyboardInset > 0;
-    final sideBySide =
-        context.isLandscape && context.screenSize.width >= AppBreakpoints.compact;
+    final sideBySide = GoogleMapsCapabilities.mapRenderingAvailable &&
+        context.isLandscape &&
+        context.screenSize.width >= AppBreakpoints.compact;
+    final showMap = GoogleMapsCapabilities.mapRenderingAvailable;
+
+    Widget buildPanel({
+      required bool showDragHandle,
+      required bool showTitle,
+      ScrollController? scrollController,
+      bool keyboardScrollPadding = false,
+    }) {
+      return _PickerPanel(
+        title: widget.args.title,
+        l10n: l10n,
+        query: _query,
+        focusNode: _focusNode,
+        searching: _searching,
+        isSearching: _isSearching,
+        predictions: _predictions,
+        errorMessage: _errorMessage,
+        draft: _draft,
+        initial: widget.args.initial,
+        onQueryChanged: _onQueryChanged,
+        onSelectPrediction: _selectPrediction,
+        onConfirm: _onConfirmPressed,
+        scrollController: scrollController,
+        showDragHandle: showDragHandle,
+        showTitle: showTitle,
+        keyboardVisible: keyboardVisible,
+        keyboardScrollPadding: keyboardScrollPadding,
+      );
+    }
+
+    if (!showMap) {
+      return Scaffold(
+        backgroundColor: AppColors.bgBase,
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                  AppSpacing.md,
+                  0,
+                ),
+                child: Row(
+                  children: [
+                    AuthBackButton(onTap: () => context.pop()),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        widget.args.title,
+                        style: AppTypography.title.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (widget.args.showUseMyLocation)
+                      _GpsFab(
+                        loading: _locating,
+                        onTap: () => unawaited(_centerOnMyLocation()),
+                      ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: buildPanel(showDragHandle: false, showTitle: false),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     final mapLayer = _MapLayer(
       center: _center,
-      onMapCreated: (controller) => _mapController = controller,
-      onCameraMove: (position) => _center = position.target,
+      onMapCreated: _onMapCreated,
+      onCameraMove: (position) {
+        if (!_ignoreMapEvents) {
+          _center = position.target;
+        }
+      },
       onCameraIdle: _onCameraIdle,
-    );
-
-    final panel = _PickerPanel(
-      title: widget.args.title,
-      l10n: l10n,
-      query: _query,
-      focusNode: _focusNode,
-      searching: _searching,
-      isSearching: _isSearching,
-      predictions: _predictions,
-      errorMessage: _errorMessage,
-      draft: _draft,
-      initial: widget.args.initial,
-      onQueryChanged: _onQueryChanged,
-      onSelectPrediction: _selectPrediction,
-      onConfirm: _confirm,
-      showDragHandle: !sideBySide,
-      keyboardVisible: keyboardVisible,
-      keyboardScrollPadding: sideBySide,
     );
 
     if (sideBySide) {
@@ -354,7 +499,7 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
                         bottom: AppSpacing.md,
                         child: _GpsFab(
                           loading: _locating,
-                          onTap: () => _centerOnMyLocation(),
+                          onTap: () => unawaited(_centerOnMyLocation()),
                         ),
                       ),
                   ],
@@ -367,7 +512,11 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
                     constraints: const BoxConstraints(
                       maxWidth: AppBreakpoints.maxContentWidth,
                     ),
-                    child: panel,
+                    child: buildPanel(
+                      showDragHandle: false,
+                      showTitle: true,
+                      keyboardScrollPadding: true,
+                    ),
                   ),
                 ),
               ),
@@ -429,7 +578,7 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
               bottom: panelPeek + AppSpacing.md,
               child: _GpsFab(
                 loading: _locating,
-                onTap: () => _centerOnMyLocation(),
+                onTap: () => unawaited(_centerOnMyLocation()),
               ),
             ),
           Positioned(
@@ -466,7 +615,7 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
                     initial: widget.args.initial,
                     onQueryChanged: _onQueryChanged,
                     onSelectPrediction: _selectPrediction,
-                    onConfirm: _confirm,
+                    onConfirm: _onConfirmPressed,
                     scrollController: scrollController,
                     showDragHandle: true,
                     showTitle: false,
