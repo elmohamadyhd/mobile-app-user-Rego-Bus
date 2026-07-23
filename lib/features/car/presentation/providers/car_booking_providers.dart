@@ -74,6 +74,8 @@ class CarBookingNotifier extends Notifier<CarBookingState> {
       state = state.copyWith(
         isLoadingQuotes: false,
         quotes: quotes,
+        selectedQuote: quotes.isEmpty ? null : quotes.first,
+        clearSelectedQuote: quotes.isEmpty,
       );
     } on ApiException catch (e) {
       state = state.copyWith(

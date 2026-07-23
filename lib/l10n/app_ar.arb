@@ -319,6 +319,8 @@
   "carGearManual": "يدوي",
   "carRefundable": "قابل للاسترداد",
   "carContinue": "متابعة",
+  "carQuotesCount": "{count, plural, =0{لا توجد مركبات} =1{مركبة واحدة متاحة} other{{count} مركبات متاحة}}",
+  "carSelectVehicleHint": "اختر مركبة للمتابعة",
   "carBookingComingSoon": "الحجز قريباً",
   "carSearchSelectBothPlaces": "اختر نقطة الانطلاق والوصول",
   "carSearchSamePlace": "يجب أن تكون نقطة الانطلاق مختلفة عن الوصول",

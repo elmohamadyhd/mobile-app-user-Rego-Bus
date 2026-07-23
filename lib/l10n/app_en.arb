@@ -621,6 +621,17 @@
   "@carRefundable": { "description": "Badge when operator allows refunds." },
   "carContinue": "Continue",
   "@carContinue": { "description": "Primary CTA on private transfer results." },
+  "carQuotesCount": "{count, plural, =0{No vehicles} =1{1 vehicle available} other{{count} vehicles available}}",
+  "@carQuotesCount": {
+    "description": "Results count header on private transfer quotes list.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "carSelectVehicleHint": "Tap a vehicle to continue",
+  "@carSelectVehicleHint": {
+    "description": "Helper under the continue CTA when nothing is selected."
+  },
   "carBookingComingSoon": "Booking coming soon",
   "@carBookingComingSoon": { "description": "Snackbar when signed-in user taps Continue before booking ships." },
   "carSearchSelectBothPlaces": "Select pickup and drop-off",

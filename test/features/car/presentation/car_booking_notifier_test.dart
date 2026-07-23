@@ -46,6 +46,7 @@ void main() {
     final state = container.read(carBookingProvider);
     expect(state.searchParams, isNotNull);
     expect(state.quotes, hasLength(1));
+    expect(state.selectedQuote?.id, FakeCarRepository.sampleQuote.id);
     expect(state.quotesError, isNull);
     expect(state.isLoadingQuotes, isFalse);
   });

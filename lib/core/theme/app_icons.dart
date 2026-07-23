@@ -43,6 +43,9 @@ abstract final class AppIcons {
   static const IconData locationTo = TablerIcons.mapPin;
   static const IconData map = TablerIcons.map;
   static const IconData swap = TablerIcons.arrowsDownUp;
+  static const IconData seats = TablerIcons.users;
+  static const IconData luggage = TablerIcons.briefcase;
+  static const IconData gear = TablerIcons.steeringWheel;
 
   // ── Misc ─────────────────────────────────────────────────────────────────
   static const IconData wallet = TablerIcons.wallet;
