@@ -7,7 +7,7 @@ import '../../fake_car_repository.dart';
 
 void main() {
   testWidgets('shows company, price, and seats', (tester) async {
-    final quote = FakeCarRepository.sampleQuote;
+    const quote = FakeCarRepository.sampleQuote;
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,

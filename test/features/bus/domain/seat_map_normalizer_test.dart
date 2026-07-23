@@ -57,8 +57,9 @@ void main() {
       // Cell count unchanged — Rule 1 does not prepend.
       final raw = jsonDecode(
         File('dummy data/seatsResponse.json').readAsStringSync(),
-      );
-      final rawCells = (raw['data'] as Map)['seats_map'] as List;
+      ) as Map<String, dynamic>;
+      final data = raw['data'] as Map<String, dynamic>;
+      final rawCells = data['seats_map'] as List;
       expect(map.cells.length, rawCells.length);
       expect(map.salon.rows, 12);
     });
@@ -81,8 +82,9 @@ void main() {
 
       final raw = jsonDecode(
         File('dummy data/seatsRespons_2.json').readAsStringSync(),
-      );
-      final rawCells = (raw['data'] as Map)['seats_map'] as List;
+      ) as Map<String, dynamic>;
+      final data = raw['data'] as Map<String, dynamic>;
+      final rawCells = data['seats_map'] as List;
       expect(map.cells.length, rawCells.length + columns);
       expect(map.salon.rows, 15);
     });

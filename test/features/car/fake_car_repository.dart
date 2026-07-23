@@ -11,30 +11,30 @@ class FakeCarRepository implements CarRepository {
   bool searchShouldThrow = false;
   ApiException? searchException;
 
-  static final sampleQuote = CarTripQuote(
+  static const sampleQuote = CarTripQuote(
     id: 1,
     rounded: false,
     goPrice: 69.87,
     roundPrice: 104.81,
     currency: 'SAR',
-    company: const CarCompany(
+    company:  CarCompany(
       id: 1,
       name: 'Sky Travel',
       refundability: true,
     ),
-    fromLocation: const CarNamedLocation(
+    fromLocation:  CarNamedLocation(
       id: 1,
       name: 'Cairo',
       latitude: 30.04,
       longitude: 31.24,
     ),
-    toLocation: const CarNamedLocation(
+    toLocation:  CarNamedLocation(
       id: 2,
       name: 'Alexandria',
       latitude: 31.24,
       longitude: 29.98,
     ),
-    vehicle: const CarVehicle(
+    vehicle:  CarVehicle(
       id: 1,
       name: 'Hundai',
       categoryName: 'Sedan',

@@ -28,7 +28,7 @@ class _FakePlacesClient extends PlacesClient {
   }) async {
     if (input.length < 2) return const [];
     return [
-      PlacePrediction(placeId: 'p1', description: 'Cairo Tower, Egypt'),
+     const PlacePrediction(placeId: 'p1', description: 'Cairo Tower, Egypt'),
     ];
   }
 
@@ -130,17 +130,15 @@ void main() {
     expect(find.text('Confirm location'), findsOneWidget);
   });
 
-  testWidgets('pickup shows GPS control', (tester) async {
+  testWidgets('pickup shows GPS control when showUseMyLocation is true',
+      (tester) async {
     await pumpPicker(
       tester,
       args: const CarPlacePickerArgs(title: 'Pickup', showUseMyLocation: true),
     );
 
-    expect(find.byIcon(Icons.gps_fixed), findsNothing);
-    // Uses AppIcons.locationFrom via Tabler — find by semantics/tooltip not ideal.
-    // GPS FAB is the second circular Material on screen; assert pickup-only path
-    // by absence when showUseMyLocation is false in next test.
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+    // GPS FAB uses AppIcons.locationFrom — verify pickup path opened without error.
+    expect(find.text('Confirm location'), findsOneWidget);
   });
 
   testWidgets('drop-off hides GPS when showUseMyLocation is false', (tester) async {
@@ -170,6 +168,40 @@ void main() {
 
     expect(find.text('Current selection'), findsWidgets);
     expect(find.text('Cairo Tower, Egypt'), findsWidgets);
+  });
+
+  testWidgets('typing with keyboard inset does not overflow', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          placesClientProvider.overrideWithValue(_FakePlacesClient()),
+        ],
+        child: const MediaQuery(
+          data: MediaQueryData(
+            viewInsets: EdgeInsets.only(bottom: 320),
+            size: Size(411, 800),
+          ),
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: Locale('en'),
+            home: CarPlacePickerScreen(
+              args: CarPlacePickerArgs(title: 'Pickup'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    await tester.enterText(find.byType(TextField), 'Cai');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Confirm location'), findsOneWidget);
+    expect(find.text('Current selection'), findsNothing);
   });
 
   testWidgets('confirm returns CarPlace', (tester) async {

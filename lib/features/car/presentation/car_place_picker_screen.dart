@@ -30,10 +30,19 @@ class CarPlacePickerScreen extends ConsumerStatefulWidget {
       _CarPlacePickerScreenState();
 }
 
-class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen> {
+class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen>
+    with WidgetsBindingObserver {
   static const _cairo = LatLng(30.0444, 31.2357);
+  static const _sheetPeek = 0.34;
+  static const _sheetPeekKeyboard = 0.55;
+  static const _sheetExpanded = 0.85;
+  static const _sheetMaxKeyboard = 0.92;
+  static const _sheetMin = 0.24;
+  static const _sheetMinKeyboard = 0.45;
+  static const _sheetMaxIdle = 0.5;
 
   GoogleMapController? _mapController;
+  final _sheetController = DraggableScrollableController();
   LatLng _center = _cairo;
   CarPlace? _draft;
   final _query = TextEditingController();
@@ -51,6 +60,8 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _focusNode.addListener(_onSearchFocusChanged);
     _sessionToken = PlacesClient.newSessionToken();
     final initial = widget.args.initial;
     if (initial != null) {
@@ -75,12 +86,62 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _focusNode.removeListener(_onSearchFocusChanged);
     _searchDebounce?.cancel();
     _geocodeDebounce?.cancel();
     _query.dispose();
     _focusNode.dispose();
+    _sheetController.dispose();
     _mapController?.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (!mounted || !_sheetController.isAttached) return;
+    final keyboardInset = View.of(context).viewInsets.bottom;
+    if (keyboardInset > 0) {
+      if (_sheetController.size < _sheetPeekKeyboard) {
+        unawaited(
+          _sheetController.animateTo(
+            _sheetPeekKeyboard,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+          ),
+        );
+      }
+    } else if (!_focusNode.hasFocus && _sheetController.size > _sheetPeek) {
+      unawaited(
+        _sheetController.animateTo(
+          _sheetPeek,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        ),
+      );
+    }
+  }
+
+  void _onSearchFocusChanged() {
+    if (!mounted || !_sheetController.isAttached) return;
+    if (_focusNode.hasFocus) {
+      unawaited(
+        _sheetController.animateTo(
+          _sheetPeekKeyboard,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        ),
+      );
+    } else if (View.of(context).viewInsets.bottom == 0) {
+      unawaited(
+        _sheetController.animateTo(
+          _sheetPeek,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        ),
+      );
+    }
   }
 
   void _newSessionToken() => _sessionToken = PlacesClient.newSessionToken();
@@ -237,6 +298,8 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final keyboardVisible = keyboardInset > 0;
     final sideBySide =
         context.isLandscape && context.screenSize.width >= AppBreakpoints.compact;
 
@@ -262,6 +325,8 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen> {
       onSelectPrediction: _selectPrediction,
       onConfirm: _confirm,
       showDragHandle: !sideBySide,
+      keyboardVisible: keyboardVisible,
+      keyboardScrollPadding: sideBySide,
     );
 
     if (sideBySide) {
@@ -312,11 +377,21 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen> {
       );
     }
 
-    final panelPeek = MediaQuery.sizeOf(context).height * 0.34;
+    final panelPeek = MediaQuery.sizeOf(context).height * _sheetPeek;
+    final sheetMin =
+        keyboardVisible ? _sheetMinKeyboard : _sheetMin;
+    final sheetMax = keyboardVisible
+        ? _sheetMaxKeyboard
+        : (_isSearching ? _sheetExpanded : _sheetMaxIdle);
+    final sheetSnapSizes = keyboardVisible
+        ? const [_sheetPeekKeyboard, _sheetMaxKeyboard]
+        : (_isSearching
+            ? const [_sheetPeek, _sheetExpanded]
+            : const [_sheetPeek, _sheetMaxIdle]);
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           mapLayer,
@@ -348,7 +423,7 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen> {
               ),
             ),
           ),
-          if (widget.args.showUseMyLocation)
+          if (widget.args.showUseMyLocation && !keyboardVisible)
             PositionedDirectional(
               end: AppSpacing.md,
               bottom: panelPeek + AppSpacing.md,
@@ -357,42 +432,49 @@ class _CarPlacePickerScreenState extends ConsumerState<CarPlacePickerScreen> {
                 onTap: () => _centerOnMyLocation(),
               ),
             ),
-          DraggableScrollableSheet(
-            initialChildSize: 0.34,
-            minChildSize: 0.24,
-            maxChildSize: _isSearching ? 0.85 : 0.5,
-            snap: true,
-            snapSizes: _isSearching
-                ? const [0.34, 0.85]
-                : const [0.34, 0.5],
-            builder: (context, scrollController) {
-              return Material(
-                color: AppColors.bgCard,
-                elevation: 8,
-                shadowColor: Colors.black26,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(AppRadius.sheet),
-                ),
-                child: _PickerPanel(
-                  title: widget.args.title,
-                  l10n: l10n,
-                  query: _query,
-                  focusNode: _focusNode,
-                  searching: _searching,
-                  isSearching: _isSearching,
-                  predictions: _predictions,
-                  errorMessage: _errorMessage,
-                  draft: _draft,
-                  initial: widget.args.initial,
-                  onQueryChanged: _onQueryChanged,
-                  onSelectPrediction: _selectPrediction,
-                  onConfirm: _confirm,
-                  scrollController: scrollController,
-                  showDragHandle: true,
-                  showTitle: false,
-                ),
-              );
-            },
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: keyboardInset,
+            child: DraggableScrollableSheet(
+              controller: _sheetController,
+              initialChildSize:
+                  keyboardVisible ? _sheetPeekKeyboard : _sheetPeek,
+              minChildSize: sheetMin,
+              maxChildSize: sheetMax,
+              snap: true,
+              snapSizes: sheetSnapSizes,
+              builder: (context, scrollController) {
+                return Material(
+                  color: AppColors.bgCard,
+                  elevation: 8,
+                  shadowColor: Colors.black26,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppRadius.sheet),
+                  ),
+                  child: _PickerPanel(
+                    title: widget.args.title,
+                    l10n: l10n,
+                    query: _query,
+                    focusNode: _focusNode,
+                    searching: _searching,
+                    isSearching: _isSearching,
+                    predictions: _predictions,
+                    errorMessage: _errorMessage,
+                    draft: _draft,
+                    initial: widget.args.initial,
+                    onQueryChanged: _onQueryChanged,
+                    onSelectPrediction: _selectPrediction,
+                    onConfirm: _confirm,
+                    scrollController: scrollController,
+                    showDragHandle: true,
+                    showTitle: false,
+                    keyboardVisible: keyboardVisible,
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -500,6 +582,8 @@ class _PickerPanel extends StatelessWidget {
     this.scrollController,
     this.showDragHandle = true,
     this.showTitle = true,
+    this.keyboardVisible = false,
+    this.keyboardScrollPadding = false,
   });
 
   final String title;
@@ -518,11 +602,17 @@ class _PickerPanel extends StatelessWidget {
   final ScrollController? scrollController;
   final bool showDragHandle;
   final bool showTitle;
+  final bool keyboardVisible;
+  final bool keyboardScrollPadding;
 
   @override
   Widget build(BuildContext context) {
     final draftLabel = draft?.displayLabel(l10n);
     final canConfirm = draft != null;
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final listBottomPadding = keyboardScrollPadding && keyboardInset > 0
+        ? keyboardInset + AppSpacing.sm
+        : AppSpacing.sm;
 
     final bodyChildren = <Widget>[
       if (showDragHandle)
@@ -624,7 +714,7 @@ class _PickerPanel extends StatelessWidget {
             style: AppTypography.caption.copyWith(color: AppColors.error),
           ),
         ),
-      if (draftLabel != null && !isSearching)
+      if (draftLabel != null && !isSearching && !keyboardVisible)
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(
             AppSpacing.md,
@@ -644,7 +734,7 @@ class _PickerPanel extends StatelessWidget {
         isSearching: isSearching,
         onSelect: onSelectPrediction,
       ),
-      if (!isSearching && initial != null && draft == null)
+      if (!isSearching && initial != null && draft == null && !keyboardVisible)
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(
             AppSpacing.md,
@@ -665,16 +755,16 @@ class _PickerPanel extends StatelessWidget {
         Expanded(
           child: ListView(
             controller: scrollController,
-            padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.sm),
+            padding: EdgeInsetsDirectional.only(bottom: listBottomPadding),
             children: bodyChildren,
           ),
         ),
         Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(
+          padding: const EdgeInsetsDirectional.fromSTEB(
             AppSpacing.md,
             AppSpacing.sm,
             AppSpacing.md,
-            AppSpacing.md + MediaQuery.viewInsetsOf(context).bottom,
+            AppSpacing.md,
           ),
           child: PrimaryButton(
             label: l10n.carConfirmLocation,

@@ -41,11 +41,11 @@ void main() {
           carRepositoryProvider.overrideWithValue(FakeCarRepository()),
           placesClientProvider.overrideWithValue(_FakePlacesClient()),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const Scaffold(
+          locale: Locale('en'),
+          home: Scaffold(
             body: SingleChildScrollView(child: CarSearchForm()),
           ),
         ),

@@ -69,7 +69,7 @@ void main() {
     final container = makeContainer(FakeCarRepository());
     addTearDown(container.dispose);
 
-    final quote = FakeCarRepository.sampleQuote;
+    const quote = FakeCarRepository.sampleQuote;
     container.read(carBookingProvider.notifier).selectQuote(quote);
 
     expect(
