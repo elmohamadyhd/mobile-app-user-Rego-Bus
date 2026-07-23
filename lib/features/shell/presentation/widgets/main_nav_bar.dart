@@ -201,8 +201,7 @@ class _NavItem extends StatelessWidget {
                   duration: _navAnim,
                   curve: _navCurve,
                   builder: (context, t, _) => Transform.scale(
-                    scale:
-                        _inactiveIconScale + (1 - _inactiveIconScale) * t,
+                    scale: _inactiveIconScale + (1 - _inactiveIconScale) * t,
                     child: Icon(
                       icon,
                       size: _navIconSize,

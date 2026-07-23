@@ -92,8 +92,7 @@ void main() {
     expect(repo.listOrdersCallCount, 0);
   });
 
-  testWidgets('signed-in with orders renders a card per order',
-      (tester) async {
+  testWidgets('signed-in with orders renders a card per order', (tester) async {
     await _pumpSection(
       tester,
       isGuest: false,

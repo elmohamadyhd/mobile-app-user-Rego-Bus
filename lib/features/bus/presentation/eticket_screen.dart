@@ -91,8 +91,7 @@ class BusTicketScreen extends ConsumerWidget {
                             horizontal: AppSpacing.lg,
                           ),
                           child: PrimaryButton(
-                            label:
-                                AppLocalizations.of(context).eTicketBackHome,
+                            label: AppLocalizations.of(context).eTicketBackHome,
                             onPressed: goHome,
                           ),
                         ),
@@ -188,8 +187,7 @@ class _BoardingPassCard extends StatelessWidget {
     final trip = ticket.trip;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final dateLabel = DateFormat.yMMMd(locale).format(trip.dateTime);
-    final seatsJoined =
-        ticket.seats.isNotEmpty ? ticket.seats.join(', ') : '-';
+    final seatsJoined = ticket.seats.isNotEmpty ? ticket.seats.join(', ') : '-';
     final departTime = _stopTimeLabel(ticket.fromStop, trip.departTime);
     final arriveTime = _stopTimeLabel(ticket.toStop, trip.arriveTime);
 
@@ -431,7 +429,8 @@ class _ConnectorLine extends StatelessWidget {
         Row(
           children: [
             _dot(AppColors.primary),
-            const Expanded(child: Divider(color: AppColors.hairline, height: 1)),
+            const Expanded(
+                child: Divider(color: AppColors.hairline, height: 1)),
             _dot(AppColors.secondary),
           ],
         ),

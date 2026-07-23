@@ -373,8 +373,7 @@ Future<void> _confirmCancel(
           onPressed: () => Navigator.of(dialogContext).pop(false),
           child: Text(
             l10n.ticketCancelKeep,
-            style:
-                AppTypography.title.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.title.copyWith(color: AppColors.textSecondary),
           ),
         ),
         TextButton(

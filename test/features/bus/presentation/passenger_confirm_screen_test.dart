@@ -130,7 +130,8 @@ void main() {
     );
   });
 
-  testWidgets('card payment hides wallet rows in price breakdown', (tester) async {
+  testWidgets('card payment hides wallet rows in price breakdown',
+      (tester) async {
     await _pumpConfirm(
       tester,
       walletRepo: FakeWalletRepository(

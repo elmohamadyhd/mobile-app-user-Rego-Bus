@@ -107,7 +107,8 @@ void main() {
     expect(find.text('1 tickets'), findsOneWidget);
   });
 
-  testWidgets('tapping a non-bus tab shows coming soon snackbar', (tester) async {
+  testWidgets('tapping a non-bus tab shows coming soon snackbar',
+      (tester) async {
     await _pumpTickets(
       tester,
       isGuest: false,

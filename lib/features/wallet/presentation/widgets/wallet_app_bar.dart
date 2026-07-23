@@ -51,8 +51,7 @@ class WalletAppBar extends StatelessWidget implements PreferredSizeWidget {
                   children: [
                     IconButton(
                       icon: Transform.flip(
-                        flipX:
-                            Directionality.of(context) == TextDirection.rtl,
+                        flipX: Directionality.of(context) == TextDirection.rtl,
                         child: const Icon(
                           AppIcons.back,
                           color: AppColors.textPrimary,

@@ -15,6 +15,7 @@ import 'package:rego/features/home/presentation/home_screen.dart';
 import 'package:rego/features/profile/presentation/profile_screen.dart';
 import 'package:rego/features/shell/presentation/main_shell.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
+import 'package:rego/features/car/presentation/car_routes.dart';
 import 'package:rego/features/tickets/presentation/tickets_screen.dart';
 import 'package:rego/features/wallet/presentation/wallet_routes.dart';
 
@@ -122,6 +123,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       ...busRoutes(),
+      ...carRoutes(),
       ...walletRoutes(),
     ],
   );

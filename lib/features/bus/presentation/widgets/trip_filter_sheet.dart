@@ -23,7 +23,8 @@ Future<BusTripFilters?> showTripFilterSheet(
     isScrollControlled: true,
     backgroundColor: AppColors.bgCard,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
+      borderRadius:
+          BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
     ),
     builder: (context) => Padding(
       padding: EdgeInsets.only(
@@ -130,8 +131,7 @@ class _TripFilterSheetState extends State<_TripFilterSheet> {
     setState(() {
       _draft = const BusTripFilters();
       _priceRange = RangeValues(_priceMin.toDouble(), _priceMax.toDouble());
-      _departRange =
-          RangeValues(_departMin.toDouble(), _departMax.toDouble());
+      _departRange = RangeValues(_departMin.toDouble(), _departMax.toDouble());
     });
   }
 

@@ -64,7 +64,8 @@ void main() {
 
       expect(adapter.lastOptions?.uri.toString(),
           'https://portal.example.com/orders/1/invoice/download');
-      expect(adapter.lastOptions?.headers['Authorization'], 'Bearer test-token');
+      expect(
+          adapter.lastOptions?.headers['Authorization'], 'Bearer test-token');
       expect(adapter.lastOptions?.headers['Accept-Language'], 'ar');
       expect(adapter.lastOptions?.headers['Accept'], 'application/pdf');
       expect(openedPath, isNotNull);

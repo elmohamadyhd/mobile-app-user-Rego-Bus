@@ -13,4 +13,8 @@ abstract final class AppConfig {
   static String get apiKey => dotenv.env['API_KEY'] ?? '';
 
   static bool get isBackendConfigured => apiBaseUrl.isNotEmpty;
+
+  static String get googleMapsApiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
+
+  static bool get isGoogleMapsConfigured => googleMapsApiKey.isNotEmpty;
 }

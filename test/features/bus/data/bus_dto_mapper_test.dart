@@ -258,8 +258,8 @@ void main() {
       test('maps known confirmed/cancelled codes', () {
         expect(BusDtoMapper.orderStatusKind('confirmed', 0),
             BusOrderStatusKind.confirmed);
-        expect(
-            BusDtoMapper.orderStatusKind('paid', 0), BusOrderStatusKind.confirmed);
+        expect(BusDtoMapper.orderStatusKind('paid', 0),
+            BusOrderStatusKind.confirmed);
         expect(BusDtoMapper.orderStatusKind('cancelled', 0),
             BusOrderStatusKind.cancelled);
         expect(BusDtoMapper.orderStatusKind('expired', 0),

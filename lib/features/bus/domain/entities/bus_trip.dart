@@ -83,8 +83,7 @@ abstract class BusTripSummary with _$BusTripSummary {
   BusStop get terminalDropoffStop =>
       dropoffStops.isNotEmpty ? dropoffStops.last : defaultDropoffStop;
 
-  DateTime get terminalArriveTime =>
-      terminalDropoffStop.arrivalAt ?? dateTime;
+  DateTime get terminalArriveTime => terminalDropoffStop.arrivalAt ?? dateTime;
 
   String get terminalArriveLabel => _formatTime(terminalArriveTime);
 

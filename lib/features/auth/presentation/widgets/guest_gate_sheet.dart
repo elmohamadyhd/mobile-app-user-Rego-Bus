@@ -14,19 +14,24 @@ import 'package:rego/shared/widgets/primary_button.dart';
 /// [context] belongs to. [returnTo] is the route to land on after a
 /// successful sign-in or registration (typically the screen the guest was
 /// gated from, e.g. the booking confirm screen).
-Future<void> showGuestGate(BuildContext context, {required String returnTo}) {
+Future<void> showGuestGate(
+  BuildContext context, {
+  required String returnTo,
+  String? body,
+}) {
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    builder: (context) => _GuestGateSheet(returnTo: returnTo),
+    builder: (context) => _GuestGateSheet(returnTo: returnTo, body: body),
   );
 }
 
 class _GuestGateSheet extends StatelessWidget {
-  const _GuestGateSheet({required this.returnTo});
+  const _GuestGateSheet({required this.returnTo, this.body});
 
   final String returnTo;
+  final String? body;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +84,7 @@ class _GuestGateSheet extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              l10n.guestGateBody,
+              body ?? l10n.guestGateBody,
               textAlign: TextAlign.center,
               style:
                   AppTypography.body.copyWith(color: AppColors.textSecondary),

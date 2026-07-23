@@ -15,6 +15,7 @@ class TransportModeTabBar extends StatelessWidget {
   });
 
   static const int busTabIndex = 0;
+  static const int privateTabIndex = 1;
   static const int flightTabIndex = 2;
 
   final int selectedIndex;

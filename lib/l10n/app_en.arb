@@ -574,5 +574,65 @@
   "pressBackAgainToExit": "Press back again to exit",
   "@pressBackAgainToExit": {
     "description": "Snackbar shown on the first back press when the user must press back again to leave the app."
-  }
+  },
+
+  "carPickup": "Pickup",
+  "@carPickup": { "description": "Label for private transfer pickup field." },
+  "carDropoff": "Drop-off",
+  "@carDropoff": { "description": "Label for private transfer drop-off field." },
+  "carPlaceSearchHint": "Search for a place",
+  "@carPlaceSearchHint": { "description": "Placeholder in private transfer place autocomplete." },
+  "carPlaceSelectedLocation": "Selected location",
+  "@carPlaceSelectedLocation": { "description": "Fallback label when reverse geocode fails or only coordinates are known." },
+  "carPlaceQuickActions": "Quick actions",
+  "@carPlaceQuickActions": { "description": "Section label above GPS/map shortcuts in place picker sheet." },
+  "carPlaceCurrentSelection": "Current selection",
+  "@carPlaceCurrentSelection": { "description": "Caption for already-selected place in picker idle state." },
+  "carMapsNotConfigured": "Maps are not configured on this build.",
+  "@carMapsNotConfigured": { "description": "Snackbar when user taps place field without Google Maps API key." },
+  "carAdjustOnMap": "Adjust on map",
+  "@carAdjustOnMap": { "description": "Link to open map pin fine-tune sheet." },
+  "carUseMyLocation": "Use my location",
+  "@carUseMyLocation": { "description": "Fill pickup from device GPS." },
+  "carRequestCar": "Request a car",
+  "@carRequestCar": { "description": "Private transfer search button on home." },
+  "carChooseVehicle": "Choose vehicle",
+  "@carChooseVehicle": { "description": "Private transfer results screen title." },
+  "carNoQuotes": "No vehicles available",
+  "@carNoQuotes": { "description": "Empty state title on private search results." },
+  "carNoQuotesBody": "Try different pickup or drop-off locations.",
+  "@carNoQuotesBody": { "description": "Empty state body on private search results." },
+  "carSeats": "{count, plural, =1{1 seat} other{{count} seats}}",
+  "@carSeats": {
+    "description": "Seat count on a private transfer tier card.",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "carBags": "{big} large · {small} small",
+  "@carBags": {
+    "description": "Bag counts on a private transfer tier card.",
+    "placeholders": {
+      "big": { "type": "int" },
+      "small": { "type": "int" }
+    }
+  },
+  "carGearAutomatic": "Automatic",
+  "carGearManual": "Manual",
+  "carRefundable": "Refundable",
+  "@carRefundable": { "description": "Badge when operator allows refunds." },
+  "carContinue": "Continue",
+  "@carContinue": { "description": "Primary CTA on private transfer results." },
+  "carBookingComingSoon": "Booking coming soon",
+  "@carBookingComingSoon": { "description": "Snackbar when signed-in user taps Continue before booking ships." },
+  "carSearchSelectBothPlaces": "Select pickup and drop-off",
+  "@carSearchSelectBothPlaces": { "description": "Validation when private search submitted without both places." },
+  "carSearchSamePlace": "Pickup and drop-off must be different",
+  "@carSearchSamePlace": { "description": "Validation when both places share coordinates." },
+  "carPlacesSearchFailed": "Couldn't search places. Try again.",
+  "@carPlacesSearchFailed": { "description": "Inline error under autocomplete when Places API fails." },
+  "carPlacesNoResults": "No places found",
+  "@carPlacesNoResults": { "description": "Autocomplete dropdown empty state." },
+  "carConfirmLocation": "Confirm location",
+  "@carConfirmLocation": { "description": "CTA on map adjust sheet." },
+  "guestGateCarBody": "Sign in or create an account to continue your transfer.",
+  "@guestGateCarBody": { "description": "Guest gate body copy on private transfer Continue." }
 }

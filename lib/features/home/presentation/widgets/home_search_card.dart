@@ -14,12 +14,12 @@ import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
 import 'package:rego/features/bus/presentation/bus_routes.dart';
 import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:rego/features/bus/presentation/widgets/bus_city_picker.dart';
+import 'package:rego/features/car/presentation/car_search_form.dart';
 import 'package:rego/features/home/presentation/widgets/home_flight_class_picker.dart';
 import 'package:rego/l10n/app_localizations.dart';
+import 'package:rego/shared/models/trip_type.dart';
 import 'package:rego/shared/widgets/primary_button.dart';
 import 'package:rego/shared/widgets/transport_mode_tab_bar.dart';
-
-enum TripType { oneWay, roundTrip }
 
 class HomeSearchCard extends ConsumerStatefulWidget {
   const HomeSearchCard({
@@ -130,15 +130,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
 
   Future<void> _onSearch() async {
     final l10n = AppLocalizations.of(context);
-    if (widget.selectedTab != 0) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(l10n.homeComingSoon),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+    if (widget.selectedTab != TransportModeTabBar.busTabIndex) {
       return;
     }
 
@@ -180,8 +172,8 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isRoundTrip = _tripType == TripType.roundTrip;
-    final showFlightClass = widget.selectedTab == HomeSearchCard.flightTabIndex;
+    final isPrivateTab =
+        widget.selectedTab == TransportModeTabBar.privateTabIndex;
 
     return Container(
       decoration: BoxDecoration(
@@ -204,7 +196,8 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
             selectedIndex: widget.selectedTab,
             onChanged: (i) {
               widget.onTabChanged(i);
-              if (i != TransportModeTabBar.busTabIndex) {
+              if (i != TransportModeTabBar.busTabIndex &&
+                  i != TransportModeTabBar.privateTabIndex) {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
@@ -217,119 +210,131 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
             },
           ),
           const SizedBox(height: 12),
-          _TripTypeToggle(
-            tripType: _tripType,
-            oneWayLabel: l10n.homeTripOneWay,
-            roundTripLabel: l10n.homeTripRoundTrip,
-            onChanged: _setTripType,
-          ),
-          const SizedBox(height: 14),
-          Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.hairline),
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                ),
-                child: Column(
-                  children: [
-                    _CityField(
-                      label: l10n.homeFrom,
-                      cityLabel: _cityLabel(_fromCity),
-                      placeholder: l10n.homeCitySelectPlaceholder,
-                      iconBg: AppColors.primaryTint,
-                      iconColor: AppColors.primary,
-                      onTap: _pickFrom,
-                    ),
-                    const Divider(
-                      color: AppColors.hairline,
-                      height: 1,
-                      indent: 16,
-                      endIndent: 16,
-                    ),
-                    _CityField(
-                      label: l10n.homeTo,
-                      cityLabel: _cityLabel(_toCity),
-                      placeholder: l10n.homeCitySelectPlaceholder,
-                      iconBg: AppColors.secondaryTint,
-                      iconColor: const Color(0xFFD98A2B),
-                      onTap: _pickTo,
-                    ),
-                  ],
-                ),
+          if (isPrivateTab) const CarSearchForm() else _buildBusForm(l10n),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBusForm(AppLocalizations l10n) {
+    final isRoundTrip = _tripType == TripType.roundTrip;
+    final showFlightClass = widget.selectedTab == HomeSearchCard.flightTabIndex;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _TripTypeToggle(
+          tripType: _tripType,
+          oneWayLabel: l10n.homeTripOneWay,
+          roundTripLabel: l10n.homeTripRoundTrip,
+          onChanged: _setTripType,
+        ),
+        const SizedBox(height: 14),
+        Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.hairline),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
-              PositionedDirectional(
-                end: 14,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: _SwapButton(onTap: _swapFields),
-                ),
+              child: Column(
+                children: [
+                  _CityField(
+                    label: l10n.homeFrom,
+                    cityLabel: _cityLabel(_fromCity),
+                    placeholder: l10n.homeCitySelectPlaceholder,
+                    iconBg: AppColors.primaryTint,
+                    iconColor: AppColors.primary,
+                    onTap: _pickFrom,
+                  ),
+                  const Divider(
+                    color: AppColors.hairline,
+                    height: 1,
+                    indent: 16,
+                    endIndent: 16,
+                  ),
+                  _CityField(
+                    label: l10n.homeTo,
+                    cityLabel: _cityLabel(_toCity),
+                    placeholder: l10n.homeCitySelectPlaceholder,
+                    iconBg: AppColors.secondaryTint,
+                    iconColor: const Color(0xFFD98A2B),
+                    onTap: _pickTo,
+                  ),
+                ],
               ),
-            ],
+            ),
+            PositionedDirectional(
+              end: 14,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: _SwapButton(onTap: _swapFields),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.hairline),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
+          child: isRoundTrip
+              ? IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: _DateField(
+                          label: l10n.homeDepart,
+                          date: _travelDate,
+                          compact: true,
+                          onTap: _pickDepart,
+                        ),
+                      ),
+                      const VerticalDivider(
+                        color: AppColors.hairline,
+                        width: 1,
+                      ),
+                      Expanded(
+                        child: _DateField(
+                          label: l10n.homeReturn,
+                          date: _returnDate,
+                          compact: true,
+                          onTap: _pickReturn,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : _DateField(
+                  label: l10n.homeDepart,
+                  date: _travelDate,
+                  onTap: _pickDepart,
+                ),
+        ),
+        if (showFlightClass) ...[
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.hairline),
               borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
-            child: isRoundTrip
-                ? IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: _DateField(
-                            label: l10n.homeDepart,
-                            date: _travelDate,
-                            compact: true,
-                            onTap: _pickDepart,
-                          ),
-                        ),
-                        const VerticalDivider(
-                          color: AppColors.hairline,
-                          width: 1,
-                        ),
-                        Expanded(
-                          child: _DateField(
-                            label: l10n.homeReturn,
-                            date: _returnDate,
-                            compact: true,
-                            onTap: _pickReturn,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : _DateField(
-                    label: l10n.homeDepart,
-                    date: _travelDate,
-                    onTap: _pickDepart,
-                  ),
-          ),
-          if (showFlightClass) ...[
-            const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.hairline),
-                borderRadius: BorderRadius.circular(AppRadius.lg),
-              ),
-              child: _ClassField(
-                label: l10n.homeFlightClass,
-                flightClass: _flightClass,
-                onTap: _pickFlightClass,
-              ),
+            child: _ClassField(
+              label: l10n.homeFlightClass,
+              flightClass: _flightClass,
+              onTap: _pickFlightClass,
             ),
-          ],
-          const SizedBox(height: 14),
-          PrimaryButton(
-            label: l10n.homeSearch,
-            loading: _searching,
-            onPressed: _onSearch,
           ),
         ],
-      ),
+        const SizedBox(height: 14),
+        PrimaryButton(
+          label: l10n.homeSearch,
+          loading: _searching,
+          onPressed: _onSearch,
+        ),
+      ],
     );
   }
 }

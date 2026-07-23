@@ -42,8 +42,7 @@ class SeatGrid extends StatelessWidget {
     }
 
     final salonRtl = seatMap.salon.direction.toLowerCase() == 'rtl';
-    final rowDirection =
-        salonRtl ? TextDirection.rtl : TextDirection.ltr;
+    final rowDirection = salonRtl ? TextDirection.rtl : TextDirection.ltr;
 
     return Container(
       width: double.infinity,

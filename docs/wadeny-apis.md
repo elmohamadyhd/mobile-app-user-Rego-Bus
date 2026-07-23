@@ -11,7 +11,7 @@
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
 | **Total requests** | 65 |
-| **Documented saved responses** | 67 |
+| **Documented saved responses** | 89 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -71,6 +71,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `POST` | `/auth/send-otp` | OTP Send |
 | `POST` | `/auth/validate-otp` | Validate OTP |
 | `POST` | `/auth/verify-otp` | OTP Verification |
+| `POST` | `/buses/orders/:id/cancel` | cancel |
 | `POST` | `/buses/trips/236437/create-ticket` | Create Ticket |
 | `POST` | `/contact` | Contact us |
 | `POST` | `/flights/:offer_id` | Pending Trip |
@@ -1781,6 +1782,33 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Success — user data | ar | — |
+
+#### 200 — Success — user data (ar)
+
+```json
+{
+  "status": 200,
+  "message": "User data",
+  "errors": {},
+  "data": {
+    "id": 69,
+    "name": "abdallah",
+    "email": "elmohamadydev@gmail.com",
+    "mobile": "1276586027",
+    "phonecode": "20",
+    "status": "Active",
+    "avatar": "",
+    "api_token": "<redacted>",
+    "is_profile_completed": true
+  }
+}
+```
+
 ### Update profile
 
 | | |
@@ -1790,7 +1818,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | **Full URL** | `https://demo.safaria.travel/api/v1/profile` |
 | **Auth** | Bearer token required |
 
-**Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`
+**Body (form-data):** `name`, `email`, `mobile`, `country_code`, `avatar`, `id`
 
 **Headers:**
 
@@ -1798,6 +1826,97 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Success — user data | ar | — |
+| `400` | The name field is required. | ar | `name` |
+| `400` | Email already taken | ar | `email` |
+| `400` | Mobile not registered | ar | `mobile` |
+| `200` | Success — user data (×2) | ar | — |
+
+#### 200 — Success — user data (ar)
+
+```json
+{
+  "status": 200,
+  "message": "User data",
+  "errors": {},
+  "data": {
+    "id": 69,
+    "name": "abdallah",
+    "email": "elmohamadydev@gmail.com",
+    "mobile": "1276586027",
+    "phonecode": "20",
+    "status": "Active",
+    "avatar": "https://demo.safaria.travel/storage/17/capcom.png",
+    "api_token": "<redacted>",
+    "is_profile_completed": true
+  }
+}
+```
+
+#### 400 — The name field is required. (ar)
+
+```json
+{
+  "status": 400,
+  "message": "The name field is required.",
+  "errors": {
+    "name": "The name field is required."
+  },
+  "data": {}
+}
+```
+
+#### 400 — Email already taken (ar)
+
+```json
+{
+  "status": 400,
+  "message": "The email field is required.",
+  "errors": {
+    "email": "The email field is required."
+  },
+  "data": {}
+}
+```
+
+#### 400 — Mobile not registered (ar)
+
+```json
+{
+  "status": 400,
+  "message": "The mobile field is required.",
+  "errors": {
+    "mobile": "The mobile field is required."
+  },
+  "data": {}
+}
+```
+
+#### 200 — Success — user data (ar)
+
+```json
+{
+  "status": 200,
+  "message": "User data",
+  "errors": {},
+  "data": {
+    "id": 69,
+    "name": "abdallah",
+    "email": "elmohamadydev@gmail.com",
+    "mobile": "1276586027",
+    "phonecode": "20",
+    "status": "Active",
+    "avatar": "https://demo.safaria.travel/storage/18/capcom.png",
+    "api_token": "<redacted>",
+    "is_profile_completed": true
+  }
+}
+```
 
 ### Update Token
 
@@ -1860,6 +1979,51 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `400` | The new password and current password must be d... | ar | `new_password` |
+| `400` | The new password confirmation does not match. | ar | `new_password` |
+| `200` | Success — password updated | ar | — |
+
+#### 400 — The new password and current password must be d... (ar)
+
+```json
+{
+  "status": 400,
+  "message": "The new password and current password must be different.",
+  "errors": {
+    "new_password": "The new password and current password must be different."
+  },
+  "data": {}
+}
+```
+
+#### 400 — The new password confirmation does not match. (ar)
+
+```json
+{
+  "status": 400,
+  "message": "The new password confirmation does not match.",
+  "errors": {
+    "new_password": "The new password confirmation does not match."
+  },
+  "data": {}
+}
+```
+
+#### 200 — Success — password updated (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Password updated",
+  "errors": {},
+  "data": {}
+}
+```
 
 ### Delete account
 
@@ -2203,6 +2367,36 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Countries list | ar | — |
+
+#### 200 — Countries list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Countries",
+  "errors": {},
+  "data": [
+    {
+      "name": "Egypt",
+      "iso2": "EG",
+      "iso3": "EGY",
+      "phonecode": "20"
+    },
+    {
+      "name": "Saudi Arabia",
+      "iso2": "SA",
+      "iso3": "SAU",
+      "phonecode": "966"
+    }
+  ]
+}
+```
+
 ### Settings
 
 | | |
@@ -2259,6 +2453,25 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | 7 | `POST` | `/flights/:offer_id/hold` | Hold Trip |
 | 8 | `POST` | `/flights/:offer_id` | Pending Trip |
 
+### Response envelope
+
+All Flights endpoints return JSON with this shape (HTTP status may differ from the inner `status` field):
+
+```json
+{
+  "status": 200,
+  "message": "…",
+  "errors": {},
+  "data": {}
+}
+```
+
+- `GET /flights/iata` returns `data` as a **paginated array** of airports plus a top-level `pagination` object.
+- `GET /flights/airports/search` returns `data` as an **array** of matching airports.
+- `POST /flights/search` returns `data` as an **array** of offers (`offerId`, `journeys`, pricing).
+- `GET /flights/:offer_id/bundles` returns bundle/fare options for a held offer.
+- `errors` values are **strings** in live responses; the mobile app normalizes strings and arrays.
+
 ### IATA
 
 | | |
@@ -2281,6 +2494,121 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Airports list | ar | — |
+| `200` | Airports list | ar | — |
+
+#### 200 — Airports list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Airports list",
+  "errors": {},
+  "data": [
+    {
+      "id": 30325,
+      "name": "Cairo Intl Airport",
+      "city": "Cairo",
+      "country": "EGYPT",
+      "iata_code": "CAI",
+      "icao_code": "HECA",
+      "country_code": "EG",
+      "latitude": 30.04998,
+      "longitude": 31.2486
+    },
+    {
+      "id": 30326,
+      "name": "Capital International Airport",
+      "city": "Cairo",
+      "country": "EGYPT",
+      "iata_code": "CCE",
+      "icao_code": "HECP",
+      "country_code": "EG",
+      "latitude": null,
+      "longitude": null
+    },
+    {
+      "id": 38383,
+      "name": "Cairo Regional Airport",
+      "city": "Cairo",
+      "country": "United States",
+      "iata_code": "CIR",
+      "icao_code": "KCIR",
+      "country_code": "US",
+      "latitude": 37.064499,
+      "longitude": -89.219597
+    },
+    "…18 more items"
+  ],
+  "pagination": {
+    "total": 21,
+    "lastPage": 1,
+    "perPage": 50,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
+#### 200 — Airports list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Airports list",
+  "errors": {},
+  "data": [
+    {
+      "id": 50232,
+      "name": "Anaa Airport",
+      "city": "Anaa",
+      "country": "French Polynesia",
+      "iata_code": "AAA",
+      "icao_code": "NTGA",
+      "country_code": "PF",
+      "latitude": -17.3526,
+      "longitude": -145.509995
+    },
+    {
+      "id": 81953,
+      "name": "Arrabury Airport",
+      "city": "Tanbar",
+      "country": "Australia",
+      "iata_code": "AAB",
+      "icao_code": "YARY",
+      "country_code": "AU",
+      "latitude": -26.69639,
+      "longitude": 141.048718
+    },
+    {
+      "id": 30319,
+      "name": "El Arish International Airport",
+      "city": "El Arish",
+      "country": "Egypt",
+      "iata_code": "AAC",
+      "icao_code": "HEAR",
+      "country_code": "EG",
+      "latitude": 31.055324,
+      "longitude": 33.827964
+    },
+    "…47 more items"
+  ],
+  "pagination": {
+    "total": 9095,
+    "lastPage": 182,
+    "perPage": 50,
+    "currentPage": 1,
+    "nextPageUrl": "https://demo.safaria.travel/api/v1/flights/iata?page=2",
+    "previousPageUrl": null
+  }
+}
+```
+
 ### Airports
 
 | | |
@@ -2302,6 +2630,75 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Airport search results | ar | — |
+| `400` | Missing search term | ar | `term` |
+
+#### 200 — Airport search results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Airports fetched successfully",
+  "errors": {},
+  "data": [
+    {
+      "iata_code": "DXB",
+      "name": "All Airport",
+      "city": "Dubai",
+      "country_code": "AE",
+      "country": "UNITED ARAB EMIRATES",
+      "latitude": 25.26948,
+      "longitude": 55.30883,
+      "is_domestic": false,
+      "is_all_airport": true,
+      "ranking": 179
+    },
+    {
+      "iata_code": "DXB",
+      "name": "Dubai Intl Airport",
+      "city": "Dubai",
+      "country_code": "AE",
+      "country": "UNITED ARAB EMIRATES",
+      "latitude": 25.26948,
+      "longitude": 55.30883,
+      "is_domestic": false,
+      "is_all_airport": false,
+      "ranking": 124
+    },
+    {
+      "iata_code": "DWC",
+      "name": "Al Maktoum International Airport",
+      "city": "Dubai",
+      "country_code": "AE",
+      "country": "UNITED ARAB EMIRATES",
+      "latitude": 25.26948,
+      "longitude": 55.30883,
+      "is_domestic": false,
+      "is_all_airport": false,
+      "ranking": 0
+    },
+    "…4 more items"
+  ]
+}
+```
+
+#### 400 — Missing search term (ar)
+
+```json
+{
+  "status": 400,
+  "message": "The term field is required.",
+  "errors": {
+    "term": "The term field is required."
+  },
+  "data": {}
+}
+```
 
 ### Search
 
@@ -2340,6 +2737,785 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Flight search results | ar | — |
+| `200` | Flight search results | ar | — |
+| `200` | Flight search results | ar | — |
+
+#### 200 — Flight search results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Flight search results",
+  "errors": {},
+  "data": [
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjOWNjODhjZDctMzQyYy00ODhmLThlYTUtYTUyNGFmMzMyZTE5I2NiMjNiNGY2LTcxOTktNDdkOS05YmQzLWNmY2Q0MTZmNjFiYg==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "NotRefundable",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8yMy8yMDI2IDA4OjIwfkpFRH4wMi8yMy8yMDI2IDExOjM1fn4=",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 0,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8yMy8yMDI2IDA4OjIwfkpFRH4wMi8yMy8yMDI2IDExOjM1fn4=",
+              "origin": "CAI",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T10:20:00+02:00",
+              "arrivalDateTime": "2026-04-09T13:35:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 135,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "566",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "566",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 7014.07,
+      "taxesAmount": 2768,
+      "baseAmount": 4246.07,
+      "discountAmount": 216.93,
+      "beforeDiscountAmount": 7231,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjOWNjODhjZDctMzQyYy00ODhmLThlYTUtYTUyNGFmMzMyZTE5I2VmNDU4NjJjLWMzYjEtNDM1Yy05MjEyLTM4Mzc3YTI0MGZmZQ==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "NotRefundable",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTc4fiB+fkNBSX4wMi8yMy8yMDI2IDExOjQwfkpFRH4wMi8yMy8yMDI2IDE0OjU1fn4=",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 0,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTc4fiB+fkNBSX4wMi8yMy8yMDI2IDExOjQwfkpFRH4wMi8yMy8yMDI2IDE0OjU1fn4=",
+              "origin": "CAI",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T13:40:00+02:00",
+              "arrivalDateTime": "2026-04-09T16:55:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 135,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "578",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "578",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 7014.07,
+      "taxesAmount": 2768,
+      "baseAmount": 4246.07,
+      "discountAmount": 216.93,
+      "beforeDiscountAmount": 7231,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjOWNjODhjZDctMzQyYy00ODhmLThlYTUtYTUyNGFmMzMyZTE5IzIzOWEyMzQ4LTE5MTktNGMwMC05OGVlLTIxYThiNWE2ZjUyZA==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "NotRefundable",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTg0fiB+fkNBSX4wMi8yMy8yMDI2IDE0OjI1fkpFRH4wMi8yMy8yMDI2IDE2OjQwfn4=",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 0,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTg0fiB+fkNBSX4wMi8yMy8yMDI2IDE0OjI1fkpFRH4wMi8yMy8yMDI2IDE2OjQwfn4=",
+              "origin": "CAI",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T16:25:00+02:00",
+              "arrivalDateTime": "2026-04-09T18:40:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 75,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "584",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "584",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 7014.07,
+      "taxesAmount": 2768,
+      "baseAmount": 4246.07,
+      "discountAmount": 216.93,
+      "beforeDiscountAmount": 7231,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    "…75 more items"
+  ]
+}
+```
+
+#### 200 — Flight search results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Flight search results",
+  "errors": {},
+  "data": [
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjNDQ5Y2UwYzctZWZjYy00NDMzLTk2NmEtOWE2YmIwNzA1MjRhI2I1NzMyNDE2LTYwZGItNDE1OC04M2RiLTUxNmViZTliYTFlNw==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "UnKnown",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn5eWFl+IDUyOX4gfn5KRUR+MDIvMDIvMjAyNiAxMzowNX5LV0l+MDIvMDIvMjAyNiAxNToxMH5+",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn4=",
+              "origin": "CAI",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T10:20:00+02:00",
+              "arrivalDateTime": "2026-04-09T13:35:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 135,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "566",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "566",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTI5fiB+fkpFRH4wMi8wMi8yMDI2IDEzOjA1fktXSX4wMi8wMi8yMDI2IDE1OjEwfn4=",
+              "origin": "SSH",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T15:05:00+02:00",
+              "arrivalDateTime": "2026-04-09T17:10:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "",
+              "flightTimeInMinutes": 125,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "529",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "529",
+              "equipment": "320"
+            }
+          ]
+        },
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gMjMyfiB+fktXSX4wMi8yMy8yMDI2IDE1OjQ1flJVSH4wMi8yMy8yMDI2IDE3OjA1fn5eWFl+IDI2NX4gfn5SVUh+MDIvMjMvMjAyNiAxOTozMH5DQUl+MDIvMjMvMjAyNiAyMTo1MH5+",
+          "origin": "RUH",
+          "destination": "CAI",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gMjMyfiB+fktXSX4wMi8yMy8yMDI2IDE1OjQ1flJVSH4wMi8yMy8yMDI2IDE3OjA1fn4=",
+              "origin": "RUH",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T17:45:00+02:00",
+              "arrivalDateTime": "2026-04-09T19:05:00+02:00",
+              "departureTerminal": "",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 80,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "232",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "232",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gMjY1fiB+flJVSH4wMi8yMy8yMDI2IDE5OjMwfkNBSX4wMi8yMy8yMDI2IDIxOjUwfn4=",
+              "origin": "SSH",
+              "destination": "CAI",
+              "departureDateTime": "2026-04-09T21:30:00+02:00",
+              "arrivalDateTime": "2026-04-09T23:50:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "3",
+              "flightTimeInMinutes": 200,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "265",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "265",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 15825.55,
+      "taxesAmount": 8230,
+      "baseAmount": 7595.55,
+      "discountAmount": 489.45,
+      "beforeDiscountAmount": 16315,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjNDQ5Y2UwYzctZWZjYy00NDMzLTk2NmEtOWE2YmIwNzA1MjRhIzMxZjA5MDk4LTg2NjUtNDgyMC04NjM2LTI4MzU5MDdmOTE1Mg==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "UnKnown",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn5eWFl+IDUyOX4gfn5KRUR+MDIvMDIvMjAyNiAxMzowNX5LV0l+MDIvMDIvMjAyNiAxNToxMH5+",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn4=",
+              "origin": "CAI",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T10:20:00+02:00",
+              "arrivalDateTime": "2026-04-09T13:35:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 135,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "566",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "566",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTI5fiB+fkpFRH4wMi8wMi8yMDI2IDEzOjA1fktXSX4wMi8wMi8yMDI2IDE1OjEwfn4=",
+              "origin": "SSH",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T15:05:00+02:00",
+              "arrivalDateTime": "2026-04-09T17:10:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "",
+              "flightTimeInMinutes": 125,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "529",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "529",
+              "equipment": "320"
+            }
+          ]
+        },
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTMwfiB+fktXSX4wMi8yMy8yMDI2IDE2OjAwfkpFRH4wMi8yMy8yMDI2IDE4OjIwfn5eWFl+IDU2N34gfn5KRUR+MDIvMjMvMjAyNiAyMTo0MH5DQUl+MDIvMjMvMjAyNiAyMzowMH5+",
+          "origin": "RUH",
+          "destination": "CAI",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTMwfiB+fktXSX4wMi8yMy8yMDI2IDE2OjAwfkpFRH4wMi8yMy8yMDI2IDE4OjIwfn4=",
+              "origin": "RUH",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T18:00:00+02:00",
+              "arrivalDateTime": "2026-04-09T20:20:00+02:00",
+              "departureTerminal": "",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 140,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "530",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "530",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY3fiB+fkpFRH4wMi8yMy8yMDI2IDIxOjQwfkNBSX4wMi8yMy8yMDI2IDIzOjAwfn4=",
+              "origin": "SSH",
+              "destination": "CAI",
+              "departureDateTime": "2026-04-09T23:40:00+02:00",
+              "arrivalDateTime": "2026-04-10T01:00:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "",
+              "flightTimeInMinutes": 140,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "567",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "567",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 22003.48,
+      "taxesAmount": 8230,
+      "baseAmount": 13773.48,
+      "discountAmount": 680.52,
+      "beforeDiscountAmount": 22684,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjNDQ5Y2UwYzctZWZjYy00NDMzLTk2NmEtOWE2YmIwNzA1MjRhIzhkNDk2NzEyLTMzYzItNDM3Yi1hM2ViLWI0M2ZiZTRhODJmOQ==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "UnKnown",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn5eWFl+IDUyOX4gfn5KRUR+MDIvMDIvMjAyNiAxMzowNX5LV0l+MDIvMDIvMjAyNiAxNToxMH5+",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn4=",
+              "origin": "CAI",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T10:20:00+02:00",
+              "arrivalDateTime": "2026-04-09T13:35:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 135,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "566",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "566",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTI5fiB+fkpFRH4wMi8wMi8yMDI2IDEzOjA1fktXSX4wMi8wMi8yMDI2IDE1OjEwfn4=",
+              "origin": "SSH",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T15:05:00+02:00",
+              "arrivalDateTime": "2026-04-09T17:10:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "",
+              "flightTimeInMinutes": 125,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "529",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "529",
+              "equipment": "320"
+            }
+          ]
+        },
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTMwfiB+fktXSX4wMi8yMy8yMDI2IDE2OjAwfkpFRH4wMi8yMy8yMDI2IDE4OjIwfn5eWFl+IDU2NX4gfn5KRUR+MDIvMjQvMjAyNiAwNjoxMH5DQUl+MDIvMjQvMjAyNiAwNzozMH5+",
+          "origin": "RUH",
+          "destination": "CAI",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTMwfiB+fktXSX4wMi8yMy8yMDI2IDE2OjAwfkpFRH4wMi8yMy8yMDI2IDE4OjIwfn4=",
+              "origin": "RUH",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T18:00:00+02:00",
+              "arrivalDateTime": "2026-04-09T20:20:00+02:00",
+              "departureTerminal": "",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 140,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "530",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "530",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY1fiB+fkpFRH4wMi8yNC8yMDI2IDA2OjEwfkNBSX4wMi8yNC8yMDI2IDA3OjMwfn4=",
+              "origin": "SSH",
+              "destination": "CAI",
+              "departureDateTime": "2026-04-10T08:10:00+02:00",
+              "arrivalDateTime": "2026-04-10T09:30:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 140,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "565",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "565",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 22003.48,
+      "taxesAmount": 8230,
+      "baseAmount": 13773.48,
+      "discountAmount": 680.52,
+      "beforeDiscountAmount": 22684,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    "…41 more items"
+  ]
+}
+```
+
+#### 200 — Flight search results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Flight search results",
+  "errors": {},
+  "data": [
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjNGJiNDY2NjItYzRlZi00NzJmLWFhOWEtNjgxNWQzZmE2ZmZkIzVjMDg2ZGY2LTZhNWYtNDE4Mi04NzliLWFiNjcyNTgwZmIxNw==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "UnKnown",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn5eWFl+IDUyOX4gfn5KRUR+MDIvMDIvMjAyNiAxMzowNX5LV0l+MDIvMDIvMjAyNiAxNToxMH5+",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn4=",
+              "origin": "CAI",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T10:20:00+02:00",
+              "arrivalDateTime": "2026-04-09T13:35:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 135,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "566",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "566",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTI5fiB+fkpFRH4wMi8wMi8yMDI2IDEzOjA1fktXSX4wMi8wMi8yMDI2IDE1OjEwfn4=",
+              "origin": "SSH",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T15:05:00+02:00",
+              "arrivalDateTime": "2026-04-09T17:10:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "",
+              "flightTimeInMinutes": 125,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "529",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "529",
+              "equipment": "320"
+            }
+          ]
+        },
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gMjMyfiB+fktXSX4wMi8yMy8yMDI2IDE1OjQ1flJVSH4wMi8yMy8yMDI2IDE3OjA1fn5eWFl+IDI2NX4gfn5SVUh+MDIvMjMvMjAyNiAxOTozMH5DQUl+MDIvMjMvMjAyNiAyMTo1MH5+",
+          "origin": "RUH",
+          "destination": "CAI",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gMjMyfiB+fktXSX4wMi8yMy8yMDI2IDE1OjQ1flJVSH4wMi8yMy8yMDI2IDE3OjA1fn4=",
+              "origin": "RUH",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T17:45:00+02:00",
+              "arrivalDateTime": "2026-04-09T19:05:00+02:00",
+              "departureTerminal": "",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 80,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "232",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "232",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gMjY1fiB+flJVSH4wMi8yMy8yMDI2IDE5OjMwfkNBSX4wMi8yMy8yMDI2IDIxOjUwfn4=",
+              "origin": "SSH",
+              "destination": "CAI",
+              "departureDateTime": "2026-04-09T21:30:00+02:00",
+              "arrivalDateTime": "2026-04-09T23:50:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "3",
+              "flightTimeInMinutes": 200,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "265",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "265",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 15825.55,
+      "taxesAmount": 8230,
+      "baseAmount": 7595.55,
+      "discountAmount": 489.45,
+      "beforeDiscountAmount": 16315,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjNGJiNDY2NjItYzRlZi00NzJmLWFhOWEtNjgxNWQzZmE2ZmZkIzI2MjYwNTNkLTVkNmUtNDhjYS04NDU5LWVmM2VkZWY3ZjBmYw==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "UnKnown",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn5eWFl+IDUyOX4gfn5KRUR+MDIvMDIvMjAyNiAxMzowNX5LV0l+MDIvMDIvMjAyNiAxNToxMH5+",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn4=",
+              "origin": "CAI",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T10:20:00+02:00",
+              "arrivalDateTime": "2026-04-09T13:35:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 135,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "566",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "566",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTI5fiB+fkpFRH4wMi8wMi8yMDI2IDEzOjA1fktXSX4wMi8wMi8yMDI2IDE1OjEwfn4=",
+              "origin": "SSH",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T15:05:00+02:00",
+              "arrivalDateTime": "2026-04-09T17:10:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "",
+              "flightTimeInMinutes": 125,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "529",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "529",
+              "equipment": "320"
+            }
+          ]
+        },
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTMwfiB+fktXSX4wMi8yMy8yMDI2IDE2OjAwfkpFRH4wMi8yMy8yMDI2IDE4OjIwfn5eWFl+IDU2N34gfn5KRUR+MDIvMjMvMjAyNiAyMTo0MH5DQUl+MDIvMjMvMjAyNiAyMzowMH5+",
+          "origin": "RUH",
+          "destination": "CAI",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTMwfiB+fktXSX4wMi8yMy8yMDI2IDE2OjAwfkpFRH4wMi8yMy8yMDI2IDE4OjIwfn4=",
+              "origin": "RUH",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T18:00:00+02:00",
+              "arrivalDateTime": "2026-04-09T20:20:00+02:00",
+              "departureTerminal": "",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 140,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "530",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "530",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY3fiB+fkpFRH4wMi8yMy8yMDI2IDIxOjQwfkNBSX4wMi8yMy8yMDI2IDIzOjAwfn4=",
+              "origin": "SSH",
+              "destination": "CAI",
+              "departureDateTime": "2026-04-09T23:40:00+02:00",
+              "arrivalDateTime": "2026-04-10T01:00:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "",
+              "flightTimeInMinutes": 140,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "567",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "567",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 22003.48,
+      "taxesAmount": 8230,
+      "baseAmount": 13773.48,
+      "discountAmount": 680.52,
+      "beforeDiscountAmount": 22684,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    {
+      "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjNGJiNDY2NjItYzRlZi00NzJmLWFhOWEtNjgxNWQzZmE2ZmZkIzdmZjE0MjNhLTMxOGMtNGY0YS04OTU4LWIzY2Y1NTdlNWFhNg==",
+      "haveBundles": true,
+      "canBeHeld": false,
+      "refundability": "UnKnown",
+      "journeys": [
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn5eWFl+IDUyOX4gfn5KRUR+MDIvMDIvMjAyNiAxMzowNX5LV0l+MDIvMDIvMjAyNiAxNToxMH5+",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8wMi8yMDI2IDA4OjIwfkpFRH4wMi8wMi8yMDI2IDExOjM1fn4=",
+              "origin": "CAI",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T10:20:00+02:00",
+              "arrivalDateTime": "2026-04-09T13:35:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 135,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "566",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "566",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTI5fiB+fkpFRH4wMi8wMi8yMDI2IDEzOjA1fktXSX4wMi8wMi8yMDI2IDE1OjEwfn4=",
+              "origin": "SSH",
+              "destination": "RUH",
+              "departureDateTime": "2026-04-09T15:05:00+02:00",
+              "arrivalDateTime": "2026-04-09T17:10:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "",
+              "flightTimeInMinutes": 125,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "529",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "529",
+              "equipment": "320"
+            }
+          ]
+        },
+        {
+          "id": "Rmx5TmFzI0VHWSNYWX4gNTMwfiB+fktXSX4wMi8yMy8yMDI2IDE2OjAwfkpFRH4wMi8yMy8yMDI2IDE4OjIwfn5eWFl+IDU2NX4gfn5KRUR+MDIvMjQvMjAyNiAwNjoxMH5DQUl+MDIvMjQvMjAyNiAwNzozMH5+",
+          "origin": "RUH",
+          "destination": "CAI",
+          "numberOfStops": 1,
+          "segment": [
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTMwfiB+fktXSX4wMi8yMy8yMDI2IDE2OjAwfkpFRH4wMi8yMy8yMDI2IDE4OjIwfn4=",
+              "origin": "RUH",
+              "destination": "SSH",
+              "departureDateTime": "2026-04-09T18:00:00+02:00",
+              "arrivalDateTime": "2026-04-09T20:20:00+02:00",
+              "departureTerminal": "",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 140,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "530",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "530",
+              "equipment": "320"
+            },
+            {
+              "id": "Rmx5TmFzI0VHWSNYWX4gNTY1fiB+fkpFRH4wMi8yNC8yMDI2IDA2OjEwfkNBSX4wMi8yNC8yMDI2IDA3OjMwfn4=",
+              "origin": "SSH",
+              "destination": "CAI",
+              "departureDateTime": "2026-04-10T08:10:00+02:00",
+              "arrivalDateTime": "2026-04-10T09:30:00+02:00",
+              "departureTerminal": "1",
+              "arrivalTerminal": "1",
+              "flightTimeInMinutes": 140,
+              "operatingCarrierCode": "XY",
+              "operatingFlightNumber": "565",
+              "marketingCarrierCode": "XY",
+              "marketingFlightNumber": "565",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 22003.48,
+      "taxesAmount": 8230,
+      "baseAmount": 13773.48,
+      "discountAmount": 680.52,
+      "beforeDiscountAmount": 22684,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "priceClasses": [
+        {
+          "classId": "Rmx5TmFzI0VHWSMx",
+          "priceClassName": "Depends on bundle choice.",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": null
+        }
+      ]
+    },
+    "…41 more items"
+  ]
+}
+```
+
 ### Confirm Order
 
 | | |
@@ -2377,6 +3553,23 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `400` | The Provided Offer Id is not valid or expired. ... | ar | — |
+
+#### 400 — The Provided Offer Id is not valid or expired. ... (ar)
+
+```json
+{
+  "status": 400,
+  "message": "The Provided Offer Id is not valid or expired. Please retry searching again for available offers.",
+  "errors": {},
+  "data": {}
+}
+```
 
 ### Add Passenger
 
@@ -2517,6 +3710,81 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Private trip quotes | ar | — |
+| `200` | Empty results | ar | — |
+
+#### 200 — Private trip quotes (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Trips",
+  "errors": {},
+  "data": [
+    {
+      "id": 1,
+      "rounded": true,
+      "go_price": 69.87,
+      "round_price": 104.81,
+      "currency": "SAR",
+      "status": true,
+      "currency_id": 1,
+      "base_currency_id": 1,
+      "exchange_rate": "1.00000000",
+      "company": {
+        "id": 1,
+        "name": "Sky Travel",
+        "refundability": true,
+        "refund_policy": "Sky Travel",
+        "logo_url": "https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg",
+        "logo_mime_type": "image/jpeg"
+      },
+      "from_location": {
+        "id": 1,
+        "name": "Cairo",
+        "latitude": "30.0441028",
+        "longitude": "31.2408498"
+      },
+      "to_location": {
+        "id": 2,
+        "name": "Alexandria",
+        "latitude": "31.2452475",
+        "longitude": "29.9892346"
+      },
+      "vehicle": {
+        "id": 1,
+        "name": "Hundai",
+        "category_id": 1,
+        "category_name": "Sedan",
+        "seats_number": 5,
+        "model": "Matrix",
+        "year": 2010,
+        "big_bags_count": 4,
+        "small_bags_count": 1,
+        "gear_type": "automatic",
+        "featured_url": "https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg",
+        "featured_mime_type": "image/jpeg"
+      }
+    }
+  ]
+}
+```
+
+#### 200 — Empty results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Trips",
+  "errors": {},
+  "data": []
+}
+```
+
 ### Show Trip Details
 
 | | |
@@ -2586,7 +3854,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | 5 | `GET` | `/buses/trips/236510` | Search details |
 | 6 | `GET` | `/buses/trips/236510/seats` | Seats |
 | 7 | `POST` | `/buses/trips/236437/create-ticket` | Create Ticket |
-| 8 | `GET` | `—` | cancel |
+| 8 | `POST` | `/buses/orders/:id/cancel` | cancel |
 
 ### Response envelope
 
@@ -4392,9 +5660,9 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 
 | | |
 |---|---|
-| **Method** | `GET` |
-| **Path** | `*(not configured)*` |
-| **Full URL** | `*(not configured)*` |
+| **Method** | `POST` |
+| **Path** | `/buses/orders/:id/cancel` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/orders/:id/cancel` |
 | **Auth** | Bearer token required |
 
 **Headers:**
@@ -4432,6 +5700,121 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Airports list | ar | — |
+| `200` | Airports list | ar | — |
+
+#### 200 — Airports list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Airports list",
+  "errors": {},
+  "data": [
+    {
+      "id": 30325,
+      "name": "قاهره مطار دولي",
+      "city": "Cairo",
+      "country": "EGYPT",
+      "iata_code": "CAI",
+      "icao_code": "HECA",
+      "country_code": "EG",
+      "latitude": 30.04998,
+      "longitude": 31.2486
+    },
+    {
+      "id": 30326,
+      "name": "مطار العاصمه الدولي",
+      "city": "Cairo",
+      "country": "EGYPT",
+      "iata_code": "CCE",
+      "icao_code": "HECP",
+      "country_code": "EG",
+      "latitude": null,
+      "longitude": null
+    },
+    {
+      "id": 38383,
+      "name": "Cairo Regional Airport",
+      "city": "Cairo",
+      "country": "United States",
+      "iata_code": "CIR",
+      "icao_code": "KCIR",
+      "country_code": "US",
+      "latitude": 37.064499,
+      "longitude": -89.219597
+    },
+    "…18 more items"
+  ],
+  "pagination": {
+    "total": 21,
+    "lastPage": 1,
+    "perPage": 50,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
+#### 200 — Airports list (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Airports list",
+  "errors": {},
+  "data": [
+    {
+      "id": 50232,
+      "name": "Anaa Airport",
+      "city": "Anaa",
+      "country": "French Polynesia",
+      "iata_code": "AAA",
+      "icao_code": "NTGA",
+      "country_code": "PF",
+      "latitude": -17.3526,
+      "longitude": -145.509995
+    },
+    {
+      "id": 81953,
+      "name": "Arrabury Airport",
+      "city": "Tanbar",
+      "country": "Australia",
+      "iata_code": "AAB",
+      "icao_code": "YARY",
+      "country_code": "AU",
+      "latitude": -26.69639,
+      "longitude": 141.048718
+    },
+    {
+      "id": 30319,
+      "name": "El Arish International Airport",
+      "city": "El Arish",
+      "country": "Egypt",
+      "iata_code": "AAC",
+      "icao_code": "HEAR",
+      "country_code": "EG",
+      "latitude": 31.055324,
+      "longitude": 33.827964
+    },
+    "…47 more items"
+  ],
+  "pagination": {
+    "total": 9097,
+    "lastPage": 182,
+    "perPage": 50,
+    "currentPage": 1,
+    "nextPageUrl": "https://portal.wdenytravel.com/api/v1/flights/iata?page=2",
+    "previousPageUrl": null
+  }
+}
+```
+
 ## Collection issues
 
 The following inconsistencies exist in the Postman collection and may not reflect the real API:
@@ -4445,7 +5828,8 @@ The following inconsistencies exist in the Postman collection and may not reflec
 | Buses saved examples | Some `originalRequest` URLs still point to legacy `/api/transports/*` paths — response bodies are valid; request snapshots are stale |
 | Buses → Create Ticket (500) | Known backend bug in `PayMobPayAction` (`Undefined array key "url"`) — not a client contract |
 | Buses → Search details (404 HTML) | Saved example returned an HTML 404 page — likely captured against a removed trip ID |
+| Buses → cancel | `POST /buses/orders/:id/cancel` has no saved response example yet — request-only in docs until captured in Postman |
 
 Nested items under Flights → Search (One Way, Round Trip, Multi City) and under Buses folders are **saved response examples**, not separate API endpoints. They all call the same endpoint as their parent request.
 
-Saved responses documented under Auth, Profile, and Buses (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.
+Saved responses documented in each endpoint section are **real response examples** attached to the parent Postman request — not separate endpoints.

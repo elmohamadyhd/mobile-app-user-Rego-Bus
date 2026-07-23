@@ -94,8 +94,7 @@ class _WalletLeavePaymentDialog extends StatelessWidget {
                 Text(
                   l10n.paymentLeaveTitle,
                   textAlign: TextAlign.center,
-                  style:
-                      AppTypography.h2.copyWith(fontWeight: FontWeight.w700),
+                  style: AppTypography.h2.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(

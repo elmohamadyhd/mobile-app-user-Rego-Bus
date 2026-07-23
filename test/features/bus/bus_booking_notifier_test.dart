@@ -351,8 +351,7 @@ void main() {
       );
     });
 
-    test(
-        'confirmBooking reuses the held ticket for the same trip/stops/seats',
+    test('confirmBooking reuses the held ticket for the same trip/stops/seats',
         () async {
       final repo = FakeBusRepository(ticketResult: _pendingTicket());
       final container = makeContainer(repo);

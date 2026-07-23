@@ -174,7 +174,8 @@ void main() {
     expect(find.text('تنزل في'), findsOneWidget);
   });
 
-  testWidgets('long press on a stop shows the stop-specific confirmation dialog',
+  testWidgets(
+      'long press on a stop shows the stop-specific confirmation dialog',
       (tester) async {
     await _pump(
       tester,

@@ -84,7 +84,12 @@ const createTicketEnvelope = {
     'id': 1466,
     'trip_id': '145658',
     'gateway_order_id': '5061990',
-    'company_data': {'name': 'SuperJet', 'avatar': '', 'bus_image': '', 'pin': ''},
+    'company_data': {
+      'name': 'SuperJet',
+      'avatar': '',
+      'bus_image': '',
+      'pin': ''
+    },
     'status': 'Pending',
     'status_code': 'pending',
     'gateway_id': 'SuperJet',
@@ -110,8 +115,7 @@ const createTicketEnvelope = {
     'date': '2026-07-30',
     'date_time': '2026-07-30 04:30 AM',
     'payment_url': 'https://demo.safaria.travel/api/v1/buses/orders/1466/pay',
-    'cancel_url':
-        'https://demo.safaria.travel/api/v1/buses/orders/1466/cancel',
+    'cancel_url': 'https://demo.safaria.travel/api/v1/buses/orders/1466/cancel',
     'total': 'EGP 240.75',
     'currency': 'EGP',
   },
@@ -249,8 +253,7 @@ const busOrderShowEnvelope = {
     'date': '2026-07-30',
     'date_time': '2026-07-30 08:45 AM',
     'payment_url': 'https://demo.safaria.travel/api/v1/buses/orders/1475/pay',
-    'cancel_url':
-        'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
+    'cancel_url': 'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
     'original_tickets_totals': 'EGP 205.00',
     'discount': 'EGP 0.00',
     'wallet_discount': 'EGP 0.00',

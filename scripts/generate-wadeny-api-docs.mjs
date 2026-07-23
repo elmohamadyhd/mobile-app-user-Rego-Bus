@@ -17,7 +17,7 @@ const POSTMAN_COLLECTION_ID =
 function parseArgs() {
   const args = process.argv.slice(2);
   let source = "postman";
-  let responses = "auth,buses,profile";
+  let responses = "all";
   let collection = defaultCollectionPath;
   for (const arg of args) {
     if (arg.startsWith("--source=")) {
@@ -297,6 +297,21 @@ function scenarioLabel(code, parsed, rawBody) {
     if (message === "Payment link") return "Payment link";
     if (message === "Bus orders") return "Bus orders list";
     if (message === "Bus order") return "Bus order details";
+    if (message === "Countries") return "Countries list";
+    if (message === "Trips") return "Private trip quotes";
+    if (message.toLowerCase().includes("airports list")) {
+      return "Airports list";
+    }
+    if (message.toLowerCase().includes("airports fetched")) {
+      return "Airport search results";
+    }
+    if (message.toLowerCase().includes("flight search results")) {
+      return "Flight search results";
+    }
+    if (message.toLowerCase().includes("bundles")) {
+      return "Fare bundles";
+    }
+    if (message === "Account deleted") return "Account deleted";
     if (parsed?.data?.api_token) return "Success — user data";
     if (
       message.toLowerCase().includes("logged in") ||
@@ -336,7 +351,11 @@ function scenarioLabel(code, parsed, rawBody) {
   }
   if (keys.includes("email")) return "Email already taken";
   if (keys.includes("mobile")) return "Mobile already taken";
+  if (keys.includes("password") && keys.includes("current_password")) {
+    return "Wrong current password";
+  }
   if (keys.includes("password")) return "Password confirmation mismatch";
+  if (keys.includes("term")) return "Missing search term";
   if (message === "Bus order not found") return "Bus order not found";
   if (code === 404) return "Record not found";
 
@@ -466,6 +485,48 @@ function renderAuthEnvelope() {
   );
   lines.push(
     "- Success responses that return a session include `data.api_token` (Bearer token for subsequent calls).",
+  );
+  lines.push("");
+  return lines.join("\n");
+}
+
+function renderFlightsEnvelope() {
+  const lines = [];
+  lines.push("### Response envelope");
+  lines.push("");
+  lines.push(
+    "All Flights endpoints return JSON with this shape (HTTP status may differ from the inner `status` field):",
+  );
+  lines.push("");
+  lines.push("```json");
+  lines.push(
+    JSON.stringify(
+      {
+        status: 200,
+        message: "…",
+        errors: {},
+        data: {},
+      },
+      null,
+      2,
+    ),
+  );
+  lines.push("```");
+  lines.push("");
+  lines.push(
+    "- `GET /flights/iata` returns `data` as a **paginated array** of airports plus a top-level `pagination` object.",
+  );
+  lines.push(
+    "- `GET /flights/airports/search` returns `data` as an **array** of matching airports.",
+  );
+  lines.push(
+    "- `POST /flights/search` returns `data` as an **array** of offers (`offerId`, `journeys`, pricing).",
+  );
+  lines.push(
+    "- `GET /flights/:offer_id/bundles` returns bundle/fare options for a held offer.",
+  );
+  lines.push(
+    "- `errors` values are **strings** in live responses; the mobile app normalizes strings and arrays.",
   );
   lines.push("");
   return lines.join("\n");
@@ -702,6 +763,10 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
       md.push(renderAuthEnvelope());
     }
 
+    if (sec === "Flights") {
+      md.push(renderFlightsEnvelope());
+    }
+
     if (sec === "Buses") {
       md.push(renderBusesEnvelope());
     }
@@ -746,13 +811,16 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
   md.push(
     "| Buses → Search details (404 HTML) | Saved example returned an HTML 404 page — likely captured against a removed trip ID |",
   );
+  md.push(
+    "| Buses → cancel | `POST /buses/orders/:id/cancel` has no saved response example yet — request-only in docs until captured in Postman |",
+  );
   md.push("");
   md.push(
     "Nested items under Flights → Search (One Way, Round Trip, Multi City) and under Buses folders are **saved response examples**, not separate API endpoints. They all call the same endpoint as their parent request.",
   );
   md.push("");
   md.push(
-    "Saved responses documented under Auth, Profile, and Buses (and other folders when using `--responses=all`) are **real response examples** attached to the parent request — not separate endpoints.",
+    "Saved responses documented in each endpoint section are **real response examples** attached to the parent Postman request — not separate endpoints.",
   );
   md.push("");
 

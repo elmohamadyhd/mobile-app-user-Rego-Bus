@@ -51,8 +51,7 @@ class _BusOrderDetailSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final order =
-        ref.watch(busOrderDetailProvider(seed.orderId)).value ?? seed;
+    final order = ref.watch(busOrderDetailProvider(seed.orderId)).value ?? seed;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.85;
     final hasRoute = _hasLabel(order.pickupStopLabel) ||
         _hasLabel(order.dropoffStopLabel) ||

@@ -101,7 +101,8 @@ void main() {
     },
   );
 
-  testWidgets('hides bus images FAB when trip has no bus image', (tester) async {
+  testWidgets('hides bus images FAB when trip has no bus image',
+      (tester) async {
     final container = ProviderContainer(
       overrides: [
         busRepositoryProvider.overrideWithValue(FakeBusRepository()),

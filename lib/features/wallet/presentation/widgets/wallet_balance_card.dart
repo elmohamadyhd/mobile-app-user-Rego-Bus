@@ -41,14 +41,12 @@ class WalletBalanceCard extends StatelessWidget {
         children: [
           Text(
             l10n.walletBalanceLabel,
-            style:
-                AppTypography.body.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.body.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             '${balance.toStringAsFixed(2)} $currency',
-            style:
-                AppTypography.display.copyWith(color: AppColors.textPrimary),
+            style: AppTypography.display.copyWith(color: AppColors.textPrimary),
           ),
           const SizedBox(height: AppSpacing.lg),
           PrimaryButton(label: l10n.walletTopUpCta, onPressed: onTopUp),

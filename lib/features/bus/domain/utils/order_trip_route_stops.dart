@@ -6,13 +6,9 @@ List<BusStop> orderTripRouteStops({
   required List<BusStop> boardingStops,
   required List<BusStop> dropoffStops,
 }) {
-  final board = boardingStops
-      .where((stop) => stop != BusStop.empty)
-      .toList()
+  final board = boardingStops.where((stop) => stop != BusStop.empty).toList()
     ..sort(_byArrival);
-  final drop = dropoffStops
-      .where((stop) => stop != BusStop.empty)
-      .toList()
+  final drop = dropoffStops.where((stop) => stop != BusStop.empty).toList()
     ..sort(_byArrival);
   return [...board, ...drop];
 }

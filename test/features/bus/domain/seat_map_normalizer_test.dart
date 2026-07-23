@@ -69,7 +69,11 @@ void main() {
 
       expect(_driverCount(map), 1);
       expect(map.cells[0].kind, SeatMapCellKind.driver);
-      expect(map.cells.sublist(1, columns).every((c) => c.kind == SeatMapCellKind.space), isTrue);
+      expect(
+          map.cells
+              .sublist(1, columns)
+              .every((c) => c.kind == SeatMapCellKind.space),
+          isTrue);
 
       // Original seat 1 shifts down by one row.
       expect(map.cells[columns].seatNo, '1');

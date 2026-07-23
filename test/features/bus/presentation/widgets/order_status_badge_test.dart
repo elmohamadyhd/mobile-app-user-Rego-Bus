@@ -22,8 +22,7 @@ Future<void> _pumpBadge(
 }
 
 void main() {
-  testWidgets('shows the localized label for each status kind',
-      (tester) async {
+  testWidgets('shows the localized label for each status kind', (tester) async {
     await _pumpBadge(tester, BusOrderStatusKind.pending);
     expect(find.text('Pending'), findsOneWidget);
 

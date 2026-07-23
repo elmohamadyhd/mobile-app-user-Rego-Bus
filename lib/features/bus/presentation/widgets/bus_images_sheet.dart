@@ -30,7 +30,8 @@ Future<void> showBusImagesSheet(
             children: [
               Text(
                 l10n.seatSelectionBusImagesTitle,
-                style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+                style:
+                    AppTypography.title.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: AppSpacing.md),
               ClipRRect(

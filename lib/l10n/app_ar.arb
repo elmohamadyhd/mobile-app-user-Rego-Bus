@@ -298,5 +298,32 @@
   "walletPaymentFailedToast": "فشلت عملية الدفع، حاول مرة أخرى",
   "walletPaymentPendingToast": "لم نتمكن من تأكيد الدفع بعد، قد يستغرق الأمر بعض الوقت",
 
-  "pressBackAgainToExit": "اضغط رجوع مرة أخرى للخروج"
+  "pressBackAgainToExit": "اضغط رجوع مرة أخرى للخروج",
+
+  "carPickup": "نقطة الانطلاق",
+  "carDropoff": "نقطة الوصول",
+  "carPlaceSearchHint": "ابحث عن مكان",
+  "carPlaceSelectedLocation": "موقع محدد",
+  "carPlaceQuickActions": "خيارات سريعة",
+  "carPlaceCurrentSelection": "الموقع الحالي",
+  "carMapsNotConfigured": "الخرائط غير مفعّلة في هذا الإصدار.",
+  "carAdjustOnMap": "تعديل على الخريطة",
+  "carUseMyLocation": "استخدم موقعي",
+  "carRequestCar": "اطلب سيارة",
+  "carChooseVehicle": "اختر المركبة",
+  "carNoQuotes": "لا توجد مركبات متاحة",
+  "carNoQuotesBody": "جرّب مواقع انطلاق أو وصول مختلفة.",
+  "carSeats": "{count, plural, =1{مقعد واحد} other{{count} مقاعد}}",
+  "carBags": "{big} كبيرة · {small} صغيرة",
+  "carGearAutomatic": "أوتوماتيك",
+  "carGearManual": "يدوي",
+  "carRefundable": "قابل للاسترداد",
+  "carContinue": "متابعة",
+  "carBookingComingSoon": "الحجز قريباً",
+  "carSearchSelectBothPlaces": "اختر نقطة الانطلاق والوصول",
+  "carSearchSamePlace": "يجب أن تكون نقطة الانطلاق مختلفة عن الوصول",
+  "carPlacesSearchFailed": "تعذّر البحث عن الأماكن. حاول مرة أخرى.",
+  "carPlacesNoResults": "لم يتم العثور على أماكن",
+  "carConfirmLocation": "تأكيد الموقع",
+  "guestGateCarBody": "سجّل الدخول أو أنشئ حساباً لمتابعة رحلتك."
 }

@@ -22,8 +22,7 @@ void main() {
       );
       final container = makeContainer(repo);
 
-      final order =
-          await container.read(busOrderDetailProvider('1475').future);
+      final order = await container.read(busOrderDetailProvider('1475').future);
 
       expect(order.orderId, '1475');
       expect(repo.orderByIdCalls, ['1475']);

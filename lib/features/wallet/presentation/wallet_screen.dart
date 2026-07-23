@@ -82,8 +82,7 @@ class _WalletEmptyState extends StatelessWidget {
           Text(
             l10n.walletEmptyBody,
             textAlign: TextAlign.center,
-            style:
-                AppTypography.body.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.body.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -108,8 +107,7 @@ class _WalletErrorState extends StatelessWidget {
           Text(
             l10n.walletError,
             textAlign: TextAlign.center,
-            style:
-                AppTypography.body.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.body.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.md),
           OutlinedButton(

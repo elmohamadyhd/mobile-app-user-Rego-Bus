@@ -99,8 +99,7 @@ void main() {
     expect(find.text('Top up 200 EGP'), findsOneWidget);
   });
 
-  testWidgets('only digits can be typed into the amount field',
-      (tester) async {
+  testWidgets('only digits can be typed into the amount field', (tester) async {
     await pumpTopUp(tester, FakeWalletRepository());
 
     await tester.enterText(find.byType(TextField), 'abc123.45xyz');

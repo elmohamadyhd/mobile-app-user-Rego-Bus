@@ -144,8 +144,7 @@ class _BusTripSummaryCard extends StatelessWidget {
     final from = state.fromStop;
     final to = state.toStop;
     final seats = state.selectedSeats;
-    final seatLabels =
-        state.seatMap?.labelsForSeatIds(seats) ?? seats;
+    final seatLabels = state.seatMap?.labelsForSeatIds(seats) ?? seats;
     final params = state.searchParams;
     final dateLabel = params == null
         ? ''

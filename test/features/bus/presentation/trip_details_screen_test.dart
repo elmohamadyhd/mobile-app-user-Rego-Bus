@@ -367,7 +367,8 @@ void main() {
       expect(find.text('Choose your stops'), findsOneWidget);
     });
 
-    testWidgets('help button is disabled while coach is showing', (tester) async {
+    testWidgets('help button is disabled while coach is showing',
+        (tester) async {
       await _pumpDetails(tester, _buildTrip(), coachSeen: false);
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pumpAndSettle();

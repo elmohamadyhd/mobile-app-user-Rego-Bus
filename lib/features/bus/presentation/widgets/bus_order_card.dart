@@ -177,8 +177,7 @@ class BusOrderCard extends StatelessWidget {
     final showPay = order.statusKind == BusOrderStatusKind.pending &&
         (order.gatewayCheckoutUrl ?? '').isNotEmpty;
     final showETicket = (order.invoiceUrl ?? '').isNotEmpty;
-    final showCancel =
-        order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
+    final showCancel = order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
     final hasSecondary = showETicket || showCancel;
     if (!showPay && !hasSecondary) return 0;
 
@@ -212,8 +211,7 @@ class _OrderActions extends StatelessWidget {
     final showPay = order.statusKind == BusOrderStatusKind.pending &&
         (order.gatewayCheckoutUrl ?? '').isNotEmpty;
     final showETicket = (order.invoiceUrl ?? '').isNotEmpty;
-    final showCancel =
-        order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
+    final showCancel = order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
 
     if (!showPay && !showETicket && !showCancel) {
       return const SizedBox.shrink();

@@ -33,11 +33,11 @@ void main() {
       const actionKey = Key('trailing-action');
 
       await tester.pumpWidget(
-      const  MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             appBar: BookingAppBar(
               title: 'Title',
-              action:  SizedBox(
+              action: SizedBox(
                 key: actionKey,
                 width: 48,
                 height: 48,
@@ -78,7 +78,8 @@ void main() {
         ),
       );
 
-      final appBarBox = tester.renderObject<RenderBox>(find.byType(BookingAppBar));
+      final appBarBox =
+          tester.renderObject<RenderBox>(find.byType(BookingAppBar));
       final badgeBox = tester.renderObject<RenderBox>(find.text('1'));
       final appBarTop = appBarBox.localToGlobal(Offset.zero).dy;
       final badgeTop = badgeBox.localToGlobal(Offset.zero).dy;

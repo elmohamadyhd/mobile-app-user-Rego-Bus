@@ -57,7 +57,8 @@ void main() {
     );
 
     expect(result.uri.queryParameters['origin'], 'Ramsis, Cairo');
-    expect(result.uri.queryParameters['destination'], 'Moharam Bek, Alexandria');
+    expect(
+        result.uri.queryParameters['destination'], 'Moharam Bek, Alexandria');
   });
 
   test('includes pipe-separated waypoints for routes with 3+ stops', () {
@@ -71,7 +72,8 @@ void main() {
     );
 
     expect(result.uri.queryParameters['origin'], 'Sekka Club, Cairo');
-    expect(result.uri.queryParameters['destination'], 'Moharam Bek, Alexandria');
+    expect(
+        result.uri.queryParameters['destination'], 'Moharam Bek, Alexandria');
     expect(
       result.uri.queryParameters['waypoints'],
       'Ramsis, Cairo|6 October, Cairo',

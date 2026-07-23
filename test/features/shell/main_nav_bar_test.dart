@@ -46,7 +46,8 @@ void main() {
     await tester.pumpWidget(wrap(currentIndex: 1, onSelected: (_) {}));
     await tester.pumpAndSettle();
 
-    expect(tester.getSize(find.byType(MainNavBar)).height, lessThanOrEqualTo(64));
+    expect(
+        tester.getSize(find.byType(MainNavBar)).height, lessThanOrEqualTo(64));
   });
 
   testWidgets('tapping a destination reports its index', (tester) async {
