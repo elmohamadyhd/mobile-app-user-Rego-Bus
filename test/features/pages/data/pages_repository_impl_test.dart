@@ -52,8 +52,8 @@ void main() {
         _FakePagesApi(detailBody: inactiveDetailEnvelope),
       );
 
-      expect(
-        () => repo.getPage('terms-and-conditions'),
+      await expectLater(
+        repo.getPage('terms-and-conditions'),
         throwsA(isA<FormatException>()),
       );
     });
