@@ -64,6 +64,13 @@ Future<ProviderContainer> _pumpConfirm(
   return container;
 }
 
+Future<void> _acceptTerms(WidgetTester tester) async {
+  final checkbox = find.byType(Checkbox);
+  await tester.ensureVisible(checkbox);
+  await tester.tap(checkbox);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('shows the step bar and the full choice recap', (tester) async {
     await _pumpConfirm(tester);
@@ -89,6 +96,7 @@ void main() {
     await tester.ensureVisible(find.text('Wallet'));
     await tester.tap(find.text('Wallet'));
     await tester.pumpAndSettle();
+    await _acceptTerms(tester);
 
     expect(
       tester.widget<PrimaryButton>(find.byType(PrimaryButton)).onPressed,
@@ -124,9 +132,24 @@ void main() {
     expect(find.text('−25.00 EGP'), findsOneWidget);
     expect(find.text('Pay by card'), findsOneWidget);
     expect(find.text('150.00 EGP'), findsNWidgets(2));
+    await _acceptTerms(tester);
     expect(
       tester.widget<PrimaryButton>(find.byType(PrimaryButton)).onPressed,
       isNotNull,
+    );
+  });
+
+  testWidgets('shows snackbar when confirm tapped without accepting terms',
+      (tester) async {
+    await _pumpConfirm(tester);
+
+    await tester.ensureVisible(find.byType(PrimaryButton));
+    await tester.tap(find.byType(PrimaryButton));
+    await tester.pump();
+
+    expect(
+      find.text('Please accept the Terms and Conditions to continue.'),
+      findsOneWidget,
     );
   });
 
