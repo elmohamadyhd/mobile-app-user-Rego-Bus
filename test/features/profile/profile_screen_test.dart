@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/features/addresses/presentation/addresses_routes.dart';
 import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 import 'package:safaria/features/auth/domain/entities/auth_user.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
@@ -286,6 +287,115 @@ void main() {
 
     expect(
       find.text('LOGIN returnTo=${WalletRoutes.wallet}'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets(
+      'tapping Addresses pushes the address list for a signed-in user',
+      (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        sessionControllerProvider.overrideWith(
+          () => _FakeSessionController(session),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.profile,
+      routes: [
+        GoRoute(
+          path: AppRoutes.profile,
+          builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: AddressesRoutes.list,
+          builder: (context, state) => const Text('ADDRESSES'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final addressesTile = find.text('Addresses');
+    await tester.ensureVisible(addressesTile);
+    await tester.pumpAndSettle();
+    await tester.tap(addressesTile);
+    await tester.pumpAndSettle();
+
+    expect(find.text('ADDRESSES'), findsOneWidget);
+  });
+
+  testWidgets(
+      'tapping Addresses as a guest opens Login with returnTo the address list',
+      (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        sessionControllerProvider.overrideWith(
+          () => _FakeSessionController(null),
+        ),
+        guestModeProvider.overrideWith(() => _FakeGuestController(true)),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.profile,
+      routes: [
+        GoRoute(
+          path: AppRoutes.profile,
+          builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) {
+            final args = state.extra;
+            return Text(
+              args is AuthGateArgs
+                  ? 'LOGIN returnTo=${args.returnTo}'
+                  : 'LOGIN no gate args',
+            );
+          },
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final addressesTile = find.text('Addresses');
+    await tester.ensureVisible(addressesTile);
+    await tester.pumpAndSettle();
+    await tester.tap(addressesTile);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('LOGIN returnTo=${AddressesRoutes.list}'),
       findsOneWidget,
     );
   });

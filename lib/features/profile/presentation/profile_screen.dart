@@ -9,6 +9,7 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/auth/domain/entities/auth_user.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/addresses/presentation/addresses_routes.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
 import 'package:safaria/l10n/app_localizations.dart';
@@ -39,7 +40,14 @@ class ProfileScreen extends ConsumerWidget {
                 _ProfileMenuItem(
                   icon: AppIcons.locationTo,
                   label: l10n.profileMenuAddresses,
-                  onTap: () => _showComingSoon(context, l10n),
+                  onTap: () => isGuest
+                      ? context.go(
+                          AppRoutes.login,
+                          extra: const AuthGateArgs(
+                            returnTo: AddressesRoutes.list,
+                          ),
+                        )
+                      : context.push(AddressesRoutes.list),
                 ),
                 _ProfileMenuItem(
                   icon: AppIcons.wallet,
