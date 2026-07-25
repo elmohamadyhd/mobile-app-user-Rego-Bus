@@ -7879,7 +7879,114 @@
                   ]
                 }
               },
-              "response": []
+              "response": [
+                {
+                  "name": "Pages",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "]",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/pages",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "pages"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 200
+                    },
+                    {
+                      "key": "date",
+                      "value": "Sat, 25 Jul 2026 12:43:05 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "x-ratelimit-limit",
+                      "value": "60"
+                    },
+                    {
+                      "key": "x-ratelimit-remaining",
+                      "value": "59"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "x-frame-options",
+                      "value": "SAMEORIGIN"
+                    },
+                    {
+                      "key": "x-xss-protection",
+                      "value": "1; mode=block"
+                    },
+                    {
+                      "key": "x-content-type-options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=tJJG7p3BIGwSVXprUUqoq6Du4q2Cw7Y%2FZlLn18BOfJyVO6mjbw9pes3boqkKEGYDhW9QIMnn5NGywpSKi4OElzDAMXTsCdl09hHNW8FIt52PuKihhKE8KG4VSoOgMqKEFY42MhwR\"}]}"
+                    },
+                    {
+                      "key": "content-encoding",
+                      "value": "br"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a20b3f8d4ce597e0-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 200,\n    \"message\": \"Pages\",\n    \"errors\": {},\n    \"data\": [\n        {\n            \"id\": 2,\n            \"title\": \"Privacy And Policy\",\n            \"slug\": \"privacy-and-policy\",\n            \"status\": 1\n        },\n        {\n            \"id\": 1,\n            \"title\": \"Terms and Conditions\",\n            \"slug\": \"terms-and-conditions\",\n            \"status\": 1\n        }\n    ]\n}"
+                }
+              ]
             },
             {
               "name": "Show Page",
@@ -7925,7 +8032,115 @@
                   ]
                 }
               },
-              "response": []
+              "response": [
+                {
+                  "name": "Show Page",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n\"name\":\"{{$randomFullName}}\",\n\"email\":\"{{$randomEmail}}\",\n\"phone\":\"{{$randomBankAccount}}\",\n\"message\":\"{{$randomLoremLines}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/pages/sy-s-lkhsosy",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "pages",
+                        "sy-s-lkhsosy"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 200
+                    },
+                    {
+                      "key": "date",
+                      "value": "Sat, 25 Jul 2026 12:43:19 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "x-ratelimit-limit",
+                      "value": "60"
+                    },
+                    {
+                      "key": "x-ratelimit-remaining",
+                      "value": "58"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "x-frame-options",
+                      "value": "SAMEORIGIN"
+                    },
+                    {
+                      "key": "x-xss-protection",
+                      "value": "1; mode=block"
+                    },
+                    {
+                      "key": "x-content-type-options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=ghpYBJzoqaVgzUyct1%2Bv5j0akKcnTtXC4vdTeZw%2FwEtdq9jnXCfiJkyyHow7nMtAM2%2F%2FUQhU0vGk0o7Yi1S47xNnovSLSsB0sQnBbbPV4RNNcUMeZyXVEX46HP4XFFKRYJFhXWDQ\"}]}"
+                    },
+                    {
+                      "key": "content-encoding",
+                      "value": "br"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a20b3fe6e9e297e0-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 200,\n    \"message\": \"Page details\",\n    \"errors\": {},\n    \"data\": {\n        \"id\": 2,\n        \"slug\": \"privacy-and-policy\",\n        \"title\": \"Privacy And Policy\",\n        \"content\": \"<p>DUIOPI[FDSDKL'</p><p>FJDSGDUIPDSGFGHJ</p>\",\n        \"status\": 1\n    }\n}"
+                }
+              ]
             },
             {
               "name": "Countries List",
@@ -8122,18 +8337,114 @@
                   ]
                 }
               },
-              "response": []
-            },
-            {
-              "name": "New Request",
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": ""
+              "response": [
+                {
+                  "name": "Settings",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n\"name\":\"{{$randomFullName}}\",\n\"email\":\"{{$randomEmail}}\",\n\"phone\":\"{{$randomBankAccount}}\",\n\"message\":\"{{$randomLoremLines}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/settings",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "settings"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 200
+                    },
+                    {
+                      "key": "date",
+                      "value": "Sat, 25 Jul 2026 12:43:37 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "x-ratelimit-limit",
+                      "value": "60"
+                    },
+                    {
+                      "key": "x-ratelimit-remaining",
+                      "value": "57"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "x-frame-options",
+                      "value": "SAMEORIGIN"
+                    },
+                    {
+                      "key": "x-xss-protection",
+                      "value": "1; mode=block"
+                    },
+                    {
+                      "key": "x-content-type-options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Eom%2ByHEU2yDitbcjbe51Batn0UANaexb0Mpq8QJaB%2Fj2q06MwNRjXDU1%2F5L2F0D3NsXoA0zjhhbyZ%2BasMbvUDTnZcnmiYDxJ6JD054%2BgQXAQeygxmE9L5um7VEVLVyNh7SGQ9Tta\"}]}"
+                    },
+                    {
+                      "key": "content-encoding",
+                      "value": "br"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a20b4054cdad97e0-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 200,\n    \"message\": \"Settings \",\n    \"errors\": {},\n    \"data\": {\n        \"name\": \"Safaria\",\n        \"email\": \"info@safaria.travel\",\n        \"mobile\": \"01063626268\",\n        \"address\": \"Riyadh\",\n        \"wallet_discount\": \"0\",\n        \"refundRules\": [],\n        \"socialLinks\": {\n            \"twitter\": \"https://x.com/Safaria_Travel\",\n            \"facebook\": \"https://www.facebook.com/SafariaaTravel\",\n            \"linkedIn\": \"https://www.linkedin.com/company/safaria-travel\",\n            \"whatsapp\": \"https://web.whatsapp.com\",\n            \"instagram\": \"https://www.instagram.com/safaria.travel\"\n        },\n        \"private_trips_discount\": \"0\",\n        \"apis\": [],\n        \"app_version\": \"1.0.1\",\n        \"app_link_on_google_store\": \"https://play.google.com/store/apps/details?id=com.teleferik&pli=1\",\n        \"app_link_on_apple_store\": \"https://wdenytravel.com\",\n        \"discounts\": {\n            \"on_time\": \"0\",\n            \"tazcara\": \"0\",\n            \"blue_bus\": \"0\",\n            \"high_bus\": \"0\",\n            \"super_jet\": \"0\",\n            \"telefreik\": \"0\",\n            \"distribusion\": \"0\"\n        },\n        \"payment_gateway\": \"myfatoorah\",\n        \"we_bus_private_companies\": [],\n        \"default_booking_currency\": \"EGP\"\n    }\n}"
                 }
-              },
-              "response": []
+              ]
             }
           ]
         },

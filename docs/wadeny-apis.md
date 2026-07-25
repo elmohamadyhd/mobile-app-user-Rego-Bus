@@ -10,8 +10,8 @@
 | **Collection** | Wadeny |
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
-| **Total requests** | 65 |
-| **Documented saved responses** | 92 |
+| **Total requests** | 64 |
+| **Documented saved responses** | 95 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -95,7 +95,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 
 - [Auth](#auth) (8 requests)
 - [Profile](#profile) (25 requests)
-- [Content](#content) (12 requests)
+- [Content](#content) (11 requests)
 - [Flights](#flights) (8 requests)
 - [Private](#private) (3 requests)
 - [Buses](#buses) (8 requests)
@@ -2089,7 +2089,6 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | 9 | `GET` | `/pages/sy-s-lkhsosy` | Show Page |
 | 10 | `GET` | `/countries` | Countries List |
 | 11 | `GET` | `/settings` | Settings |
-| 12 | `GET` | `—` | New Request |
 
 #### Posts
 
@@ -2314,6 +2313,36 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Pages | ar | — |
+
+#### 200 — Pages (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Pages",
+  "errors": {},
+  "data": [
+    {
+      "id": 2,
+      "title": "Privacy And Policy",
+      "slug": "privacy-and-policy",
+      "status": 1
+    },
+    {
+      "id": 1,
+      "title": "Terms and Conditions",
+      "slug": "terms-and-conditions",
+      "status": 1
+    }
+  ]
+}
+```
+
 ### Show Page
 
 | | |
@@ -2340,6 +2369,29 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Page details | ar | — |
+
+#### 200 — Page details (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Page details",
+  "errors": {},
+  "data": {
+    "id": 2,
+    "slug": "privacy-and-policy",
+    "title": "Privacy And Policy",
+    "content": "<p>DUIOPI[FDSDKL'</p><p>FJDSGDUIPDSGFGHJ</p>",
+    "status": 1
+  }
+}
+```
 
 ### Countries List
 
@@ -2425,21 +2477,53 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
-### New Request
+**Saved responses:**
 
-| | |
-|---|---|
-| **Method** | `GET` |
-| **Path** | `*(not configured)*` |
-| **Full URL** | `*(not configured)*` |
-| **Auth** | Bearer token required |
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Settings  | ar | — |
 
-**Headers:**
+#### 200 — Settings  (ar)
 
-| Header | Value |
-|--------|-------|
-| `Accept` | application/json |
-| `Accept-Language` | `ar` \| `en` (app locale) |
+```json
+{
+  "status": 200,
+  "message": "Settings ",
+  "errors": {},
+  "data": {
+    "name": "Safaria",
+    "email": "info@safaria.travel",
+    "mobile": "01063626268",
+    "address": "Riyadh",
+    "wallet_discount": "0",
+    "refundRules": [],
+    "socialLinks": {
+      "twitter": "https://x.com/Safaria_Travel",
+      "facebook": "https://www.facebook.com/SafariaaTravel",
+      "linkedIn": "https://www.linkedin.com/company/safaria-travel",
+      "whatsapp": "https://web.whatsapp.com",
+      "instagram": "https://www.instagram.com/safaria.travel"
+    },
+    "private_trips_discount": "0",
+    "apis": [],
+    "app_version": "1.0.1",
+    "app_link_on_google_store": "https://play.google.com/store/apps/details?id=com.teleferik&pli=1",
+    "app_link_on_apple_store": "https://wdenytravel.com",
+    "discounts": {
+      "on_time": "0",
+      "tazcara": "0",
+      "blue_bus": "0",
+      "high_bus": "0",
+      "super_jet": "0",
+      "telefreik": "0",
+      "distribusion": "0"
+    },
+    "payment_gateway": "myfatoorah",
+    "we_bus_private_companies": [],
+    "default_booking_currency": "EGP"
+  }
+}
+```
 
 ## Flights
 
