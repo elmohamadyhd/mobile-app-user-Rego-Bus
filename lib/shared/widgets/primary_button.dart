@@ -16,6 +16,8 @@ class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,
     required this.label,
+    this.icon,
+    this.iconInSquare = false,
     this.onPressed,
     this.loading = false,
     this.variant = PrimaryButtonVariant.primary,
@@ -23,6 +25,10 @@ class PrimaryButton extends StatelessWidget {
   });
 
   final String label;
+  final IconData? icon;
+
+  /// When true, [icon] is drawn inside a small rounded square before the label.
+  final bool iconInSquare;
   final VoidCallback? onPressed;
   final bool loading;
   final PrimaryButtonVariant variant;
@@ -47,6 +53,27 @@ class PrimaryButton extends StatelessWidget {
     final radius = BorderRadius.circular(AppRadius.input);
     final showGlow = !isGhost && !compact;
     final height = compact ? 40.0 : 54.0;
+    final iconBoxSize = compact ? 28.0 : 36.0;
+
+    Widget? iconWidget;
+    if (icon != null) {
+      final iconSize = compact ? 16.0 : 18.0;
+      final iconChild = Icon(icon, size: iconSize, color: fg);
+      iconWidget = iconInSquare
+          ? Container(
+              width: iconBoxSize,
+              height: iconBoxSize,
+              decoration: BoxDecoration(
+                color: isGhost
+                    ? AppColors.primaryTint
+                    : Colors.white.withValues(alpha: 0.22),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+              alignment: Alignment.center,
+              child: iconChild,
+            )
+          : iconChild;
+    }
 
     return Opacity(
       opacity: enabled ? 1 : 0.6,
@@ -89,13 +116,23 @@ class PrimaryButton extends StatelessWidget {
                         valueColor: AlwaysStoppedAnimation(fg),
                       ),
                     )
-                  : Text(
-                      label,
-                      style: AppTypography.title.copyWith(
-                        color: fg,
-                        fontWeight: FontWeight.w700,
-                        fontSize: compact ? 15 : null,
-                      ),
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (iconWidget != null) ...[
+                          iconWidget,
+                          SizedBox(width: compact ? 6 : AppSpacing.sm),
+                        ],
+                        Text(
+                          label,
+                          style: AppTypography.title.copyWith(
+                            color: fg,
+                            fontWeight: FontWeight.w700,
+                            fontSize: compact ? 15 : null,
+                          ),
+                        ),
+                      ],
                     ),
             ),
           ),

@@ -78,21 +78,18 @@ class _WalletLoadedBody extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsetsDirectional.fromSTEB(
                         AppSpacing.lg,
-                        0,
+                        AppSpacing.lg,
                         AppSpacing.lg,
                         0,
                       ),
-                      child: Transform.translate(
-                        offset: const Offset(0, -24),
-                        child: WalletTopUpActionCard(
-                          onTopUp: () => context.push(WalletRoutes.topUp),
-                        ),
+                      child: WalletTopUpActionCard(
+                        onTopUp: () => context.push(WalletRoutes.topUp),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsetsDirectional.fromSTEB(
                         AppSpacing.lg,
-                        AppSpacing.sm,
+                        AppSpacing.lg,
                         AppSpacing.lg,
                         AppSpacing.lg,
                       ),
