@@ -73,7 +73,9 @@ abstract final class AppIcons {
   static const IconData spaceBar = TablerIcons.spacingHorizontal;
 
   // ── Actions ───────────────────────────────────────────────────────────────
+  static const IconData add = TablerIcons.plus;
   static const IconData plus = TablerIcons.plus;
+  static const IconData edit = TablerIcons.edit;
   static const IconData download = TablerIcons.download;
   static const IconData share = TablerIcons.share;
   static const IconData checkCircle = TablerIcons.circleCheck;
