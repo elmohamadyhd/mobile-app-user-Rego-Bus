@@ -16,7 +16,9 @@ import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:safaria/features/wallet/presentation/providers/wallet_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
-import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:safaria/shared/pages/cms_page_paths.dart';
+import 'package:safaria/shared/widgets/booking_terms_checkbox.dart';
+import 'package:safaria/shared/widgets/gated_primary_button.dart';
 
 int _bookingTotalEgp(BusBookingState state) =>
     state.segmentFare.round() * state.selectedSeats.length;
@@ -55,11 +57,20 @@ _WalletPaymentSplit? _walletSplit({
   );
 }
 
-class PassengerConfirmScreen extends ConsumerWidget {
+class PassengerConfirmScreen extends ConsumerStatefulWidget {
   const PassengerConfirmScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PassengerConfirmScreen> createState() =>
+      _PassengerConfirmScreenState();
+}
+
+class _PassengerConfirmScreenState
+    extends ConsumerState<PassengerConfirmScreen> {
+  bool _termsAccepted = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
     // Side-effect navigation via ref.listen — never call context.go inside build.
@@ -97,12 +108,17 @@ class PassengerConfirmScreen extends ConsumerWidget {
             AppSpacing.lg,
             AppSpacing.lg,
           ),
-          child: PrimaryButton(
+          child: GatedPrimaryButton(
             label: l10n.confirmBook,
             loading: isLoading,
-            onPressed: isLoading
-                ? null
-                : () => ref.read(busBookingProvider.notifier).confirmBooking(),
+            gated: !_termsAccepted,
+            onPressed: () =>
+                ref.read(busBookingProvider.notifier).confirmBooking(),
+            onGateBlocked: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.confirmTermsRequired)),
+              );
+            },
           ),
         ),
       ),
@@ -121,6 +137,11 @@ class PassengerConfirmScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.md),
                   _PriceBreakdown(state: state, l10n: l10n),
                   const SizedBox(height: AppSpacing.md),
+                  BookingTermsCheckbox(
+                    value: _termsAccepted,
+                    onChanged: (v) => setState(() => _termsAccepted = v),
+                    onOpenTerms: () => context.push(CmsPagePaths.terms),
+                  ),
                 ],
               ),
             ),
