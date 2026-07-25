@@ -552,6 +552,30 @@
   "walletBalanceLabel": "Available balance",
   "walletTopUpCta": "Top up",
   "walletHistoryTitle": "Recent activity",
+  "walletSeeAll": "See all",
+  "@walletSeeAll": {
+    "description": "Link on the wallet screen to open the full transaction history."
+  },
+  "walletHistoryScreenTitle": "Transaction history",
+  "@walletHistoryScreenTitle": {
+    "description": "App bar title for the full wallet transaction history screen."
+  },
+  "walletTransactionDepositTitle": "Wallet top-up",
+  "@walletTransactionDepositTitle": {
+    "description": "Short title for a wallet deposit transaction row."
+  },
+  "walletTransactionWithdrawTitle": "Payment",
+  "@walletTransactionWithdrawTitle": {
+    "description": "Short title for a wallet withdrawal transaction row."
+  },
+  "walletTopUpCurrentBalance": "Current balance {balance} {currency}",
+  "@walletTopUpCurrentBalance": {
+    "description": "Shows the rider's wallet balance on the top-up screen.",
+    "placeholders": {
+      "balance": { "type": "String" },
+      "currency": { "type": "String" }
+    }
+  },
   "walletEmptyTitle": "No activity yet",
   "walletEmptyBody": "Your wallet transactions will show up here.",
   "walletError": "Couldn't load your wallet",

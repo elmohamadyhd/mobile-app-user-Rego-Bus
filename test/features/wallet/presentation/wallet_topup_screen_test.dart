@@ -68,6 +68,7 @@ void main() {
     final button = tester.widget<PrimaryButton>(find.byType(PrimaryButton));
     expect(button.onPressed, isNotNull);
     expect(find.text('Top up 200 EGP'), findsOneWidget);
+    expect(find.text('Current balance 25.00 EGP'), findsOneWidget);
   });
 
   testWidgets('submitting charges the repository and pushes the pay route',

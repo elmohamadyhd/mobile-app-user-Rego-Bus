@@ -33,6 +33,10 @@ void main() {
           path: WalletRoutes.topUp,
           builder: (context, state) => const Text('TOPUP'),
         ),
+        GoRoute(
+          path: WalletRoutes.history,
+          builder: (context, state) => const Text('HISTORY'),
+        ),
       ],
     );
 
@@ -54,7 +58,9 @@ void main() {
   testWidgets('shows the balance and transaction list', (tester) async {
     await pumpWallet(tester, FakeWalletRepository());
 
-    expect(find.text('25.00 EGP'), findsOneWidget);
+    expect(find.text('25.00'), findsOneWidget);
+    expect(find.text('EGP'), findsWidgets);
+    expect(find.text('Wallet top-up'), findsOneWidget);
     expect(find.text('Welcome bonus'), findsOneWidget);
     expect(find.text('+25.00'), findsOneWidget);
   });
@@ -66,6 +72,35 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('TOPUP'), findsOneWidget);
+  });
+
+  testWidgets('shows See all when there are more than five transactions',
+      (tester) async {
+    final transactions = List.generate(
+      6,
+      (i) => WalletTransaction(
+        id: i,
+        description: 'Transaction $i',
+        type: WalletTransactionType.deposit,
+        amount: 10,
+      ),
+    );
+    final repo = FakeWalletRepository(
+      walletResult: const Wallet(
+        id: 1,
+        balance: 60,
+        currency: 'EGP',
+        transactions: [],
+      ).copyWith(transactions: transactions),
+    );
+    await pumpWallet(tester, repo);
+
+    expect(find.text('See all'), findsOneWidget);
+
+    await tester.tap(find.text('See all'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('HISTORY'), findsOneWidget);
   });
 
   testWidgets('shows the empty state when there are no transactions',
@@ -94,6 +129,6 @@ void main() {
     await tester.tap(find.text('Try again'));
     await tester.pumpAndSettle();
 
-    expect(find.text('25.00 EGP'), findsOneWidget);
+    expect(find.text('25.00'), findsOneWidget);
   });
 }

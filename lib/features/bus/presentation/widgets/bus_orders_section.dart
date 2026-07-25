@@ -22,6 +22,7 @@ import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/providers/ticket_pdf_providers.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:safaria/shared/widgets/skyline_float_card.dart';
 
 /// The bus-owned section dropped into the "My Tickets" tab shell
 /// (`TicketsScreen`). Renders guest/loading/error/empty/list states for the
@@ -51,38 +52,13 @@ class BusOrdersSection extends ConsumerWidget {
   }
 }
 
-class _SkylineFloatCard extends StatelessWidget {
-  const _SkylineFloatCard({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryDark.withValues(alpha: 0.20),
-            blurRadius: 40,
-            spreadRadius: -18,
-            offset: const Offset(0, 18),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-}
-
 class _GuestSignInCard extends StatelessWidget {
   const _GuestSignInCard();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return _SkylineFloatCard(
+    return SkylineFloatCard(
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -143,7 +119,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return _SkylineFloatCard(
+    return SkylineFloatCard(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -196,7 +172,7 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return _SkylineFloatCard(
+    return SkylineFloatCard(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(

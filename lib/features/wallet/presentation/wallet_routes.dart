@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import 'package:safaria/features/wallet/presentation/wallet_history_screen.dart';
 import 'package:safaria/features/wallet/presentation/wallet_payment_webview_screen.dart';
 import 'package:safaria/features/wallet/presentation/wallet_screen.dart';
 import 'package:safaria/features/wallet/presentation/wallet_topup_screen.dart';
@@ -7,6 +8,7 @@ import 'package:safaria/features/wallet/presentation/wallet_topup_screen.dart';
 abstract final class WalletRoutes {
   static const wallet = '/profile/wallet';
   static const topUp = '/profile/wallet/top-up';
+  static const history = '/profile/wallet/history';
   static const pay = '/profile/wallet/pay';
 }
 
@@ -18,6 +20,10 @@ List<RouteBase> walletRoutes() => [
       GoRoute(
         path: WalletRoutes.topUp,
         builder: (context, state) => const WalletTopUpScreen(),
+      ),
+      GoRoute(
+        path: WalletRoutes.history,
+        builder: (context, state) => const WalletHistoryScreen(),
       ),
       GoRoute(
         path: WalletRoutes.pay,
