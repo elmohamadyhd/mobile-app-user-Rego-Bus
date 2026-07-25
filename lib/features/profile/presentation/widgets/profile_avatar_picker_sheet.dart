@@ -135,7 +135,6 @@ Future<String?> pickProfileAvatarImage(ProfileAvatarSource source) async {
       maxWidth: 1024,
       maxHeight: 1024,
       imageQuality: 85,
-      requestFullMetadata: false,
     );
     return file?.path;
   } on PlatformException catch (e) {

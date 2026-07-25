@@ -12,6 +12,7 @@ import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/addresses/presentation/addresses_routes.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/profile/presentation/profile_routes.dart';
+import 'package:safaria/features/profile/presentation/widgets/profile_circle_avatar.dart';
 import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/language_picker_sheet.dart';
@@ -254,57 +255,11 @@ class _ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (avatarUrl != null && avatarUrl!.trim().isNotEmpty) {
-      return Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.25),
-            width: 2,
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Image.network(
-          avatarUrl!,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) =>
-              _InitialAvatar(initial: initial, size: size),
-        ),
-      );
-    }
-
-    return _InitialAvatar(initial: initial, size: size);
-  }
-}
-
-class _InitialAvatar extends StatelessWidget {
-  const _InitialAvatar({required this.initial, required this.size});
-
-  final String initial;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: 0.18),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.25),
-        ),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        initial,
-        style: AppTypography.h1.copyWith(
-          color: AppColors.onHero,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
+    return ProfileCircleAvatar(
+      size: size,
+      networkUrl: avatarUrl,
+      initial: initial,
+      style: ProfileCircleAvatarStyle.hero,
     );
   }
 }

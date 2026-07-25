@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +19,7 @@ import 'package:safaria/features/auth/presentation/widgets/phone_field.dart';
 import 'package:safaria/features/profile/presentation/providers/profile_providers.dart';
 import 'package:safaria/features/profile/presentation/widgets/profile_app_bar.dart';
 import 'package:safaria/features/profile/presentation/widgets/profile_avatar_picker_sheet.dart';
+import 'package:safaria/features/profile/presentation/widgets/profile_circle_avatar.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
@@ -415,6 +414,9 @@ class _ProfileAvatarHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasPhoto = (localAvatarPath?.trim().isNotEmpty ?? false) ||
+        (avatarUrl?.trim().isNotEmpty ?? false);
+
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.lg),
       child: Column(
@@ -424,14 +426,14 @@ class _ProfileAvatarHeader extends StatelessWidget {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                _GradientAvatarRing(
+                ProfileCircleAvatar(
                   size: _avatarSize,
-                  child: _AvatarImage(
-                    avatarUrl: avatarUrl,
-                    localAvatarPath: localAvatarPath,
-                    initial: initial,
-                    size: _avatarSize - 10,
-                  ),
+                  networkUrl: avatarUrl,
+                  filePath: localAvatarPath,
+                  initial: initial,
+                  style: hasPhoto
+                      ? ProfileCircleAvatarStyle.photo
+                      : ProfileCircleAvatarStyle.brandRing,
                 ),
                 PositionedDirectional(
                   end: 0,
@@ -473,109 +475,6 @@ class _ProfileAvatarHeader extends StatelessWidget {
           ],
          
         ],
-      ),
-    );
-  }
-}
-
-class _GradientAvatarRing extends StatelessWidget {
-  const _GradientAvatarRing({required this.size, required this.child});
-
-  final double size;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: AppColors.heroGradient,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x331464EC),
-            blurRadius: 24,
-            spreadRadius: -4,
-            offset: Offset(0, 10),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(3),
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.bgCard,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(3),
-          child: ClipOval(child: child),
-        ),
-      ),
-    );
-  }
-}
-
-class _AvatarImage extends StatelessWidget {
-  const _AvatarImage({
-    required this.avatarUrl,
-    required this.localAvatarPath,
-    required this.initial,
-    required this.size,
-  });
-
-  final String? avatarUrl;
-  final String? localAvatarPath;
-  final String initial;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    final localPath = localAvatarPath?.trim();
-    if (localPath != null && localPath.isNotEmpty) {
-      return Image.file(
-        File(localPath),
-        width: size,
-        height: size,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _InitialAvatar(initial: initial, size: size),
-      );
-    }
-
-    final url = avatarUrl?.trim();
-    if (url != null && url.isNotEmpty) {
-      return Image.network(
-        url,
-        width: size,
-        height: size,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _InitialAvatar(initial: initial, size: size),
-      );
-    }
-
-    return _InitialAvatar(initial: initial, size: size);
-  }
-}
-
-class _InitialAvatar extends StatelessWidget {
-  const _InitialAvatar({required this.initial, required this.size});
-
-  final String initial;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      color: AppColors.primaryTint,
-      alignment: Alignment.center,
-      child: Text(
-        initial,
-        style: AppTypography.h1.copyWith(
-          color: AppColors.primary,
-          fontWeight: FontWeight.w800,
-        ),
       ),
     );
   }
