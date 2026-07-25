@@ -18,6 +18,9 @@ import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/tickets/presentation/tickets_screen.dart';
 import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
+import 'package:safaria/shared/widgets/map_place_picker_args.dart';
+import 'package:safaria/shared/widgets/map_place_picker_screen.dart';
+import 'package:safaria/shared/widgets/place_picker_routes.dart';
 
 // Named route constants so call-sites never use raw strings.
 abstract final class AppRoutes {
@@ -125,6 +128,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       ...busRoutes(),
       ...carRoutes(),
       ...walletRoutes(),
+      GoRoute(
+        path: PlacePickerRoutes.picker,
+        builder: (context, state) {
+          final args = state.extra;
+          return MapPlacePickerScreen(
+            args: args is MapPlacePickerArgs
+                ? args
+                : const MapPlacePickerArgs(title: ''),
+          );
+        },
+      ),
     ],
   );
 });
