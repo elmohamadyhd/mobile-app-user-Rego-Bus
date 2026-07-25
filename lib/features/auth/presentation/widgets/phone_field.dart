@@ -19,6 +19,7 @@ class PhoneField extends StatefulWidget {
     this.focusNode,
     this.textInputAction,
     this.onSubmitted,
+    this.readOnly = false,
   });
 
   final TextEditingController controller;
@@ -28,6 +29,7 @@ class PhoneField extends StatefulWidget {
   final FocusNode? focusNode;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final bool readOnly;
 
   @override
   State<PhoneField> createState() => _PhoneFieldState();
@@ -70,7 +72,9 @@ class _PhoneFieldState extends State<PhoneField> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
           decoration: BoxDecoration(
-            color: AppColors.inputFill,
+            color: widget.readOnly
+                ? AppColors.hairline.withValues(alpha: 0.55)
+                : AppColors.inputFill,
             borderRadius: BorderRadius.circular(AppRadius.input),
             border: Border.all(
               color: hasError ? AppColors.error : AppColors.hairline,
@@ -82,7 +86,7 @@ class _PhoneFieldState extends State<PhoneField> {
               children: [
                 _CountryChip(
                   country: widget.country,
-                  onTap: widget.onTapCountry,
+                  onTap: widget.readOnly ? null : widget.onTapCountry,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -94,14 +98,19 @@ class _PhoneFieldState extends State<PhoneField> {
                     textDirection: TextDirection.ltr,
                     textAlign: TextAlign.start,
                     onSubmitted: widget.onSubmitted,
+                    readOnly: widget.readOnly,
                     autofillHints: const [AutofillHints.telephoneNumberLocal],
-                    inputFormatters: [
-                      NationalPhoneInputFormatter(
-                        groupSizes: widget.country.groupSizes,
-                      ),
-                    ],
+                    inputFormatters: widget.readOnly
+                        ? null
+                        : [
+                            NationalPhoneInputFormatter(
+                              groupSizes: widget.country.groupSizes,
+                            ),
+                          ],
                     style: AppTypography.body.copyWith(
-                      color: AppColors.textPrimary,
+                      color: widget.readOnly
+                          ? AppColors.textSecondary
+                          : AppColors.textPrimary,
                     ),
                     decoration: InputDecoration(
                       isCollapsed: true,
@@ -148,7 +157,9 @@ class _CountryChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
         decoration: BoxDecoration(
-          color: AppColors.bgCard,
+          color: onTap == null
+              ? AppColors.hairline.withValues(alpha: 0.45)
+              : AppColors.bgCard,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(color: AppColors.hairline),
         ),
@@ -160,7 +171,9 @@ class _CountryChip extends StatelessWidget {
             Text(
               '+${country.dial}',
               style: AppTypography.caption.copyWith(
-                color: AppColors.textPrimary,
+                color: onTap == null
+                    ? AppColors.textMuted
+                    : AppColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),

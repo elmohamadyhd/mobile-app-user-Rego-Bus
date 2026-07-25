@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/auth/domain/entities/auth_user.dart';
@@ -21,17 +22,26 @@ class ProfileRepositoryImpl implements ProfileRepository {
     required String email,
     required String phoneCode,
     required String mobile,
+    String? avatarPath,
   }) =>
       _guard(() async {
-        final envelope = await _api.update(
-          FormData.fromMap({
-            'id': id,
-            'name': name,
-            'email': email,
-            'mobile': mobile,
-            'country_code': phoneCode,
-          }),
-        );
+        final fields = <String, dynamic>{
+          'id': id,
+          'name': name,
+          'email': email,
+          'mobile': mobile,
+          'country_code': phoneCode,
+        };
+
+        final localAvatar = avatarPath?.trim();
+        if (localAvatar != null && localAvatar.isNotEmpty) {
+          fields['avatar'] = await MultipartFile.fromFile(
+            localAvatar,
+            filename: p.basename(localAvatar),
+          );
+        }
+
+        final envelope = await _api.update(FormData.fromMap(fields));
         return _userFromEnvelope(envelope);
       });
 

@@ -21,6 +21,7 @@ class AuthTextField extends StatelessWidget {
     this.onChanged,
     this.errorText,
     this.autofillHints,
+    this.readOnly = false,
   });
 
   final TextEditingController controller;
@@ -35,6 +36,7 @@ class AuthTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final String? errorText;
   final Iterable<String>? autofillHints;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,9 @@ class AuthTextField extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            color: AppColors.inputFill,
+            color: readOnly
+                ? AppColors.hairline.withValues(alpha: 0.55)
+                : AppColors.inputFill,
             borderRadius: BorderRadius.circular(AppRadius.input),
             border: Border.all(
               color: hasError ? AppColors.error : AppColors.hairline,
@@ -55,7 +59,11 @@ class AuthTextField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: AppColors.textMuted),
+              Icon(
+                icon,
+                size: 20,
+                color: readOnly ? AppColors.textMuted : AppColors.textMuted,
+              ),
               const SizedBox(width: 11),
               Expanded(
                 child: TextField(
@@ -67,8 +75,11 @@ class AuthTextField extends StatelessWidget {
                   autofillHints: autofillHints,
                   onChanged: onChanged,
                   onSubmitted: onSubmitted,
+                  readOnly: readOnly,
                   style: AppTypography.body.copyWith(
-                    color: AppColors.textPrimary,
+                    color: readOnly
+                        ? AppColors.textSecondary
+                        : AppColors.textPrimary,
                   ),
                   decoration: InputDecoration(
                     isCollapsed: true,

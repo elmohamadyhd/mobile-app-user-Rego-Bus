@@ -61,6 +61,7 @@ dependencies:
 
   google_maps_flutter: ^2.12.1
   geolocator: ^13.0.2
+  image_picker: ^1.1.2
 
   # Icons (Tabler outline — design system source of truth)
   tabler_icons_plus: ^3.44.0

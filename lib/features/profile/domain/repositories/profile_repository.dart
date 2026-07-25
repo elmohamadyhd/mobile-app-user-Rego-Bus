@@ -10,5 +10,6 @@ abstract interface class ProfileRepository {
     required String email,
     required String phoneCode,
     required String mobile,
+    String? avatarPath,
   });
 }

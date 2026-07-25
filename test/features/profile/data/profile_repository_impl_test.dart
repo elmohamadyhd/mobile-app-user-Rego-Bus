@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safaria/features/profile/data/profile_api.dart';
@@ -6,16 +8,20 @@ import 'package:safaria/features/profile/data/profile_repository_impl.dart';
 import 'profile_fixtures.dart';
 
 class _FakeProfileApi extends ProfileApi {
-  _FakeProfileApi({this.fetchBody, this.updateBody}) : super(Dio());
+  _FakeProfileApi({this.fetchBody, this.updateBody, this.onUpdate}) : super(Dio());
 
   final dynamic fetchBody;
   final dynamic updateBody;
+  final void Function(FormData body)? onUpdate;
 
   @override
   Future<dynamic> fetch() async => fetchBody;
 
   @override
-  Future<dynamic> update(FormData body) async => updateBody;
+  Future<dynamic> update(FormData body) async {
+    onUpdate?.call(body);
+    return updateBody;
+  }
 }
 
 void main() {
@@ -48,6 +54,35 @@ void main() {
       expect(user.name, 'Abdallah');
       expect(user.email, 'new@example.com');
       expect(user.avatarUrl, contains('capcom.png'));
+    });
+
+    test('updateProfile() attaches avatar multipart when avatarPath is set',
+        () async {
+      final tempDir = await Directory.systemTemp.createTemp('profile_avatar');
+      addTearDown(() => tempDir.delete(recursive: true));
+      final avatarFile = File('${tempDir.path}/capcom.png');
+      await avatarFile.writeAsBytes(const [0x89, 0x50, 0x4E, 0x47]);
+
+      FormData? captured;
+      final repo = ProfileRepositoryImpl(
+        _FakeProfileApi(
+          updateBody: updateProfileEnvelope,
+          onUpdate: (body) => captured = body,
+        ),
+      );
+
+      await repo.updateProfile(
+        id: 69,
+        name: 'Abdallah',
+        email: 'new@example.com',
+        phoneCode: '20',
+        mobile: '1276586027',
+        avatarPath: avatarFile.path,
+      );
+
+      expect(captured, isNotNull);
+      expect(captured!.fields.map((e) => e.key), contains('id'));
+      expect(captured!.files.map((e) => e.key), contains('avatar'));
     });
   });
 }

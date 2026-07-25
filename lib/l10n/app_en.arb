@@ -567,6 +567,42 @@
   "@profileEditError": {
     "description": "Generic error when profile cannot be saved."
   },
+  "profileEditSectionTitle": "Personal details",
+  "@profileEditSectionTitle": {
+    "description": "Section heading above the profile edit form fields."
+  },
+  "profileEditPhoneLabel": "Phone number",
+  "@profileEditPhoneLabel": {
+    "description": "Label for the phone number field on the profile edit screen."
+  },
+  "profileEditVerified": "Verified",
+  "@profileEditVerified": {
+    "description": "Badge shown next to verified phone and email fields."
+  },
+  "profileEditPhotoLocked": "Photo can't be changed",
+  "@profileEditPhotoLocked": {
+    "description": "Deprecated — replaced by profileEditChangePhoto."
+  },
+  "profileEditChangePhoto": "Change photo",
+  "@profileEditChangePhoto": {
+    "description": "Action label for updating the profile avatar."
+  },
+  "profileEditPickGallery": "Choose from gallery",
+  "@profileEditPickGallery": {
+    "description": "Profile avatar picker option for the photo library."
+  },
+  "profileEditPickCamera": "Take a photo",
+  "@profileEditPickCamera": {
+    "description": "Profile avatar picker option for the device camera."
+  },
+  "profileEditPickerError": "Could not open the photo picker. Please try again.",
+  "@profileEditPickerError": {
+    "description": "Snackbar when image_picker fails for a generic reason."
+  },
+  "profileEditPickerRebuildRequired": "Photo picker is not ready. Stop the app, then run a full rebuild.",
+  "@profileEditPickerRebuildRequired": {
+    "description": "Snackbar when image_picker native plugin is not linked (channel-error)."
+  },
 
   "walletTitle": "My Wallet",
   "walletBalanceLabel": "Available balance",
