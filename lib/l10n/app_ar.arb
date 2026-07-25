@@ -370,5 +370,10 @@
   "addressFormSaved": "تم حفظ العنوان",
   "addressFormDeleted": "تم حذف العنوان",
   "addressFormNameRequired": "التسمية مطلوبة",
-  "addressFormLocationRequired": "اختر موقعًا على الخريطة"
+  "addressFormLocationRequired": "اختر موقعًا على الخريطة",
+  "cmsPageTermsTitle": "الشروط والأحكام",
+  "cmsPagePrivacyTitle": "سياسة الخصوصية",
+  "cmsPageGenericTitle": "صفحة",
+  "cmsPageLoadError": "تعذر تحميل هذه الصفحة. حاول مرة أخرى.",
+  "cmsPageRetry": "إعادة المحاولة"
 }

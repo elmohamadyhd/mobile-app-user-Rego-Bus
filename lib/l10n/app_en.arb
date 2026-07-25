@@ -772,5 +772,25 @@
   "addressFormNameRequired": "Label is required",
   "@addressFormNameRequired": { "description": "Validation error when the address label is empty." },
   "addressFormLocationRequired": "Pick a location on the map",
-  "@addressFormLocationRequired": { "description": "Validation error when no map location has been selected." }
+  "@addressFormLocationRequired": { "description": "Validation error when no map location has been selected." },
+  "cmsPageTermsTitle": "Terms and Conditions",
+  "@cmsPageTermsTitle": {
+    "description": "Fallback app-bar title while terms page is loading."
+  },
+  "cmsPagePrivacyTitle": "Privacy Policy",
+  "@cmsPagePrivacyTitle": {
+    "description": "Fallback app-bar title while privacy page is loading."
+  },
+  "cmsPageGenericTitle": "Page",
+  "@cmsPageGenericTitle": {
+    "description": "Fallback app-bar title for unknown CMS slugs."
+  },
+  "cmsPageLoadError": "Couldn't load this page. Please try again.",
+  "@cmsPageLoadError": {
+    "description": "Error body when GET /pages/{slug} fails."
+  },
+  "cmsPageRetry": "Retry",
+  "@cmsPageRetry": {
+    "description": "Retry button on CMS page error state."
+  }
 }
