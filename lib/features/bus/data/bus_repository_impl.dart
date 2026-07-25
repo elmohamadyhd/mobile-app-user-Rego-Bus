@@ -1,16 +1,16 @@
 import 'package:dio/dio.dart';
 
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/bus/data/bus_api.dart';
-import 'package:rego/features/bus/data/bus_dto_mapper.dart';
-import 'package:rego/features/bus/domain/entities/bus_location.dart';
-import 'package:rego/features/bus/domain/entities/bus_order.dart';
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/domain/entities/seat_map.dart';
-import 'package:rego/features/bus/domain/repositories/bus_repository.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/bus/data/bus_api.dart';
+import 'package:safaria/features/bus/data/bus_dto_mapper.dart';
+import 'package:safaria/features/bus/domain/entities/bus_location.dart';
+import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/seat_map.dart';
+import 'package:safaria/features/bus/domain/repositories/bus_repository.dart';
 
 class BusRepositoryImpl implements BusRepository {
   BusRepositoryImpl(this._api);

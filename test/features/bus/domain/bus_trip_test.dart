@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 
 BusTripSummary _tripWithStops({
   required BusStop defaultDrop,

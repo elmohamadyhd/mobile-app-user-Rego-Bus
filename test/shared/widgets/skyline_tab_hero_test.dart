@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/theme/app_theme.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/shell_tab_scroll_view.dart';
-import 'package:rego/shared/widgets/skyline_tab_hero.dart';
+import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
+import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
 
 void main() {
   Widget wrap(Widget child, {Locale locale = const Locale('en')}) {

@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "REGO",
+  "appTitle": "Safaria",
   "@appTitle": {
     "description": "Application/brand name. Kept in Latin across all locales."
   },
@@ -8,7 +8,7 @@
   "@homeTitle": {
     "description": "Title of the home screen."
   },
-  "homeWelcome": "Welcome to REGO",
+  "homeWelcome": "Welcome to Safaria",
   "@homeWelcome": {
     "description": "Greeting shown on the home screen body."
   },
@@ -24,7 +24,7 @@
   "onboarding2Title": "Tickets in your pocket",
   "onboarding2Body": "Manage every booking and board with a QR code, no paperwork needed.",
   "onboarding3Title": "Pay your way",
-  "onboarding3Body": "Top up your REGO wallet and check out in seconds.",
+  "onboarding3Body": "Top up your Safaria wallet and check out in seconds.",
 
   "loginTitle": "Welcome back",
   "loginSubtitle": "Sign in to continue",
@@ -42,7 +42,7 @@
   "socialComingSoon": "Social sign-in is coming soon",
 
   "registerTitle": "Create new account",
-  "registerSubtitle": "Join REGO and travel smarter",
+  "registerSubtitle": "Join Safaria and travel smarter",
   "registerName": "Full name",
   "registerEmail": "Email",
   "registerButton": "Create account",
@@ -275,7 +275,7 @@
   "@tripDetailOpenMapsTitle": {
     "description": "Title of the dialog before opening Google Maps."
   },
-  "tripDetailOpenMapsBody": "You'll leave REGO. Google Maps will show the full trip route through every stop on this journey.",
+  "tripDetailOpenMapsBody": "You'll leave Safaria. Google Maps will show the full trip route through every stop on this journey.",
   "@tripDetailOpenMapsBody": {
     "description": "Body of the dialog before opening Google Maps."
   },
@@ -309,7 +309,7 @@
       }
     }
   },
-  "tripDetailOpenMapsStopBody": "You'll leave REGO and see this stop on Google Maps.",
+  "tripDetailOpenMapsStopBody": "You'll leave Safaria and see this stop on Google Maps.",
   "@tripDetailOpenMapsStopBody": {
     "description": "Body of the dialog before opening a single stop in Google Maps."
   },
@@ -393,7 +393,7 @@
   "eTicketRef": "Booking ref.",
   "eTicketDownload": "Download",
   "eTicketShare": "Share",
-  "eTicketShareSubject": "REGO bus ticket — {bookingRef}",
+  "eTicketShareSubject": "Safaria bus ticket — {bookingRef}",
   "@eTicketShareSubject": {
     "description": "Subject line when sharing an e-ticket PDF.",
     "placeholders": {

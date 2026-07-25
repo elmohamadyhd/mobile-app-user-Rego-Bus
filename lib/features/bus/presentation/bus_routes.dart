@@ -1,12 +1,12 @@
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/features/bus/presentation/trip_results_screen.dart';
-import 'package:rego/features/bus/presentation/trip_details_screen.dart';
-import 'package:rego/features/bus/presentation/seat_selection_screen.dart';
-import 'package:rego/features/bus/presentation/passenger_confirm_screen.dart';
-import 'package:rego/features/bus/presentation/payment_webview_screen.dart';
-import 'package:rego/features/bus/presentation/payment_pending_screen.dart';
-import 'package:rego/features/bus/presentation/eticket_screen.dart';
+import 'package:safaria/features/bus/presentation/trip_results_screen.dart';
+import 'package:safaria/features/bus/presentation/trip_details_screen.dart';
+import 'package:safaria/features/bus/presentation/seat_selection_screen.dart';
+import 'package:safaria/features/bus/presentation/passenger_confirm_screen.dart';
+import 'package:safaria/features/bus/presentation/payment_webview_screen.dart';
+import 'package:safaria/features/bus/presentation/payment_pending_screen.dart';
+import 'package:safaria/features/bus/presentation/eticket_screen.dart';
 
 /// Bus booking route paths. URLs are unchanged from the pre-reshape router.
 abstract final class BusRoutes {

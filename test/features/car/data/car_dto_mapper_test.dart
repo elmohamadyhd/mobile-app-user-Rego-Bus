@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/features/car/data/car_dto_mapper.dart';
+import 'package:safaria/features/car/data/car_dto_mapper.dart';
 
 import 'car_fixtures.dart';
 

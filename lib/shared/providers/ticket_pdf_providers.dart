@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/network/dio_client.dart';
-import 'package:rego/core/providers/locale_controller.dart';
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/services/ticket_pdf_downloader.dart';
+import 'package:safaria/core/network/dio_client.dart';
+import 'package:safaria/core/providers/locale_controller.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/services/ticket_pdf_downloader.dart';
 
 typedef TicketPdfDownloadFn = Future<void> Function({
   required String invoiceUrl,

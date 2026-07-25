@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/core/utils/locale_resolution.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/utils/locale_resolution.dart';
 
 /// The active app locale. Follows the device language until the user picks one.
 ///

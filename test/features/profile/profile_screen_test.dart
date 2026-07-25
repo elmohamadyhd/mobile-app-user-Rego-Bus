@@ -3,15 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/theme/app_theme.dart';
-import 'package:rego/features/auth/domain/entities/auth_session.dart';
-import 'package:rego/features/auth/domain/entities/auth_user.dart';
-import 'package:rego/features/auth/presentation/auth_flow_args.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/profile/presentation/profile_screen.dart';
-import 'package:rego/features/wallet/presentation/wallet_routes.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/features/auth/domain/entities/auth_session.dart';
+import 'package:safaria/features/auth/domain/entities/auth_user.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/profile/presentation/profile_screen.dart';
+import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 class _FakeSessionController extends SessionController {
   _FakeSessionController(this._initial);

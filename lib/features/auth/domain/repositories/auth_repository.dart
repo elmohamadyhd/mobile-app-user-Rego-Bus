@@ -1,4 +1,4 @@
-import 'package:rego/features/auth/domain/entities/auth_session.dart';
+import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 
 /// Contract for the auth backend (`/auth/*`). The implementation lives in the
 /// data layer; presentation talks only to this interface.

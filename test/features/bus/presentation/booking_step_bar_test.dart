@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/features/bus/presentation/widgets/booking_step_bar.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/bus/presentation/widgets/booking_step_bar.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 Future<GoRouter> _pumpTwoScreenRouter(
   WidgetTester tester,

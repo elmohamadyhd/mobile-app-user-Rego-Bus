@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/core/places/places_client.dart';
+import 'package:safaria/core/places/places_client.dart';
 
 void main() {
   group('PlacesClient', () {

@@ -5,8 +5,8 @@
 
 ## What this project is
 
-**REGO** (Wadeny) — the Arabic-first, RTL multi-modal travel rider app, built on a
-**Riverpod + go_router + Freezed + Dio** foundation. Dart package name: `rego`.
+**Safaria** — the Arabic-first, RTL multi-modal travel rider app, built on a
+**Riverpod + go_router + Freezed + Dio** foundation. Dart package name: `safaria`.
 Screens follow the "Skyline" design direction (blue gradient hero + amber accent, Tajawal).
 
 The app covers multiple transport modes — bus, private car, and flight now;

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/providers/locale_controller.dart';
-import 'package:rego/core/storage/secure_storage.dart';
+import 'package:safaria/core/providers/locale_controller.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

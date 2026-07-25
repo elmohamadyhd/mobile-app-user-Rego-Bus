@@ -1,12 +1,12 @@
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/bus/domain/entities/bus_location.dart';
-import 'package:rego/features/bus/domain/entities/bus_order.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/domain/entities/seat_map.dart';
-import 'package:rego/features/bus/domain/repositories/bus_repository.dart';
-import 'package:rego/features/bus/domain/seat_map_normalizer.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/bus/domain/entities/bus_location.dart';
+import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/seat_map.dart';
+import 'package:safaria/features/bus/domain/repositories/bus_repository.dart';
+import 'package:safaria/features/bus/domain/seat_map_normalizer.dart';
 
 abstract final class BusDtoMapper {
   static void ensureSuccess(Map<String, dynamic> envelope) {

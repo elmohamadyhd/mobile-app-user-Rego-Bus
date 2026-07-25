@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/features/bus/presentation/widgets/amenity_icon.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/features/bus/presentation/widgets/amenity_icon.dart';
 
 /// Compact row of amenity glyphs (max 4, no labels) shared by the results
 /// `TripCard` header and the trip-details ticket header.

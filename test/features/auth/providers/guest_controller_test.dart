@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import '../../../support/in_memory_secure_storage.dart';
 
 void main() {

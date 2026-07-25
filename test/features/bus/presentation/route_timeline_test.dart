@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/presentation/widgets/route_timeline.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/presentation/widgets/route_timeline.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 const _board1 = BusStop(
   locationId: 'b1',
@@ -190,7 +190,7 @@ void main() {
 
     expect(find.text('View Zayed on Google Maps?'), findsOneWidget);
     expect(
-      find.text("You'll leave REGO and see this stop on Google Maps."),
+      find.text("You'll leave Safaria and see this stop on Google Maps."),
       findsOneWidget,
     );
   });

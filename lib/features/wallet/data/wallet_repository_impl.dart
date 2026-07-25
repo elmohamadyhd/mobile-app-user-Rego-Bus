@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/wallet/data/wallet_api.dart';
-import 'package:rego/features/wallet/data/wallet_dto_mapper.dart';
-import 'package:rego/features/wallet/domain/entities/wallet.dart';
-import 'package:rego/features/wallet/domain/repositories/wallet_repository.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/wallet/data/wallet_api.dart';
+import 'package:safaria/features/wallet/data/wallet_dto_mapper.dart';
+import 'package:safaria/features/wallet/domain/entities/wallet.dart';
+import 'package:safaria/features/wallet/domain/repositories/wallet_repository.dart';
 
 class WalletRepositoryImpl implements WalletRepository {
   WalletRepositoryImpl(this._api);

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/bus/presentation/providers/bus_locations_provider.dart';
-import 'package:rego/features/home/presentation/widgets/home_search_card.dart';
-import 'package:rego/features/home/presentation/widgets/popular_destinations.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/shell_tab_scroll_view.dart';
-import 'package:rego/shared/widgets/skyline_tab_hero.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_locations_provider.dart';
+import 'package:safaria/features/home/presentation/widgets/home_search_card.dart';
+import 'package:safaria/features/home/presentation/widgets/popular_destinations.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
+import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

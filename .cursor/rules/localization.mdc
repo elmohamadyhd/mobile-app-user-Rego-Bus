@@ -13,7 +13,7 @@ string is localized — no hardcoded text in widgets, ever.
 
 - `flutter_localizations` + `intl`; codegen config in `l10n.yaml`.
 - ARB files in `lib/l10n/` — `app_ar.arb` (Arabic) + `app_en.arb` (English template carrying `@key` metadata).
-- Generated `AppLocalizations` → `package:rego/l10n/app_localizations.dart` (gitignored; run `flutter gen-l10n`).
+- Generated `AppLocalizations` → `package:safaria/l10n/app_localizations.dart` (gitignored; run `flutter gen-l10n`).
 - `LocaleController` defaults to the device language (`ar` / `en`; unsupported langs → `en`) and persists a user override in `SecureStorage` when they change it in Settings. `MaterialApp` uses `AppLocalizations.localizationsDelegates` / `supportedLocales`.
 
 ## Rules
@@ -27,7 +27,7 @@ string is localized — no hardcoded text in widgets, ever.
 
 ## BiDi — mixing Arabic with Latin / numbers
 
-- "REGO", phone numbers, plate codes, etc. are LTR runs inside RTL text.
+- "Safaria", phone numbers, plate codes, etc. are LTR runs inside RTL text.
 - Prefer **separating** the Latin token into its own widget over inline mixing.
 - When inline mixing in one string is required, wrap the LTR run in Unicode **isolates** `⁦…⁩` (FSI…PDI) or use `intl`'s `Bidi` helpers. Do **not** scatter raw RLM/LRM marks.
 - Format numbers/dates with `intl` (`NumberFormat`/`DateFormat`, `ar` locale). Decide deliberately between Western (0-9) and Eastern-Arabic (٠-٩) digits — pick one and be consistent.

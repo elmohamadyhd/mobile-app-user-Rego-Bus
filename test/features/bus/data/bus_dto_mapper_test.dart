@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/bus/data/bus_dto_mapper.dart';
-import 'package:rego/features/bus/domain/entities/bus_order.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/bus/data/bus_dto_mapper.dart';
+import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
 
 import 'bus_fixtures.dart';
 

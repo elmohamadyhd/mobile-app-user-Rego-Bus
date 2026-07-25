@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 class PopularDestinations extends StatelessWidget {
   const PopularDestinations({super.key});
@@ -119,14 +119,6 @@ class _DestCard extends StatelessWidget {
                     style: AppTypography.h2.copyWith(
                       color: AppColors.onPrimary,
                       fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    l10n.homeFromPrice(price),
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.onPrimary.withValues(alpha: 0.85),
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],

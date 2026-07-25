@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
-import 'package:rego/features/bus/presentation/passenger_confirm_screen.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/wallet/domain/entities/wallet.dart';
-import 'package:rego/features/wallet/presentation/providers/wallet_providers.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
+import 'package:safaria/features/bus/presentation/passenger_confirm_screen.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/wallet/domain/entities/wallet.dart';
+import 'package:safaria/features/wallet/presentation/providers/wallet_providers.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 import '../../wallet/fake_wallet_repository.dart';
 import '../fake_bus_repository.dart';

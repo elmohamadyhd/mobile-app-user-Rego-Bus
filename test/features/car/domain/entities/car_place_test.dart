@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/features/car/domain/entities/car_place.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 void main() {
   late AppLocalizations l10n;

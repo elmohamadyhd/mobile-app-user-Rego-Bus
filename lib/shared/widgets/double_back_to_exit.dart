@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Intercepts the system back button when the router cannot pop further.
 ///

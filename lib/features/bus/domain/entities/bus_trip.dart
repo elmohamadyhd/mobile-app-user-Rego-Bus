@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 
 part 'bus_trip.freezed.dart';
 

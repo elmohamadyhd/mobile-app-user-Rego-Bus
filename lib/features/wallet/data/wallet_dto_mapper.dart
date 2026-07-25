@@ -1,5 +1,5 @@
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/wallet/domain/entities/wallet.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/wallet/domain/entities/wallet.dart';
 
 /// Envelope → domain mapping for `/profile/wallet` and its charge endpoint.
 /// Defensive parsing mirrors `BusDtoMapper`'s `_string`/`_int`/`_double`

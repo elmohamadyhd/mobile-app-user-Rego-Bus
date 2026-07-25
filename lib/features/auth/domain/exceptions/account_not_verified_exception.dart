@@ -1,4 +1,4 @@
-import 'package:rego/features/auth/domain/repositories/auth_repository.dart';
+import 'package:safaria/features/auth/domain/repositories/auth_repository.dart';
 
 /// Thrown by [AuthRepository.login] when the backend reports
 /// `need_verfication: true`: credentials were correct but the account

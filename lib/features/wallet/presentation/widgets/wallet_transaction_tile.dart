@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/wallet/domain/entities/wallet.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/wallet/domain/entities/wallet.dart';
 
 /// One row in the wallet's transaction history: icon by type, description,
 /// signed amount, and date when the backend sent one.

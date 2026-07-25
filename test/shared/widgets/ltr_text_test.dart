@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/shared/widgets/ltr_text.dart';
+import 'package:safaria/shared/widgets/ltr_text.dart';
 
 void main() {
   testWidgets('renders text with LTR direction under Arabic RTL shell',

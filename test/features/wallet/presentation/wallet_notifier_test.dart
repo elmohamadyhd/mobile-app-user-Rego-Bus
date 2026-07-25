@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/wallet/domain/entities/wallet.dart';
-import 'package:rego/features/wallet/presentation/providers/wallet_providers.dart';
+import 'package:safaria/features/wallet/domain/entities/wallet.dart';
+import 'package:safaria/features/wallet/presentation/providers/wallet_providers.dart';
 
 import '../fake_wallet_repository.dart';
 

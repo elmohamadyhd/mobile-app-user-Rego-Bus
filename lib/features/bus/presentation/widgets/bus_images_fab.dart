@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/features/bus/presentation/widgets/bus_images_sheet.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/features/bus/presentation/widgets/bus_images_sheet.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Floating action on seat selection — opens bus photos when available.
 class BusImagesFab extends StatelessWidget {

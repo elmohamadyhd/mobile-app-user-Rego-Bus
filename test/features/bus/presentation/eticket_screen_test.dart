@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
-import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/features/bus/presentation/eticket_screen.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/providers/ticket_pdf_providers.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
+import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/features/bus/presentation/eticket_screen.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/providers/ticket_pdf_providers.dart';
 
 import '../fake_bus_repository.dart';
 
@@ -276,6 +276,6 @@ void main() {
     expect(called, isTrue);
     expect(capturedUrl, 'https://example.com/ticket.pdf');
     expect(capturedRef, '000001457');
-    expect(capturedSubject, 'REGO bus ticket — 000001457');
+    expect(capturedSubject, 'Safaria bus ticket — 000001457');
   });
 }

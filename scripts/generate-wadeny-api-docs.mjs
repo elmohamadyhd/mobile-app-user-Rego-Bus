@@ -794,9 +794,6 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
   md.push("|------|-------|");
   md.push("| Content → New Request | No URL configured (empty request) |");
   md.push(
-    "| Private → Show Trip Details | URL points to `/flights/airports/search` instead of a private trip endpoint |",
-  );
-  md.push(
     '| Currencies | Named "Currencies" but URL is `/flights/iata?search=CAI` — likely copy-paste error |',
   );
   md.push(

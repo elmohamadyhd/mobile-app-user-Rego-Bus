@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/core/utils/device_token.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/utils/device_token.dart';
 
 import '../../support/in_memory_secure_storage.dart';
 

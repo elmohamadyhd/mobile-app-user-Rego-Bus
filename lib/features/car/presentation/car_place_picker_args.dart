@@ -1,4 +1,4 @@
-import 'package:rego/features/car/domain/entities/car_place.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
 
 /// Arguments for [CarPlacePickerScreen] via go_router `extra`.
 final class CarPlacePickerArgs {

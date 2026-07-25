@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
-import 'package:rego/features/bus/domain/entities/seat_map.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/bus/presentation/seat_selection_screen.dart';
-import 'package:rego/features/bus/presentation/widgets/bus_images_fab.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
+import 'package:safaria/features/bus/domain/entities/seat_map.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/presentation/seat_selection_screen.dart';
+import 'package:safaria/features/bus/presentation/widgets/bus_images_fab.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
 

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/language_icon_button.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/language_icon_button.dart';
 
 class _Slide {
   const _Slide(this.icon, this.title, this.body);

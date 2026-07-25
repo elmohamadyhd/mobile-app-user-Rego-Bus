@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/core/utils/phone_number_formatter.dart';
+import 'package:safaria/core/utils/phone_number_formatter.dart';
 
 void main() {
   group('formatNationalPhone', () {

@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/network/dio_client.dart';
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/features/auth/data/auth_api.dart';
-import 'package:rego/features/auth/data/auth_repository_impl.dart';
-import 'package:rego/features/auth/domain/entities/auth_session.dart';
-import 'package:rego/features/auth/domain/entities/auth_user.dart';
-import 'package:rego/features/auth/domain/repositories/auth_repository.dart';
+import 'package:safaria/core/network/dio_client.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/features/auth/data/auth_api.dart';
+import 'package:safaria/features/auth/data/auth_repository_impl.dart';
+import 'package:safaria/features/auth/domain/entities/auth_session.dart';
+import 'package:safaria/features/auth/domain/entities/auth_user.dart';
+import 'package:safaria/features/auth/domain/repositories/auth_repository.dart';
 
 final authApiProvider =
     Provider<AuthApi>((ref) => AuthApi(ref.watch(dioProvider)));

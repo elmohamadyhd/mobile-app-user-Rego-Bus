@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/auth/presentation/auth_flow_args.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 /// Shows the guest sign-in gate as a bottom sheet over whatever screen
 /// [context] belongs to. [returnTo] is the route to land on after a

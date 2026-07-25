@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/auth/presentation/widgets/country_picker.dart';
-import 'package:rego/features/auth/presentation/widgets/phone_field.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/auth/presentation/widgets/country_picker.dart';
+import 'package:safaria/features/auth/presentation/widgets/phone_field.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('keeps phone input LTR under Arabic locale', (tester) async {

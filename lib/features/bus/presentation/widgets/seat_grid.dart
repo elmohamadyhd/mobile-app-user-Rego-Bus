@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/seat_map.dart';
-import 'package:rego/features/bus/presentation/widgets/bus_images_fab.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/seat_map.dart';
+import 'package:safaria/features/bus/presentation/widgets/bus_images_fab.dart';
 
 /// Shared square size for every grid cell — seats, icon markers (driver,
 /// door, WC), and blank aisle fillers — so rows stay aligned regardless of

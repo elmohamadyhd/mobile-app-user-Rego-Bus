@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_typography.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_typography.dart';
 
 /// A row of single-digit OTP boxes with auto-advance and backspace handling.
 /// Filled boxes tint blue, matching the Skyline design.

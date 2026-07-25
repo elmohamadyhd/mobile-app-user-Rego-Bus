@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/presentation/payment_webview_screen.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/bus/presentation/payment_webview_screen.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 Widget _harness({
   required Locale locale,

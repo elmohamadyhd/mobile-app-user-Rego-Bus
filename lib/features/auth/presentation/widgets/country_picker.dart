@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
 
 /// A country dial code. Minimal static set for now; wire `/countries` later.
 class CountryCode {

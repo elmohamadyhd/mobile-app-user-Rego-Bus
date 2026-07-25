@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/features/bus/domain/entities/bus_order.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 
 /// Owns the "My Tickets" list of booked bus trips. A plain
 /// `AsyncNotifierProvider` (not autoDispose) so state survives switching

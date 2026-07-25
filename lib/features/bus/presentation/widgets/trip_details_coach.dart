@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/coach_mark_overlay.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/coach_mark_overlay.dart';
 
 /// Whether a trip-details coach overlay is currently visible.
 class TripDetailsCoachActiveScope extends InheritedWidget {

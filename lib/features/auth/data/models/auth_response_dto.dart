@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:rego/features/auth/domain/entities/auth_session.dart';
-import 'package:rego/features/auth/domain/entities/auth_user.dart';
+import 'package:safaria/features/auth/domain/entities/auth_session.dart';
+import 'package:safaria/features/auth/domain/entities/auth_user.dart';
 
 part 'auth_response_dto.freezed.dart';
 part 'auth_response_dto.g.dart';

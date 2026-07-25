@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/shared/widgets/coach_mark_overlay.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/shared/widgets/coach_mark_overlay.dart';
 
 void main() {
   testWidgets('CoachMarkOverlay shows title and advances steps',

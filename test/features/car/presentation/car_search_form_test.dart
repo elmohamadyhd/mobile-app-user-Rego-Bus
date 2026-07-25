@@ -5,14 +5,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rego/core/places/place_prediction.dart';
-import 'package:rego/core/places/places_client.dart';
-import 'package:rego/core/places/places_providers.dart';
-import 'package:rego/features/car/domain/entities/car_place.dart';
-import 'package:rego/features/car/presentation/car_routes.dart';
-import 'package:rego/features/car/presentation/car_search_form.dart';
-import 'package:rego/features/car/presentation/providers/car_booking_providers.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/places/place_prediction.dart';
+import 'package:safaria/core/places/places_client.dart';
+import 'package:safaria/core/places/places_providers.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
+import 'package:safaria/features/car/presentation/car_routes.dart';
+import 'package:safaria/features/car/presentation/car_search_form.dart';
+import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_car_repository.dart';
 

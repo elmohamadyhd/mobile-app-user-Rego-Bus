@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/bus/presentation/providers/bus_orders_provider.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
 
 import '../fake_bus_repository.dart';
 

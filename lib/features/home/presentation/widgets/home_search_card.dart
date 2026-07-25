@@ -4,22 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/core/utils/date_formatting.dart';
-import 'package:rego/features/bus/domain/entities/bus_location.dart';
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/bus/presentation/widgets/bus_city_picker.dart';
-import 'package:rego/features/car/presentation/car_search_form.dart';
-import 'package:rego/features/home/presentation/widgets/home_flight_class_picker.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/models/trip_type.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
-import 'package:rego/shared/widgets/transport_mode_tab_bar.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/date_formatting.dart';
+import 'package:safaria/features/bus/domain/entities/bus_location.dart';
+import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/presentation/widgets/bus_city_picker.dart';
+import 'package:safaria/features/car/presentation/car_search_form.dart';
+import 'package:safaria/features/home/presentation/widgets/home_flight_class_picker.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/models/trip_type.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:safaria/shared/widgets/transport_mode_tab_bar.dart';
 
 class HomeSearchCard extends ConsumerStatefulWidget {
   const HomeSearchCard({

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/features/auth/presentation/auth_flow_args.dart';
-import 'package:rego/features/auth/presentation/widgets/guest_gate_sheet.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/widgets/guest_gate_sheet.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 void main() {
   Future<GoRouter> pumpWithGate(WidgetTester tester) async {

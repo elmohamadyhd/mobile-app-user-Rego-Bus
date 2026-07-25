@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/wallet/presentation/providers/wallet_providers.dart';
-import 'package:rego/features/wallet/presentation/wallet_routes.dart';
-import 'package:rego/features/wallet/presentation/widgets/wallet_app_bar.dart';
-import 'package:rego/features/wallet/presentation/widgets/wallet_balance_card.dart';
-import 'package:rego/features/wallet/presentation/widgets/wallet_transaction_tile.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/wallet/presentation/providers/wallet_providers.dart';
+import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
+import 'package:safaria/features/wallet/presentation/widgets/wallet_app_bar.dart';
+import 'package:safaria/features/wallet/presentation/widgets/wallet_balance_card.dart';
+import 'package:safaria/features/wallet/presentation/widgets/wallet_transaction_tile.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});

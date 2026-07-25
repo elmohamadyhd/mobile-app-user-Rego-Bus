@@ -6,20 +6,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/core/utils/responsive.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
-import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/providers/ticket_pdf_providers.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/responsive.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
+import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/providers/ticket_pdf_providers.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 class BusTicketScreen extends ConsumerWidget {
   const BusTicketScreen({super.key});

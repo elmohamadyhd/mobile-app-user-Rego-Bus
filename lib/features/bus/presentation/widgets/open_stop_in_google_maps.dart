@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/core/utils/external_url_launcher.dart';
-import 'package:rego/core/utils/google_maps_url.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/external_url_launcher.dart';
+import 'package:safaria/core/utils/google_maps_url.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Confirms with the user, then opens [stop] in Google Maps with a map pin.
 Future<void> confirmAndOpenStopInGoogleMaps(

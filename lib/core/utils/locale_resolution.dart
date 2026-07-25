@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Maps the device locale to a supported app locale (`ar` / `en`).
 ///

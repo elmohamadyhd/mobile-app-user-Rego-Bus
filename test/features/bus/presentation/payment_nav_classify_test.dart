@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/presentation/payment_webview_screen.dart';
+import 'package:safaria/features/bus/presentation/payment_webview_screen.dart';
 
 void main() {
   PaymentNavResult classify(String url) => classifyPaymentNav(Uri.parse(url));

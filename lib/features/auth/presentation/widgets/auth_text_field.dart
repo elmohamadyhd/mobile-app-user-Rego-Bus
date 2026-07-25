@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
 
 /// Skyline filled input: leading [icon], borderless field, optional [trailing]
 /// (e.g. a password eye toggle), and an inline [errorText].

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/core/utils/google_maps_url.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/core/utils/google_maps_url.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 
 BusStop _stop({
   required String name,

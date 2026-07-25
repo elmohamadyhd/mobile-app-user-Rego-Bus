@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/utils/order_trip_route_stops.dart';
-import 'package:rego/features/bus/presentation/widgets/open_stop_in_google_maps.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/utils/order_trip_route_stops.dart';
+import 'package:safaria/features/bus/presentation/widgets/open_stop_in_google_maps.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Vertical route timeline split into two labeled, single-tap zones: board
 /// candidates (origin city) on top, drop-off candidates (destination city)

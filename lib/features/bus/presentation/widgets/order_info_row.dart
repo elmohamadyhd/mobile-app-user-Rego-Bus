@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/shared/widgets/ltr_text.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/shared/widgets/ltr_text.dart';
 
 /// Label/value row shared by [BusOrderCard] and the order detail sheet:
 /// label on the leading edge, value on the trailing edge. [valueLtr] forces

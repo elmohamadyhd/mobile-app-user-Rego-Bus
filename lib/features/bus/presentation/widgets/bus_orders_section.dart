@@ -5,23 +5,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/auth/presentation/auth_flow_args.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/bus/domain/entities/bus_order.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/features/bus/presentation/payment_webview_screen.dart';
-import 'package:rego/features/bus/presentation/providers/bus_orders_provider.dart';
-import 'package:rego/features/bus/presentation/widgets/bus_order_card.dart';
-import 'package:rego/features/bus/presentation/widgets/bus_order_detail_sheet.dart';
-import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/providers/ticket_pdf_providers.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/features/bus/presentation/payment_webview_screen.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
+import 'package:safaria/features/bus/presentation/widgets/bus_order_card.dart';
+import 'package:safaria/features/bus/presentation/widgets/bus_order_detail_sheet.dart';
+import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/providers/ticket_pdf_providers.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 /// The bus-owned section dropped into the "My Tickets" tab shell
 /// (`TicketsScreen`). Renders guest/loading/error/empty/list states for the

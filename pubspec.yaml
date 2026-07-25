@@ -1,5 +1,5 @@
-name: rego
-description: REGO Buses — rider mobile app (Wadeny). Arabic-first, RTL.
+name: safaria
+description: Safaria — rider mobile app. Arabic-first, RTL.
 publish_to: "none"
 version: 0.1.0+1
 

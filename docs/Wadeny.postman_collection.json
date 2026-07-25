@@ -9539,24 +9539,233 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{url}}/flights/airports/search?term=دبي",
+                  "raw": "{{url}}/private/trips/:id",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
-                    "flights",
-                    "airports",
-                    "search"
+                    "private",
+                    "trips",
+                    ":id"
                   ],
-                  "query": [
+                  "variable": [
                     {
-                      "key": "term",
-                      "value": "دبي"
+                      "key": "id",
+                      "value": "1"
                     }
                   ]
                 }
               },
-              "response": []
+              "response": [
+                {
+                  "name": "Show Trip Details",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/private/trips/:id",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "private",
+                        "trips",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "1"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 200
+                    },
+                    {
+                      "key": "date",
+                      "value": "Thu, 23 Jul 2026 10:51:54 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "x-ratelimit-limit",
+                      "value": "60"
+                    },
+                    {
+                      "key": "x-ratelimit-remaining",
+                      "value": "58"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "x-frame-options",
+                      "value": "SAMEORIGIN"
+                    },
+                    {
+                      "key": "x-xss-protection",
+                      "value": "1; mode=block"
+                    },
+                    {
+                      "key": "x-content-type-options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=lXVa%2FnjRu%2BMtjJYnNbw00QMJphwZSZEMWLrquep4FibE1odZnrAsTls8lajX9yggkuPYIBIPYj0HSb4oWDKB0W%2F0x3eirPtSJXTEt0x%2FuFVLbbRnpjLPPTtFzQpeCBB8eSklTf6d\"}]}"
+                    },
+                    {
+                      "key": "content-encoding",
+                      "value": "br"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a1fa21f12a1ae289-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 200,\n    \"message\": \"Trip\",\n    \"errors\": {},\n    \"data\": {\n        \"id\": 1,\n        \"rounded\": true,\n        \"go_price\": 1000,\n        \"round_price\": 1500,\n        \"currency\": \"EGP\",\n        \"status\": true,\n        \"currency_id\": 1,\n        \"base_currency_id\": 1,\n        \"exchange_rate\": \"1.00000000\",\n        \"company\": {\n            \"id\": 1,\n            \"name\": \"Sky Travel\",\n            \"refundability\": true,\n            \"refund_policy\": \"Sky Travel\",\n            \"logo_url\": \"https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg\",\n            \"logo_mime_type\": \"image/jpeg\"\n        },\n        \"from_location\": {\n            \"id\": 1,\n            \"name\": \"Cairo\",\n            \"latitude\": \"30.0441028\",\n            \"longitude\": \"31.2408498\"\n        },\n        \"to_location\": {\n            \"id\": 2,\n            \"name\": \"Alexandria\",\n            \"latitude\": \"31.2452475\",\n            \"longitude\": \"29.9892346\"\n        },\n        \"vehicle\": {\n            \"id\": 1,\n            \"name\": \"Hundai\",\n            \"category_id\": 1,\n            \"category_name\": \"Sedan\",\n            \"seats_number\": 5,\n            \"model\": \"Matrix\",\n            \"year\": 2010,\n            \"big_bags_count\": 4,\n            \"small_bags_count\": 1,\n            \"gear_type\": \"automatic\",\n            \"featured_url\": \"https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg\",\n            \"featured_mime_type\": \"image/jpeg\"\n        }\n    }\n}"
+                },
+                {
+                  "name": "Show Trip Details",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/private/trips/:id",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "private",
+                        "trips",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "5"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 404
+                    },
+                    {
+                      "key": "date",
+                      "value": "Thu, 23 Jul 2026 10:52:30 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "x-ratelimit-limit",
+                      "value": "60"
+                    },
+                    {
+                      "key": "x-ratelimit-remaining",
+                      "value": "57"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=U6X94sasBrlNhJAGIlOM2xEb69Df8%2B6rGjuhOrtWfHvuU346wopUOFBFgXrQytBSn%2FTwpUYA40aYXsnm0ivX5mAxRoqRh5YNExDYOGIIGCjvGp8W0Uh2%2BI3diEAxNGH4ipEl%2Fg0b\"}]}"
+                    },
+                    {
+                      "key": "content-encoding",
+                      "value": "br"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a1fa22d2ea30e289-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 404,\n    \"message\": \"This record can't be found\",\n    \"errors\": {},\n    \"data\": {}\n}"
+                }
+              ]
             },
             {
               "name": "Orders",
@@ -9605,7 +9814,97 @@
                   ]
                 }
               },
-              "response": []
+              "response": [
+                {
+                  "name": "Orders",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"trip_id\": 1,\n    \"rounded\": false,\n    \"departure\": {\n        \"latitude\": \"30.0314696\",\n        \"longitude\": \"31.2612288\",\n        \"date\": \"2026-12-20\"\n    },\n    \"destination\": {\n        \"latitude\": \"31.182972882989525\",\n        \"longitude\": \"29.894801258559188\",\n        \"date\": \"2026-12-20\"\n    }\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/private/orders",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "private",
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 401
+                    },
+                    {
+                      "key": "date",
+                      "value": "Thu, 23 Jul 2026 10:53:00 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Rm%2BcZqhxWVrBvrRpr4Bv72%2FmF5%2BhzbrQunKWf3y2ccfWWtvpyAZZBnQYUzOZqMtBraD3EEhXIH%2BWUQLFhM5vIdphLrvaRm62lZbGLH0pA1gC2QOw76rT%2FHR5R%2FsOqOizbftV3VfO\"}]}"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a1fa238ebd36e289-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 401,\n    \"message\": \"Unauthenticated\",\n    \"errors\": {},\n    \"data\": {}\n}"
+                }
+              ]
             }
           ]
         },

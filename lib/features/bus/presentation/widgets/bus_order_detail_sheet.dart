@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/bus_order.dart';
-import 'package:rego/features/bus/presentation/providers/bus_orders_provider.dart';
-import 'package:rego/features/bus/presentation/widgets/operator_mark.dart';
-import 'package:rego/features/bus/presentation/widgets/order_info_row.dart';
-import 'package:rego/features/bus/presentation/widgets/order_status_badge.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
+import 'package:safaria/features/bus/presentation/widgets/operator_mark.dart';
+import 'package:safaria/features/bus/presentation/widgets/order_info_row.dart';
+import 'package:safaria/features/bus/presentation/widgets/order_status_badge.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Opens the order-detail sheet, seeded instantly from [order] (the row
 /// already in memory from the My Tickets list) while `GET

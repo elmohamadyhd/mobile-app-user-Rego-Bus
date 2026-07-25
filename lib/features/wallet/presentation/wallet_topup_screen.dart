@@ -5,15 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/wallet/presentation/providers/wallet_providers.dart';
-import 'package:rego/features/wallet/presentation/wallet_routes.dart';
-import 'package:rego/features/wallet/presentation/widgets/wallet_app_bar.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/wallet/presentation/providers/wallet_providers.dart';
+import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
+import 'package:safaria/features/wallet/presentation/widgets/wallet_app_bar.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 class WalletTopUpScreen extends ConsumerStatefulWidget {
   const WalletTopUpScreen({super.key});

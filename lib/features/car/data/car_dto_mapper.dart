@@ -1,5 +1,5 @@
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/car/domain/entities/car_trip_quote.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
 
 abstract final class CarDtoMapper {
   static void ensureSuccess(Map<String, dynamic> envelope) {

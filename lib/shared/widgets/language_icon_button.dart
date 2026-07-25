@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/shared/widgets/language_picker_sheet.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/shared/widgets/language_picker_sheet.dart';
 
 /// Globe icon button that opens [showLanguagePickerSheet] on tap. Used on
 /// the app's start screens (onboarding, login) to switch languages.

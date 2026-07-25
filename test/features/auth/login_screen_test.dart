@@ -3,17 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_theme.dart';
-import 'package:rego/features/auth/domain/entities/auth_session.dart';
-import 'package:rego/features/auth/domain/entities/auth_user.dart';
-import 'package:rego/features/auth/presentation/auth_flow_args.dart';
-import 'package:rego/features/auth/presentation/login_screen.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/features/auth/domain/entities/auth_session.dart';
+import 'package:safaria/features/auth/domain/entities/auth_user.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/login_screen.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../../support/fake_auth_repository.dart';
 import '../../support/in_memory_secure_storage.dart';

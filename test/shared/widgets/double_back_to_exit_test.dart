@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/theme/app_theme.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/double_back_to_exit.dart';
+import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/double_back_to_exit.dart';
 
 void main() {
   Future<void> pumpDoubleBack(

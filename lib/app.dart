@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/providers/locale_controller.dart';
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/theme/app_theme.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/providers/locale_controller.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});

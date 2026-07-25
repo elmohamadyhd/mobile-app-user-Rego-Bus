@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/core/network/dio_client.dart';
-import 'package:rego/features/car/data/car_api.dart';
-import 'package:rego/features/car/data/car_repository_impl.dart';
-import 'package:rego/features/car/domain/entities/car_search_params.dart';
-import 'package:rego/features/car/domain/entities/car_trip_quote.dart';
-import 'package:rego/features/car/domain/repositories/car_repository.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/core/network/dio_client.dart';
+import 'package:safaria/features/car/data/car_api.dart';
+import 'package:safaria/features/car/data/car_repository_impl.dart';
+import 'package:safaria/features/car/domain/entities/car_search_params.dart';
+import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
+import 'package:safaria/features/car/domain/repositories/car_repository.dart';
 
 final carApiProvider =
     Provider<CarApi>((ref) => CarApi(ref.watch(dioProvider)));

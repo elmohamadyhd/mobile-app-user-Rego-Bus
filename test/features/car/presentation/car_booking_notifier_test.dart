@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/car/domain/entities/car_place.dart';
-import 'package:rego/features/car/domain/entities/car_search_params.dart';
-import 'package:rego/features/car/presentation/providers/car_booking_providers.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
+import 'package:safaria/features/car/domain/entities/car_search_params.dart';
+import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 
 import '../fake_car_repository.dart';
 

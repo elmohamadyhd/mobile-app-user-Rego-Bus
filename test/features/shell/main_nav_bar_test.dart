@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/theme/app_theme.dart';
-import 'package:rego/features/shell/presentation/widgets/main_nav_bar.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/features/shell/presentation/widgets/main_nav_bar.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 void main() {
   Widget wrap({

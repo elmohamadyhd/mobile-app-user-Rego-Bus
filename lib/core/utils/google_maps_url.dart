@@ -1,4 +1,4 @@
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 
 /// Max intermediate waypoints per Google Maps URLs spec.
 const int kGoogleMapsMaxWaypoints = 9;

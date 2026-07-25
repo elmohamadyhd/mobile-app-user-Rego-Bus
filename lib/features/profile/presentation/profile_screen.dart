@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/auth/domain/entities/auth_user.dart';
-import 'package:rego/features/auth/presentation/auth_flow_args.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/wallet/presentation/wallet_routes.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/language_picker_sheet.dart';
-import 'package:rego/shared/widgets/ltr_text.dart';
-import 'package:rego/shared/widgets/shell_tab_scroll_view.dart';
-import 'package:rego/shared/widgets/skyline_tab_hero.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/auth/domain/entities/auth_user.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/language_picker_sheet.dart';
+import 'package:safaria/shared/widgets/ltr_text.dart';
+import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
+import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

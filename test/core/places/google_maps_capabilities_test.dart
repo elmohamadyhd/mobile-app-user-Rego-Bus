@@ -1,6 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/core/places/google_maps_capabilities.dart';
+import 'package:safaria/core/places/google_maps_capabilities.dart';
 
 void main() {
   setUpAll(() {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/presentation/widgets/trip_card.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 Offset _textTopLeft(WidgetTester tester, String text) {
   final finder = find.text(text);

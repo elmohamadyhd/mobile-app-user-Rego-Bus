@@ -2,22 +2,22 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/features/auth/presentation/auth_flow_args.dart';
-import 'package:rego/features/auth/presentation/forgot_password_screen.dart';
-import 'package:rego/features/auth/presentation/login_screen.dart';
-import 'package:rego/features/auth/presentation/new_password_screen.dart';
-import 'package:rego/features/auth/presentation/onboarding_screen.dart';
-import 'package:rego/features/auth/presentation/otp_verify_screen.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/auth/presentation/register_screen.dart';
-import 'package:rego/features/auth/presentation/splash_screen.dart';
-import 'package:rego/features/home/presentation/home_screen.dart';
-import 'package:rego/features/profile/presentation/profile_screen.dart';
-import 'package:rego/features/shell/presentation/main_shell.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/features/car/presentation/car_routes.dart';
-import 'package:rego/features/tickets/presentation/tickets_screen.dart';
-import 'package:rego/features/wallet/presentation/wallet_routes.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/forgot_password_screen.dart';
+import 'package:safaria/features/auth/presentation/login_screen.dart';
+import 'package:safaria/features/auth/presentation/new_password_screen.dart';
+import 'package:safaria/features/auth/presentation/onboarding_screen.dart';
+import 'package:safaria/features/auth/presentation/otp_verify_screen.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/auth/presentation/register_screen.dart';
+import 'package:safaria/features/auth/presentation/splash_screen.dart';
+import 'package:safaria/features/home/presentation/home_screen.dart';
+import 'package:safaria/features/profile/presentation/profile_screen.dart';
+import 'package:safaria/features/shell/presentation/main_shell.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/features/car/presentation/car_routes.dart';
+import 'package:safaria/features/tickets/presentation/tickets_screen.dart';
+import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
 
 // Named route constants so call-sites never use raw strings.
 abstract final class AppRoutes {

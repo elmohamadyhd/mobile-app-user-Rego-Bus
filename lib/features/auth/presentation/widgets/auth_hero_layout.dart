@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/shared/widgets/gradient_hero.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/shared/widgets/gradient_hero.dart';
 
 /// Skyline auth header: blue gradient hero with a floating card overlapping
 /// upward — same pattern as [HomeScreen] and [ProfileScreen].

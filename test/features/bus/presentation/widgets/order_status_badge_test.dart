@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/domain/entities/bus_order.dart';
-import 'package:rego/features/bus/presentation/widgets/order_status_badge.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/presentation/widgets/order_status_badge.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 Future<void> _pumpBadge(
   WidgetTester tester,

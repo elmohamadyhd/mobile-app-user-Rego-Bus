@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/places/places_providers.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/car/domain/entities/car_place.dart';
-import 'package:rego/features/car/presentation/car_place_picker_args.dart';
-import 'package:rego/features/car/presentation/car_routes.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/places/places_providers.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
+import 'package:safaria/features/car/presentation/car_place_picker_args.dart';
+import 'package:safaria/features/car/presentation/car_routes.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 class CarPlaceField extends ConsumerWidget {
   const CarPlaceField({

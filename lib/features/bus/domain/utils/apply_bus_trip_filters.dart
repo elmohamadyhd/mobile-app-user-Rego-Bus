@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip_filters.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
 
 /// Active filter constraints (one per removable chip).
 int busTripFilterActiveCount(BusTripFilters filters) {

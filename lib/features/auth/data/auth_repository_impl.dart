@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
 
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/auth/data/auth_api.dart';
-import 'package:rego/features/auth/data/auth_envelope_keys.dart';
-import 'package:rego/features/auth/data/models/auth_response_dto.dart';
-import 'package:rego/features/auth/domain/entities/auth_session.dart';
-import 'package:rego/features/auth/domain/exceptions/account_not_verified_exception.dart';
-import 'package:rego/features/auth/domain/repositories/auth_repository.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/auth/data/auth_api.dart';
+import 'package:safaria/features/auth/data/auth_envelope_keys.dart';
+import 'package:safaria/features/auth/data/models/auth_response_dto.dart';
+import 'package:safaria/features/auth/domain/entities/auth_session.dart';
+import 'package:safaria/features/auth/domain/exceptions/account_not_verified_exception.dart';
+import 'package:safaria/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._api);

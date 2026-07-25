@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/theme/app_theme.dart';
-import 'package:rego/features/wallet/domain/entities/wallet.dart';
-import 'package:rego/features/wallet/presentation/providers/wallet_providers.dart';
-import 'package:rego/features/wallet/presentation/wallet_routes.dart';
-import 'package:rego/features/wallet/presentation/wallet_screen.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/features/wallet/domain/entities/wallet.dart';
+import 'package:safaria/features/wallet/presentation/providers/wallet_providers.dart';
+import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
+import 'package:safaria/features/wallet/presentation/wallet_screen.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_wallet_repository.dart';
 

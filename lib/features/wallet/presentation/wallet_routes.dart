@@ -1,8 +1,8 @@
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/features/wallet/presentation/wallet_payment_webview_screen.dart';
-import 'package:rego/features/wallet/presentation/wallet_screen.dart';
-import 'package:rego/features/wallet/presentation/wallet_topup_screen.dart';
+import 'package:safaria/features/wallet/presentation/wallet_payment_webview_screen.dart';
+import 'package:safaria/features/wallet/presentation/wallet_screen.dart';
+import 'package:safaria/features/wallet/presentation/wallet_topup_screen.dart';
 
 abstract final class WalletRoutes {
   static const wallet = '/profile/wallet';

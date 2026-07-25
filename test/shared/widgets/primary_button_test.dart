@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 void main() {
   Future<void> pump(WidgetTester tester, PrimaryButtonVariant variant) {

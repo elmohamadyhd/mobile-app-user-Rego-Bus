@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/utils/device_token.dart';
+import 'package:safaria/core/utils/device_token.dart';
 
 void main() {
   final uuidV4Pattern = RegExp(

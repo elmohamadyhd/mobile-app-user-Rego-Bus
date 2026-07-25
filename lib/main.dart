@@ -4,8 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/app.dart';
-import 'package:rego/core/theme/app_theme.dart';
+import 'package:safaria/app.dart';
+import 'package:safaria/core/theme/app_theme.dart';
 
 void main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();

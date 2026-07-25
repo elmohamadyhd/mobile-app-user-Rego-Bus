@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/features/bus/domain/entities/bus_location.dart';
+import 'package:safaria/features/bus/domain/entities/bus_location.dart';
 
 void main() {
   const cairo = BusLocation(

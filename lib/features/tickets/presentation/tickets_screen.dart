@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/bus/presentation/providers/bus_orders_provider.dart';
-import 'package:rego/features/bus/presentation/widgets/bus_orders_section.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/shell_tab_scroll_view.dart';
-import 'package:rego/shared/widgets/skyline_tab_hero.dart';
-import 'package:rego/shared/widgets/transport_mode_tab_bar.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
+import 'package:safaria/features/bus/presentation/widgets/bus_orders_section.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
+import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
+import 'package:safaria/shared/widgets/transport_mode_tab_bar.dart';
 
 /// Composition root for the "My Tickets" bottom-nav tab. Owns only the hero
 /// and scroll scaffold — each transport mode contributes its own section

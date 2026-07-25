@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/utils/locale_resolution.dart';
+import 'package:safaria/core/utils/locale_resolution.dart';
 
 void main() {
   test('resolveAppLocale maps Arabic device locale to ar', () {

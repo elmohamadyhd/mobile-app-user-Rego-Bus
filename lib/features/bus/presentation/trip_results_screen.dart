@@ -5,22 +5,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip_filters.dart';
-import 'package:rego/features/bus/domain/utils/apply_bus_trip_filters.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/bus/presentation/widgets/active_filter_chips.dart';
-import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
-import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
-import 'package:rego/features/bus/presentation/widgets/trip_card.dart';
-import 'package:rego/features/bus/presentation/widgets/trip_filter_button.dart';
-import 'package:rego/features/bus/presentation/widgets/trip_filter_sheet.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
+import 'package:safaria/features/bus/domain/utils/apply_bus_trip_filters.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/presentation/widgets/active_filter_chips.dart';
+import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
+import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
+import 'package:safaria/features/bus/presentation/widgets/trip_filter_button.dart';
+import 'package:safaria/features/bus/presentation/widgets/trip_filter_sheet.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 class TripResultsScreen extends ConsumerStatefulWidget {
   const TripResultsScreen({super.key});

@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/core/utils/date_formatting.dart';
-import 'package:rego/core/utils/responsive.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/auth/presentation/widgets/guest_gate_sheet.dart';
-import 'package:rego/features/bus/presentation/widgets/booking_app_bar.dart';
-import 'package:rego/features/car/domain/entities/car_search_params.dart';
-import 'package:rego/features/car/presentation/car_routes.dart';
-import 'package:rego/features/car/presentation/providers/car_booking_providers.dart';
-import 'package:rego/features/car/presentation/widgets/car_tier_card.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/date_formatting.dart';
+import 'package:safaria/core/utils/responsive.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/auth/presentation/widgets/guest_gate_sheet.dart';
+import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:safaria/features/car/domain/entities/car_search_params.dart';
+import 'package:safaria/features/car/presentation/car_routes.dart';
+import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
+import 'package:safaria/features/car/presentation/widgets/car_tier_card.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 class CarTierResultsScreen extends ConsumerStatefulWidget {
   const CarTierResultsScreen({super.key});

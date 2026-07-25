@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 part 'bus_trip_filters.freezed.dart';
 

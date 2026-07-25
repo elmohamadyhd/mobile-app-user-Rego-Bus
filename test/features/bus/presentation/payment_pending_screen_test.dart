@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
-import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/features/bus/presentation/payment_pending_screen.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
+import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/features/bus/presentation/payment_pending_screen.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/features/car/presentation/widgets/car_tier_card.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/features/car/presentation/widgets/car_tier_card.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../../fake_car_repository.dart';
 

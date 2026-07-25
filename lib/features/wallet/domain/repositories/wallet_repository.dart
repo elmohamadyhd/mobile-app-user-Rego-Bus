@@ -1,4 +1,4 @@
-import 'package:rego/features/wallet/domain/entities/wallet.dart';
+import 'package:safaria/features/wallet/domain/entities/wallet.dart';
 
 abstract interface class WalletRepository {
   /// Fetches the signed-in rider's wallet balance and transaction history.

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
 
 /// Scroll layout shared by bottom-nav shell tab bodies.
 ///

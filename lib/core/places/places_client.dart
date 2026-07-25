@@ -3,8 +3,8 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 
-import 'package:rego/core/places/place_prediction.dart';
-import 'package:rego/features/car/domain/entities/car_place.dart';
+import 'package:safaria/core/places/place_prediction.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
 
 class PlacesClient {
   PlacesClient({

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/bus/presentation/trip_details_screen.dart';
-import 'package:rego/features/bus/presentation/widgets/trip_route_map_fab.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/presentation/trip_details_screen.dart';
+import 'package:safaria/features/bus/presentation/widgets/trip_route_map_fab.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
 import '../../../support/in_memory_secure_storage.dart';
@@ -184,7 +184,7 @@ void main() {
     expect(find.text('Open in Google Maps?'), findsOneWidget);
     expect(
       find.text(
-        "You'll leave REGO. Google Maps will show the full trip route "
+        "You'll leave Safaria. Google Maps will show the full trip route "
         'through every stop on this journey.',
       ),
       findsOneWidget,

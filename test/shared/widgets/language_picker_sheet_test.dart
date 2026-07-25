@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/core/providers/locale_controller.dart';
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/language_picker_sheet.dart';
+import 'package:safaria/core/providers/locale_controller.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/language_picker_sheet.dart';
 
 void main() {
   Future<ProviderContainer> pumpSheetHarness(WidgetTester tester) async {

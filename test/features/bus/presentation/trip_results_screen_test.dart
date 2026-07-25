@@ -5,16 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/domain/repositories/bus_repository.dart';
-import 'package:rego/features/bus/presentation/bus_routes.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/bus/presentation/trip_results_screen.dart';
-import 'package:rego/features/bus/presentation/widgets/active_filter_chips.dart';
-import 'package:rego/features/bus/presentation/widgets/trip_card.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/repositories/bus_repository.dart';
+import 'package:safaria/features/bus/presentation/bus_routes.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/presentation/trip_results_screen.dart';
+import 'package:safaria/features/bus/presentation/widgets/active_filter_chips.dart';
+import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
 

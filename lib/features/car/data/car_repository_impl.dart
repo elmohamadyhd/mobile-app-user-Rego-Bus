@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/car/data/car_api.dart';
-import 'package:rego/features/car/data/car_dto_mapper.dart';
-import 'package:rego/features/car/domain/entities/car_search_params.dart';
-import 'package:rego/features/car/domain/entities/car_trip_quote.dart';
-import 'package:rego/features/car/domain/repositories/car_repository.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/car/data/car_api.dart';
+import 'package:safaria/features/car/data/car_dto_mapper.dart';
+import 'package:safaria/features/car/domain/entities/car_search_params.dart';
+import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
+import 'package:safaria/features/car/domain/repositories/car_repository.dart';
 
 class CarRepositoryImpl implements CarRepository {
   CarRepositoryImpl(this._api);

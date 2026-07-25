@@ -6,20 +6,20 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:rego/core/places/google_maps_capabilities.dart';
-import 'package:rego/core/places/place_prediction.dart';
-import 'package:rego/core/places/places_client.dart';
-import 'package:rego/core/places/places_providers.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/core/utils/responsive.dart';
-import 'package:rego/features/auth/presentation/widgets/auth_back_button.dart';
-import 'package:rego/features/car/domain/entities/car_place.dart';
-import 'package:rego/features/car/presentation/car_place_picker_args.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/core/places/google_maps_capabilities.dart';
+import 'package:safaria/core/places/place_prediction.dart';
+import 'package:safaria/core/places/places_client.dart';
+import 'package:safaria/core/places/places_providers.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/responsive.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_back_button.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
+import 'package:safaria/features/car/presentation/car_place_picker_args.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 class CarPlacePickerScreen extends ConsumerStatefulWidget {
   const CarPlacePickerScreen({

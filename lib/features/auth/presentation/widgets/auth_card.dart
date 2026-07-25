@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
 
 /// The floating white card that overlaps the hero, holding the form fields.
 class AuthCard extends StatelessWidget {

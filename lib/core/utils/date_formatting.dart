@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Strips the time component from [d].
 DateTime dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/features/bus/domain/entities/seat_map.dart';
+import 'package:safaria/features/bus/domain/entities/seat_map.dart';
 
 const _salon = SeatSalon(id: 1, name: 'Express', rows: 1, columns: 1);
 

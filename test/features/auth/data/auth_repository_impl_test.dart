@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/features/auth/data/auth_api.dart';
-import 'package:rego/features/auth/data/auth_envelope_keys.dart';
-import 'package:rego/features/auth/data/auth_repository_impl.dart';
-import 'package:rego/features/auth/domain/exceptions/account_not_verified_exception.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/auth/data/auth_api.dart';
+import 'package:safaria/features/auth/data/auth_envelope_keys.dart';
+import 'package:safaria/features/auth/data/auth_repository_impl.dart';
+import 'package:safaria/features/auth/domain/exceptions/account_not_verified_exception.dart';
 
 class _FakeAuthApi extends AuthApi {
   _FakeAuthApi({this.loginBody, this.registerBody}) : super(Dio());

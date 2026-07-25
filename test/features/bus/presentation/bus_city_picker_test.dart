@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/domain/entities/bus_location.dart';
-import 'package:rego/features/bus/presentation/providers/bus_booking_providers.dart';
-import 'package:rego/features/bus/presentation/widgets/bus_city_picker.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/bus/domain/entities/bus_location.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
+import 'package:safaria/features/bus/presentation/widgets/bus_city_picker.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
 

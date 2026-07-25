@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/features/auth/presentation/onboarding_screen.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/features/auth/presentation/onboarding_screen.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 void main() {
   Future<ProviderContainer> pumpOnboarding(WidgetTester tester) async {

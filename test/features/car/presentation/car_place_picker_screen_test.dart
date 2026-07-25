@@ -6,15 +6,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:rego/core/places/google_maps_capabilities.dart';
-import 'package:rego/core/places/place_prediction.dart';
-import 'package:rego/core/places/places_client.dart';
-import 'package:rego/core/places/places_providers.dart';
-import 'package:rego/features/car/domain/entities/car_place.dart';
-import 'package:rego/features/car/presentation/car_place_picker_args.dart';
-import 'package:rego/features/car/presentation/car_place_picker_screen.dart';
-import 'package:rego/features/car/presentation/car_routes.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/places/google_maps_capabilities.dart';
+import 'package:safaria/core/places/place_prediction.dart';
+import 'package:safaria/core/places/places_client.dart';
+import 'package:safaria/core/places/places_providers.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
+import 'package:safaria/features/car/presentation/car_place_picker_args.dart';
+import 'package:safaria/features/car/presentation/car_place_picker_screen.dart';
+import 'package:safaria/features/car/presentation/car_routes.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 class _FakePlacesClient extends PlacesClient {
   _FakePlacesClient() : super(apiKey: 'test');

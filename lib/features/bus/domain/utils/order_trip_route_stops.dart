@@ -1,4 +1,4 @@
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 
 /// All boarding stops (by arrival), then all drop-off stops (by arrival) —
 /// the same order shown on the trip route timeline.

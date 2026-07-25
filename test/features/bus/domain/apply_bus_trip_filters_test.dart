@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip_filters.dart';
-import 'package:rego/features/bus/domain/utils/apply_bus_trip_filters.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
+import 'package:safaria/features/bus/domain/utils/apply_bus_trip_filters.dart';
 
 BusTripSummary _trip({
   required String id,

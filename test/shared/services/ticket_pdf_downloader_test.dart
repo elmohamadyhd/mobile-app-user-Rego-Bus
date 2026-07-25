@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as p;
 
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/shared/services/ticket_pdf_downloader.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/shared/services/ticket_pdf_downloader.dart';
 
 import '../../support/in_memory_secure_storage.dart';
 
@@ -90,7 +90,7 @@ void main() {
         localeCode: 'ar',
         invoiceUrl: 'https://portal.example.com/orders/1/invoice/download',
         bookingRef: '000001457',
-        shareSubject: 'REGO bus ticket — 000001457',
+        shareSubject: 'Safaria bus ticket — 000001457',
         savePathResolver: (ref) async =>
             p.join(tempDir.path, 'rego-ticket-$ref.pdf'),
         shareFile: (path, {required String shareSubject}) async {
@@ -103,7 +103,7 @@ void main() {
           'https://portal.example.com/orders/1/invoice/download');
       expect(sharedPath, isNotNull);
       expect(sharedPath!, contains('rego-ticket-000001457.pdf'));
-      expect(sharedSubject, 'REGO bus ticket — 000001457');
+      expect(sharedSubject, 'Safaria bus ticket — 000001457');
     });
 
     test('throws invalidUrl when invoiceUrl is empty', () async {

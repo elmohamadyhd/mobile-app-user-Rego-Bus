@@ -1,4 +1,4 @@
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 final class CarPlace {
   const CarPlace({

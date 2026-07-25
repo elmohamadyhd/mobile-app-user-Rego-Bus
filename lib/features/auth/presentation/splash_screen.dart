@@ -9,15 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/storage/secure_storage.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_theme.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/auth/domain/entities/auth_session.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/auth/domain/entities/auth_session.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Minimum time the brand splash stays visible so users can see it.
 const kMinSplashDuration = Duration(seconds: 2);
@@ -238,7 +238,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               children: [
                                 const SizedBox(height: 30),
                                 Image.asset(
-                                  'assets/rego-wordmark-white.png',
+                                  'assets/safaria-wordmark-white.png',
                                   width: 194,
                                   fit: BoxFit.contain,
                                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/wallet/presentation/wallet_payment_webview_screen.dart';
+import 'package:safaria/features/wallet/presentation/wallet_payment_webview_screen.dart';
 
 void main() {
   WalletPaymentNavResult classify(String url) =>

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 
 /// Rounded-square operator mark (logo, falling back to initials) shared by
 /// the results [TripCard] and the trip-details ticket so the same operator

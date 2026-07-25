@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/bus_location.dart';
-import 'package:rego/features/bus/presentation/providers/bus_locations_provider.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_location.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_locations_provider.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Bottom-sheet picker backed by the cached `/buses/locations` list.
 Future<BusLocation?> showBusCityPicker(

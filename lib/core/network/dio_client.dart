@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:rego/core/config/app_config.dart';
-import 'package:rego/core/providers/locale_controller.dart';
-import 'package:rego/core/storage/secure_storage.dart';
+import 'package:safaria/core/config/app_config.dart';
+import 'package:safaria/core/providers/locale_controller.dart';
+import 'package:safaria/core/storage/secure_storage.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio(

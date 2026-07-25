@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rego/features/bus/data/bus_dto_mapper.dart';
-import 'package:rego/features/bus/domain/entities/seat_map.dart';
-import 'package:rego/features/bus/domain/seat_map_normalizer.dart';
+import 'package:safaria/features/bus/data/bus_dto_mapper.dart';
+import 'package:safaria/features/bus/domain/entities/seat_map.dart';
+import 'package:safaria/features/bus/domain/seat_map_normalizer.dart';
 
 SeatMap _loadFixture(String filename) {
   final file = File('dummy data/$filename');

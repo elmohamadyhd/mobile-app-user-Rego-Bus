@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/core/utils/responsive.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip_filters.dart';
-import 'package:rego/features/bus/domain/utils/apply_bus_trip_filters.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/responsive.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
+import 'package:safaria/features/bus/domain/utils/apply_bus_trip_filters.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Skyline filter control for trip results — 42dp visual inside a 48dp target.
 class TripFilterButton extends StatelessWidget {

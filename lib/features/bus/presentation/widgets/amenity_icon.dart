@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_icons.dart';
 
 /// Maps a free-text amenity label (English or Arabic, placeholder or live
 /// API data) to its display icon. Contains-based matching so partial or

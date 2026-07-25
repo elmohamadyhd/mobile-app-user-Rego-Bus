@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import 'package:rego/core/utils/device_token.dart';
+import 'package:safaria/core/utils/device_token.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) => SecureStorage());
 

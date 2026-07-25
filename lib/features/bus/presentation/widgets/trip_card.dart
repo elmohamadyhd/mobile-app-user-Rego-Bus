@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_spacing.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/presentation/widgets/amenity_icons_row.dart';
-import 'package:rego/features/bus/presentation/widgets/operator_avatar.dart';
-import 'package:rego/features/bus/presentation/widgets/ticket_border.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/presentation/widgets/amenity_icons_row.dart';
+import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
+import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Boarding-pass styled result card for a single [BusTripSummary].
 ///

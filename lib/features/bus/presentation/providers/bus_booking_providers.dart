@@ -1,16 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rego/core/network/dio_client.dart';
-import 'package:rego/core/utils/date_formatting.dart';
-import 'package:rego/features/bus/data/bus_api.dart';
-import 'package:rego/features/bus/data/bus_dto_mapper.dart';
-import 'package:rego/features/bus/data/bus_repository_impl.dart';
-import 'package:rego/features/bus/domain/entities/bus_search_params.dart';
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/domain/entities/bus_ticket.dart';
-import 'package:rego/features/bus/domain/entities/bus_trip.dart';
-import 'package:rego/features/bus/domain/entities/seat_map.dart';
-import 'package:rego/features/bus/domain/repositories/bus_repository.dart';
+import 'package:safaria/core/network/dio_client.dart';
+import 'package:safaria/core/utils/date_formatting.dart';
+import 'package:safaria/features/bus/data/bus_api.dart';
+import 'package:safaria/features/bus/data/bus_dto_mapper.dart';
+import 'package:safaria/features/bus/data/bus_repository_impl.dart';
+import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
+import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/seat_map.dart';
+import 'package:safaria/features/bus/domain/repositories/bus_repository.dart';
 
 part 'bus_booking_providers.freezed.dart';
 

@@ -1,4 +1,4 @@
-import 'package:rego/features/bus/domain/entities/seat_map.dart';
+import 'package:safaria/features/bus/domain/entities/seat_map.dart';
 
 /// Normalizes inconsistent driver-seat data from the Wadeny seats API.
 ///

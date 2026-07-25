@@ -11,7 +11,7 @@
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
 | **Total requests** | 65 |
-| **Documented saved responses** | 89 |
+| **Documented saved responses** | 92 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -49,6 +49,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `GET` | `/posts/:slug` | Show |
 | `GET` | `/posts/categories` | Categories |
 | `GET` | `/private/search` | Search |
+| `GET` | `/private/trips/:id` | Show Trip Details |
 | `GET` | `/profile` | Show profile |
 | `GET` | `/profile/address-book` | List |
 | `GET` | `/profile/buses/orders` | List |
@@ -3681,7 +3682,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | # | Method | Path | Name |
 |---|--------|------|------|
 | 1 | `GET` | `/private/search` | Search |
-| 2 | `GET` | `/flights/airports/search` | Show Trip Details |
+| 2 | `GET` | `/private/trips/:id` | Show Trip Details |
 | 3 | `POST` | `/private/orders` | Orders |
 
 ### Search
@@ -3790,15 +3791,9 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | | |
 |---|---|
 | **Method** | `GET` |
-| **Path** | `/flights/airports/search` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/flights/airports/search?term=دبي` |
+| **Path** | `/private/trips/:id` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/private/trips/:id` |
 | **Auth** | Bearer token required |
-
-**Query parameters:**
-
-| Parameter | Example |
-|-----------|---------|
-| `term` | دبي |
 
 **Headers:**
 
@@ -3806,6 +3801,79 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Trip | ar | — |
+| `404` | Record not found | ar | — |
+
+#### 200 — Trip (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Trip",
+  "errors": {},
+  "data": {
+    "id": 1,
+    "rounded": true,
+    "go_price": 1000,
+    "round_price": 1500,
+    "currency": "EGP",
+    "status": true,
+    "currency_id": 1,
+    "base_currency_id": 1,
+    "exchange_rate": "1.00000000",
+    "company": {
+      "id": 1,
+      "name": "Sky Travel",
+      "refundability": true,
+      "refund_policy": "Sky Travel",
+      "logo_url": "https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg",
+      "logo_mime_type": "image/jpeg"
+    },
+    "from_location": {
+      "id": 1,
+      "name": "Cairo",
+      "latitude": "30.0441028",
+      "longitude": "31.2408498"
+    },
+    "to_location": {
+      "id": 2,
+      "name": "Alexandria",
+      "latitude": "31.2452475",
+      "longitude": "29.9892346"
+    },
+    "vehicle": {
+      "id": 1,
+      "name": "Hundai",
+      "category_id": 1,
+      "category_name": "Sedan",
+      "seats_number": 5,
+      "model": "Matrix",
+      "year": 2010,
+      "big_bags_count": 4,
+      "small_bags_count": 1,
+      "gear_type": "automatic",
+      "featured_url": "https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg",
+      "featured_mime_type": "image/jpeg"
+    }
+  }
+}
+```
+
+#### 404 — Record not found (ar)
+
+```json
+{
+  "status": 404,
+  "message": "This record can't be found",
+  "errors": {},
+  "data": {}
+}
+```
 
 ### Orders
 
@@ -3842,6 +3910,23 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 | `Authorization` | Bearer {{token}} |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `401` | Unauthenticated | ar | — |
+
+#### 401 — Unauthenticated (ar)
+
+```json
+{
+  "status": 401,
+  "message": "Unauthenticated",
+  "errors": {},
+  "data": {}
+}
+```
 
 ## Buses
 
@@ -5822,7 +5907,6 @@ The following inconsistencies exist in the Postman collection and may not reflec
 | Item | Issue |
 |------|-------|
 | Content → New Request | No URL configured (empty request) |
-| Private → Show Trip Details | URL points to `/flights/airports/search` instead of a private trip endpoint |
 | Currencies | Named "Currencies" but URL is `/flights/iata?search=CAI` — likely copy-paste error |
 | Profile → Wallet / Orders (GET) | Postman copies form-data bodies from other requests — real API expects no body on these GET calls |
 | Buses saved examples | Some `originalRequest` URLs still point to legacy `/api/transports/*` paths — response bodies are valid; request snapshots are stale |

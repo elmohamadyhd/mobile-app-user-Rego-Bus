@@ -1,5 +1,5 @@
-import 'package:rego/features/auth/domain/entities/auth_session.dart';
-import 'package:rego/features/auth/domain/repositories/auth_repository.dart';
+import 'package:safaria/features/auth/domain/entities/auth_session.dart';
+import 'package:safaria/features/auth/domain/repositories/auth_repository.dart';
 
 /// Minimal fake of [AuthRepository] for widget tests. Supports [login] and
 /// [verifyOtp] (both return [_session]). All other methods throw

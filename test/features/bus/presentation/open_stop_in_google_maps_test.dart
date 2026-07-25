@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/bus/domain/entities/bus_stop.dart';
-import 'package:rego/features/bus/presentation/widgets/open_stop_in_google_maps.dart';
-import 'package:rego/l10n/app_localizations.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/presentation/widgets/open_stop_in_google_maps.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('confirming opens Google Maps search URL for the stop', (

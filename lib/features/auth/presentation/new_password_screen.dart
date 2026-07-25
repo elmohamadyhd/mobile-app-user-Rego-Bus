@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:rego/core/network/api_exception.dart';
-import 'package:rego/core/router/app_router.dart';
-import 'package:rego/core/theme/app_colors.dart';
-import 'package:rego/core/theme/app_icons.dart';
-import 'package:rego/core/theme/app_typography.dart';
-import 'package:rego/core/utils/validators.dart';
-import 'package:rego/features/auth/presentation/auth_flow_args.dart';
-import 'package:rego/features/auth/presentation/providers/auth_providers.dart';
-import 'package:rego/features/auth/presentation/widgets/auth_back_button.dart';
-import 'package:rego/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
-import 'package:rego/features/auth/presentation/widgets/auth_text_field.dart';
-import 'package:rego/features/auth/presentation/widgets/icon_badge.dart';
-import 'package:rego/l10n/app_localizations.dart';
-import 'package:rego/shared/widgets/primary_button.dart';
+import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/validators.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_back_button.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:safaria/features/auth/presentation/widgets/icon_badge.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 class NewPasswordScreen extends ConsumerStatefulWidget {
   const NewPasswordScreen({super.key, required this.args});

@@ -1,4 +1,4 @@
-import 'package:rego/features/auth/domain/value/otp_purpose.dart';
+import 'package:safaria/features/auth/domain/value/otp_purpose.dart';
 
 /// Arguments handed to the OTP screen via go_router `extra`.
 class OtpArgs {

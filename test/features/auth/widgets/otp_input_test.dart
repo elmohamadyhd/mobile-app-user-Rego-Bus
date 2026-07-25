@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rego/features/auth/presentation/widgets/otp_input.dart';
+import 'package:safaria/features/auth/presentation/widgets/otp_input.dart';
 
 void main() {
   testWidgets('backspace on empty box moves to previous and clears it',

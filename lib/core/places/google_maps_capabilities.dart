@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:rego/core/config/app_config.dart';
+import 'package:safaria/core/config/app_config.dart';
 
 /// Tracks which Google APIs are usable on the current key.
 ///
