@@ -773,6 +773,18 @@
   "@addressFormNameRequired": { "description": "Validation error when the address label is empty." },
   "addressFormLocationRequired": "Pick a location on the map",
   "@addressFormLocationRequired": { "description": "Validation error when no map location has been selected." },
+  "confirmTermsAgreePrefix": "I agree to the ",
+  "@confirmTermsAgreePrefix": {
+    "description": "Text before the tappable Terms link on booking confirm."
+  },
+  "confirmTermsLink": "Terms and Conditions",
+  "@confirmTermsLink": {
+    "description": "Tappable Terms and Conditions label on booking confirm."
+  },
+  "confirmTermsRequired": "Please accept the Terms and Conditions to continue.",
+  "@confirmTermsRequired": {
+    "description": "Snackbar when Confirm is tapped while terms are unchecked."
+  },
   "cmsPageTermsTitle": "Terms and Conditions",
   "@cmsPageTermsTitle": {
     "description": "Fallback app-bar title while terms page is loading."
