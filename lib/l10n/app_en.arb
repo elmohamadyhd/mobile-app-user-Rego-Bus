@@ -493,10 +493,6 @@
   "@profileGuest": {
     "description": "Fallback display name when the session has no user name."
   },
-  "profileMenuTrips": "My trips",
-  "@profileMenuTrips": {
-    "description": "Profile menu row for booking history."
-  },
   "profileMenuAddresses": "Addresses",
   "@profileMenuAddresses": {
     "description": "Profile menu row for saved addresses."

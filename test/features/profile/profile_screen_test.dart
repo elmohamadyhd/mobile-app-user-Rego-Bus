@@ -76,7 +76,6 @@ void main() {
 
     expect(find.text('Ahmed'), findsOneWidget);
     expect(find.text('+20 1012345678'), findsOneWidget);
-    expect(find.text('My trips'), findsOneWidget);
     expect(find.text('Log out'), findsOneWidget);
   });
 

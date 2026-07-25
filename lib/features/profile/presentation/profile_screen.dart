@@ -37,11 +37,6 @@ class ProfileScreen extends ConsumerWidget {
             _ProfileMenuCard(
               items: [
                 _ProfileMenuItem(
-                  icon: AppIcons.ticket,
-                  label: l10n.profileMenuTrips,
-                  onTap: () => _showComingSoon(context, l10n),
-                ),
-                _ProfileMenuItem(
                   icon: AppIcons.locationTo,
                   label: l10n.profileMenuAddresses,
                   onTap: () => _showComingSoon(context, l10n),
