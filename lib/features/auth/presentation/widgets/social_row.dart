@@ -42,10 +42,6 @@ class SocialRow extends StatelessWidget {
         Row(
           children: [
             Expanded(child: _SocialButton(BrandMark.google, onDisabledTap)),
-            const SizedBox(width: 10),
-            Expanded(child: _SocialButton(BrandMark.facebook, onDisabledTap)),
-            const SizedBox(width: 10),
-            Expanded(child: _SocialButton(BrandMark.apple, onDisabledTap)),
           ],
         ),
       ],
