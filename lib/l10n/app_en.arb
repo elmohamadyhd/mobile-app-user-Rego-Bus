@@ -543,6 +543,30 @@
   "@profileComingSoon": {
     "description": "Snackbar shown when a profile menu row is not yet implemented."
   },
+  "profileEditTitle": "Edit profile",
+  "@profileEditTitle": {
+    "description": "Title of the profile edit screen."
+  },
+  "profileEditSave": "Save changes",
+  "@profileEditSave": {
+    "description": "Primary action on the profile edit screen."
+  },
+  "profileEditSaved": "Profile updated",
+  "@profileEditSaved": {
+    "description": "Snackbar after a successful profile update."
+  },
+  "profileEditLoadError": "Could not load your profile. Please try again.",
+  "@profileEditLoadError": {
+    "description": "Error state when GET /profile fails."
+  },
+  "profileEditRetry": "Retry",
+  "@profileEditRetry": {
+    "description": "Retry button on the profile edit load error state."
+  },
+  "profileEditError": "Something went wrong. Please try again.",
+  "@profileEditError": {
+    "description": "Generic error when profile cannot be saved."
+  },
 
   "walletTitle": "My Wallet",
   "walletBalanceLabel": "Available balance",

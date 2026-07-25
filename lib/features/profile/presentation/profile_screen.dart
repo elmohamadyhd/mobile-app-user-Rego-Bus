@@ -11,6 +11,7 @@ import 'package:safaria/features/auth/domain/entities/auth_user.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/addresses/presentation/addresses_routes.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/profile/presentation/profile_routes.dart';
 import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/language_picker_sheet.dart';
@@ -29,7 +30,12 @@ class ProfileScreen extends ConsumerWidget {
 
     return ShellTabScrollView(
       hero: SkylineTabHero(
-        child: _ProfileHeroContent(user: user),
+        child: _ProfileHeroContent(
+          user: user,
+          onTap: isGuest
+              ? null
+              : () => context.push(ProfileRoutes.edit),
+        ),
       ),
       children: [
         Column(
@@ -147,11 +153,12 @@ class ProfileScreen extends ConsumerWidget {
 }
 
 class _ProfileHeroContent extends StatelessWidget {
-  const _ProfileHeroContent({required this.user});
+  const _ProfileHeroContent({required this.user, this.onTap});
 
   static const double _avatarSize = 56;
 
   final AuthUser? user;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +169,7 @@ class _ProfileHeroContent extends StatelessWidget {
     final initial = name.isNotEmpty ? name.substring(0, 1) : '?';
     final phone = _formatPhone(user);
 
-    return Row(
+    final content = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _ProfileAvatar(
@@ -194,7 +201,34 @@ class _ProfileHeroContent extends StatelessWidget {
             ],
           ),
         ),
+        if (onTap != null) ...[
+          const SizedBox(width: AppSpacing.sm),
+          Transform.flip(
+            flipX: Directionality.of(context) == TextDirection.rtl,
+            child: Icon(
+              AppIcons.edit,
+              size: 20,
+              color: AppColors.onHero.withValues(alpha: 0.72),
+            ),
+          ),
+        ],
       ],
+    );
+
+    if (onTap == null) return content;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.symmetric(
+            vertical: AppSpacing.xs,
+          ),
+          child: content,
+        ),
+      ),
     );
   }
 

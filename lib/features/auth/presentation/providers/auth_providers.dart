@@ -55,6 +55,14 @@ class SessionController extends AsyncNotifier<AuthSession?> {
     await ref.read(guestModeProvider.notifier).disable();
     state = const AsyncData(null);
   }
+
+  /// Replaces the cached [AuthUser] after a profile update without rotating
+  /// the bearer token.
+  Future<void> updateUser(AuthUser user) async {
+    final session = state.value;
+    if (session == null) return;
+    await setSession(session.copyWith(user: user));
+  }
 }
 
 final sessionControllerProvider =

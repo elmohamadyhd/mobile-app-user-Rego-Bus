@@ -12,6 +12,7 @@ import 'package:safaria/features/auth/presentation/providers/auth_providers.dart
 import 'package:safaria/features/auth/presentation/register_screen.dart';
 import 'package:safaria/features/auth/presentation/splash_screen.dart';
 import 'package:safaria/features/home/presentation/home_screen.dart';
+import 'package:safaria/features/profile/presentation/profile_routes.dart';
 import 'package:safaria/features/profile/presentation/profile_screen.dart';
 import 'package:safaria/features/shell/presentation/main_shell.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
@@ -130,6 +131,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ...carRoutes(),
       ...walletRoutes(),
       ...addressesRoutes(),
+      ...profileRoutes(),
       GoRoute(
         path: PlacePickerRoutes.picker,
         builder: (context, state) {

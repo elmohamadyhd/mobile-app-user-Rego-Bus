@@ -281,6 +281,12 @@
   "profileLogoutCancel": "إلغاء",
   "profileLogoutConfirm": "تسجيل الخروج",
   "profileComingSoon": "قريباً",
+  "profileEditTitle": "تعديل الملف الشخصي",
+  "profileEditSave": "حفظ التغييرات",
+  "profileEditSaved": "تم تحديث الملف الشخصي",
+  "profileEditLoadError": "تعذّر تحميل ملفك الشخصي. حاول مرة أخرى.",
+  "profileEditRetry": "إعادة المحاولة",
+  "profileEditError": "حدث خطأ. حاول مرة أخرى.",
 
   "walletTitle": "محفظتي",
   "walletBalanceLabel": "الرصيد المتاح",
