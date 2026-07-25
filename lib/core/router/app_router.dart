@@ -17,6 +17,7 @@ import 'package:safaria/features/shell/presentation/main_shell.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/tickets/presentation/tickets_screen.dart';
+import 'package:safaria/features/addresses/presentation/addresses_routes.dart';
 import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
 import 'package:safaria/shared/widgets/map_place_picker_args.dart';
 import 'package:safaria/shared/widgets/map_place_picker_screen.dart';
@@ -128,6 +129,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ...busRoutes(),
       ...carRoutes(),
       ...walletRoutes(),
+      ...addressesRoutes(),
       GoRoute(
         path: PlacePickerRoutes.picker,
         builder: (context, state) {
