@@ -1,7 +1,138 @@
+import 'package:intl/intl.dart';
+
 import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/car/domain/entities/car_create_order_request.dart';
+import 'package:safaria/features/car/domain/entities/car_order.dart';
+import 'package:safaria/features/car/domain/entities/car_search_params.dart';
 import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
 
 abstract final class CarDtoMapper {
+  static final _orderDateFormat = DateFormat('yyyy-MM-dd HH:mm');
+
+  static String formatOrderDate(DateTime date) => _orderDateFormat.format(date);
+
+  static CarCreateOrderRequest createRequestFromSelection({
+    required CarTripQuote quote,
+    required CarSearchParams params,
+  }) {
+    final depart = formatOrderDate(params.departDate);
+    final destinationDate = params.rounded
+        ? formatOrderDate(params.returnDate ?? params.departDate)
+        : depart;
+    return CarCreateOrderRequest(
+      tripId: quote.id,
+      rounded: params.rounded,
+      departureLatitude: params.from.latitude.toString(),
+      departureLongitude: params.from.longitude.toString(),
+      departureDate: depart,
+      destinationLatitude: params.to.latitude.toString(),
+      destinationLongitude: params.to.longitude.toString(),
+      destinationDate: destinationDate,
+    );
+  }
+
+  static Map<String, dynamic> createOrderBody(CarCreateOrderRequest req) {
+    return {
+      'trip_id': req.tripId,
+      'rounded': req.rounded,
+      'departure': {
+        'latitude': req.departureLatitude,
+        'longitude': req.departureLongitude,
+        'date': req.departureDate,
+      },
+      'destination': {
+        'latitude': req.destinationLatitude,
+        'longitude': req.destinationLongitude,
+        'date': req.destinationDate,
+      },
+    };
+  }
+
+  static List<CarOrder> ordersFromEnvelope(dynamic body) {
+    final envelope = body as Map<String, dynamic>;
+    ensureSuccess(envelope);
+    final data = envelope['data'];
+    if (data is! List) return const [];
+    return data.whereType<Map<String, dynamic>>().map(orderFromJson).toList();
+  }
+
+  static CarOrder orderFromEnvelope(dynamic body) {
+    final envelope = body as Map<String, dynamic>;
+    ensureSuccess(envelope);
+    final data = envelope['data'];
+    if (data is Map<String, dynamic>) return orderFromJson(data);
+    return orderFromJson(const <String, dynamic>{});
+  }
+
+  static CarOrder orderFromJson(Map<String, dynamic> json) {
+    final statusText = _string(json['status']) ?? '';
+    final transaction = json['transaction'];
+    String? invoiceUrl;
+    String? transactionStatus;
+    if (transaction is Map<String, dynamic>) {
+      invoiceUrl = _string(transaction['invoice_url']);
+      transactionStatus = _string(transaction['status']);
+    }
+
+    final from = json['from'];
+    final to = json['to'];
+    final tripJson = json['trip'];
+
+    return CarOrder(
+      id: _int(json['id']) ?? 0,
+      statusText: statusText,
+      statusKind: orderStatusKind(statusText),
+      price: _string(json['price']) ?? '',
+      currency: _string(json['currency']) ?? '',
+      rounded: json['rounded'] == true,
+      departureDate: _string(json['departure_date']),
+      returnDate: _string(json['return_date']),
+      from: CarOrderCoords(
+        latitude: _double(
+              from is Map<String, dynamic> ? from['latitude'] : null,
+            ) ??
+            0,
+        longitude: _double(
+              from is Map<String, dynamic> ? from['longitude'] : null,
+            ) ??
+            0,
+      ),
+      to: CarOrderCoords(
+        latitude: _double(
+              to is Map<String, dynamic> ? to['latitude'] : null,
+            ) ??
+            0,
+        longitude: _double(
+              to is Map<String, dynamic> ? to['longitude'] : null,
+            ) ??
+            0,
+      ),
+      trip: tripJson is Map<String, dynamic> ? quoteFromJson(tripJson) : null,
+      invoiceUrl: invoiceUrl,
+      transactionStatus: transactionStatus,
+      canBeCancel: json['can_be_cancel'] == true,
+      createdAt: _string(json['created_at']),
+    );
+  }
+
+  static CarOrderStatusKind orderStatusKind(String status) {
+    final code = status.trim().toLowerCase();
+    const paid = {
+      'confirmed',
+      'paid',
+      'success',
+      'completed',
+      'succeeded',
+      'in_processing',
+    };
+    if (paid.contains(code)) return CarOrderStatusKind.confirmed;
+    if (code == 'pending') return CarOrderStatusKind.pending;
+    if (code == 'cancelled' || code == 'canceled') {
+      return CarOrderStatusKind.cancelled;
+    }
+    return CarOrderStatusKind.unknown;
+  }
+
   static void ensureSuccess(Map<String, dynamic> envelope) {
     final innerStatus = envelope['status'];
     if (innerStatus is num && innerStatus.toInt() != 200) {

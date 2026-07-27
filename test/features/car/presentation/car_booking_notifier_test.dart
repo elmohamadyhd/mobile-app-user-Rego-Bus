@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/car/domain/entities/car_order.dart';
 import 'package:safaria/features/car/domain/entities/car_place.dart';
 import 'package:safaria/features/car/domain/entities/car_search_params.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
@@ -149,5 +150,86 @@ void main() {
     final state = container.read(carBookingProvider);
     expect(state.tripDetailsSoftError, isNull);
     expect(state.tripDetailsHardError, isNull);
+  });
+
+  test('createOrder sets awaitingPayment with invoice url', () async {
+    final repo = FakeCarRepository();
+    final container = makeContainer(repo);
+    addTearDown(container.dispose);
+
+    final notifier = container.read(carBookingProvider.notifier);
+    await notifier.searchQuotes(params());
+    await notifier.createOrder();
+
+    final state = container.read(carBookingProvider);
+    expect(repo.createCallCount, 1);
+    expect(state.status, CarBookingStatus.awaitingPayment);
+    expect(state.order?.invoiceUrl, isNotEmpty);
+  });
+
+  test('createOrder resumes without second API call when reusable', () async {
+    const matchingOrder = CarOrder(
+      id: 39,
+      statusText: 'pending',
+      statusKind: CarOrderStatusKind.pending,
+      price: '1000.00',
+      currency: 'EGP',
+      rounded: false,
+      from: CarOrderCoords(latitude: 30.03, longitude: 31.26),
+      to: CarOrderCoords(latitude: 31.18, longitude: 29.89),
+      trip: FakeCarRepository.sampleQuote,
+      invoiceUrl: 'https://eg.myfatoorah.com/EGY/ia/sample',
+      canBeCancel: true,
+    );
+    final repo = FakeCarRepository(orderResult: matchingOrder);
+    final container = makeContainer(repo);
+    addTearDown(container.dispose);
+
+    final notifier = container.read(carBookingProvider.notifier);
+    await notifier.searchQuotes(params());
+    await notifier.createOrder();
+    expect(repo.createCallCount, 1);
+
+    await notifier.createOrder();
+    expect(repo.createCallCount, 1);
+    expect(
+      container.read(carBookingProvider).status,
+      CarBookingStatus.awaitingPayment,
+    );
+  });
+
+  test('verifyPayment sets confirmed when order paid', () async {
+    final repo = FakeCarRepository(
+      orderResult: FakeCarRepository.sampleConfirmedOrder,
+    );
+    final container = makeContainer(repo);
+    addTearDown(container.dispose);
+
+    final notifier = container.read(carBookingProvider.notifier);
+    await notifier.searchQuotes(params());
+    await notifier.createOrder();
+    // Force pending held order id, then verify returns confirmed.
+    notifier.hydrateOrder(FakeCarRepository.samplePendingOrder);
+    await notifier.verifyPayment();
+
+    expect(
+      container.read(carBookingProvider).status,
+      CarBookingStatus.confirmed,
+    );
+  });
+
+  test('verifyPayment sets paymentPending on lookup failure', () async {
+    final repo = FakeCarRepository()..getOrderShouldThrow = true;
+    final container = makeContainer(repo);
+    addTearDown(container.dispose);
+
+    final notifier = container.read(carBookingProvider.notifier);
+    notifier.hydrateOrder(FakeCarRepository.samplePendingOrder);
+    await notifier.verifyPayment();
+
+    expect(
+      container.read(carBookingProvider).status,
+      CarBookingStatus.paymentPending,
+    );
   });
 }

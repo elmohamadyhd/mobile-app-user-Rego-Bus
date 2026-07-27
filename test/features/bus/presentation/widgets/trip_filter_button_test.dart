@@ -95,7 +95,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      const longTitle = 'WJH3+W2، الظهير الصحراوى لمحافظة ال، محافظة القاهرة‬ '
+      const longTitle = 'WJH3+W2، الظهير الصحراوى لمحافظة ال، محافظة '
           '4802001، مصر → طريق الجيش، سان ستفانو، El Raml 2، '
           'محافظة الإسكندرية 5452054، مصر';
 

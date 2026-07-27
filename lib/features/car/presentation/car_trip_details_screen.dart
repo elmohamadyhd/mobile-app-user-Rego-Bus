@@ -167,14 +167,7 @@ class _CarTripDetailsScreenState extends ConsumerState<CarTripDetailsScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(l10n.carBookingComingSoon),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+    context.push(CarRoutes.confirm);
   }
 }
 

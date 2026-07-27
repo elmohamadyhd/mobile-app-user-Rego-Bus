@@ -29,4 +29,32 @@ class CarApi {
     final res = await _dio.get('/private/trips/$id');
     return res.data;
   }
+
+  Future<dynamic> createOrder(Map<String, dynamic> body) async {
+    final res = await _dio.post('/private/orders', data: body);
+    return res.data;
+  }
+
+  Future<dynamic> payOrder({
+    required int orderId,
+    required Map<String, dynamic> body,
+  }) async {
+    final res = await _dio.post('/private/orders/$orderId/pay', data: body);
+    return res.data;
+  }
+
+  Future<dynamic> cancelOrder(int orderId) async {
+    final res = await _dio.put('/private/orders/$orderId/cancel');
+    return res.data;
+  }
+
+  Future<dynamic> listOrders() async {
+    final res = await _dio.get('/profile/private/orders');
+    return res.data;
+  }
+
+  Future<dynamic> getOrder(int orderId) async {
+    final res = await _dio.get('/profile/private/orders/$orderId');
+    return res.data;
+  }
 }

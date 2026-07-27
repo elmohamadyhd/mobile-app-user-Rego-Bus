@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/network/dio_client.dart';
 import 'package:safaria/features/car/data/car_api.dart';
+import 'package:safaria/features/car/data/car_dto_mapper.dart';
 import 'package:safaria/features/car/data/car_repository_impl.dart';
+import 'package:safaria/features/car/domain/entities/car_create_order_request.dart';
+import 'package:safaria/features/car/domain/entities/car_order.dart';
 import 'package:safaria/features/car/domain/entities/car_search_params.dart';
 import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
 import 'package:safaria/features/car/domain/repositories/car_repository.dart';
@@ -14,6 +17,16 @@ final carApiProvider =
 final carRepositoryProvider = Provider<CarRepository>(
   (ref) => CarRepositoryImpl(ref.watch(carApiProvider)),
 );
+
+enum CarBookingStatus {
+  idle,
+  creatingOrder,
+  awaitingPayment,
+  verifyingPayment,
+  paymentPending,
+  confirmed,
+  error,
+}
 
 class CarBookingState {
   const CarBookingState({
@@ -26,6 +39,9 @@ class CarBookingState {
     this.isLoadingTripDetails = false,
     this.tripDetailsHardError,
     this.tripDetailsSoftError,
+    this.status = CarBookingStatus.idle,
+    this.order,
+    this.bookingError,
   });
 
   final CarSearchParams? searchParams;
@@ -37,6 +53,9 @@ class CarBookingState {
   final bool isLoadingTripDetails;
   final String? tripDetailsHardError;
   final String? tripDetailsSoftError;
+  final CarBookingStatus status;
+  final CarOrder? order;
+  final String? bookingError;
 
   CarBookingState copyWith({
     CarSearchParams? searchParams,
@@ -48,10 +67,15 @@ class CarBookingState {
     bool? isLoadingTripDetails,
     String? tripDetailsHardError,
     String? tripDetailsSoftError,
+    CarBookingStatus? status,
+    CarOrder? order,
+    String? bookingError,
     bool clearQuotesError = false,
     bool clearSelectedQuote = false,
     bool clearTripDetailsHardError = false,
     bool clearTripDetailsSoftError = false,
+    bool clearOrder = false,
+    bool clearBookingError = false,
   }) {
     return CarBookingState(
       searchParams: searchParams ?? this.searchParams,
@@ -68,6 +92,10 @@ class CarBookingState {
       tripDetailsSoftError: clearTripDetailsSoftError
           ? null
           : (tripDetailsSoftError ?? this.tripDetailsSoftError),
+      status: status ?? this.status,
+      order: clearOrder ? null : (order ?? this.order),
+      bookingError:
+          clearBookingError ? null : (bookingError ?? this.bookingError),
     );
   }
 }
@@ -86,6 +114,9 @@ class CarBookingNotifier extends Notifier<CarBookingState> {
       clearQuotesError: true,
       needsAuthRetry: false,
       clearSelectedQuote: true,
+      clearOrder: true,
+      status: CarBookingStatus.idle,
+      clearBookingError: true,
     );
     try {
       final quotes = await _repo.searchQuotes(params);
@@ -155,6 +186,158 @@ class CarBookingNotifier extends Notifier<CarBookingState> {
   void clearAuthRetry() {
     state = state.copyWith(needsAuthRetry: false);
   }
+
+  bool _orderReusable(
+    CarOrder order,
+    CarTripQuote quote,
+    CarSearchParams params,
+  ) {
+    if ((order.invoiceUrl ?? '').isEmpty) return false;
+    if (order.statusKind != CarOrderStatusKind.pending) return false;
+    final tripId = order.trip?.id;
+    if (tripId != null && tripId != quote.id) return false;
+    if (order.rounded != params.rounded) return false;
+
+    final req = CarDtoMapper.createRequestFromSelection(
+      quote: quote,
+      params: params,
+    );
+    final depLat = double.tryParse(req.departureLatitude) ?? 0;
+    final depLng = double.tryParse(req.departureLongitude) ?? 0;
+    final destLat = double.tryParse(req.destinationLatitude) ?? 0;
+    final destLng = double.tryParse(req.destinationLongitude) ?? 0;
+    const eps = 0.0001;
+    if ((order.from.latitude - depLat).abs() > eps) return false;
+    if ((order.from.longitude - depLng).abs() > eps) return false;
+    if ((order.to.latitude - destLat).abs() > eps) return false;
+    if ((order.to.longitude - destLng).abs() > eps) return false;
+    return true;
+  }
+
+  /// Creates a private order (or resumes a held pending one) and moves to
+  /// [CarBookingStatus.awaitingPayment] when an invoice URL is available.
+  Future<void> createOrder() async {
+    final quote = state.selectedQuote;
+    final params = state.searchParams;
+    if (quote == null || params == null) {
+      state = state.copyWith(
+        status: CarBookingStatus.error,
+        bookingError: 'No trip selected',
+      );
+      return;
+    }
+
+    final held = state.order;
+    if (held != null && _orderReusable(held, quote, params)) {
+      state = state.copyWith(
+        status: CarBookingStatus.awaitingPayment,
+        clearBookingError: true,
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      status: CarBookingStatus.creatingOrder,
+      clearBookingError: true,
+    );
+    try {
+      final request = CarDtoMapper.createRequestFromSelection(
+        quote: quote,
+        params: params,
+      );
+      final order = await _repo.createOrder(request);
+      final invoice = order.invoiceUrl ?? '';
+      state = state.copyWith(
+        order: order,
+        status: invoice.isNotEmpty
+            ? CarBookingStatus.awaitingPayment
+            : order.isConfirmed
+                ? CarBookingStatus.confirmed
+                : CarBookingStatus.paymentPending,
+      );
+    } on ApiException catch (e) {
+      state = state.copyWith(
+        status: CarBookingStatus.error,
+        bookingError: e.message,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: CarBookingStatus.error,
+        bookingError: e.toString(),
+      );
+    }
+  }
+
+  Future<void> verifyPayment() async {
+    final order = state.order;
+    if (order == null || order.id == 0) {
+      state = state.copyWith(status: CarBookingStatus.paymentPending);
+      return;
+    }
+
+    state = state.copyWith(status: CarBookingStatus.verifyingPayment);
+    try {
+      final fresh = await _repo.getOrder(order.id);
+      state = state.copyWith(
+        order: fresh,
+        status: fresh.isConfirmed
+            ? CarBookingStatus.confirmed
+            : CarBookingStatus.paymentPending,
+        clearBookingError: true,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: CarBookingStatus.paymentPending,
+        bookingError: e.toString(),
+      );
+    }
+  }
+
+  /// Loads an existing order into booking state (tickets → voucher / pay).
+  void hydrateOrder(CarOrder order) {
+    state = state.copyWith(
+      order: order,
+      selectedQuote: order.trip ?? state.selectedQuote,
+      status: order.isConfirmed
+          ? CarBookingStatus.confirmed
+          : order.isPending
+              ? CarBookingStatus.awaitingPayment
+              : CarBookingStatus.idle,
+      clearBookingError: true,
+    );
+  }
+
+  /// Ensures a checkout URL exists for [order], calling pay when needed.
+  Future<CarOrder?> ensureCheckoutUrl(CarOrder order) async {
+    if ((order.invoiceUrl ?? '').isNotEmpty) return order;
+    final trip = order.trip;
+    if (trip == null) return order;
+    try {
+      final params = state.searchParams;
+      final request = params != null
+          ? CarDtoMapper.createRequestFromSelection(
+              quote: trip,
+              params: params,
+            )
+          : CarCreateOrderRequest(
+              tripId: trip.id,
+              rounded: order.rounded,
+              departureLatitude: order.from.latitude.toString(),
+              departureLongitude: order.from.longitude.toString(),
+              departureDate: order.departureDate ?? '',
+              destinationLatitude: order.to.latitude.toString(),
+              destinationLongitude: order.to.longitude.toString(),
+              destinationDate: order.returnDate ?? order.departureDate ?? '',
+            );
+      final paid = await _repo.payOrder(orderId: order.id, request: request);
+      state = state.copyWith(order: paid);
+      return paid;
+    } catch (_) {
+      return order;
+    }
+  }
+
+  void reset() => state = const CarBookingState();
 }
 
 final carBookingProvider =

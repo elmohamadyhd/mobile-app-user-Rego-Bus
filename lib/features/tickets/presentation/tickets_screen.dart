@@ -5,33 +5,47 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_orders_section.dart';
+import 'package:safaria/features/car/presentation/providers/car_orders_provider.dart';
+import 'package:safaria/features/car/presentation/widgets/car_orders_section.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
 import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
 import 'package:safaria/shared/widgets/transport_mode_tab_bar.dart';
 
 /// Composition root for the "My Tickets" bottom-nav tab. Owns only the hero
-/// and scroll scaffold — each transport mode contributes its own section
-/// widget (currently just [BusOrdersSection]; flight/car add their own later
-/// with no refactor here).
-class TicketsScreen extends ConsumerWidget {
+/// and scroll scaffold — each transport mode contributes its own section.
+class TicketsScreen extends ConsumerStatefulWidget {
   const TicketsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TicketsScreen> createState() => _TicketsScreenState();
+}
+
+class _TicketsScreenState extends ConsumerState<TicketsScreen> {
+  var _modeIndex = TransportModeTabBar.busTabIndex;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // `guestModeProvider` is async — `.value` is null while it resolves.
-    // Only watch the protected `busOrdersProvider` once it's definitely
-    // `false` (signed in), so a guest never triggers that fetch even
-    // transiently, just to show a count in the hero.
     final guestModeValue = ref.watch(guestModeProvider).value;
-    final count = guestModeValue == false
+    final busCount = guestModeValue == false
         ? ref.watch(busOrdersProvider).value?.length
         : null;
+    final carCount = guestModeValue == false
+        ? ref.watch(carOrdersProvider).value?.length
+        : null;
+    final count = _modeIndex == TransportModeTabBar.privateTabIndex
+        ? carCount
+        : busCount;
 
     return RefreshIndicator(
       onRefresh: guestModeValue == false
-          ? () => ref.read(busOrdersProvider.notifier).refresh()
+          ? () async {
+              await Future.wait([
+                ref.read(busOrdersProvider.notifier).refresh(),
+                ref.read(carOrdersProvider.notifier).refresh(),
+              ]);
+            }
           : () async {},
       child: ShellTabScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -60,9 +74,9 @@ class TicketsScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TransportModeTabBar(
-                  selectedIndex: TransportModeTabBar.busTabIndex,
+                  selectedIndex: _modeIndex,
                   onChanged: (i) {
-                    if (i != TransportModeTabBar.busTabIndex) {
+                    if (i == TransportModeTabBar.flightTabIndex) {
                       ScaffoldMessenger.of(context)
                         ..hideCurrentSnackBar()
                         ..showSnackBar(
@@ -71,11 +85,16 @@ class TicketsScreen extends ConsumerWidget {
                             duration: const Duration(seconds: 2),
                           ),
                         );
+                      return;
                     }
+                    setState(() => _modeIndex = i);
                   },
                 ),
                 const SizedBox(height: AppSpacing.md),
-                const BusOrdersSection(),
+                if (_modeIndex == TransportModeTabBar.privateTabIndex)
+                  const CarOrdersSection()
+                else
+                  const BusOrdersSection(),
               ],
             ),
           ),

@@ -1,7 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/car/data/car_dto_mapper.dart';
+import 'package:safaria/features/car/domain/entities/car_order.dart';
+import 'package:safaria/features/car/domain/entities/car_search_params.dart';
+import 'package:safaria/shared/models/map_place.dart';
 
+import '../fake_car_repository.dart';
 import 'car_fixtures.dart';
 
 void main() {
@@ -46,6 +50,65 @@ void main() {
           privateTripDetailsNotFoundEnvelope,
         ),
         throwsA(isA<ApiException>()),
+      );
+    });
+
+    test('maps create order envelope', () {
+      final order =
+          CarDtoMapper.orderFromEnvelope(privateOrderCreatedEnvelope);
+      expect(order.id, 39);
+      expect(order.statusKind, CarOrderStatusKind.pending);
+      expect(order.price, '1000.00');
+      expect(order.currency, 'EGP');
+      expect(order.invoiceUrl, 'https://eg.myfatoorah.com/EGY/ia/sample');
+      expect(order.canBeCancel, isTrue);
+      expect(order.trip?.company.name, 'Sky Travel');
+    });
+
+    test('builds create order body from selection', () {
+      final params = CarSearchParams(
+        from: const MapPlace(
+          label: 'A',
+          latitude: 30.03,
+          longitude: 31.26,
+        ),
+        to: const MapPlace(
+          label: 'B',
+          latitude: 31.18,
+          longitude: 29.89,
+        ),
+        rounded: false,
+        departDate: DateTime(2026, 12, 20, 22, 0),
+      );
+      final req = CarDtoMapper.createRequestFromSelection(
+        quote: FakeCarRepository.sampleQuote,
+        params: params,
+      );
+      final body = CarDtoMapper.createOrderBody(req);
+      expect(body['trip_id'], 1);
+      expect(body['rounded'], false);
+      expect(
+        (body['departure'] as Map)['date'],
+        '2026-12-20 22:00',
+      );
+      expect(
+        (body['destination'] as Map)['date'],
+        '2026-12-20 22:00',
+      );
+    });
+
+    test('orderStatusKind maps paid and cancelled', () {
+      expect(
+        CarDtoMapper.orderStatusKind('confirmed'),
+        CarOrderStatusKind.confirmed,
+      );
+      expect(
+        CarDtoMapper.orderStatusKind('cancelled'),
+        CarOrderStatusKind.cancelled,
+      );
+      expect(
+        CarDtoMapper.orderStatusKind('pending'),
+        CarOrderStatusKind.pending,
       );
     });
   });

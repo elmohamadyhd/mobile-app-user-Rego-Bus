@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/car/data/car_api.dart';
 import 'package:safaria/features/car/data/car_dto_mapper.dart';
+import 'package:safaria/features/car/domain/entities/car_create_order_request.dart';
+import 'package:safaria/features/car/domain/entities/car_order.dart';
 import 'package:safaria/features/car/domain/entities/car_search_params.dart';
 import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
 import 'package:safaria/features/car/domain/repositories/car_repository.dart';
@@ -31,6 +33,54 @@ class CarRepositoryImpl implements CarRepository {
     return _guard(() async {
       final body = await _api.getTrip(id);
       return CarDtoMapper.quoteFromDetailsEnvelope(body);
+    });
+  }
+
+  @override
+  Future<CarOrder> createOrder(CarCreateOrderRequest request) {
+    return _guard(() async {
+      final body = await _api.createOrder(
+        CarDtoMapper.createOrderBody(request),
+      );
+      return CarDtoMapper.orderFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<CarOrder> payOrder({
+    required int orderId,
+    required CarCreateOrderRequest request,
+  }) {
+    return _guard(() async {
+      final body = await _api.payOrder(
+        orderId: orderId,
+        body: CarDtoMapper.createOrderBody(request),
+      );
+      return CarDtoMapper.orderFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<CarOrder> cancelOrder(int orderId) {
+    return _guard(() async {
+      final body = await _api.cancelOrder(orderId);
+      return CarDtoMapper.orderFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<List<CarOrder>> listOrders() {
+    return _guard(() async {
+      final body = await _api.listOrders();
+      return CarDtoMapper.ordersFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<CarOrder> getOrder(int orderId) {
+    return _guard(() async {
+      final body = await _api.getOrder(orderId);
+      return CarDtoMapper.orderFromEnvelope(body);
     });
   }
 

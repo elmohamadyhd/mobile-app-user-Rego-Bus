@@ -824,5 +824,35 @@
   "cmsPageRetry": "Retry",
   "@cmsPageRetry": {
     "description": "Retry button on CMS page error state."
-  }
+  },
+
+  "carConfirmTitle": "Confirm booking",
+  "@carConfirmTitle": { "description": "App bar title on private-car confirm screen." },
+  "carConfirmPay": "Pay now",
+  "@carConfirmPay": { "description": "Primary CTA on private-car confirm to create order and pay." },
+  "carConfirmCreateError": "Couldn't create the booking. Please try again.",
+  "@carConfirmCreateError": { "description": "Error when POST /private/orders fails." },
+  "carConfirmMissingTrip": "No trip selected",
+  "@carConfirmMissingTrip": { "description": "Empty state when confirm opens without quote/params." },
+  "carVoucherTitle": "Booking confirmed",
+  "@carVoucherTitle": { "description": "Hero title on private-car voucher after successful payment." },
+  "carVoucherSubtitle": "Your private transfer is ready",
+  "@carVoucherSubtitle": { "description": "Hero subtitle on private-car voucher." },
+  "carVoucherOrderId": "Booking #{id}",
+  "@carVoucherOrderId": {
+    "description": "Order id line on private-car voucher.",
+    "placeholders": { "id": { "type": "String" } }
+  },
+  "carVoucherBackHome": "Back to home",
+  "@carVoucherBackHome": { "description": "Primary CTA leaving the private-car voucher to home." },
+  "carPaymentPendingBody": "Your booking is held. Complete payment to confirm — unpaid orders may be cancelled automatically.",
+  "@carPaymentPendingBody": { "description": "Body copy on private-car payment pending screen." },
+  "carTicketsEmptyTitle": "No private transfers yet",
+  "@carTicketsEmptyTitle": { "description": "Empty state title for private orders on tickets tab." },
+  "carTicketsEmptyBody": "Your private car bookings will show up here.",
+  "@carTicketsEmptyBody": { "description": "Empty state body for private orders on tickets tab." },
+  "carTicketActionVoucher": "View booking",
+  "@carTicketActionVoucher": { "description": "Open voucher action on a confirmed private order card." },
+  "carTicketSectionTitle": "Private transfers",
+  "@carTicketSectionTitle": { "description": "Optional section heading for private orders list." }
 }

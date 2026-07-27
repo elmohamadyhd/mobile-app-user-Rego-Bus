@@ -383,5 +383,19 @@
   "cmsPagePrivacyTitle": "سياسة الخصوصية",
   "cmsPageGenericTitle": "صفحة",
   "cmsPageLoadError": "تعذر تحميل هذه الصفحة. حاول مرة أخرى.",
-  "cmsPageRetry": "إعادة المحاولة"
+  "cmsPageRetry": "إعادة المحاولة",
+
+  "carConfirmTitle": "تأكيد الحجز",
+  "carConfirmPay": "ادفع الآن",
+  "carConfirmCreateError": "تعذّر إنشاء الحجز. حاول مرة أخرى.",
+  "carConfirmMissingTrip": "لم يتم اختيار رحلة",
+  "carVoucherTitle": "تم تأكيد الحجز",
+  "carVoucherSubtitle": "رحلة النقل الخاص جاهزة",
+  "carVoucherOrderId": "حجز #{id}",
+  "carVoucherBackHome": "العودة للرئيسية",
+  "carPaymentPendingBody": "حجزك معلّق. أكمل الدفع للتأكيد — قد يُلغى الحجز غير المدفوع تلقائياً.",
+  "carTicketsEmptyTitle": "لا توجد رحلات خاصة بعد",
+  "carTicketsEmptyBody": "ستظهر حجوزات السيارة الخاصة هنا.",
+  "carTicketActionVoucher": "عرض الحجز",
+  "carTicketSectionTitle": "النقل الخاص"
 }

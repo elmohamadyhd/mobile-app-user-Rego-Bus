@@ -121,3 +121,74 @@ const privateTripDetailsNotFoundEnvelope = {
   'errors': <String, dynamic>{},
   'data': <String, dynamic>{},
 };
+
+/// Trimmed from docs/wadeny-apis.md → Private → Orders (200 created).
+const privateOrderCreatedEnvelope = {
+  'status': 200,
+  'message': 'Order created',
+  'errors': <String, dynamic>{},
+  'data': {
+    'id': 39,
+    'status': 'pending',
+    'price': '1000.00',
+    'currency': 'EGP',
+    'rounded': false,
+    'departure_date': '2026-12-20',
+    'return_date': null,
+    'from': {'latitude': 30.0314696, 'longitude': 31.2612288},
+    'to': {
+      'latitude': 31.182972882989525,
+      'longitude': 29.894801258559188,
+    },
+    'trip': {
+      'id': 1,
+      'rounded': true,
+      'go_price': 1000,
+      'round_price': 1500,
+      'currency': 'EGP',
+      'status': true,
+      'company': {
+        'id': 1,
+        'name': 'Sky Travel',
+        'refundability': true,
+        'refund_policy': 'Sky Travel',
+        'logo_url':
+            'https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg',
+      },
+      'from_location': {
+        'id': 1,
+        'name': 'Cairo',
+        'latitude': '30.0441028',
+        'longitude': '31.2408498',
+      },
+      'to_location': {
+        'id': 2,
+        'name': 'Alexandria',
+        'latitude': '31.2452475',
+        'longitude': '29.9892346',
+      },
+      'vehicle': {
+        'id': 1,
+        'name': 'Hundai',
+        'category_id': 1,
+        'category_name': 'Sedan',
+        'seats_number': 5,
+        'model': 'Matrix',
+        'year': 2010,
+        'big_bags_count': 4,
+        'small_bags_count': 1,
+        'gear_type': 'automatic',
+      },
+    },
+    'transaction': {
+      'id': 102,
+      'gateway': 'myfatoorah',
+      'status': 'pending',
+      'paid_at': null,
+      'invoice_url': 'https://eg.myfatoorah.com/EGY/ia/sample',
+      'created_at': '2026-07-27T21:39:17+03:00',
+    },
+    'can_be_cancel': true,
+    'created_at': '2026-07-27T21:39:17+03:00',
+  },
+};

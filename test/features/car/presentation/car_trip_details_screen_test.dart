@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/car/domain/entities/car_place.dart';
 import 'package:safaria/features/car/domain/entities/car_search_params.dart';
+import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/car_trip_details_screen.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
@@ -116,15 +118,52 @@ void main() {
     expect(find.text(l10n.carTripDetailsNotFound), findsOneWidget);
   });
 
-  testWidgets('continue shows booking coming soon when signed in',
-      (tester) async {
+  testWidgets('continue navigates to confirm when signed in', (tester) async {
     final repo = FakeCarRepository();
-    await pumpDetails(tester, repo: repo, isGuest: false);
+    final container = ProviderContainer(
+      overrides: [
+        carRepositoryProvider.overrideWithValue(repo),
+        guestModeProvider.overrideWith(() => _FakeGuestController(false)),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await container.read(carBookingProvider.notifier).searchQuotes(params);
+    container
+        .read(carBookingProvider.notifier)
+        .selectQuote(FakeCarRepository.sampleQuote);
+
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const CarTripDetailsScreen(),
+        ),
+        GoRoute(
+          path: CarRoutes.confirm,
+          builder: (context, state) =>
+              const Scaffold(body: Text('confirm-screen')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          locale: const Locale('ar'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byType(PrimaryButton));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    final l10n = lookupAppLocalizations(const Locale('ar'));
-    expect(find.text(l10n.carBookingComingSoon), findsOneWidget);
+    expect(find.text('confirm-screen'), findsOneWidget);
   });
 }
