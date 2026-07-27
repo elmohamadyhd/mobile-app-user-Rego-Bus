@@ -91,9 +91,9 @@ class _CarTierResultsScreenState extends ConsumerState<CarTierResultsScreen> {
   String? _subtitle(BuildContext context, CarSearchParams? params) {
     if (params == null) return null;
     final locale = Localizations.localeOf(context).toString();
-    final depart = formatSearchDateCell(params.departDate, locale);
+    final depart = formatSearchDateTimeCell(params.departDate, locale);
     if (params.rounded && params.returnDate != null) {
-      final ret = formatSearchDateCell(params.returnDate!, locale);
+      final ret = formatSearchDateTimeCell(params.returnDate!, locale);
       return '$depart · $ret';
     }
     return depart;

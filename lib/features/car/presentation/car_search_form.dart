@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_icons.dart';
@@ -40,6 +41,8 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
   TripType _tripType = TripType.oneWay;
   DateTime _travelDate = dateOnly(DateTime.now());
   DateTime _returnDate = dateOnly(DateTime.now().add(const Duration(days: 7)));
+  late TimeOfDay _departTime = defaultDepartTimeForDate(_travelDate);
+  late TimeOfDay _returnTime = defaultDepartTimeForDate(_returnDate);
   bool _searching = false;
 
   static const _maxBookingDays = 90;
@@ -64,11 +67,12 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
       _tripType = type;
       if (type == TripType.roundTrip && _returnDate.isBefore(_travelDate)) {
         _returnDate = _travelDate.add(const Duration(days: 7));
+        _returnTime = defaultDepartTimeForDate(_returnDate);
       }
     });
   }
 
-  Future<void> _pickDepart() async {
+  Future<void> _pickDepartDate() async {
     final today = dateOnly(DateTime.now());
     final picked = await showDatePicker(
       context: context,
@@ -79,14 +83,16 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
     if (picked == null) return;
     setState(() {
       _travelDate = dateOnly(picked);
+      _departTime = bumpTimeIfPast(_travelDate, _departTime);
       if (_tripType == TripType.roundTrip &&
           _returnDate.isBefore(_travelDate)) {
         _returnDate = _travelDate;
+        _returnTime = defaultDepartTimeForDate(_returnDate);
       }
     });
   }
 
-  Future<void> _pickReturn() async {
+  Future<void> _pickReturnDate() async {
     final picked = await showDatePicker(
       context: context,
       initialDate:
@@ -94,7 +100,33 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
       firstDate: _travelDate,
       lastDate: _travelDate.add(const Duration(days: _maxBookingDays)),
     );
-    if (picked != null) setState(() => _returnDate = dateOnly(picked));
+    if (picked == null) return;
+    setState(() {
+      _returnDate = dateOnly(picked);
+      _returnTime = bumpTimeIfPast(_returnDate, _returnTime);
+    });
+  }
+
+  Future<void> _pickDepartTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _departTime,
+    );
+    if (picked == null) return;
+    setState(() {
+      _departTime = bumpTimeIfPast(_travelDate, picked);
+    });
+  }
+
+  Future<void> _pickReturnTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _returnTime,
+    );
+    if (picked == null) return;
+    setState(() {
+      _returnTime = bumpTimeIfPast(_returnDate, picked);
+    });
   }
 
   Future<void> _onSearch() async {
@@ -122,13 +154,43 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
       return;
     }
 
+    final departDateTime = combineDateAndTime(_travelDate, _departTime);
+    final now = DateTime.now();
+    if (departDateTime.isBefore(now)) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(l10n.carSearchDepartInPast),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      return;
+    }
+
     final rounded = _tripType == TripType.roundTrip;
+    DateTime? returnDateTime;
+    if (rounded) {
+      returnDateTime = combineDateAndTime(_returnDate, _returnTime);
+      if (!returnDateTime.isAfter(departDateTime)) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(l10n.carSearchReturnBeforeDepart),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        return;
+      }
+    }
+
     final params = CarSearchParams(
       from: _from!,
       to: _to!,
       rounded: rounded,
-      departDate: _travelDate,
-      returnDate: rounded ? _returnDate : null,
+      departDate: departDateTime,
+      returnDate: returnDateTime,
     );
 
     setState(() => _searching = true);
@@ -149,7 +211,10 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final localeName = Localizations.localeOf(context).toString();
     final isRoundTrip = _tripType == TripType.roundTrip;
+    final departDateTime = combineDateAndTime(_travelDate, _departTime);
+    final returnDateTime = combineDateAndTime(_returnDate, _returnTime);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -218,11 +283,14 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Expanded(
-                        child: _DateField(
+                        child: _DateTimeField(
                           label: l10n.homeDepart,
-                          date: _travelDate,
+                          dateTime: departDateTime,
+                          timeLabel: l10n.carSearchTime,
+                          localeName: localeName,
                           compact: true,
-                          onTap: _pickDepart,
+                          onPickDate: _pickDepartDate,
+                          onPickTime: _pickDepartTime,
                         ),
                       ),
                       const VerticalDivider(
@@ -230,20 +298,26 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
                         width: 1,
                       ),
                       Expanded(
-                        child: _DateField(
+                        child: _DateTimeField(
                           label: l10n.homeReturn,
-                          date: _returnDate,
+                          dateTime: returnDateTime,
+                          timeLabel: l10n.carSearchTime,
+                          localeName: localeName,
                           compact: true,
-                          onTap: _pickReturn,
+                          onPickDate: _pickReturnDate,
+                          onPickTime: _pickReturnTime,
                         ),
                       ),
                     ],
                   ),
                 )
-              : _DateField(
+              : _DateTimeField(
                   label: l10n.homeDepart,
-                  date: _travelDate,
-                  onTap: _pickDepart,
+                  dateTime: departDateTime,
+                  timeLabel: l10n.carSearchTime,
+                  localeName: localeName,
+                  onPickDate: _pickDepartDate,
+                  onPickTime: _pickDepartTime,
                 ),
         ),
         const SizedBox(height: 14),
@@ -324,74 +398,117 @@ class _TripTypeChip extends StatelessWidget {
   }
 }
 
-class _DateField extends StatelessWidget {
-  const _DateField({
+class _DateTimeField extends StatelessWidget {
+  const _DateTimeField({
     required this.label,
-    required this.date,
-    required this.onTap,
+    required this.dateTime,
+    required this.timeLabel,
+    required this.localeName,
+    required this.onPickDate,
+    required this.onPickTime,
     this.compact = false,
   });
 
   final String label;
-  final DateTime date;
-  final VoidCallback onTap;
+  final DateTime dateTime;
+  final String timeLabel;
+  final String localeName;
+  final VoidCallback onPickDate;
+  final VoidCallback onPickTime;
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
-    final localeName = Localizations.localeOf(context).toString();
-    final value = formatSearchDateCell(date, localeName);
+    final dateValue = formatSearchDateCell(dateTime, localeName);
+    final timeValue = DateFormat.jm(localeName).format(dateTime);
 
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: const BoxDecoration(
+              color: AppColors.bgBase,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              AppIcons.calendar,
+              color: AppColors.textMuted,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: AppTypography.overline.copyWith(
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                _TappableValue(
+                  value: dateValue,
+                  onTap: onPickDate,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  timeLabel,
+                  style: AppTypography.overline.copyWith(
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                _TappableValue(
+                  value: timeValue,
+                  onTap: onPickTime,
+                ),
+              ],
+            ),
+          ),
+          if (!compact)
+            const Icon(
+              AppIcons.chevronDown,
+              color: AppColors.textMuted,
+              size: 20,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TappableValue extends StatelessWidget {
+  const _TappableValue({
+    required this.value,
+    required this.onTap,
+  });
+
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
-          child: Row(
-            children: [
-              Container(
-                width: 34,
-                height: 34,
-                decoration: const BoxDecoration(
-                  color: AppColors.bgBase,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  AppIcons.calendar,
-                  color: AppColors.textMuted,
-                  size: 18,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: AppTypography.overline.copyWith(
-                        color: AppColors.textMuted,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      value,
-                      style: AppTypography.title.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (!compact)
-                const Icon(
-                  AppIcons.chevronDown,
-                  color: AppColors.textMuted,
-                  size: 20,
-                ),
-            ],
+          padding: const EdgeInsetsDirectional.only(end: AppSpacing.xs),
+          child: Text(
+            value,
+            style: AppTypography.title.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
       ),

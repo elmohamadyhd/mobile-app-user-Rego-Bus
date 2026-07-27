@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 
+import 'package:safaria/features/car/data/car_dto_mapper.dart';
+
 class CarApi {
   CarApi(this._dio);
 
@@ -11,16 +13,23 @@ class CarApi {
     required double toLatitude,
     required double toLongitude,
     required bool rounded,
+    required DateTime departDate,
+    DateTime? returnDate,
   }) async {
+    final queryParameters = <String, dynamic>{
+      'from_latitude': fromLatitude,
+      'from_longitude': fromLongitude,
+      'to_latitude': toLatitude,
+      'to_longitude': toLongitude,
+      'rounded': rounded,
+      'date': CarDtoMapper.formatOrderDate(departDate),
+    };
+    if (rounded && returnDate != null) {
+      queryParameters['return_date'] = CarDtoMapper.formatOrderDate(returnDate);
+    }
     final res = await _dio.get(
       '/private/search',
-      queryParameters: {
-        'from_latitude': fromLatitude,
-        'from_longitude': fromLongitude,
-        'to_latitude': toLatitude,
-        'to_longitude': toLongitude,
-        'rounded': rounded,
-      },
+      queryParameters: queryParameters,
     );
     return res.data;
   }

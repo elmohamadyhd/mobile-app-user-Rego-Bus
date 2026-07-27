@@ -37,7 +37,7 @@ void main() {
     from: cairo,
     to: alex,
     rounded: false,
-    departDate: DateTime(2026, 7, 31),
+    departDate: DateTime(2026, 7, 31, 10, 30),
   );
 
   Future<ProviderContainer> pumpDetails(

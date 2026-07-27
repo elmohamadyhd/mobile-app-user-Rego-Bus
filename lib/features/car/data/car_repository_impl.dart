@@ -23,6 +23,8 @@ class CarRepositoryImpl implements CarRepository {
         toLatitude: params.to.latitude,
         toLongitude: params.to.longitude,
         rounded: params.rounded,
+        departDate: params.departDate,
+        returnDate: params.returnDate,
       );
       return CarDtoMapper.quotesFromEnvelope(body);
     });

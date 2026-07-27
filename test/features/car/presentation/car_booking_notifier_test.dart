@@ -24,7 +24,8 @@ void main() {
         from: cairo,
         to: alex,
         rounded: rounded,
-        departDate: DateTime(2026, 12, 20),
+        departDate: DateTime(2026, 12, 20, 22, 0),
+        returnDate: rounded ? DateTime(2026, 12, 21, 1, 0) : null,
       );
 
   ProviderContainer makeContainer(FakeCarRepository repo) {

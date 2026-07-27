@@ -67,6 +67,7 @@ void main() {
   });
 
   testWidgets('search proceeds when pickup and drop-off differ', (tester) async {
+    final repo = FakeCarRepository();
     final router = GoRouter(
       routes: [
         GoRoute(
@@ -99,7 +100,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          carRepositoryProvider.overrideWithValue(FakeCarRepository()),
+          carRepositoryProvider.overrideWithValue(repo),
           placesClientProvider.overrideWithValue(_FakePlacesClient()),
         ],
         child: MaterialApp.router(
@@ -118,5 +119,7 @@ void main() {
 
     expect(find.text('Pickup and drop-off must be different'), findsNothing);
     expect(find.text('Select pickup and drop-off'), findsNothing);
+    expect(repo.lastSearchParams, isNotNull);
+    expect(repo.lastSearchParams!.departDate.hour, isNot(0));
   });
 }
