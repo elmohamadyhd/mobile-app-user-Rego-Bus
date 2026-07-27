@@ -27,7 +27,7 @@ grep -rl "app_skeleton" . --include="*.dart" --include="*.yaml" | xargs sed -i '
 
 # 3. Set up secrets
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env with your API keys (including GOOGLE_MAPS_API_KEY for Places and Android map tiles)
 
 # 4. Install deps + run codegen
 flutter pub get

@@ -86,6 +86,38 @@ void main() {
 
       expect(badgeTop, greaterThanOrEqualTo(appBarTop));
     });
+
+    testWidgets('does not overflow with long route title and subtitle',
+        (tester) async {
+      // Reproduce the phone width from the production overflow report.
+      tester.view.physicalSize = const Size(411, 812);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      const longTitle = 'WJH3+W2، الظهير الصحراوى لمحافظة ال، محافظة القاهرة‬ '
+          '4802001، مصر → طريق الجيش، سان ستفانو، El Raml 2، '
+          'محافظة الإسكندرية 5452054، مصر';
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          locale: Locale('ar'),
+          home: Scaffold(
+            appBar: BookingAppBar(
+              title: longTitle,
+              subtitle: '31 يوليو',
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+
+      final titleText = tester.widget<Text>(find.text(longTitle));
+      expect(titleText.maxLines, 1);
+      expect(titleText.overflow, TextOverflow.ellipsis);
+    });
   });
 
   group('TripFilterButton', () {

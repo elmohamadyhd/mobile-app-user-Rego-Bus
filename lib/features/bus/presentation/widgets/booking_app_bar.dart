@@ -23,6 +23,11 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(subtitle != null ? 68.0 : 56.0);
 
+  // Leave room for the leading back button and a trailing action so the
+  // centered title never paints under either control.
+  static const double _titleHorizontalInset =
+      kMinInteractiveDimension + AppSpacing.xs;
+
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
@@ -35,30 +40,42 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
             clipBehavior: Clip.none,
             alignment: Alignment.center,
             children: [
-              subtitle != null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.title
-                              .copyWith(fontWeight: FontWeight.w700),
-                        ),
-                        Text(
-                          subtitle!,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.caption
-                              .copyWith(color: AppColors.textMuted),
-                        ),
-                      ],
-                    )
-                  : Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.title
-                          .copyWith(fontWeight: FontWeight.w700),
-                    ),
+              Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: _titleHorizontalInset,
+                ),
+                child: subtitle != null
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.title
+                                .copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          Text(
+                            subtitle!,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.caption
+                                .copyWith(color: AppColors.textMuted),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.title
+                            .copyWith(fontWeight: FontWeight.w700),
+                      ),
+              ),
               Padding(
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: AppSpacing.xs,
