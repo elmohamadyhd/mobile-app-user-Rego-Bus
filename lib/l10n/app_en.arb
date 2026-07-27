@@ -714,6 +714,10 @@
   },
   "carBookingComingSoon": "Booking coming soon",
   "@carBookingComingSoon": { "description": "Snackbar when signed-in user taps Continue before booking ships." },
+  "carDetailsComingSoon": "Details coming soon",
+  "@carDetailsComingSoon": {
+    "description": "Snackbar when user taps a private-car quote card before the details screen ships."
+  },
   "carSearchSelectBothPlaces": "Select pickup and drop-off",
   "@carSearchSelectBothPlaces": { "description": "Validation when private search submitted without both places." },
   "carSearchSamePlace": "Pickup and drop-off must be different",
