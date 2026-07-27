@@ -718,6 +718,22 @@
   "@carDetailsComingSoon": {
     "description": "Snackbar when user taps a private-car quote card before the details screen ships."
   },
+  "carTripDetailsTitle": "Trip details",
+  "@carTripDetailsTitle": {
+    "description": "App bar title on private-car trip details screen."
+  },
+  "carTripDetailsNotFound": "This trip is no longer available",
+  "@carTripDetailsNotFound": {
+    "description": "Hard error when GET /private/trips/:id returns 404."
+  },
+  "carTripDetailsRefreshFailed": "Couldn't refresh trip details. Showing search results.",
+  "@carTripDetailsRefreshFailed": {
+    "description": "Soft banner when signed-in details refresh fails for a non-404 reason."
+  },
+  "carTripDetailsMissing": "No trip selected",
+  "@carTripDetailsMissing": {
+    "description": "Empty state when details opens without a selectedQuote."
+  },
   "carSearchSelectBothPlaces": "Select pickup and drop-off",
   "@carSearchSelectBothPlaces": { "description": "Validation when private search submitted without both places." },
   "carSearchSamePlace": "Pickup and drop-off must be different",
