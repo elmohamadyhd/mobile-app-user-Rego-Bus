@@ -78,4 +78,76 @@ void main() {
       quote.id,
     );
   });
+
+  test('loadTripDetails replaces selectedQuote on success', () async {
+    final repo =
+        FakeCarRepository(tripResult: FakeCarRepository.refreshedQuote);
+    final container = makeContainer(repo);
+    addTearDown(container.dispose);
+
+    final notifier = container.read(carBookingProvider.notifier);
+    notifier.selectQuote(FakeCarRepository.sampleQuote);
+    await notifier.loadTripDetails(1);
+
+    final state = container.read(carBookingProvider);
+    expect(repo.lastGetTripId, 1);
+    expect(state.selectedQuote?.currency, 'EGP');
+    expect(state.selectedQuote?.goPrice, 1000);
+    expect(state.isLoadingTripDetails, isFalse);
+    expect(state.tripDetailsHardError, isNull);
+    expect(state.tripDetailsSoftError, isNull);
+  });
+
+  test('loadTripDetails sets hard error on 404 and keeps quote', () async {
+    final repo = FakeCarRepository()
+      ..getTripShouldThrow = true
+      ..getTripException =
+          const ApiException("This record can't be found", statusCode: 404);
+    final container = makeContainer(repo);
+    addTearDown(container.dispose);
+
+    final notifier = container.read(carBookingProvider.notifier);
+    notifier.selectQuote(FakeCarRepository.sampleQuote);
+    await notifier.loadTripDetails(1);
+
+    final state = container.read(carBookingProvider);
+    expect(state.selectedQuote?.id, FakeCarRepository.sampleQuote.id);
+    expect(state.tripDetailsHardError, isNotNull);
+    expect(state.tripDetailsSoftError, isNull);
+    expect(state.isLoadingTripDetails, isFalse);
+  });
+
+  test('loadTripDetails sets soft error on non-404 and keeps quote', () async {
+    final repo = FakeCarRepository()
+      ..getTripShouldThrow = true
+      ..getTripException = const ApiException('Network error', statusCode: 500);
+    final container = makeContainer(repo);
+    addTearDown(container.dispose);
+
+    final notifier = container.read(carBookingProvider.notifier);
+    notifier.selectQuote(FakeCarRepository.sampleQuote);
+    await notifier.loadTripDetails(1);
+
+    final state = container.read(carBookingProvider);
+    expect(state.selectedQuote?.id, FakeCarRepository.sampleQuote.id);
+    expect(state.tripDetailsSoftError, isNotNull);
+    expect(state.tripDetailsHardError, isNull);
+  });
+
+  test('clearTripDetailsErrors clears hard and soft flags', () async {
+    final repo = FakeCarRepository()
+      ..getTripShouldThrow = true
+      ..getTripException = const ApiException('Network error', statusCode: 500);
+    final container = makeContainer(repo);
+    addTearDown(container.dispose);
+
+    final notifier = container.read(carBookingProvider.notifier);
+    notifier.selectQuote(FakeCarRepository.sampleQuote);
+    await notifier.loadTripDetails(1);
+    notifier.clearTripDetailsErrors();
+
+    final state = container.read(carBookingProvider);
+    expect(state.tripDetailsSoftError, isNull);
+    expect(state.tripDetailsHardError, isNull);
+  });
 }

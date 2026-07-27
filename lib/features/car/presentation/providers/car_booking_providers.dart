@@ -23,6 +23,9 @@ class CarBookingState {
     this.isLoadingQuotes = false,
     this.quotesError,
     this.needsAuthRetry = false,
+    this.isLoadingTripDetails = false,
+    this.tripDetailsHardError,
+    this.tripDetailsSoftError,
   });
 
   final CarSearchParams? searchParams;
@@ -31,6 +34,9 @@ class CarBookingState {
   final bool isLoadingQuotes;
   final String? quotesError;
   final bool needsAuthRetry;
+  final bool isLoadingTripDetails;
+  final String? tripDetailsHardError;
+  final String? tripDetailsSoftError;
 
   CarBookingState copyWith({
     CarSearchParams? searchParams,
@@ -39,8 +45,13 @@ class CarBookingState {
     bool? isLoadingQuotes,
     String? quotesError,
     bool? needsAuthRetry,
+    bool? isLoadingTripDetails,
+    String? tripDetailsHardError,
+    String? tripDetailsSoftError,
     bool clearQuotesError = false,
     bool clearSelectedQuote = false,
+    bool clearTripDetailsHardError = false,
+    bool clearTripDetailsSoftError = false,
   }) {
     return CarBookingState(
       searchParams: searchParams ?? this.searchParams,
@@ -50,6 +61,13 @@ class CarBookingState {
       isLoadingQuotes: isLoadingQuotes ?? this.isLoadingQuotes,
       quotesError: clearQuotesError ? null : (quotesError ?? this.quotesError),
       needsAuthRetry: needsAuthRetry ?? this.needsAuthRetry,
+      isLoadingTripDetails: isLoadingTripDetails ?? this.isLoadingTripDetails,
+      tripDetailsHardError: clearTripDetailsHardError
+          ? null
+          : (tripDetailsHardError ?? this.tripDetailsHardError),
+      tripDetailsSoftError: clearTripDetailsSoftError
+          ? null
+          : (tripDetailsSoftError ?? this.tripDetailsSoftError),
     );
   }
 }
@@ -93,6 +111,45 @@ class CarBookingNotifier extends Notifier<CarBookingState> {
 
   void selectQuote(CarTripQuote quote) {
     state = state.copyWith(selectedQuote: quote);
+  }
+
+  Future<void> loadTripDetails(int id) async {
+    state = state.copyWith(
+      isLoadingTripDetails: true,
+      clearTripDetailsHardError: true,
+      clearTripDetailsSoftError: true,
+    );
+    try {
+      final quote = await _repo.getTrip(id);
+      state = state.copyWith(
+        isLoadingTripDetails: false,
+        selectedQuote: quote,
+      );
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) {
+        state = state.copyWith(
+          isLoadingTripDetails: false,
+          tripDetailsHardError: e.message,
+        );
+      } else {
+        state = state.copyWith(
+          isLoadingTripDetails: false,
+          tripDetailsSoftError: e.message,
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoadingTripDetails: false,
+        tripDetailsSoftError: e.toString(),
+      );
+    }
+  }
+
+  void clearTripDetailsErrors() {
+    state = state.copyWith(
+      clearTripDetailsHardError: true,
+      clearTripDetailsSoftError: true,
+    );
   }
 
   void clearAuthRetry() {
