@@ -30,3 +30,9 @@ final carOrdersProvider =
     AsyncNotifierProvider<CarOrdersNotifier, List<CarOrder>>(
   CarOrdersNotifier.new,
 );
+
+/// Freshness fetch for the order detail sheet — seeded from the list card.
+final carOrderDetailProvider =
+    FutureProvider.autoDispose.family<CarOrder, int>((ref, orderId) {
+  return ref.read(carRepositoryProvider).getOrder(orderId);
+});

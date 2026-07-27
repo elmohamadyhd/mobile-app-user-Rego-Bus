@@ -61,12 +61,14 @@ class CarOrderCard extends StatelessWidget {
     required this.onPay,
     required this.onOpenVoucher,
     required this.onCancel,
+    this.onTap,
   });
 
   final CarOrder order;
   final VoidCallback onPay;
   final VoidCallback onOpenVoucher;
   final VoidCallback onCancel;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +81,43 @@ class CarOrderCard extends StatelessWidget {
     final showPay = order.statusKind == CarOrderStatusKind.pending;
     final showVoucher = order.statusKind == CarOrderStatusKind.confirmed;
 
+    final body = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                company.isEmpty ? l10n.carTicketSectionTitle : company,
+                style: AppTypography.title.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            CarOrderStatusBadge(statusKind: order.statusKind),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(routeLabel, style: AppTypography.body),
+        if (order.departureDate != null) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            order.departureDate!,
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          '${order.currency} ${order.price}',
+          style: AppTypography.title.copyWith(color: AppColors.primary),
+        ),
+      ],
+    );
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
-      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(AppRadius.card),
@@ -90,59 +126,55 @@ class CarOrderCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  company.isEmpty ? l10n.carTicketSectionTitle : company,
-                  style: AppTypography.title.copyWith(
-                    fontWeight: FontWeight.w700,
+          Material(
+            color: AppColors.bgCard,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppRadius.card),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: body,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (showPay)
+                  PrimaryButton(
+                    label: l10n.ticketActionPay,
+                    compact: true,
+                    onPressed: onPay,
                   ),
-                ),
-              ),
-              CarOrderStatusBadge(statusKind: order.statusKind),
-            ],
+                if (showVoucher) ...[
+                  if (showPay) const SizedBox(height: AppSpacing.sm),
+                  PrimaryButton(
+                    label: l10n.carTicketActionVoucher,
+                    compact: true,
+                    onPressed: onOpenVoucher,
+                  ),
+                ],
+                if (order.canBeCancel) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  PrimaryButton(
+                    label: l10n.ticketCancelConfirm,
+                    compact: true,
+                    variant: PrimaryButtonVariant.ghost,
+                    onPressed: onCancel,
+                  ),
+                ],
+              ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(routeLabel, style: AppTypography.body),
-          if (order.departureDate != null) ...[
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              order.departureDate!,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            '${order.currency} ${order.price}',
-            style: AppTypography.title.copyWith(color: AppColors.primary),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (showPay)
-            PrimaryButton(
-              label: l10n.ticketActionPay,
-              compact: true,
-              onPressed: onPay,
-            ),
-          if (showVoucher) ...[
-            if (showPay) const SizedBox(height: AppSpacing.sm),
-            PrimaryButton(
-              label: l10n.carTicketActionVoucher,
-              compact: true,
-              onPressed: onOpenVoucher,
-            ),
-          ],
-          if (order.canBeCancel) ...[
-            const SizedBox(height: AppSpacing.sm),
-            PrimaryButton(
-              label: l10n.ticketCancelConfirm,
-              compact: true,
-              variant: PrimaryButtonVariant.ghost,
-              onPressed: onCancel,
-            ),
-          ],
         ],
       ),
     );

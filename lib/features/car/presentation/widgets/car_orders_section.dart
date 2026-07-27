@@ -18,6 +18,7 @@ import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/features/car/presentation/providers/car_orders_provider.dart';
 import 'package:safaria/features/car/presentation/widgets/car_order_card.dart';
+import 'package:safaria/features/car/presentation/widgets/car_order_detail_sheet.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
@@ -88,7 +89,8 @@ class _GuestSignInCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Icon(AppIcons.forward, size: 20, color: AppColors.textMuted),
+                const Icon(AppIcons.forward,
+                    size: 20, color: AppColors.textMuted),
               ],
             ),
           ),
@@ -180,7 +182,8 @@ class _OrdersList extends ConsumerWidget {
 
   final List<CarOrder> orders;
 
-  Future<void> _cancel(BuildContext context, WidgetRef ref, CarOrder order) async {
+  Future<void> _cancel(
+      BuildContext context, WidgetRef ref, CarOrder order) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -242,6 +245,7 @@ class _OrdersList extends ConsumerWidget {
           CarOrderCard(
             key: ValueKey(order.id),
             order: order,
+            onTap: () => showCarOrderDetailSheet(context, order),
             onPay: () => unawaited(_pay(context, ref, order)),
             onOpenVoucher: () => _openVoucher(context, ref, order),
             onCancel: () => unawaited(_cancel(context, ref, order)),

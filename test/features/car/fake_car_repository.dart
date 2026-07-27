@@ -120,6 +120,8 @@ class FakeCarRepository implements CarRepository {
     trip: sampleQuote,
     invoiceUrl: 'https://eg.myfatoorah.com/EGY/ia/sample',
     transactionStatus: 'pending',
+    paymentGateway: 'myfatoorah',
+    paymentInvoiceId: '8213800',
     canBeCancel: true,
   );
 
@@ -139,6 +141,8 @@ class FakeCarRepository implements CarRepository {
     trip: sampleQuote,
     invoiceUrl: 'https://eg.myfatoorah.com/EGY/ia/sample',
     transactionStatus: 'paid',
+    paymentGateway: 'myfatoorah',
+    paymentInvoiceId: '8213800',
     canBeCancel: false,
   );
 

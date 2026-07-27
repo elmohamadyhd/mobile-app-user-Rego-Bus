@@ -400,5 +400,18 @@
   "carTicketsEmptyTitle": "لا توجد رحلات خاصة بعد",
   "carTicketsEmptyBody": "ستظهر حجوزات السيارة الخاصة هنا.",
   "carTicketActionVoucher": "عرض الحجز",
-  "carTicketSectionTitle": "النقل الخاص"
+  "carTicketSectionTitle": "النقل الخاص",
+  "carOrderDetailVehicleSection": "المركبة",
+  "carOrderDetailTripSection": "الرحلة",
+  "carOrderDetailDeparture": "المغادرة",
+  "carOrderDetailReturn": "العودة",
+  "carOrderDetailTripType": "نوع الرحلة",
+  "carOrderDetailOneWay": "اتجاه واحد",
+  "carOrderDetailRoundTrip": "ذهاب وعودة",
+  "carOrderDetailVehicle": "المركبة",
+  "carOrderDetailCategory": "الفئة",
+  "carOrderDetailSeats": "المقاعد",
+  "carOrderDetailBags": "الأمتعة",
+  "carOrderDetailGear": "ناقل الحركة",
+  "carOrderDetailOrderId": "رقم الطلب"
 }

@@ -1,4 +1,4 @@
-import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/core/utils/map_location.dart';
 
 /// Max intermediate waypoints per Google Maps URLs spec.
 const int kGoogleMapsMaxWaypoints = 9;
@@ -18,7 +18,7 @@ final class GoogleMapsRouteResult {
 
 /// Builds a Google Maps directions URL through every [stops] entry in order.
 GoogleMapsRouteResult buildGoogleMapsDirectionsUrl({
-  required List<BusStop> stops,
+  required List<MapLocation> stops,
 }) {
   if (stops.isEmpty) {
     return GoogleMapsRouteResult(
@@ -27,7 +27,7 @@ GoogleMapsRouteResult buildGoogleMapsDirectionsUrl({
   }
 
   if (stops.length == 1) {
-    final encoded = _encodeStop(stops.first);
+    final encoded = _encodeLocation(stops.first);
     return GoogleMapsRouteResult(
       uri: Uri(
         scheme: 'https',
@@ -56,12 +56,12 @@ GoogleMapsRouteResult buildGoogleMapsDirectionsUrl({
 
   final params = <String, String>{
     'api': '1',
-    'origin': _encodeStop(origin),
-    'destination': _encodeStop(destination),
+    'origin': _encodeLocation(origin),
+    'destination': _encodeLocation(destination),
     'travelmode': 'driving',
   };
   if (waypoints.isNotEmpty) {
-    params['waypoints'] = waypoints.map(_encodeStop).join('|');
+    params['waypoints'] = waypoints.map(_encodeLocation).join('|');
   }
 
   return GoogleMapsRouteResult(
@@ -75,24 +75,27 @@ GoogleMapsRouteResult buildGoogleMapsDirectionsUrl({
   );
 }
 
-/// Builds a Google Maps search URL that pins a single [stop] on the map.
-Uri buildGoogleMapsSearchUrl(BusStop stop) {
+/// Builds a Google Maps search URL that pins a single [location] on the map.
+Uri buildGoogleMapsSearchUrl(MapLocation location) {
   return Uri(
     scheme: 'https',
     host: 'www.google.com',
     path: '/maps/search/',
     queryParameters: {
       'api': '1',
-      'query': _encodeStop(stop),
+      'query': _encodeLocation(location),
     },
   );
 }
 
-String _encodeStop(BusStop stop) {
-  final lat = stop.latitude;
-  final lng = stop.longitude;
+String _encodeLocation(MapLocation location) {
+  final lat = location.latitude;
+  final lng = location.longitude;
   if (lat != null && lng != null) {
     return '$lat,$lng';
   }
-  return '${stop.name}, ${stop.cityName}';
+  if (location.cityName.trim().isEmpty) {
+    return location.name;
+  }
+  return '${location.name}, ${location.cityName}';
 }

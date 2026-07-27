@@ -1,17 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safaria/core/utils/google_maps_url.dart';
-import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/core/utils/map_location.dart';
 
-BusStop _stop({
+MapLocation _loc({
   required String name,
-  required String cityName,
+  String cityName = '',
   double? latitude,
   double? longitude,
 }) {
-  return BusStop(
-    locationId: '1',
+  return MapLocation(
     name: name,
-    cityId: 1,
     cityName: cityName,
     latitude: latitude,
     longitude: longitude,
@@ -22,13 +20,13 @@ void main() {
   test('uses coordinates when both latitude and longitude are present', () {
     final result = buildGoogleMapsDirectionsUrl(
       stops: [
-        _stop(
+        _loc(
           name: 'Ramsis',
           cityName: 'Cairo',
           latitude: 30.063437,
           longitude: 31.252121,
         ),
-        _stop(
+        _loc(
           name: 'Moharam Bek',
           cityName: 'Alexandria',
           latitude: 31.178158,
@@ -51,29 +49,33 @@ void main() {
   test('falls back to stop name and city when coordinates are missing', () {
     final result = buildGoogleMapsDirectionsUrl(
       stops: [
-        _stop(name: 'Ramsis', cityName: 'Cairo'),
-        _stop(name: 'Moharam Bek', cityName: 'Alexandria'),
+        _loc(name: 'Ramsis', cityName: 'Cairo'),
+        _loc(name: 'Moharam Bek', cityName: 'Alexandria'),
       ],
     );
 
     expect(result.uri.queryParameters['origin'], 'Ramsis, Cairo');
     expect(
-        result.uri.queryParameters['destination'], 'Moharam Bek, Alexandria');
+      result.uri.queryParameters['destination'],
+      'Moharam Bek, Alexandria',
+    );
   });
 
   test('includes pipe-separated waypoints for routes with 3+ stops', () {
     final result = buildGoogleMapsDirectionsUrl(
       stops: [
-        _stop(name: 'Sekka Club', cityName: 'Cairo'),
-        _stop(name: 'Ramsis', cityName: 'Cairo'),
-        _stop(name: '6 October', cityName: 'Cairo'),
-        _stop(name: 'Moharam Bek', cityName: 'Alexandria'),
+        _loc(name: 'Sekka Club', cityName: 'Cairo'),
+        _loc(name: 'Ramsis', cityName: 'Cairo'),
+        _loc(name: '6 October', cityName: 'Cairo'),
+        _loc(name: 'Moharam Bek', cityName: 'Alexandria'),
       ],
     );
 
     expect(result.uri.queryParameters['origin'], 'Sekka Club, Cairo');
     expect(
-        result.uri.queryParameters['destination'], 'Moharam Bek, Alexandria');
+      result.uri.queryParameters['destination'],
+      'Moharam Bek, Alexandria',
+    );
     expect(
       result.uri.queryParameters['waypoints'],
       'Ramsis, Cairo|6 October, Cairo',
@@ -82,10 +84,10 @@ void main() {
   });
 
   test('truncates middle stops beyond the Google Maps waypoint cap', () {
-    final stops = <BusStop>[
-      _stop(name: 'Stop 0', cityName: 'A'),
-      for (var i = 1; i <= 11; i++) _stop(name: 'Stop $i', cityName: 'A'),
-      _stop(name: 'Stop 12', cityName: 'B'),
+    final stops = <MapLocation>[
+      _loc(name: 'Stop 0', cityName: 'A'),
+      for (var i = 1; i <= 11; i++) _loc(name: 'Stop $i', cityName: 'A'),
+      _loc(name: 'Stop 12', cityName: 'B'),
     ];
 
     final result = buildGoogleMapsDirectionsUrl(stops: stops);
@@ -98,7 +100,7 @@ void main() {
 
   test('search URL uses coordinates when available', () {
     final uri = buildGoogleMapsSearchUrl(
-      _stop(
+      _loc(
         name: 'Moharam Bek',
         cityName: 'Alexandria',
         latitude: 31.178158,
@@ -113,7 +115,7 @@ void main() {
 
   test('search URL falls back to stop name and city', () {
     final uri = buildGoogleMapsSearchUrl(
-      _stop(name: 'Ramsis', cityName: 'Cairo'),
+      _loc(name: 'Ramsis', cityName: 'Cairo'),
     );
 
     expect(uri.queryParameters['query'], 'Ramsis, Cairo');

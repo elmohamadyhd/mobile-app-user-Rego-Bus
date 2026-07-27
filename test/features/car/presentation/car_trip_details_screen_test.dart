@@ -98,8 +98,7 @@ void main() {
   testWidgets('shows soft banner when refresh fails non-404', (tester) async {
     final repo = FakeCarRepository()
       ..getTripShouldThrow = true
-      ..getTripException =
-          const ApiException('Network error', statusCode: 500);
+      ..getTripException = const ApiException('Network error', statusCode: 500);
     await pumpDetails(tester, repo: repo, isGuest: false);
 
     final l10n = lookupAppLocalizations(const Locale('ar'));
@@ -170,8 +169,7 @@ void main() {
         ),
         GoRoute(
           path: CarRoutes.pay,
-          builder: (context, state) =>
-              const Scaffold(body: Text('pay-screen')),
+          builder: (context, state) => const Scaffold(body: Text('pay-screen')),
         ),
       ],
     );

@@ -6,6 +6,7 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/external_url_launcher.dart';
 import 'package:safaria/core/utils/google_maps_url.dart';
+import 'package:safaria/core/utils/map_location.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/utils/order_trip_route_stops.dart';
 import 'package:safaria/l10n/app_localizations.dart';
@@ -98,7 +99,17 @@ class TripRouteMapFab extends StatelessWidget {
       boardingStops: boardingStops,
       dropoffStops: dropoffStops,
     );
-    final route = buildGoogleMapsDirectionsUrl(stops: routeStops);
+    final route = buildGoogleMapsDirectionsUrl(
+      stops: [
+        for (final stop in routeStops)
+          MapLocation(
+            name: stop.name,
+            latitude: stop.latitude,
+            longitude: stop.longitude,
+            cityName: stop.cityName,
+          ),
+      ],
+    );
     final opened = await launchUrl(route.uri);
     if (!context.mounted) return;
 

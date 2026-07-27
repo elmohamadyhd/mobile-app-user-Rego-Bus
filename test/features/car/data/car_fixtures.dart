@@ -186,6 +186,11 @@ const privateOrderCreatedEnvelope = {
       'status': 'pending',
       'paid_at': null,
       'invoice_url': 'https://eg.myfatoorah.com/EGY/ia/sample',
+      'meta_data': {
+        'trip_id': 1,
+        'order_id': 39,
+        'invoice_id': 8213800,
+      },
       'created_at': '2026-07-27T21:39:17+03:00',
     },
     'can_be_cancel': true,

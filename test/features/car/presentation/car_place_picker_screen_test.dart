@@ -30,7 +30,7 @@ class _FakePlacesClient extends PlacesClient {
   }) async {
     if (input.length < 2) return const [];
     return [
-     const PlacePrediction(placeId: 'p1', description: 'Cairo Tower, Egypt'),
+      const PlacePrediction(placeId: 'p1', description: 'Cairo Tower, Egypt'),
     ];
   }
 
@@ -145,7 +145,8 @@ void main() {
     expect(find.text('Confirm location'), findsOneWidget);
   });
 
-  testWidgets('drop-off hides GPS when showUseMyLocation is false', (tester) async {
+  testWidgets('drop-off hides GPS when showUseMyLocation is false',
+      (tester) async {
     await pumpPicker(
       tester,
       args: const CarPlacePickerArgs(title: 'Drop-off'),

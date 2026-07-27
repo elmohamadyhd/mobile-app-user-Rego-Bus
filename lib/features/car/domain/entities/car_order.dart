@@ -28,6 +28,8 @@ final class CarOrder {
     this.trip,
     this.invoiceUrl,
     this.transactionStatus,
+    this.paymentGateway,
+    this.paymentInvoiceId,
     required this.canBeCancel,
     this.createdAt,
   });
@@ -45,6 +47,8 @@ final class CarOrder {
   final CarTripQuote? trip;
   final String? invoiceUrl;
   final String? transactionStatus;
+  final String? paymentGateway;
+  final String? paymentInvoiceId;
   final bool canBeCancel;
   final String? createdAt;
 

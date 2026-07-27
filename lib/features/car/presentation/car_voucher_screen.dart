@@ -28,7 +28,7 @@ class CarVoucherScreen extends ConsumerWidget {
     if (order == null) {
       return const Scaffold(
         backgroundColor: AppColors.primaryDeep,
-        body:  DecoratedBox(
+        body: DecoratedBox(
           decoration: BoxDecoration(gradient: AppColors.heroGradient),
           child: Center(child: CircularProgressIndicator()),
         ),
@@ -53,7 +53,8 @@ class CarVoucherScreen extends ConsumerWidget {
             decoration: const BoxDecoration(gradient: AppColors.heroGradient),
             child: SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.lg),
+                padding:
+                    const EdgeInsetsDirectional.only(bottom: AppSpacing.lg),
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(

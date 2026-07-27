@@ -66,7 +66,8 @@ void main() {
     expect(find.text('Select pickup and drop-off'), findsOneWidget);
   });
 
-  testWidgets('search proceeds when pickup and drop-off differ', (tester) async {
+  testWidgets('search proceeds when pickup and drop-off differ',
+      (tester) async {
     final repo = FakeCarRepository();
     final router = GoRouter(
       routes: [

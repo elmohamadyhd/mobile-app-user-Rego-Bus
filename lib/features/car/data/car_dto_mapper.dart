@@ -69,9 +69,16 @@ abstract final class CarDtoMapper {
     final transaction = json['transaction'];
     String? invoiceUrl;
     String? transactionStatus;
+    String? paymentGateway;
+    String? paymentInvoiceId;
     if (transaction is Map<String, dynamic>) {
       invoiceUrl = _string(transaction['invoice_url']);
       transactionStatus = _string(transaction['status']);
+      paymentGateway = _string(transaction['gateway']);
+      final meta = transaction['meta_data'];
+      if (meta is Map<String, dynamic>) {
+        paymentInvoiceId = _string(meta['invoice_id']);
+      }
     }
 
     final from = json['from'];
@@ -110,6 +117,8 @@ abstract final class CarDtoMapper {
       trip: tripJson is Map<String, dynamic> ? quoteFromJson(tripJson) : null,
       invoiceUrl: invoiceUrl,
       transactionStatus: transactionStatus,
+      paymentGateway: paymentGateway,
+      paymentInvoiceId: paymentInvoiceId,
       canBeCancel: json['can_be_cancel'] == true,
       createdAt: _string(json['created_at']),
     );

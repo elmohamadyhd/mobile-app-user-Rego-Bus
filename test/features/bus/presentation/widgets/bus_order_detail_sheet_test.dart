@@ -13,7 +13,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 
 import '../../fake_bus_repository.dart';
 
-BusOrder _seedOrder() => BusOrder(
+BusOrder _seedOrder() => const BusOrder(
       orderId: '1475',
       bookingNumber: '000001475',
       operatorName: 'SuperJet',
@@ -23,14 +23,14 @@ BusOrder _seedOrder() => BusOrder(
       dateTimeLabel: '2026-07-30 08:45 AM',
       pickupStopLabel: 'Cairo Main Station',
       dropoffStopLabel: 'Alexandria Terminal',
-      ticketLines: const [
+      ticketLines:  [
         BusTicketLine(id: 2076, seatNumber: '1', price: '205.00'),
       ],
       total: 'EGP 219.35',
       canCancel: true,
       gatewayCheckoutUrl: 'https://demo.MyFatoorah.com/pay',
       invoiceUrl: 'https://portal.wdenytravel.com/orders/1475/invoice',
-      fare: const BusOrderFare(
+      fare:  BusOrderFare(
         originalTicketsTotal: 'EGP 205.00',
         discount: 'EGP 0.00',
         walletDiscount: 'EGP 0.00',

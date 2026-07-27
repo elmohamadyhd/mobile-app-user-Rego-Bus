@@ -54,8 +54,7 @@ void main() {
     });
 
     test('maps create order envelope', () {
-      final order =
-          CarDtoMapper.orderFromEnvelope(privateOrderCreatedEnvelope);
+      final order = CarDtoMapper.orderFromEnvelope(privateOrderCreatedEnvelope);
       expect(order.id, 39);
       expect(order.statusKind, CarOrderStatusKind.pending);
       expect(order.price, '1000.00');
@@ -63,6 +62,10 @@ void main() {
       expect(order.invoiceUrl, 'https://eg.myfatoorah.com/EGY/ia/sample');
       expect(order.canBeCancel, isTrue);
       expect(order.trip?.company.name, 'Sky Travel');
+      expect(order.paymentGateway, 'myfatoorah');
+      expect(order.paymentInvoiceId, '8213800');
+      expect(order.trip?.fromLocation.name, 'Cairo');
+      expect(order.trip?.toLocation.name, 'Alexandria');
     });
 
     test('builds create order body from selection', () {
