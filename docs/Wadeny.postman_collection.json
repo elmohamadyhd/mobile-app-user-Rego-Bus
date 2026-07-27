@@ -5847,6 +5847,234 @@
                           ],
                           "cookie": [],
                           "body": "{\n    \"status\": 200,\n    \"message\": \"Private orders\",\n    \"errors\": {},\n    \"data\": [],\n    \"pagination\": {\n        \"total\": 0,\n        \"lastPage\": 1,\n        \"perPage\": 15,\n        \"currentPage\": 1,\n        \"nextPageUrl\": null,\n        \"previousPageUrl\": null\n    }\n}"
+                        },
+                        {
+                          "name": "List",
+                          "originalRequest": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                              }
+                            ],
+                            "body": {
+                              "mode": "formdata",
+                              "formdata": [
+                                {
+                                  "key": "file",
+                                  "type": "file",
+                                  "src": "/C:/Users/Mahmoud El Boshy/Desktop/download.jpg"
+                                },
+                                {
+                                  "key": "message",
+                                  "value": "test customer",
+                                  "type": "text"
+                                }
+                              ]
+                            },
+                            "url": {
+                              "raw": "{{url}}/profile/private/orders",
+                              "host": [
+                                "{{url}}"
+                              ],
+                              "path": [
+                                "profile",
+                                "private",
+                                "orders"
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": null,
+                          "header": [
+                            {
+                              "key": ":status",
+                              "value": 200
+                            },
+                            {
+                              "key": "date",
+                              "value": "Mon, 27 Jul 2026 18:39:43 GMT"
+                            },
+                            {
+                              "key": "content-type",
+                              "value": "application/json"
+                            },
+                            {
+                              "key": "server",
+                              "value": "cloudflare"
+                            },
+                            {
+                              "key": "nel",
+                              "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                            },
+                            {
+                              "key": "cache-control",
+                              "value": "no-cache, private"
+                            },
+                            {
+                              "key": "x-ratelimit-limit",
+                              "value": "60"
+                            },
+                            {
+                              "key": "x-ratelimit-remaining",
+                              "value": "58"
+                            },
+                            {
+                              "key": "access-control-allow-origin",
+                              "value": "*"
+                            },
+                            {
+                              "key": "x-frame-options",
+                              "value": "SAMEORIGIN"
+                            },
+                            {
+                              "key": "x-xss-protection",
+                              "value": "1; mode=block"
+                            },
+                            {
+                              "key": "x-content-type-options",
+                              "value": "nosniff"
+                            },
+                            {
+                              "key": "cf-cache-status",
+                              "value": "DYNAMIC"
+                            },
+                            {
+                              "key": "report-to",
+                              "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=p4fYNBqfdUFRKvUtInIdJCEfcUrXe4dB%2BKwYbnf1vXGIGJ1541vffdk7YFWL3xmPkGiscr0%2Bslpc7r8ruDv0xo91mTtTMHfMXjnyAbf7hYIdONATjWfanREXCdNNPiGtBTonrzIr\"}]}"
+                            },
+                            {
+                              "key": "content-encoding",
+                              "value": "br"
+                            },
+                            {
+                              "key": "cf-ray",
+                              "value": "a21dc4b888f82558-MRS"
+                            },
+                            {
+                              "key": "alt-svc",
+                              "value": "h3=\":443\"; ma=86400"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n    \"status\": 200,\n    \"message\": \"Private orders\",\n    \"errors\": {},\n    \"data\": [\n        {\n            \"id\": 39,\n            \"status\": \"pending\",\n            \"price\": \"1000.00\",\n            \"currency\": \"EGP\",\n            \"rounded\": false,\n            \"departure_date\": \"2026-12-20\",\n            \"return_date\": null,\n            \"currency_id\": 1,\n            \"base_currency_id\": 1,\n            \"exchange_rate\": \"1.00000000\",\n            \"from\": {\n                \"latitude\": 30.0314696,\n                \"longitude\": 31.2612288\n            },\n            \"to\": {\n                \"latitude\": 31.182972882989525,\n                \"longitude\": 29.894801258559188\n            },\n            \"trip\": {\n                \"id\": 1,\n                \"rounded\": true,\n                \"go_price\": 1000,\n                \"round_price\": 1500,\n                \"currency\": \"EGP\",\n                \"status\": true,\n                \"currency_id\": 1,\n                \"base_currency_id\": 1,\n                \"exchange_rate\": \"1.00000000\",\n                \"company\": {\n                    \"id\": 1,\n                    \"name\": \"Sky Travel\",\n                    \"refundability\": true,\n                    \"refund_policy\": \"Sky Travel\",\n                    \"logo_url\": \"https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg\",\n                    \"logo_mime_type\": \"image/jpeg\"\n                },\n                \"from_location\": {\n                    \"id\": 1,\n                    \"name\": \"Cairo\",\n                    \"latitude\": \"30.0441028\",\n                    \"longitude\": \"31.2408498\"\n                },\n                \"to_location\": {\n                    \"id\": 2,\n                    \"name\": \"Alexandria\",\n                    \"latitude\": \"31.2452475\",\n                    \"longitude\": \"29.9892346\"\n                },\n                \"vehicle\": {\n                    \"id\": 1,\n                    \"name\": \"Hundai\",\n                    \"category_id\": 1,\n                    \"category_name\": \"Sedan\",\n                    \"seats_number\": 5,\n                    \"model\": \"Matrix\",\n                    \"year\": 2010,\n                    \"big_bags_count\": 4,\n                    \"small_bags_count\": 1,\n                    \"gear_type\": \"automatic\",\n                    \"featured_url\": \"https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg\",\n                    \"featured_mime_type\": \"image/jpeg\"\n                }\n            },\n            \"transaction\": {\n                \"id\": 102,\n                \"gateway\": \"myfatoorah\",\n                \"status\": \"pending\",\n                \"paid_at\": null,\n                \"invoice_url\": \"https://eg.myfatoorah.com/EGY/ia/050714540821380061-161f6fb4\",\n                \"meta_data\": {\n                    \"trip_id\": 1,\n                    \"order_id\": 39,\n                    \"invoice_id\": 8213800\n                },\n                \"created_at\": \"2026-07-27T21:39:17+03:00\"\n            },\n            \"can_be_cancel\": true,\n            \"created_at\": \"2026-07-27T21:39:17+03:00\"\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"lastPage\": 1,\n        \"perPage\": 15,\n        \"currentPage\": 1,\n        \"nextPageUrl\": null,\n        \"previousPageUrl\": null\n    }\n}"
+                        },
+                        {
+                          "name": "List",
+                          "originalRequest": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                              }
+                            ],
+                            "body": {
+                              "mode": "formdata",
+                              "formdata": [
+                                {
+                                  "key": "file",
+                                  "type": "file",
+                                  "src": "/C:/Users/Mahmoud El Boshy/Desktop/download.jpg"
+                                },
+                                {
+                                  "key": "message",
+                                  "value": "test customer",
+                                  "type": "text"
+                                }
+                              ]
+                            },
+                            "url": {
+                              "raw": "{{url}}/profile/private/orders",
+                              "host": [
+                                "{{url}}"
+                              ],
+                              "path": [
+                                "profile",
+                                "private",
+                                "orders"
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": null,
+                          "header": [
+                            {
+                              "key": ":status",
+                              "value": 200
+                            },
+                            {
+                              "key": "date",
+                              "value": "Mon, 27 Jul 2026 18:45:31 GMT"
+                            },
+                            {
+                              "key": "content-type",
+                              "value": "application/json"
+                            },
+                            {
+                              "key": "server",
+                              "value": "cloudflare"
+                            },
+                            {
+                              "key": "nel",
+                              "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                            },
+                            {
+                              "key": "cache-control",
+                              "value": "no-cache, private"
+                            },
+                            {
+                              "key": "x-ratelimit-limit",
+                              "value": "60"
+                            },
+                            {
+                              "key": "x-ratelimit-remaining",
+                              "value": "58"
+                            },
+                            {
+                              "key": "access-control-allow-origin",
+                              "value": "*"
+                            },
+                            {
+                              "key": "x-frame-options",
+                              "value": "SAMEORIGIN"
+                            },
+                            {
+                              "key": "x-xss-protection",
+                              "value": "1; mode=block"
+                            },
+                            {
+                              "key": "x-content-type-options",
+                              "value": "nosniff"
+                            },
+                            {
+                              "key": "cf-cache-status",
+                              "value": "DYNAMIC"
+                            },
+                            {
+                              "key": "report-to",
+                              "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=q9IadsIXgiPilYWljCnn%2FBuRMDLpSboSF%2F%2BkiRGErSoGtjuGBSEb1Fk7pqPQbahjPfRNpb4RvwrRMFSp%2BJeAWb8JxABML0QHen1VQk7JXUC9LaiE8s1LVIFYmhZO7nB349OcTeKE\"}]}"
+                            },
+                            {
+                              "key": "content-encoding",
+                              "value": "br"
+                            },
+                            {
+                              "key": "cf-ray",
+                              "value": "a21dcd380cefe185-MRS"
+                            },
+                            {
+                              "key": "alt-svc",
+                              "value": "h3=\":443\"; ma=86400"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n    \"status\": 200,\n    \"message\": \"Private orders\",\n    \"errors\": {},\n    \"data\": [\n        {\n            \"id\": 39,\n            \"status\": \"cancelled\",\n            \"price\": \"1000.00\",\n            \"currency\": \"EGP\",\n            \"rounded\": false,\n            \"departure_date\": \"2026-12-20\",\n            \"return_date\": null,\n            \"currency_id\": 1,\n            \"base_currency_id\": 1,\n            \"exchange_rate\": \"1.00000000\",\n            \"from\": {\n                \"latitude\": 30.0314696,\n                \"longitude\": 31.2612288\n            },\n            \"to\": {\n                \"latitude\": 31.182972882989525,\n                \"longitude\": 29.894801258559188\n            },\n            \"trip\": {\n                \"id\": 1,\n                \"rounded\": true,\n                \"go_price\": 1000,\n                \"round_price\": 1500,\n                \"currency\": \"EGP\",\n                \"status\": true,\n                \"currency_id\": 1,\n                \"base_currency_id\": 1,\n                \"exchange_rate\": \"1.00000000\",\n                \"company\": {\n                    \"id\": 1,\n                    \"name\": \"Sky Travel\",\n                    \"refundability\": true,\n                    \"refund_policy\": \"Sky Travel\",\n                    \"logo_url\": \"https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg\",\n                    \"logo_mime_type\": \"image/jpeg\"\n                },\n                \"from_location\": {\n                    \"id\": 1,\n                    \"name\": \"Cairo\",\n                    \"latitude\": \"30.0441028\",\n                    \"longitude\": \"31.2408498\"\n                },\n                \"to_location\": {\n                    \"id\": 2,\n                    \"name\": \"Alexandria\",\n                    \"latitude\": \"31.2452475\",\n                    \"longitude\": \"29.9892346\"\n                },\n                \"vehicle\": {\n                    \"id\": 1,\n                    \"name\": \"Hundai\",\n                    \"category_id\": 1,\n                    \"category_name\": \"Sedan\",\n                    \"seats_number\": 5,\n                    \"model\": \"Matrix\",\n                    \"year\": 2010,\n                    \"big_bags_count\": 4,\n                    \"small_bags_count\": 1,\n                    \"gear_type\": \"automatic\",\n                    \"featured_url\": \"https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg\",\n                    \"featured_mime_type\": \"image/jpeg\"\n                }\n            },\n            \"transaction\": {\n                \"id\": 102,\n                \"gateway\": \"myfatoorah\",\n                \"status\": \"cancelled\",\n                \"paid_at\": null,\n                \"invoice_url\": \"https://eg.myfatoorah.com/EGY/ia/050714540821380061-161f6fb4\",\n                \"meta_data\": {\n                    \"trip_id\": 1,\n                    \"order_id\": 39,\n                    \"invoice_id\": 8213800\n                },\n                \"created_at\": \"2026-07-27T21:39:17+03:00\"\n            },\n            \"can_be_cancel\": false,\n            \"created_at\": \"2026-07-27T21:39:17+03:00\"\n        }\n    ],\n    \"pagination\": {\n        \"total\": 1,\n        \"lastPage\": 1,\n        \"perPage\": 15,\n        \"currentPage\": 1,\n        \"nextPageUrl\": null,\n        \"previousPageUrl\": null\n    }\n}"
                         }
                       ]
                     },
@@ -5903,12 +6131,134 @@
                           "variable": [
                             {
                               "key": "id",
-                              "value": "1"
+                              "value": "39"
                             }
                           ]
                         }
                       },
-                      "response": []
+                      "response": [
+                        {
+                          "name": "Show",
+                          "originalRequest": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                              }
+                            ],
+                            "body": {
+                              "mode": "formdata",
+                              "formdata": [
+                                {
+                                  "key": "file",
+                                  "type": "file",
+                                  "src": "/C:/Users/Mahmoud El Boshy/Desktop/download.jpg"
+                                },
+                                {
+                                  "key": "message",
+                                  "value": "test customer",
+                                  "type": "text"
+                                }
+                              ]
+                            },
+                            "url": {
+                              "raw": "{{url}}/profile/private/orders/:id",
+                              "host": [
+                                "{{url}}"
+                              ],
+                              "path": [
+                                "profile",
+                                "private",
+                                "orders",
+                                ":id"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "id",
+                                  "value": "39"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": null,
+                          "header": [
+                            {
+                              "key": ":status",
+                              "value": 200
+                            },
+                            {
+                              "key": "date",
+                              "value": "Mon, 27 Jul 2026 18:40:00 GMT"
+                            },
+                            {
+                              "key": "content-type",
+                              "value": "application/json"
+                            },
+                            {
+                              "key": "server",
+                              "value": "cloudflare"
+                            },
+                            {
+                              "key": "nel",
+                              "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                            },
+                            {
+                              "key": "cache-control",
+                              "value": "no-cache, private"
+                            },
+                            {
+                              "key": "x-ratelimit-limit",
+                              "value": "60"
+                            },
+                            {
+                              "key": "x-ratelimit-remaining",
+                              "value": "57"
+                            },
+                            {
+                              "key": "access-control-allow-origin",
+                              "value": "*"
+                            },
+                            {
+                              "key": "x-frame-options",
+                              "value": "SAMEORIGIN"
+                            },
+                            {
+                              "key": "x-xss-protection",
+                              "value": "1; mode=block"
+                            },
+                            {
+                              "key": "x-content-type-options",
+                              "value": "nosniff"
+                            },
+                            {
+                              "key": "cf-cache-status",
+                              "value": "DYNAMIC"
+                            },
+                            {
+                              "key": "report-to",
+                              "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=XggI9BhW76vJDWa7RLfu8ndmX8MK6V8h00G3N4VnYMYVmQs2HLKRfItxy90bWu5j1txBBGwiiurjldTSlvNn3nXMOtJ5EeKlOzGr0Oyd7dY61IHkmgrr8Swa5pW3u98SiaCj5xMA\"}]}"
+                            },
+                            {
+                              "key": "content-encoding",
+                              "value": "br"
+                            },
+                            {
+                              "key": "cf-ray",
+                              "value": "a21dc520cc0b2558-MRS"
+                            },
+                            {
+                              "key": "alt-svc",
+                              "value": "h3=\":443\"; ma=86400"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n    \"status\": 200,\n    \"message\": \"Private order\",\n    \"errors\": {},\n    \"data\": {\n        \"id\": 39,\n        \"status\": \"pending\",\n        \"price\": \"1000.00\",\n        \"currency\": \"EGP\",\n        \"rounded\": false,\n        \"departure_date\": \"2026-12-20\",\n        \"return_date\": null,\n        \"currency_id\": 1,\n        \"base_currency_id\": 1,\n        \"exchange_rate\": \"1.00000000\",\n        \"from\": {\n            \"latitude\": 30.0314696,\n            \"longitude\": 31.2612288\n        },\n        \"to\": {\n            \"latitude\": 31.182972882989525,\n            \"longitude\": 29.894801258559188\n        },\n        \"trip\": {\n            \"id\": 1,\n            \"rounded\": true,\n            \"go_price\": 1000,\n            \"round_price\": 1500,\n            \"currency\": \"EGP\",\n            \"status\": true,\n            \"currency_id\": 1,\n            \"base_currency_id\": 1,\n            \"exchange_rate\": \"1.00000000\",\n            \"company\": {\n                \"id\": 1,\n                \"name\": \"Sky Travel\",\n                \"refundability\": true,\n                \"refund_policy\": \"Sky Travel\",\n                \"logo_url\": \"https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg\",\n                \"logo_mime_type\": \"image/jpeg\"\n            },\n            \"from_location\": {\n                \"id\": 1,\n                \"name\": \"Cairo\",\n                \"latitude\": \"30.0441028\",\n                \"longitude\": \"31.2408498\"\n            },\n            \"to_location\": {\n                \"id\": 2,\n                \"name\": \"Alexandria\",\n                \"latitude\": \"31.2452475\",\n                \"longitude\": \"29.9892346\"\n            },\n            \"vehicle\": {\n                \"id\": 1,\n                \"name\": \"Hundai\",\n                \"category_id\": 1,\n                \"category_name\": \"Sedan\",\n                \"seats_number\": 5,\n                \"model\": \"Matrix\",\n                \"year\": 2010,\n                \"big_bags_count\": 4,\n                \"small_bags_count\": 1,\n                \"gear_type\": \"automatic\",\n                \"featured_url\": \"https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg\",\n                \"featured_mime_type\": \"image/jpeg\"\n            }\n        },\n        \"transaction\": {\n            \"id\": 102,\n            \"gateway\": \"myfatoorah\",\n            \"status\": \"pending\",\n            \"paid_at\": null,\n            \"invoice_url\": \"https://eg.myfatoorah.com/EGY/ia/050714540821380061-161f6fb4\",\n            \"meta_data\": {\n                \"trip_id\": 1,\n                \"order_id\": 39,\n                \"invoice_id\": 8213800\n            },\n            \"created_at\": \"2026-07-27T21:39:17+03:00\"\n        },\n        \"can_be_cancel\": true,\n        \"created_at\": \"2026-07-27T21:39:17+03:00\"\n    }\n}"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -10232,7 +10582,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"trip_id\": 1,\n    \"rounded\": false,\n    \"departure\": {\n        \"latitude\": \"30.0314696\",\n        \"longitude\": \"31.2612288\",\n        \"date\": \"2026-12-20\"\n    },\n    \"destination\": {\n        \"latitude\": \"31.182972882989525\",\n        \"longitude\": \"29.894801258559188\",\n        \"date\": \"2026-12-20\"\n    }\n}",
+                  "raw": "{\n    \"trip_id\": 1,\n    \"rounded\": false,\n    \"departure\": {\n        \"latitude\": \"30.0314696\",\n        \"longitude\": \"31.2612288\",\n        \"date\": \"2026-12-20 22:00\"\n    },\n    \"destination\": {\n        \"latitude\": \"31.182972882989525\",\n        \"longitude\": \"29.894801258559188\",\n        \"date\": \"2026-12-21 01:00\"\n    }\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -10339,6 +10689,119 @@
                   ],
                   "cookie": [],
                   "body": "{\n    \"status\": 401,\n    \"message\": \"Unauthenticated\",\n    \"errors\": {},\n    \"data\": {}\n}"
+                },
+                {
+                  "name": "Orders",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"trip_id\": 1,\n    \"rounded\": false,\n    \"departure\": {\n        \"latitude\": \"30.0314696\",\n        \"longitude\": \"31.2612288\",\n        \"date\": \"2026-12-20 22:00\"\n    },\n    \"destination\": {\n        \"latitude\": \"31.182972882989525\",\n        \"longitude\": \"29.894801258559188\",\n        \"date\": \"2026-12-21 01:00\"\n    }\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/private/orders",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "private",
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 200
+                    },
+                    {
+                      "key": "date",
+                      "value": "Mon, 27 Jul 2026 18:39:17 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "x-ratelimit-limit",
+                      "value": "60"
+                    },
+                    {
+                      "key": "x-ratelimit-remaining",
+                      "value": "59"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "x-frame-options",
+                      "value": "SAMEORIGIN"
+                    },
+                    {
+                      "key": "x-xss-protection",
+                      "value": "1; mode=block"
+                    },
+                    {
+                      "key": "x-content-type-options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=N7ctYKc6tgDNF82N89QfhzXDZ7u6kXygEEqEf07xUoCefcSDl8U7lmKYOHk4omCpcAlmdewv%2F3zNCtXjXvx9vaot7PrYWSyPtK9goS2uSMSA43kUqtlnaxn0LyyFHdf96wRm4VD5\"}]}"
+                    },
+                    {
+                      "key": "content-encoding",
+                      "value": "br"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a21dc414cd6a2558-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 200,\n    \"message\": \"Order created\",\n    \"errors\": {},\n    \"data\": {\n        \"id\": 39,\n        \"status\": \"pending\",\n        \"price\": \"1000.00\",\n        \"currency\": \"EGP\",\n        \"rounded\": false,\n        \"departure_date\": \"2026-12-20\",\n        \"return_date\": null,\n        \"currency_id\": 1,\n        \"base_currency_id\": 1,\n        \"exchange_rate\": \"1.00000000\",\n        \"from\": {\n            \"latitude\": 30.0314696,\n            \"longitude\": 31.2612288\n        },\n        \"to\": {\n            \"latitude\": 31.182972882989525,\n            \"longitude\": 29.894801258559188\n        },\n        \"trip\": {\n            \"id\": 1,\n            \"rounded\": true,\n            \"go_price\": 1000,\n            \"round_price\": 1500,\n            \"currency\": \"EGP\",\n            \"status\": true,\n            \"currency_id\": 1,\n            \"base_currency_id\": 1,\n            \"exchange_rate\": \"1.00000000\",\n            \"company\": {\n                \"id\": 1,\n                \"name\": \"Sky Travel\",\n                \"refundability\": true,\n                \"refund_policy\": \"Sky Travel\",\n                \"logo_url\": \"https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg\",\n                \"logo_mime_type\": \"image/jpeg\"\n            },\n            \"from_location\": {\n                \"id\": 1,\n                \"name\": \"Cairo\",\n                \"latitude\": \"30.0441028\",\n                \"longitude\": \"31.2408498\"\n            },\n            \"to_location\": {\n                \"id\": 2,\n                \"name\": \"Alexandria\",\n                \"latitude\": \"31.2452475\",\n                \"longitude\": \"29.9892346\"\n            },\n            \"vehicle\": {\n                \"id\": 1,\n                \"name\": \"Hundai\",\n                \"category_id\": 1,\n                \"category_name\": \"Sedan\",\n                \"seats_number\": 5,\n                \"model\": \"Matrix\",\n                \"year\": 2010,\n                \"big_bags_count\": 4,\n                \"small_bags_count\": 1,\n                \"gear_type\": \"automatic\",\n                \"featured_url\": \"https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg\",\n                \"featured_mime_type\": \"image/jpeg\"\n            }\n        },\n        \"transaction\": {\n            \"id\": 102,\n            \"gateway\": \"myfatoorah\",\n            \"status\": \"pending\",\n            \"paid_at\": null,\n            \"invoice_url\": \"https://eg.myfatoorah.com/EGY/ia/050714540821380061-161f6fb4\",\n            \"meta_data\": {\n                \"trip_id\": 1,\n                \"order_id\": 39,\n                \"invoice_id\": 8213800\n            },\n            \"created_at\": \"2026-07-27T21:39:17+03:00\"\n        },\n        \"can_be_cancel\": true,\n        \"created_at\": \"2026-07-27T21:39:17+03:00\"\n    }\n}"
                 }
               ]
             },
@@ -10486,6 +10949,143 @@
                   ],
                   "cookie": [],
                   "body": "{\n    \"status\": 401,\n    \"message\": \"Unauthenticated\",\n    \"errors\": {},\n    \"data\": {}\n}"
+                }
+              ]
+            },
+            {
+              "name": "cancel",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/private/orders/:id/cancel",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "private",
+                    "orders",
+                    ":id",
+                    "cancel"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "39"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "cancel",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/private/orders/:id/cancel",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "private",
+                        "orders",
+                        ":id",
+                        "cancel"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "39"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 200
+                    },
+                    {
+                      "key": "date",
+                      "value": "Mon, 27 Jul 2026 18:45:11 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "x-ratelimit-limit",
+                      "value": "60"
+                    },
+                    {
+                      "key": "x-ratelimit-remaining",
+                      "value": "59"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "x-frame-options",
+                      "value": "SAMEORIGIN"
+                    },
+                    {
+                      "key": "x-xss-protection",
+                      "value": "1; mode=block"
+                    },
+                    {
+                      "key": "x-content-type-options",
+                      "value": "nosniff"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=kwLESWKYafqefqBSZEv83P5yroF9wrBQ3Hl1izGA3o0skNeE4jMhOCohX3nxwSxdo%2FFF3erXoZIbMPYmb5h8lvYxbcTOBao6U36USSYw7yr3diy0HQPxFEAK2MCLQ1oZwKo0uW1F\"}]}"
+                    },
+                    {
+                      "key": "content-encoding",
+                      "value": "br"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a21dccbcdf76e185-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 200,\n    \"message\": \"canceled\",\n    \"errors\": {},\n    \"data\": {\n        \"id\": 39,\n        \"status\": \"cancelled\",\n        \"price\": \"1000.00\",\n        \"currency\": \"EGP\",\n        \"rounded\": false,\n        \"departure_date\": \"2026-12-20\",\n        \"return_date\": null,\n        \"currency_id\": 1,\n        \"base_currency_id\": 1,\n        \"exchange_rate\": \"1.00000000\",\n        \"from\": {\n            \"latitude\": 30.0314696,\n            \"longitude\": 31.2612288\n        },\n        \"to\": {\n            \"latitude\": 31.182972882989525,\n            \"longitude\": 29.894801258559188\n        },\n        \"trip\": {\n            \"id\": 1,\n            \"rounded\": true,\n            \"go_price\": 1000,\n            \"round_price\": 1500,\n            \"currency\": \"EGP\",\n            \"status\": true,\n            \"currency_id\": 1,\n            \"base_currency_id\": 1,\n            \"exchange_rate\": \"1.00000000\",\n            \"company\": {\n                \"id\": 1,\n                \"name\": \"Sky Travel\",\n                \"refundability\": true,\n                \"refund_policy\": \"Sky Travel\",\n                \"logo_url\": \"https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg\",\n                \"logo_mime_type\": \"image/jpeg\"\n            },\n            \"from_location\": {\n                \"id\": 1,\n                \"name\": \"Cairo\",\n                \"latitude\": \"30.0441028\",\n                \"longitude\": \"31.2408498\"\n            },\n            \"to_location\": {\n                \"id\": 2,\n                \"name\": \"Alexandria\",\n                \"latitude\": \"31.2452475\",\n                \"longitude\": \"29.9892346\"\n            },\n            \"vehicle\": {\n                \"id\": 1,\n                \"name\": \"Hundai\",\n                \"category_id\": 1,\n                \"category_name\": \"Sedan\",\n                \"seats_number\": 5,\n                \"model\": \"Matrix\",\n                \"year\": 2010,\n                \"big_bags_count\": 4,\n                \"small_bags_count\": 1,\n                \"gear_type\": \"automatic\",\n                \"featured_url\": \"https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg\",\n                \"featured_mime_type\": \"image/jpeg\"\n            }\n        },\n        \"transaction\": {\n            \"id\": 102,\n            \"gateway\": \"myfatoorah\",\n            \"status\": \"cancelled\",\n            \"paid_at\": null,\n            \"invoice_url\": \"https://eg.myfatoorah.com/EGY/ia/050714540821380061-161f6fb4\",\n            \"meta_data\": {\n                \"trip_id\": 1,\n                \"order_id\": 39,\n                \"invoice_id\": 8213800\n            },\n            \"created_at\": \"2026-07-27T21:39:17+03:00\"\n        },\n        \"can_be_cancel\": false,\n        \"created_at\": \"2026-07-27T21:39:17+03:00\"\n    }\n}"
                 }
               ]
             }
@@ -12141,6 +12741,42 @@
               ]
             },
             {
+              "name": "cancel",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/buses/orders/:id/cancel",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "buses",
+                    "orders",
+                    ":id",
+                    "cancel"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1457"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Create Ticket",
               "request": {
                 "auth": {
@@ -12606,42 +13242,6 @@
                   "body": "{\n    \"status\": 200,\n    \"message\": \"order created\",\n    \"errors\": {},\n    \"data\": {\n        \"number\": \"000001455\",\n        \"id\": 1455,\n        \"trip_id\": \"125723\",\n        \"gateway_order_id\": \"1204737\",\n        \"company_data\": {\n            \"name\": \"بلو باص\",\n            \"avatar\": \"\",\n            \"bus_image\": \"\",\n            \"pin\": \"\"\n        },\n        \"status\": \"Pending\",\n        \"status_code\": \"pending\",\n        \"gateway_id\": \"BlueBus\",\n        \"company_name\": \"بلو باص\",\n        \"category\": \"first8\",\n        \"can_be_cancel\": true,\n        \"trip_type\": \"Buses\",\n        \"is_confirmed\": 0,\n        \"review\": null,\n        \"can_review\": false,\n        \"payment_data\": {\n            \"status\": \"Pending\",\n            \"status_code\": \"pending\",\n            \"invoice_id\": 6933118,\n            \"gateway\": \"Myfatoorah\",\n            \"invoice_url\": \"https://demo.MyFatoorah.com/KWT/ia/01072693311841-9cd668d7\",\n            \"data\": {\n                \"notes\": \"\"\n            }\n        },\n        \"invoice_url\": \"https://portal.wdenytravel.com/orders/1455/invoice/download\",\n        \"station_from\": {\n            \"id\": \"938\",\n            \"station_id\": \"938\",\n            \"name\": \"رمسيس\",\n            \"city_id\": 1,\n            \"city_name\": \"القاهره\",\n            \"latitude\": \"30.063437\",\n            \"longitude\": \"31.252121\",\n            \"arrival_at\": \"2026-07-10 06:15 am\"\n        },\n        \"station_to\": {\n            \"id\": \"945\",\n            \"station_id\": \"945\",\n            \"name\": \"محرم بك\",\n            \"city_id\": 2,\n            \"city_name\": \"الاسكندريه\",\n            \"latitude\": \"31.178158\",\n            \"longitude\": \"29.915599\",\n            \"arrival_at\": \"2026-07-10 10:00 am\"\n        },\n        \"tickets\": [\n            {\n                \"id\": 2052,\n                \"seat_number\": \"16\",\n                \"price\": \"280.00\"\n            }\n        ],\n        \"date\": \"2026-07-10\",\n        \"date_time\": \"2026-07-10 12:01 AM\",\n        \"payment_url\": \"https://portal.wdenytravel.com/api/v1/buses/orders/1455/pay\",\n        \"cancel_url\": \"https://portal.wdenytravel.com/api/v1/buses/orders/1455/cancel\",\n        \"original_tickets_totals\": \"EGP 280.00\",\n        \"discount\": \"EGP 0.00\",\n        \"wallet_discount\": \"EGP 0.00\",\n        \"tickets_totals_after_discount\": \"EGP 280.00\",\n        \"payment_fees\": \"EGP 19.60\",\n        \"total\": \"EGP 299.60\",\n        \"currency\": \"EGP\"\n    }\n}"
                 }
               ]
-            },
-            {
-              "name": "cancel",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/buses/orders/:id/cancel",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "buses",
-                    "orders",
-                    ":id",
-                    "cancel"
-                  ],
-                  "variable": [
-                    {
-                      "key": "id",
-                      "value": "1457"
-                    }
-                  ]
-                }
-              },
-              "response": []
             }
           ]
         },

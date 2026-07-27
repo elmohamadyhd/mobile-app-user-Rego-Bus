@@ -10,8 +10,8 @@
 | **Collection** | Wadeny |
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
-| **Total requests** | 65 |
-| **Documented saved responses** | 97 |
+| **Total requests** | 66 |
+| **Documented saved responses** | 102 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -72,7 +72,6 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `POST` | `/auth/send-otp` | OTP Send |
 | `POST` | `/auth/validate-otp` | Validate OTP |
 | `POST` | `/auth/verify-otp` | OTP Verification |
-| `POST` | `/buses/orders/:id/cancel` | cancel |
 | `POST` | `/buses/trips/237747/create-ticket` | Create Ticket |
 | `POST` | `/contact` | Contact us |
 | `POST` | `/flights/:offer_id` | Pending Trip |
@@ -89,6 +88,8 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `POST` | `/profile/update-password` | Update password |
 | `POST` | `/profile/verify-alt-phone` | Verify Alt phone |
 | `POST` | `/profile/wallet/:amount/charge` | Charge |
+| `PUT` | `/buses/orders/:id/cancel` | cancel |
+| `PUT` | `/private/orders/:id/cancel` | cancel |
 | `PUT` | `/profile/address-book/22` | Update |
 | `PUT` | `/profile/firebase/token` | Update Token |
 
@@ -98,7 +99,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 - [Profile](#profile) (25 requests)
 - [Content](#content) (11 requests)
 - [Flights](#flights) (8 requests)
-- [Private](#private) (4 requests)
+- [Private](#private) (5 requests)
 - [Buses](#buses) (8 requests)
 - [Currencies](#currencies) (1 requests)
 - [Collection issues](#collection-issues)
@@ -1752,6 +1753,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
 | `200` | Empty results | ar | — |
+| `200` | Private orders | ar | — |
+| `200` | Private orders | ar | — |
 
 #### 200 — Empty results (ar)
 
@@ -1763,6 +1766,206 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
   "data": [],
   "pagination": {
     "total": 0,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
+#### 200 — Private orders (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Private orders",
+  "errors": {},
+  "data": [
+    {
+      "id": 39,
+      "status": "pending",
+      "price": "1000.00",
+      "currency": "EGP",
+      "rounded": false,
+      "departure_date": "2026-12-20",
+      "return_date": null,
+      "currency_id": 1,
+      "base_currency_id": 1,
+      "exchange_rate": "1.00000000",
+      "from": {
+        "latitude": 30.0314696,
+        "longitude": 31.2612288
+      },
+      "to": {
+        "latitude": 31.182972882989525,
+        "longitude": 29.894801258559188
+      },
+      "trip": {
+        "id": 1,
+        "rounded": true,
+        "go_price": 1000,
+        "round_price": 1500,
+        "currency": "EGP",
+        "status": true,
+        "currency_id": 1,
+        "base_currency_id": 1,
+        "exchange_rate": "1.00000000",
+        "company": {
+          "id": 1,
+          "name": "Sky Travel",
+          "refundability": true,
+          "refund_policy": "Sky Travel",
+          "logo_url": "https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg",
+          "logo_mime_type": "image/jpeg"
+        },
+        "from_location": {
+          "id": 1,
+          "name": "Cairo",
+          "latitude": "30.0441028",
+          "longitude": "31.2408498"
+        },
+        "to_location": {
+          "id": 2,
+          "name": "Alexandria",
+          "latitude": "31.2452475",
+          "longitude": "29.9892346"
+        },
+        "vehicle": {
+          "id": 1,
+          "name": "Hundai",
+          "category_id": 1,
+          "category_name": "Sedan",
+          "seats_number": 5,
+          "model": "Matrix",
+          "year": 2010,
+          "big_bags_count": 4,
+          "small_bags_count": 1,
+          "gear_type": "automatic",
+          "featured_url": "https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg",
+          "featured_mime_type": "image/jpeg"
+        }
+      },
+      "transaction": {
+        "id": 102,
+        "gateway": "myfatoorah",
+        "status": "pending",
+        "paid_at": null,
+        "invoice_url": "https://eg.myfatoorah.com/EGY/ia/…",
+        "meta_data": {
+          "trip_id": 1,
+          "order_id": 39,
+          "invoice_id": 8213800
+        },
+        "created_at": "2026-07-27T21:39:17+03:00"
+      },
+      "can_be_cancel": true,
+      "created_at": "2026-07-27T21:39:17+03:00"
+    }
+  ],
+  "pagination": {
+    "total": 1,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
+#### 200 — Private orders (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Private orders",
+  "errors": {},
+  "data": [
+    {
+      "id": 39,
+      "status": "cancelled",
+      "price": "1000.00",
+      "currency": "EGP",
+      "rounded": false,
+      "departure_date": "2026-12-20",
+      "return_date": null,
+      "currency_id": 1,
+      "base_currency_id": 1,
+      "exchange_rate": "1.00000000",
+      "from": {
+        "latitude": 30.0314696,
+        "longitude": 31.2612288
+      },
+      "to": {
+        "latitude": 31.182972882989525,
+        "longitude": 29.894801258559188
+      },
+      "trip": {
+        "id": 1,
+        "rounded": true,
+        "go_price": 1000,
+        "round_price": 1500,
+        "currency": "EGP",
+        "status": true,
+        "currency_id": 1,
+        "base_currency_id": 1,
+        "exchange_rate": "1.00000000",
+        "company": {
+          "id": 1,
+          "name": "Sky Travel",
+          "refundability": true,
+          "refund_policy": "Sky Travel",
+          "logo_url": "https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg",
+          "logo_mime_type": "image/jpeg"
+        },
+        "from_location": {
+          "id": 1,
+          "name": "Cairo",
+          "latitude": "30.0441028",
+          "longitude": "31.2408498"
+        },
+        "to_location": {
+          "id": 2,
+          "name": "Alexandria",
+          "latitude": "31.2452475",
+          "longitude": "29.9892346"
+        },
+        "vehicle": {
+          "id": 1,
+          "name": "Hundai",
+          "category_id": 1,
+          "category_name": "Sedan",
+          "seats_number": 5,
+          "model": "Matrix",
+          "year": 2010,
+          "big_bags_count": 4,
+          "small_bags_count": 1,
+          "gear_type": "automatic",
+          "featured_url": "https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg",
+          "featured_mime_type": "image/jpeg"
+        }
+      },
+      "transaction": {
+        "id": 102,
+        "gateway": "myfatoorah",
+        "status": "cancelled",
+        "paid_at": null,
+        "invoice_url": "https://eg.myfatoorah.com/EGY/ia/…",
+        "meta_data": {
+          "trip_id": 1,
+          "order_id": 39,
+          "invoice_id": 8213800
+        },
+        "created_at": "2026-07-27T21:39:17+03:00"
+      },
+      "can_be_cancel": false,
+      "created_at": "2026-07-27T21:39:17+03:00"
+    }
+  ],
+  "pagination": {
+    "total": 1,
     "lastPage": 1,
     "perPage": 15,
     "currentPage": 1,
@@ -1790,6 +1993,102 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Private order | ar | — |
+
+#### 200 — Private order (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Private order",
+  "errors": {},
+  "data": {
+    "id": 39,
+    "status": "pending",
+    "price": "1000.00",
+    "currency": "EGP",
+    "rounded": false,
+    "departure_date": "2026-12-20",
+    "return_date": null,
+    "currency_id": 1,
+    "base_currency_id": 1,
+    "exchange_rate": "1.00000000",
+    "from": {
+      "latitude": 30.0314696,
+      "longitude": 31.2612288
+    },
+    "to": {
+      "latitude": 31.182972882989525,
+      "longitude": 29.894801258559188
+    },
+    "trip": {
+      "id": 1,
+      "rounded": true,
+      "go_price": 1000,
+      "round_price": 1500,
+      "currency": "EGP",
+      "status": true,
+      "currency_id": 1,
+      "base_currency_id": 1,
+      "exchange_rate": "1.00000000",
+      "company": {
+        "id": 1,
+        "name": "Sky Travel",
+        "refundability": true,
+        "refund_policy": "Sky Travel",
+        "logo_url": "https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg",
+        "logo_mime_type": "image/jpeg"
+      },
+      "from_location": {
+        "id": 1,
+        "name": "Cairo",
+        "latitude": "30.0441028",
+        "longitude": "31.2408498"
+      },
+      "to_location": {
+        "id": 2,
+        "name": "Alexandria",
+        "latitude": "31.2452475",
+        "longitude": "29.9892346"
+      },
+      "vehicle": {
+        "id": 1,
+        "name": "Hundai",
+        "category_id": 1,
+        "category_name": "Sedan",
+        "seats_number": 5,
+        "model": "Matrix",
+        "year": 2010,
+        "big_bags_count": 4,
+        "small_bags_count": 1,
+        "gear_type": "automatic",
+        "featured_url": "https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg",
+        "featured_mime_type": "image/jpeg"
+      }
+    },
+    "transaction": {
+      "id": 102,
+      "gateway": "myfatoorah",
+      "status": "pending",
+      "paid_at": null,
+      "invoice_url": "https://eg.myfatoorah.com/EGY/ia/…",
+      "meta_data": {
+        "trip_id": 1,
+        "order_id": 39,
+        "invoice_id": 8213800
+      },
+      "created_at": "2026-07-27T21:39:17+03:00"
+    },
+    "can_be_cancel": true,
+    "created_at": "2026-07-27T21:39:17+03:00"
+  }
+}
+```
 
 ### Show profile
 
@@ -3795,6 +4094,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | 2 | `GET` | `/private/trips/:id` | Show Trip Details |
 | 3 | `POST` | `/private/orders` | Orders |
 | 4 | `POST` | `/private/orders/:id/pay` | pay |
+| 5 | `PUT` | `/private/orders/:id/cancel` | cancel |
 
 ### Search
 
@@ -4006,12 +4306,12 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
   "departure": {
     "latitude": "30.0314696",
     "longitude": "31.2612288",
-    "date": "2026-12-20"
+    "date": "2026-12-20 22:00"
   },
   "destination": {
     "latitude": "31.182972882989525",
     "longitude": "29.894801258559188",
-    "date": "2026-12-20"
+    "date": "2026-12-21 01:00"
   }
 }
 ```
@@ -4029,6 +4329,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
 | `401` | Unauthenticated | ar | — |
+| `200` | Order created | ar | — |
 
 #### 401 — Unauthenticated (ar)
 
@@ -4038,6 +4339,96 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
   "message": "Unauthenticated",
   "errors": {},
   "data": {}
+}
+```
+
+#### 200 — Order created (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Order created",
+  "errors": {},
+  "data": {
+    "id": 39,
+    "status": "pending",
+    "price": "1000.00",
+    "currency": "EGP",
+    "rounded": false,
+    "departure_date": "2026-12-20",
+    "return_date": null,
+    "currency_id": 1,
+    "base_currency_id": 1,
+    "exchange_rate": "1.00000000",
+    "from": {
+      "latitude": 30.0314696,
+      "longitude": 31.2612288
+    },
+    "to": {
+      "latitude": 31.182972882989525,
+      "longitude": 29.894801258559188
+    },
+    "trip": {
+      "id": 1,
+      "rounded": true,
+      "go_price": 1000,
+      "round_price": 1500,
+      "currency": "EGP",
+      "status": true,
+      "currency_id": 1,
+      "base_currency_id": 1,
+      "exchange_rate": "1.00000000",
+      "company": {
+        "id": 1,
+        "name": "Sky Travel",
+        "refundability": true,
+        "refund_policy": "Sky Travel",
+        "logo_url": "https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg",
+        "logo_mime_type": "image/jpeg"
+      },
+      "from_location": {
+        "id": 1,
+        "name": "Cairo",
+        "latitude": "30.0441028",
+        "longitude": "31.2408498"
+      },
+      "to_location": {
+        "id": 2,
+        "name": "Alexandria",
+        "latitude": "31.2452475",
+        "longitude": "29.9892346"
+      },
+      "vehicle": {
+        "id": 1,
+        "name": "Hundai",
+        "category_id": 1,
+        "category_name": "Sedan",
+        "seats_number": 5,
+        "model": "Matrix",
+        "year": 2010,
+        "big_bags_count": 4,
+        "small_bags_count": 1,
+        "gear_type": "automatic",
+        "featured_url": "https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg",
+        "featured_mime_type": "image/jpeg"
+      }
+    },
+    "transaction": {
+      "id": 102,
+      "gateway": "myfatoorah",
+      "status": "pending",
+      "paid_at": null,
+      "invoice_url": "https://eg.myfatoorah.com/EGY/ia/…",
+      "meta_data": {
+        "trip_id": 1,
+        "order_id": 39,
+        "invoice_id": 8213800
+      },
+      "created_at": "2026-07-27T21:39:17+03:00"
+    },
+    "can_be_cancel": true,
+    "created_at": "2026-07-27T21:39:17+03:00"
+  }
 }
 ```
 
@@ -4094,6 +4485,118 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 }
 ```
 
+### cancel
+
+| | |
+|---|---|
+| **Method** | `PUT` |
+| **Path** | `/private/orders/:id/cancel` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/private/orders/:id/cancel` |
+| **Auth** | Bearer token required |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | canceled | ar | — |
+
+#### 200 — canceled (ar)
+
+```json
+{
+  "status": 200,
+  "message": "canceled",
+  "errors": {},
+  "data": {
+    "id": 39,
+    "status": "cancelled",
+    "price": "1000.00",
+    "currency": "EGP",
+    "rounded": false,
+    "departure_date": "2026-12-20",
+    "return_date": null,
+    "currency_id": 1,
+    "base_currency_id": 1,
+    "exchange_rate": "1.00000000",
+    "from": {
+      "latitude": 30.0314696,
+      "longitude": 31.2612288
+    },
+    "to": {
+      "latitude": 31.182972882989525,
+      "longitude": 29.894801258559188
+    },
+    "trip": {
+      "id": 1,
+      "rounded": true,
+      "go_price": 1000,
+      "round_price": 1500,
+      "currency": "EGP",
+      "status": true,
+      "currency_id": 1,
+      "base_currency_id": 1,
+      "exchange_rate": "1.00000000",
+      "company": {
+        "id": 1,
+        "name": "Sky Travel",
+        "refundability": true,
+        "refund_policy": "Sky Travel",
+        "logo_url": "https://demo.safaria.travel/storage/15/6a1f0a7b628ff_images-(1).jpeg",
+        "logo_mime_type": "image/jpeg"
+      },
+      "from_location": {
+        "id": 1,
+        "name": "Cairo",
+        "latitude": "30.0441028",
+        "longitude": "31.2408498"
+      },
+      "to_location": {
+        "id": 2,
+        "name": "Alexandria",
+        "latitude": "31.2452475",
+        "longitude": "29.9892346"
+      },
+      "vehicle": {
+        "id": 1,
+        "name": "Hundai",
+        "category_id": 1,
+        "category_name": "Sedan",
+        "seats_number": 5,
+        "model": "Matrix",
+        "year": 2010,
+        "big_bags_count": 4,
+        "small_bags_count": 1,
+        "gear_type": "automatic",
+        "featured_url": "https://demo.safaria.travel/storage/16/6a1f0aecdea34_large.jpg",
+        "featured_mime_type": "image/jpeg"
+      }
+    },
+    "transaction": {
+      "id": 102,
+      "gateway": "myfatoorah",
+      "status": "cancelled",
+      "paid_at": null,
+      "invoice_url": "https://eg.myfatoorah.com/EGY/ia/…",
+      "meta_data": {
+        "trip_id": 1,
+        "order_id": 39,
+        "invoice_id": 8213800
+      },
+      "created_at": "2026-07-27T21:39:17+03:00"
+    },
+    "can_be_cancel": false,
+    "created_at": "2026-07-27T21:39:17+03:00"
+  }
+}
+```
+
 ## Buses
 
 | # | Method | Path | Name |
@@ -4104,8 +4607,8 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | 4 | `GET` | `/buses/trips` | Search trips |
 | 5 | `GET` | `/buses/trips/236510` | Search details |
 | 6 | `GET` | `/buses/trips/236510/seats` | Seats |
-| 7 | `POST` | `/buses/trips/237747/create-ticket` | Create Ticket |
-| 8 | `POST` | `/buses/orders/:id/cancel` | cancel |
+| 7 | `PUT` | `/buses/orders/:id/cancel` | cancel |
+| 8 | `POST` | `/buses/trips/237747/create-ticket` | Create Ticket |
 
 ### Response envelope
 
@@ -5642,6 +6145,22 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 }
 ```
 
+### cancel
+
+| | |
+|---|---|
+| **Method** | `PUT` |
+| **Path** | `/buses/orders/:id/cancel` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/orders/:id/cancel` |
+| **Auth** | Bearer token required |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
 ### Create Ticket
 
 | | |
@@ -5921,22 +6440,6 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
   }
 }
 ```
-
-### cancel
-
-| | |
-|---|---|
-| **Method** | `POST` |
-| **Path** | `/buses/orders/:id/cancel` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/buses/orders/:id/cancel` |
-| **Auth** | Bearer token required |
-
-**Headers:**
-
-| Header | Value |
-|--------|-------|
-| `Accept` | application/json |
-| `Accept-Language` | `ar` \| `en` (app locale) |
 
 ## Currencies
 
