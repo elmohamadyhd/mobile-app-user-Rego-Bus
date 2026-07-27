@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
@@ -160,15 +161,8 @@ class _CarTierResultsScreenState extends ConsumerState<CarTierResultsScreen> {
             quote: quote,
             rounded: rounded,
             onTap: () {
-              final messenger = ScaffoldMessenger.of(context);
-              messenger
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.carDetailsComingSoon),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
+              ref.read(carBookingProvider.notifier).selectQuote(quote);
+              context.push(CarRoutes.details);
             },
           );
         },

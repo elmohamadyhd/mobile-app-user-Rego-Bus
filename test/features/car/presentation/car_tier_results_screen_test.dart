@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:safaria/features/car/domain/entities/car_place.dart';
 import 'package:safaria/features/car/domain/entities/car_search_params.dart';
+import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/car_tier_results_screen.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/features/car/presentation/widgets/car_tier_card.dart';
@@ -30,28 +32,39 @@ void main() {
     departDate: DateTime(2026, 7, 31),
   );
 
-  Future<void> pumpResults(WidgetTester tester) async {
+  Future<(GoRouter, ProviderContainer)> pumpResults(
+    WidgetTester tester,
+  ) async {
+    final repo = FakeCarRepository(
+      quotesResult: [FakeCarRepository.sampleQuote],
+    );
+    final router = GoRouter(
+      initialLocation: CarRoutes.results,
+      routes: carRoutes(),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        carRepositoryProvider.overrideWithValue(repo),
+      ],
+    );
+    addTearDown(container.dispose);
+    addTearDown(router.dispose);
+
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          carRepositoryProvider.overrideWithValue(
-            FakeCarRepository(quotesResult: [FakeCarRepository.sampleQuote]),
-          ),
-        ],
-        child: const MaterialApp(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: Locale('en'),
-          home: CarTierResultsScreen(),
+          locale: const Locale('en'),
+          routerConfig: router,
         ),
       ),
     );
 
-    final ctx = tester.element(find.byType(CarTierResultsScreen));
-    await ProviderScope.containerOf(ctx)
-        .read(carBookingProvider.notifier)
-        .searchQuotes(params);
+    await container.read(carBookingProvider.notifier).searchQuotes(params);
     await tester.pumpAndSettle();
+    return (router, container);
   }
 
   testWidgets('shows quote card and no Continue button', (tester) async {
@@ -63,13 +76,18 @@ void main() {
     expect(find.text('Continue'), findsNothing);
   });
 
-  testWidgets('tapping a card shows details coming soon snackbar',
+  testWidgets('tapping a quote card selects it and opens details',
       (tester) async {
-    await pumpResults(tester);
+    final (router, container) = await pumpResults(tester);
 
     await tester.tap(find.byType(CarTierCard));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    expect(find.text('Details coming soon'), findsOneWidget);
+    expect(
+      container.read(carBookingProvider).selectedQuote?.id,
+      FakeCarRepository.sampleQuote.id,
+    );
+    expect(router.state.uri.path, CarRoutes.details);
+    expect(find.byType(CarTierResultsScreen), findsNothing);
   });
 }
