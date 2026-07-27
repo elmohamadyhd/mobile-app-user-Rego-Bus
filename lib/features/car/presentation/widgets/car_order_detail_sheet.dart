@@ -96,7 +96,7 @@ class _CarOrderDetailSheet extends ConsumerWidget {
                     _HeaderSection(order: order),
                     if (hasRoute) ...[
                       const SizedBox(height: AppSpacing.lg),
-                      _RouteSection(trip: trip as CarTripQuote, l10n: l10n),
+                      _RouteSection(trip: trip, l10n: l10n),
                     ],
                     const SizedBox(height: AppSpacing.lg),
                     _TripInfoSection(order: order, l10n: l10n),
