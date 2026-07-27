@@ -116,8 +116,8 @@ Extend `CarBookingState` (names may vary; intent is fixed):
   skeleton while quote is already shown)
 - `tripDetailsHardError` — non-null on 404 (or equivalent “gone”); drives hard
   error body
-- `tripDetailsSoftError` — non-null on other logged-in failures; drives banner /
-  SnackBar over usable UI
+- `tripDetailsSoftError` — non-null on other logged-in failures; drives the
+  persistent soft-error banner over usable UI
 
 `loadTripDetails` clears prior details errors at start. Leaving the screen may
 clear soft/hard details errors (implementation detail in plan); do not clear
