@@ -24,4 +24,9 @@ class CarApi {
     );
     return res.data;
   }
+
+  Future<dynamic> getTrip(int id) async {
+    final res = await _dio.get('/private/trips/$id');
+    return res.data;
+  }
 }

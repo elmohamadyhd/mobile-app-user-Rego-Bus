@@ -17,6 +17,16 @@ abstract final class CarDtoMapper {
     return data.whereType<Map<String, dynamic>>().map(quoteFromJson).toList();
   }
 
+  static CarTripQuote quoteFromDetailsEnvelope(dynamic body) {
+    final envelope = body as Map<String, dynamic>;
+    ensureSuccess(envelope);
+    final data = envelope['data'];
+    if (data is! Map<String, dynamic>) {
+      throw ApiException.fromEnvelope(envelope);
+    }
+    return quoteFromJson(data);
+  }
+
   static CarTripQuote quoteFromJson(Map<String, dynamic> json) {
     final company = json['company'];
     final from = json['from_location'];

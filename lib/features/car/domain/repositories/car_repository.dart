@@ -3,4 +3,6 @@ import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
 
 abstract interface class CarRepository {
   Future<List<CarTripQuote>> searchQuotes(CarSearchParams params);
+
+  Future<CarTripQuote> getTrip(int id);
 }

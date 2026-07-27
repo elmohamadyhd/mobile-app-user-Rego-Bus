@@ -26,6 +26,14 @@ class CarRepositoryImpl implements CarRepository {
     });
   }
 
+  @override
+  Future<CarTripQuote> getTrip(int id) {
+    return _guard(() async {
+      final body = await _api.getTrip(id);
+      return CarDtoMapper.quoteFromDetailsEnvelope(body);
+    });
+  }
+
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
       return await action();
