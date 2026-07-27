@@ -7,7 +7,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 import '../../fake_car_repository.dart';
 
 void main() {
-  testWidgets('shows company, price, seats chip, and selection mark',
+  testWidgets('shows company, price, seats chip, and forward chevron',
       (tester) async {
     const quote = FakeCarRepository.sampleQuote;
     await tester.pumpWidget(
@@ -19,7 +19,6 @@ void main() {
           body: CarTierCard(
             quote: quote,
             rounded: false,
-            selected: true,
             onTap: () {},
           ),
         ),
@@ -28,12 +27,35 @@ void main() {
 
     expect(find.text('Sky Travel'), findsOneWidget);
     expect(find.textContaining('69.87'), findsOneWidget);
-    expect(find.textContaining('5'), findsWidgets);
     expect(find.text('Refundable'), findsOneWidget);
-    expect(find.byIcon(AppIcons.check), findsOneWidget);
+    expect(find.byIcon(AppIcons.check), findsNothing);
+    expect(find.byIcon(AppIcons.forward), findsOneWidget);
     expect(find.byIcon(AppIcons.seats), findsOneWidget);
     expect(find.byIcon(AppIcons.luggage), findsOneWidget);
     expect(find.byIcon(AppIcons.gear), findsOneWidget);
+  });
+
+  testWidgets('tapping the card invokes onTap', (tester) async {
+    var taps = 0;
+    const quote = FakeCarRepository.sampleQuote;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: Scaffold(
+          body: CarTierCard(
+            quote: quote,
+            rounded: false,
+            onTap: () => taps++,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(CarTierCard));
+    await tester.pump();
+    expect(taps, 1);
   });
 
   testWidgets('renders under Arabic locale', (tester) async {
@@ -47,7 +69,6 @@ void main() {
           body: CarTierCard(
             quote: quote,
             rounded: false,
-            selected: false,
             onTap: () {},
           ),
         ),
@@ -56,5 +77,6 @@ void main() {
 
     expect(find.text('Sky Travel'), findsOneWidget);
     expect(find.text('قابل للاسترداد'), findsOneWidget);
+    expect(find.byIcon(AppIcons.forward), findsOneWidget);
   });
 }
