@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 
-import 'package:safaria/features/car/presentation/car_confirm_screen.dart';
 import 'package:safaria/features/car/presentation/car_payment_pending_screen.dart';
 import 'package:safaria/features/car/presentation/car_payment_webview_screen.dart';
 import 'package:safaria/features/car/presentation/car_place_picker_args.dart';
@@ -13,7 +12,6 @@ abstract final class CarRoutes {
   static const results = '/car/results';
   static const placePicker = '/car/place-picker';
   static const details = '/car/details';
-  static const confirm = '/car/confirm';
   static const pay = '/car/pay';
   static const pending = '/car/pending';
   static const voucher = '/car/voucher';
@@ -27,10 +25,6 @@ List<RouteBase> carRoutes() => [
       GoRoute(
         path: CarRoutes.details,
         builder: (context, state) => const CarTripDetailsScreen(),
-      ),
-      GoRoute(
-        path: CarRoutes.confirm,
-        builder: (context, state) => const CarConfirmScreen(),
       ),
       GoRoute(
         path: CarRoutes.pay,

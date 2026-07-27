@@ -118,7 +118,35 @@ void main() {
     expect(find.text(l10n.carTripDetailsNotFound), findsOneWidget);
   });
 
-  testWidgets('continue navigates to confirm when signed in', (tester) async {
+  testWidgets('pay without terms shows snackbar and does not create order',
+      (tester) async {
+    final repo = FakeCarRepository();
+    final l10n = lookupAppLocalizations(const Locale('ar'));
+    await pumpDetails(tester, repo: repo, isGuest: false);
+
+    await tester.tap(find.byType(PrimaryButton));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text(l10n.confirmTermsRequired), findsOneWidget);
+    expect(repo.createCallCount, 0);
+  });
+
+  testWidgets('pay with terms accepted creates order', (tester) async {
+    final repo = FakeCarRepository();
+    await pumpDetails(tester, repo: repo, isGuest: false);
+
+    await tester.tap(find.byType(Checkbox));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(PrimaryButton));
+    await tester.pumpAndSettle();
+
+    expect(repo.createCallCount, 1);
+    expect(repo.lastCreateRequest, isNotNull);
+  });
+
+  testWidgets('pay with terms navigates to payment when invoice is ready',
+      (tester) async {
     final repo = FakeCarRepository();
     final container = ProviderContainer(
       overrides: [
@@ -141,9 +169,9 @@ void main() {
           builder: (context, state) => const CarTripDetailsScreen(),
         ),
         GoRoute(
-          path: CarRoutes.confirm,
+          path: CarRoutes.pay,
           builder: (context, state) =>
-              const Scaffold(body: Text('confirm-screen')),
+              const Scaffold(body: Text('pay-screen')),
         ),
       ],
     );
@@ -161,9 +189,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byType(Checkbox));
+    await tester.pumpAndSettle();
     await tester.tap(find.byType(PrimaryButton));
     await tester.pumpAndSettle();
 
-    expect(find.text('confirm-screen'), findsOneWidget);
+    expect(find.text('pay-screen'), findsOneWidget);
+    expect(repo.createCallCount, 1);
   });
 }

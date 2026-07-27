@@ -15,6 +15,8 @@ import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
 import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/pages/cms_page_paths.dart';
+import 'package:safaria/shared/widgets/booking_terms_checkbox.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
 class CarTripDetailsScreen extends ConsumerStatefulWidget {
@@ -27,6 +29,7 @@ class CarTripDetailsScreen extends ConsumerStatefulWidget {
 
 class _CarTripDetailsScreenState extends ConsumerState<CarTripDetailsScreen> {
   var _didRequestRefresh = false;
+  var _termsAccepted = false;
 
   @override
   void initState() {
@@ -63,6 +66,29 @@ class _CarTripDetailsScreenState extends ConsumerState<CarTripDetailsScreen> {
     });
 
     final subtitle = _routeLabel(state, quote);
+    final isCreating = state.status == CarBookingStatus.creatingOrder;
+
+    ref.listen<CarBookingState>(carBookingProvider, (prev, next) {
+      if (next.status == CarBookingStatus.awaitingPayment) {
+        context.push(CarRoutes.pay);
+      } else if (next.status == CarBookingStatus.confirmed) {
+        context.go(CarRoutes.voucher);
+      } else if (next.status == CarBookingStatus.error &&
+          next.bookingError != null &&
+          prev?.status == CarBookingStatus.creatingOrder) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                next.bookingError!.isEmpty
+                    ? l10n.carConfirmCreateError
+                    : next.bookingError!,
+              ),
+            ),
+          );
+      }
+    });
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
@@ -72,11 +98,13 @@ class _CarTripDetailsScreenState extends ConsumerState<CarTripDetailsScreen> {
       ),
       bottomNavigationBar: quote == null || state.tripDetailsHardError != null
           ? null
-          : _PriceFooter(
-              quote: quote,
-              rounded: rounded,
+          : _PayFooter(
               l10n: l10n,
-              onContinue: () => _onContinue(context, guestMode),
+              termsAccepted: _termsAccepted,
+              isCreating: isCreating,
+              onTermsChanged: (v) => setState(() => _termsAccepted = v),
+              onOpenTerms: () => context.push(CmsPagePaths.terms),
+              onPay: () => _onPayNow(context, guestMode),
             ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -156,7 +184,7 @@ class _CarTripDetailsScreenState extends ConsumerState<CarTripDetailsScreen> {
     return '${quote.fromLocation.name} → ${quote.toLocation.name}';
   }
 
-  void _onContinue(BuildContext context, bool? guestMode) {
+  void _onPayNow(BuildContext context, bool? guestMode) {
     final l10n = AppLocalizations.of(context);
     if (guestMode != false) {
       showGuestGate(
@@ -167,7 +195,14 @@ class _CarTripDetailsScreenState extends ConsumerState<CarTripDetailsScreen> {
       return;
     }
 
-    context.push(CarRoutes.confirm);
+    if (!_termsAccepted) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.confirmTermsRequired)));
+      return;
+    }
+
+    ref.read(carBookingProvider.notifier).createOrder();
   }
 }
 
@@ -590,61 +625,47 @@ class _SpecChip extends StatelessWidget {
   }
 }
 
-class _PriceFooter extends StatelessWidget {
-  const _PriceFooter({
-    required this.quote,
-    required this.rounded,
+class _PayFooter extends StatelessWidget {
+  const _PayFooter({
     required this.l10n,
-    required this.onContinue,
+    required this.termsAccepted,
+    required this.isCreating,
+    required this.onTermsChanged,
+    required this.onOpenTerms,
+    required this.onPay,
   });
 
-  final CarTripQuote quote;
-  final bool rounded;
   final AppLocalizations l10n;
-  final VoidCallback onContinue;
+  final bool termsAccepted;
+  final bool isCreating;
+  final ValueChanged<bool> onTermsChanged;
+  final VoidCallback onOpenTerms;
+  final VoidCallback onPay;
 
   @override
   Widget build(BuildContext context) {
-    final price = quote.priceFor(rounded: rounded);
-    final priceText = NumberFormat.decimalPattern(
-      Localizations.localeOf(context).toString(),
-    ).format(price);
-
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: priceText,
-                          style: AppTypography.h2.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const TextSpan(text: ' '),
-                        TextSpan(
-                          text: quote.currency,
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textMuted,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            BookingTermsCheckbox(
+              value: termsAccepted,
+              onChanged: onTermsChanged,
+              onOpenTerms: onOpenTerms,
             ),
-            const SizedBox(height: AppSpacing.sm),
-            PrimaryButton(label: l10n.carContinue, onPressed: onContinue),
+            const SizedBox(height: AppSpacing.md),
+            PrimaryButton(
+              label: l10n.carConfirmPay,
+              loading: isCreating,
+              onPressed: isCreating ? null : onPay,
+            ),
           ],
         ),
       ),
