@@ -6,7 +6,9 @@ import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
+import 'package:safaria/features/bus/presentation/widgets/open_stop_in_google_maps.dart';
 import 'package:safaria/features/bus/presentation/widgets/operator_mark.dart';
 import 'package:safaria/features/bus/presentation/widgets/order_info_row.dart';
 import 'package:safaria/features/bus/presentation/widgets/order_status_badge.dart';
@@ -53,9 +55,7 @@ class _BusOrderDetailSheet extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final order = ref.watch(busOrderDetailProvider(seed.orderId)).value ?? seed;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.85;
-    final hasRoute = _hasLabel(order.pickupStopLabel) ||
-        _hasLabel(order.dropoffStopLabel) ||
-        order.dateTimeLabel.trim().isNotEmpty;
+    final hasRoute = order.pickupStop != null || order.dropoffStop != null;
 
     return SafeArea(
       child: ConstrainedBox(
@@ -193,28 +193,109 @@ class _RouteSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rows = <Widget>[];
-    void addRow(String label, String? value) {
-      if (!_hasLabel(value)) return;
-      if (rows.isNotEmpty) rows.add(const SizedBox(height: AppSpacing.xs));
-      rows.add(OrderInfoRow(label: label, value: value!));
-    }
-
-    addRow(l10n.eTicketFrom, order.pickupStopLabel);
-    addRow(l10n.eTicketTo, order.dropoffStopLabel);
-    if (order.dateTimeLabel.trim().isNotEmpty) {
-      if (rows.isNotEmpty) rows.add(const SizedBox(height: AppSpacing.xs));
-      rows.add(
-        OrderInfoRow(label: l10n.eTicketDate, value: order.dateTimeLabel),
-      );
-    }
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _SectionLabel(l10n.orderDetailRouteSection),
-        ...rows,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _RouteStopSide(
+                stop: order.pickupStop,
+                alignEnd: false,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.sm,
+              ),
+              child: Transform.flip(
+                flipX: isRtl,
+                child: const Icon(
+                  AppIcons.forward,
+                  size: 18,
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ),
+            Expanded(
+              child: _RouteStopSide(
+                stop: order.dropoffStop,
+                alignEnd: true,
+              ),
+            ),
+          ],
+        ),
       ],
+    );
+  }
+}
+
+class _RouteStopSide extends StatelessWidget {
+  const _RouteStopSide({
+    required this.stop,
+    required this.alignEnd,
+  });
+
+  final BusStop? stop;
+  final bool alignEnd;
+
+  static String _formatTime(DateTime? dt) {
+    if (dt == null) return '--:--';
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final name = stop?.name.trim() ?? '';
+    final canOpenMaps = name.isNotEmpty && stop != null;
+    final crossAlign =
+        alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    final textAlign = alignEnd ? TextAlign.end : TextAlign.start;
+
+    final content = ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: Column(
+          crossAxisAlignment: crossAlign,
+          children: [
+            Text(
+              _formatTime(stop?.arrivalAt),
+              style: AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+              textAlign: textAlign,
+            ),
+            if (name.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.xxs),
+              Text(
+                name,
+                style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
+                textAlign: textAlign,
+              ),
+              const SizedBox(height: AppSpacing.xxs),
+              const Icon(
+                AppIcons.locationTo,
+                size: 16,
+                color: AppColors.textMuted,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+
+    if (!canOpenMaps) return content;
+
+    return InkWell(
+      onTap: () => confirmAndOpenStopInGoogleMaps(context, stop: stop!),
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      child: content,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
 
 part 'bus_order.freezed.dart';
@@ -44,6 +45,8 @@ abstract class BusOrder with _$BusOrder {
     required String dateTimeLabel,
     String? pickupStopLabel,
     String? dropoffStopLabel,
+    BusStop? pickupStop,
+    BusStop? dropoffStop,
     required List<BusTicketLine> ticketLines,
     required String total,
     required bool canCancel,

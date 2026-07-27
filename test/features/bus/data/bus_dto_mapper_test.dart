@@ -185,6 +185,8 @@ void main() {
         expect(pending.ticketLines.first.seatNumber, '1');
         expect(pending.pickupStopLabel, 'Cairo Main Station');
         expect(pending.dropoffStopLabel, 'Alexandria Terminal');
+        expect(pending.pickupStop?.name, 'Cairo Main Station');
+        expect(pending.dropoffStop?.name, 'Alexandria Terminal');
         expect(pending.total, 'EGP 219.35');
         expect(pending.canCancel, isTrue);
         expect(
@@ -237,6 +239,21 @@ void main() {
           order.cancelUrl,
           'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
         );
+      });
+
+      test('maps station_from/to into BusStop with times and coords', () {
+        final order = BusDtoMapper.orderFromEnvelope(busOrderShowEnvelope);
+
+        expect(order.pickupStop, isNotNull);
+        expect(order.pickupStop!.name, 'Sekka Club');
+        expect(order.pickupStop!.arrivalAt, DateTime(2026, 7, 30, 5, 45));
+        expect(order.pickupStop!.latitude, closeTo(30.057569550064, 1e-9));
+        expect(order.pickupStop!.longitude, closeTo(31.304265372823, 1e-9));
+        expect(order.dropoffStop, isNotNull);
+        expect(order.dropoffStop!.name, 'Moharam Bek');
+        expect(order.dropoffStop!.arrivalAt, DateTime(2026, 7, 30, 10, 0));
+        expect(order.pickupStopLabel, 'Sekka Club');
+        expect(order.dropoffStopLabel, 'Moharam Bek');
       });
 
       test('throws ApiException for the documented not-found envelope', () {

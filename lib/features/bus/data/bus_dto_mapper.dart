@@ -335,8 +335,8 @@ abstract final class BusDtoMapper {
       paymentInvoiceId = _string(paymentData['invoice_id']);
     }
 
-    final pickupStopLabel = _stationName(json['station_from']);
-    final dropoffStopLabel = _stationName(json['station_to']);
+    final pickupStop = _orderStationFromJson(json['station_from']);
+    final dropoffStop = _orderStationFromJson(json['station_to']);
 
     return BusOrder(
       orderId: _string(json['id']) ?? '',
@@ -347,8 +347,10 @@ abstract final class BusDtoMapper {
       statusText: _string(json['status']) ?? '',
       statusKind: orderStatusKind(statusCode, isConfirmedFlag),
       dateTimeLabel: _string(json['date_time']) ?? _string(json['date']) ?? '',
-      pickupStopLabel: pickupStopLabel,
-      dropoffStopLabel: dropoffStopLabel,
+      pickupStopLabel: pickupStop?.name,
+      dropoffStopLabel: dropoffStop?.name,
+      pickupStop: pickupStop,
+      dropoffStop: dropoffStop,
       ticketLines: ticketLinesFromJson(json['tickets']),
       total: _string(json['total']) ?? '',
       canCancel: json['can_be_cancel'] == true,
@@ -464,11 +466,11 @@ abstract final class BusDtoMapper {
     return (url != null && url.isNotEmpty) ? url : null;
   }
 
-  static String? _stationName(dynamic value) {
+  static BusStop? _orderStationFromJson(dynamic value) {
     if (value is! Map<String, dynamic>) return null;
-    final name = _string(value['name']);
-    if (name == null || name.trim().isEmpty) return null;
-    return name;
+    final stop = stopFromJson(value);
+    if (stop.name.trim().isEmpty) return null;
+    return stop;
   }
 
   static DateTime? _parseDateTime(String? primary, String? fallbackDate) {

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_order_detail_sheet.dart';
@@ -12,7 +13,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 
 import '../../fake_bus_repository.dart';
 
-BusOrder _seedOrder() => const BusOrder(
+BusOrder _seedOrder() => BusOrder(
       orderId: '1475',
       bookingNumber: '000001475',
       operatorName: 'SuperJet',
@@ -22,12 +23,14 @@ BusOrder _seedOrder() => const BusOrder(
       dateTimeLabel: '2026-07-30 08:45 AM',
       pickupStopLabel: 'Cairo Main Station',
       dropoffStopLabel: 'Alexandria Terminal',
-      ticketLines: [BusTicketLine(id: 2076, seatNumber: '1', price: '205.00')],
+      ticketLines: const [
+        BusTicketLine(id: 2076, seatNumber: '1', price: '205.00'),
+      ],
       total: 'EGP 219.35',
       canCancel: true,
       gatewayCheckoutUrl: 'https://demo.MyFatoorah.com/pay',
       invoiceUrl: 'https://portal.wdenytravel.com/orders/1475/invoice',
-      fare: BusOrderFare(
+      fare: const BusOrderFare(
         originalTicketsTotal: 'EGP 205.00',
         discount: 'EGP 0.00',
         walletDiscount: 'EGP 0.00',
@@ -42,6 +45,28 @@ BusOrder _seedOrder() => const BusOrder(
       tripId: '145261',
       gatewayOrderId: '5077099',
       tripType: 'Buses',
+    );
+
+BusOrder _seedWithTripStops() => _seedOrder().copyWith(
+      dateTimeLabel: '2026-07-30 12:01 AM',
+      pickupStop: BusStop(
+        locationId: '940',
+        name: 'Sekka Club',
+        cityId: 1,
+        cityName: 'Cairo',
+        arrivalAt: DateTime(2026, 7, 30, 5, 45),
+        latitude: 30.05,
+        longitude: 31.30,
+      ),
+      dropoffStop: BusStop(
+        locationId: '945',
+        name: 'Moharam Bek',
+        cityId: 2,
+        cityName: 'Alexandria',
+        arrivalAt: DateTime(2026, 7, 30, 10, 0),
+        latitude: 31.17,
+        longitude: 29.91,
+      ),
     );
 
 Future<void> _pumpSheet(
@@ -135,5 +160,31 @@ void main() {
     expect(find.text('EGP 12.00'), findsOneWidget);
     expect(find.text('Wallet discount'), findsOneWidget);
     expect(find.text('EGP 5.00'), findsOneWidget);
+  });
+
+  testWidgets('shows side-by-side departure and arrival times', (tester) async {
+    final repo = FakeBusRepository()
+      ..orderByIdCompleter = Completer<BusOrder>();
+    await _pumpSheet(tester, repo: repo, seed: _seedWithTripStops());
+
+    expect(find.text('05:45'), findsOneWidget);
+    expect(find.text('10:00'), findsOneWidget);
+    expect(find.text('Sekka Club'), findsOneWidget);
+    expect(find.text('Moharam Bek'), findsOneWidget);
+    expect(find.text('2026-07-30 12:01 AM'), findsNothing);
+    expect(find.text('Cairo'), findsNothing);
+    expect(find.text('Alexandria'), findsNothing);
+  });
+
+  testWidgets('tapping a station opens Maps confirm dialog', (tester) async {
+    final repo = FakeBusRepository()
+      ..orderByIdCompleter = Completer<BusOrder>();
+    await _pumpSheet(tester, repo: repo, seed: _seedWithTripStops());
+
+    await tester.tap(find.text('Sekka Club'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('View Sekka Club on Google Maps?'), findsOneWidget);
+    expect(find.text('Open Google Maps'), findsOneWidget);
   });
 }
