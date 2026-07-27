@@ -10,8 +10,8 @@
 | **Collection** | Wadeny |
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
-| **Total requests** | 64 |
-| **Documented saved responses** | 95 |
+| **Total requests** | 65 |
+| **Documented saved responses** | 97 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -73,7 +73,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `POST` | `/auth/validate-otp` | Validate OTP |
 | `POST` | `/auth/verify-otp` | OTP Verification |
 | `POST` | `/buses/orders/:id/cancel` | cancel |
-| `POST` | `/buses/trips/236437/create-ticket` | Create Ticket |
+| `POST` | `/buses/trips/237747/create-ticket` | Create Ticket |
 | `POST` | `/contact` | Contact us |
 | `POST` | `/flights/:offer_id` | Pending Trip |
 | `POST` | `/flights/:offer_id/confirm` | Confirm Order |
@@ -81,6 +81,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `POST` | `/flights/:offer_id/passengers` | Add Passenger |
 | `POST` | `/flights/search` | Search |
 | `POST` | `/private/orders` | Orders |
+| `POST` | `/private/orders/:id/pay` | pay |
 | `POST` | `/profile` | Update profile |
 | `POST` | `/profile/address-book` | Create |
 | `POST` | `/profile/tickets` | Create Ticket |
@@ -97,7 +98,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 - [Profile](#profile) (25 requests)
 - [Content](#content) (11 requests)
 - [Flights](#flights) (8 requests)
-- [Private](#private) (3 requests)
+- [Private](#private) (4 requests)
 - [Buses](#buses) (8 requests)
 - [Currencies](#currencies) (1 requests)
 - [Collection issues](#collection-issues)
@@ -1745,6 +1746,31 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Empty results | ar | — |
+
+#### 200 — Empty results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Private orders",
+  "errors": {},
+  "data": [],
+  "pagination": {
+    "total": 0,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
 
 ### Show
 
@@ -3768,6 +3794,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | 1 | `GET` | `/private/search` | Search |
 | 2 | `GET` | `/private/trips/:id` | Show Trip Details |
 | 3 | `POST` | `/private/orders` | Orders |
+| 4 | `POST` | `/private/orders/:id/pay` | pay |
 
 ### Search
 
@@ -3775,7 +3802,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/private/search` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/private/search?from_latitude=30.0314696&from_longitude=31.2612288&to_latitude=31.182972882989525&to_longitude=29.894801258559188&rounded=false` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/private/search?from_latitude=30.0314696&from_longitude=31.2612288&to_latitude=31.182972882989525&to_longitude=29.894801258559188&rounded=false&date=2026-10-10 22:10&return_date=2026-10-12 22:10` |
 | **Auth** | Bearer token required |
 
 **Query parameters:**
@@ -3787,6 +3814,8 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | `to_latitude` | 31.182972882989525 |
 | `to_longitude` | 29.894801258559188 |
 | `rounded` | false |
+| `date` | 2026-10-10 22:10 |
+| `return_date` | 2026-10-12 22:10 |
 
 **Headers:**
 
@@ -4012,6 +4041,59 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 }
 ```
 
+### pay
+
+| | |
+|---|---|
+| **Method** | `POST` |
+| **Path** | `/private/orders/:id/pay` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/private/orders/:id/pay` |
+| **Auth** | Bearer token required |
+
+**Body (JSON):**
+
+```json
+{
+  "trip_id": 1,
+  "rounded": false,
+  "departure": {
+    "latitude": "30.0314696",
+    "longitude": "31.2612288",
+    "date": "2026-12-20"
+  },
+  "destination": {
+    "latitude": "31.182972882989525",
+    "longitude": "29.894801258559188",
+    "date": "2026-12-20"
+  }
+}
+```
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+| `Authorization` | Bearer {{token}} |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `401` | Unauthenticated | ar | — |
+
+#### 401 — Unauthenticated (ar)
+
+```json
+{
+  "status": 401,
+  "message": "Unauthenticated",
+  "errors": {},
+  "data": {}
+}
+```
+
 ## Buses
 
 | # | Method | Path | Name |
@@ -4022,7 +4104,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | 4 | `GET` | `/buses/trips` | Search trips |
 | 5 | `GET` | `/buses/trips/236510` | Search details |
 | 6 | `GET` | `/buses/trips/236510/seats` | Seats |
-| 7 | `POST` | `/buses/trips/236437/create-ticket` | Create Ticket |
+| 7 | `POST` | `/buses/trips/237747/create-ticket` | Create Ticket |
 | 8 | `POST` | `/buses/orders/:id/cancel` | cancel |
 
 ### Response envelope
@@ -5565,23 +5647,38 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 | | |
 |---|---|
 | **Method** | `POST` |
-| **Path** | `/buses/trips/236437/create-ticket` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/236437/create-ticket` |
+| **Path** | `/buses/trips/237747/create-ticket` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/237747/create-ticket` |
 | **Auth** | Bearer token required |
 
 **Body (JSON):**
 
 ```json
+// {
+//   "from_city_id": 1,
+//   "to_city_id": 2,
+//   "from_location_id": "50",
+//   "to_location_id": "22",
+//   "date": "2026-07-29",
+//   "seats": [
+//     {
+//       "seat_type_id": "3",
+//       "seat_id": "3"
+//     }
+//   ],
+//   "payment_method": "myfatoorah",
+//   "currency": "EGP"
+// }
 {
   "from_city_id": 1,
-  "to_city_id": 2,
-  "from_location_id": "50",
-  "to_location_id": "22",
-  "date": "2026-07-29",
+  "to_city_id": 9,
+  "from_location_id": "23",
+  "to_location_id": "19",
+  "date": "2026-07-31",
   "seats": [
     {
-      "seat_type_id": "3",
-      "seat_id": "3"
+      "seat_type_id": "10",
+      "seat_id": "10"
     }
   ],
   "payment_method": "myfatoorah",

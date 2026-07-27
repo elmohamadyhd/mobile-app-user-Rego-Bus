@@ -5733,7 +5733,122 @@
                           ]
                         }
                       },
-                      "response": []
+                      "response": [
+                        {
+                          "name": "List",
+                          "originalRequest": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                              }
+                            ],
+                            "body": {
+                              "mode": "formdata",
+                              "formdata": [
+                                {
+                                  "key": "file",
+                                  "type": "file",
+                                  "src": "/C:/Users/Mahmoud El Boshy/Desktop/download.jpg"
+                                },
+                                {
+                                  "key": "message",
+                                  "value": "test customer",
+                                  "type": "text"
+                                }
+                              ]
+                            },
+                            "url": {
+                              "raw": "{{url}}/profile/private/orders",
+                              "host": [
+                                "{{url}}"
+                              ],
+                              "path": [
+                                "profile",
+                                "private",
+                                "orders"
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": null,
+                          "header": [
+                            {
+                              "key": ":status",
+                              "value": 200
+                            },
+                            {
+                              "key": "date",
+                              "value": "Mon, 27 Jul 2026 15:49:18 GMT"
+                            },
+                            {
+                              "key": "content-type",
+                              "value": "application/json"
+                            },
+                            {
+                              "key": "server",
+                              "value": "cloudflare"
+                            },
+                            {
+                              "key": "nel",
+                              "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                            },
+                            {
+                              "key": "cache-control",
+                              "value": "no-cache, private"
+                            },
+                            {
+                              "key": "x-ratelimit-limit",
+                              "value": "60"
+                            },
+                            {
+                              "key": "x-ratelimit-remaining",
+                              "value": "58"
+                            },
+                            {
+                              "key": "access-control-allow-origin",
+                              "value": "*"
+                            },
+                            {
+                              "key": "x-frame-options",
+                              "value": "SAMEORIGIN"
+                            },
+                            {
+                              "key": "x-xss-protection",
+                              "value": "1; mode=block"
+                            },
+                            {
+                              "key": "x-content-type-options",
+                              "value": "nosniff"
+                            },
+                            {
+                              "key": "cf-cache-status",
+                              "value": "DYNAMIC"
+                            },
+                            {
+                              "key": "report-to",
+                              "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=itZYceAwOiitGmDfpidisLWYQnyeOyegM6uwfEjtrb8IPEtkZtTEq3yFeGU7wNGQAt2PExwpEyUH1i3v1JRfSHG%2BH3Q%2F%2FDHyk7p%2FULsxTkgxzgUet%2F8561qkNLf0Iei%2FVsAYPIro\"}]}"
+                            },
+                            {
+                              "key": "content-encoding",
+                              "value": "br"
+                            },
+                            {
+                              "key": "cf-ray",
+                              "value": "a21ccb185cb8e22f-MRS"
+                            },
+                            {
+                              "key": "alt-svc",
+                              "value": "h3=\":443\"; ma=86400"
+                            }
+                          ],
+                          "cookie": [],
+                          "body": "{\n    \"status\": 200,\n    \"message\": \"Private orders\",\n    \"errors\": {},\n    \"data\": [],\n    \"pagination\": {\n        \"total\": 0,\n        \"lastPage\": 1,\n        \"perPage\": 15,\n        \"currentPage\": 1,\n        \"nextPageUrl\": null,\n        \"previousPageUrl\": null\n    }\n}"
+                        }
+                      ]
                     },
                     {
                       "name": "Show",
@@ -9558,7 +9673,7 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{url}}/private/search?from_latitude=30.0314696&from_longitude=31.2612288&to_latitude=31.182972882989525&to_longitude=29.894801258559188&rounded=false",
+                  "raw": "{{url}}/private/search?from_latitude=30.0314696&from_longitude=31.2612288&to_latitude=31.182972882989525&to_longitude=29.894801258559188&rounded=false&date=2026-10-10 22:10&return_date=2026-10-12 22:10",
                   "host": [
                     "{{url}}"
                   ],
@@ -9586,6 +9701,16 @@
                     {
                       "key": "rounded",
                       "value": "false"
+                    },
+                    {
+                      "key": "date",
+                      "value": "2026-10-10 22:10",
+                      "type": "text"
+                    },
+                    {
+                      "key": "return_date",
+                      "value": "2026-10-12 22:10",
+                      "type": "text"
                     }
                   ]
                 }
@@ -10086,7 +10211,7 @@
                   "bearer": [
                     {
                       "key": "token",
-                      "value": "{{auth_secret_0k48}}",
+                      "value": "{{token}}",
                       "type": "string"
                     }
                   ]
@@ -10122,6 +10247,153 @@
                   "path": [
                     "private",
                     "orders"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Orders",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"trip_id\": 1,\n    \"rounded\": false,\n    \"departure\": {\n        \"latitude\": \"30.0314696\",\n        \"longitude\": \"31.2612288\",\n        \"date\": \"2026-12-20\"\n    },\n    \"destination\": {\n        \"latitude\": \"31.182972882989525\",\n        \"longitude\": \"29.894801258559188\",\n        \"date\": \"2026-12-20\"\n    }\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/private/orders",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "private",
+                        "orders"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": ":status",
+                      "value": 401
+                    },
+                    {
+                      "key": "date",
+                      "value": "Thu, 23 Jul 2026 10:53:00 GMT"
+                    },
+                    {
+                      "key": "content-type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "server",
+                      "value": "cloudflare"
+                    },
+                    {
+                      "key": "nel",
+                      "value": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}"
+                    },
+                    {
+                      "key": "cache-control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "access-control-allow-origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "cf-cache-status",
+                      "value": "DYNAMIC"
+                    },
+                    {
+                      "key": "report-to",
+                      "value": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Rm%2BcZqhxWVrBvrRpr4Bv72%2FmF5%2BhzbrQunKWf3y2ccfWWtvpyAZZBnQYUzOZqMtBraD3EEhXIH%2BWUQLFhM5vIdphLrvaRm62lZbGLH0pA1gC2QOw76rT%2FHR5R%2FsOqOizbftV3VfO\"}]}"
+                    },
+                    {
+                      "key": "cf-ray",
+                      "value": "a1fa238ebd36e289-MRS"
+                    },
+                    {
+                      "key": "alt-svc",
+                      "value": "h3=\":443\"; ma=86400"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": 401,\n    \"message\": \"Unauthenticated\",\n    \"errors\": {},\n    \"data\": {}\n}"
+                }
+              ]
+            },
+            {
+              "name": "pay",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"trip_id\": 1,\n    \"rounded\": false,\n    \"departure\": {\n        \"latitude\": \"30.0314696\",\n        \"longitude\": \"31.2612288\",\n        \"date\": \"2026-12-20\"\n    },\n    \"destination\": {\n        \"latitude\": \"31.182972882989525\",\n        \"longitude\": \"29.894801258559188\",\n        \"date\": \"2026-12-20\"\n    }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/private/orders/:id/pay",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "private",
+                    "orders",
+                    ":id",
+                    "pay"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
                   ]
                 }
               },
@@ -11894,7 +12166,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"from_city_id\": 1,\n  \"to_city_id\": 2,\n  \"from_location_id\": \"50\",\n  \"to_location_id\": \"22\",\n  \"date\": \"2026-07-29\",\n  \"seats\": [\n    {\n      \"seat_type_id\": \"3\",\n      \"seat_id\": \"3\"\n    }\n  ],\n  \"payment_method\": \"myfatoorah\",\n  \"currency\": \"EGP\"\n}",
+                  "raw": "// {\n//   \"from_city_id\": 1,\n//   \"to_city_id\": 2,\n//   \"from_location_id\": \"50\",\n//   \"to_location_id\": \"22\",\n//   \"date\": \"2026-07-29\",\n//   \"seats\": [\n//     {\n//       \"seat_type_id\": \"3\",\n//       \"seat_id\": \"3\"\n//     }\n//   ],\n//   \"payment_method\": \"myfatoorah\",\n//   \"currency\": \"EGP\"\n// }\n{\n  \"from_city_id\": 1,\n  \"to_city_id\": 9,\n  \"from_location_id\": \"23\",\n  \"to_location_id\": \"19\",\n  \"date\": \"2026-07-31\",\n  \"seats\": [\n    {\n      \"seat_type_id\": \"10\",\n      \"seat_id\": \"10\"\n    }\n  ],\n  \"payment_method\": \"myfatoorah\",\n  \"currency\": \"EGP\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -11902,14 +12174,14 @@
                   }
                 },
                 "url": {
-                  "raw": "{{url}}/buses/trips/236437/create-ticket",
+                  "raw": "{{url}}/buses/trips/237747/create-ticket",
                   "host": [
                     "{{url}}"
                   ],
                   "path": [
                     "buses",
                     "trips",
-                    "236437",
+                    "237747",
                     "create-ticket"
                   ]
                 }
@@ -12558,7 +12830,7 @@
     "bearer": [
       {
         "key": "token",
-        "value": "{{auth_secret_0pz1}}",
+        "value": "{{token}}",
         "type": "string"
       }
     ]
