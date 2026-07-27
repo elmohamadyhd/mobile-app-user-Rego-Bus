@@ -8,7 +8,6 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/date_formatting.dart';
 import 'package:safaria/core/utils/responsive.dart';
-import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/auth/presentation/widgets/guest_gate_sheet.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/car/domain/entities/car_search_params.dart';
@@ -16,7 +15,6 @@ import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/features/car/presentation/widgets/car_tier_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
-import 'package:safaria/shared/widgets/primary_button.dart';
 
 class CarTierResultsScreen extends ConsumerStatefulWidget {
   const CarTierResultsScreen({super.key});
@@ -85,11 +83,6 @@ class _CarTierResultsScreenState extends ConsumerState<CarTierResultsScreen> {
             ),
           );
         },
-      ),
-      bottomNavigationBar: _ContinueBar(
-        enabled: state.selectedQuote != null,
-        hintVisible: state.quotes.isNotEmpty && state.selectedQuote == null,
-        onPressed: () => _onContinue(),
       ),
     );
   }
@@ -162,102 +155,23 @@ class _CarTierResultsScreenState extends ConsumerState<CarTierResultsScreen> {
             );
           }
           final quote = state.quotes[index - 1];
-          final selected = state.selectedQuote?.id == quote.id;
           return CarTierCard(
             key: ValueKey(quote.id),
             quote: quote,
             rounded: rounded,
-            selected: selected,
-            onTap: () =>
-                ref.read(carBookingProvider.notifier).selectQuote(quote),
+            onTap: () {
+              final messenger = ScaffoldMessenger.of(context);
+              messenger
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(l10n.carDetailsComingSoon),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+            },
           );
         },
-      ),
-    );
-  }
-
-  Future<void> _onContinue() async {
-    final l10n = AppLocalizations.of(context);
-    final isGuest = ref.read(guestModeProvider).value ?? false;
-    if (isGuest) {
-      await showGuestGate(
-        context,
-        returnTo: CarRoutes.results,
-        body: l10n.guestGateCarBody,
-      );
-      return;
-    }
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(l10n.carBookingComingSoon),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-  }
-}
-
-class _ContinueBar extends StatelessWidget {
-  const _ContinueBar({
-    required this.enabled,
-    required this.hintVisible,
-    required this.onPressed,
-  });
-
-  final bool enabled;
-  final bool hintVisible;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    // Avoid Align/Center here — Scaffold gives bottomNavigationBar a large
-    // max height, and expanding widgets steal the body (zero-height list).
-    return Material(
-      color: AppColors.bgElevated,
-      elevation: 8,
-      shadowColor: AppColors.textPrimary.withValues(alpha: 0.12),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(
-            AppSpacing.md,
-            AppSpacing.sm,
-            AppSpacing.md,
-            AppSpacing.md,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (hintVisible) ...[
-                Text(
-                  l10n.carSelectVehicleHint,
-                  textAlign: TextAlign.center,
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.textMuted,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-              ],
-              Center(
-                heightFactor: 1,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: AppBreakpoints.maxContentWidth,
-                  ),
-                  child: PrimaryButton(
-                    label: l10n.carContinue,
-                    onPressed: enabled ? onPressed : null,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -317,7 +231,7 @@ class _LoadingSkeleton extends StatelessWidget {
         baseColor: AppColors.bgBase,
         highlightColor: AppColors.bgElevated,
         child: Container(
-          height: 168,
+          height: 188,
           decoration: BoxDecoration(
             color: AppColors.bgElevated,
             borderRadius: BorderRadius.circular(AppRadius.card),
