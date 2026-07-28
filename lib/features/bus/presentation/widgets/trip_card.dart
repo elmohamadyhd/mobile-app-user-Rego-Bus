@@ -366,23 +366,12 @@ class _Timeline extends StatelessWidget {
         ),
         if (trip.stopsCount > 0) ...[
           const SizedBox(height: AppSpacing.xs),
-          Row(
-            children: [
-              const Expanded(flex: 1, child: SizedBox.shrink()),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                  child: _StopsChip(
-                    stopsCount: trip.stopsCount,
-                    l10n: l10n,
-                    onTap: onStopsTap,
-                  ),
-                ),
-              ),
-              const Expanded(flex: 1, child: SizedBox.shrink()),
-            ],
+          Align(
+            child: _StopsChip(
+              stopsCount: trip.stopsCount,
+              l10n: l10n,
+              onTap: onStopsTap,
+            ),
           ),
         ],
         const SizedBox(height: AppSpacing.sm),
@@ -441,7 +430,7 @@ class _ConnectorWithDuration extends StatelessWidget {
   }
 }
 
-/// Full-width centered pill — obvious tap target for the stops sheet.
+/// Compact centered pill — tap opens the stops sheet.
 class _StopsChip extends StatelessWidget {
   const _StopsChip({
     required this.stopsCount,
@@ -470,30 +459,27 @@ class _StopsChip extends StatelessWidget {
           onTap: onTap,
           customBorder: const StadiumBorder(),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
+            padding: const EdgeInsetsDirectional.symmetric(
               horizontal: AppSpacing.sm,
-              vertical: AppSpacing.xs,
+              vertical: AppSpacing.xxs,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Flexible(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: false,
-                    textAlign: TextAlign.center,
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w800,
-                    ),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  style: AppTypography.overline.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(width: AppSpacing.xs),
+                const SizedBox(width: AppSpacing.xxs),
                 const Icon(
                   AppIcons.chevronDown,
-                  size: 16,
+                  size: 14,
                   color: AppColors.primary,
                 ),
               ],
