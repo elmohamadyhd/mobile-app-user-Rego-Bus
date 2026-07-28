@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
@@ -36,6 +37,9 @@ class TripCard extends StatelessWidget {
 
   /// Duration label row under the connector.
   static const double _durationRowHeight = 20;
+
+  /// Governorate/city label pinned above the stop name.
+  static const double _cityRowHeight = 16;
 
   /// Two-line station name + optional `+N` chip.
   static const double _stationRowHeight = 34;
@@ -268,22 +272,27 @@ class _Timeline extends StatelessWidget {
           ),
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               flex: 1,
               child: _StationCell(
+                cityName: trip.defaultBoardingStop.cityName,
                 station: trip.defaultBoardingStop.name,
                 extra: boardingExtra,
                 textAlign: TextAlign.start,
+                accentColor: AppColors.primary,
               ),
             ),
             const Expanded(flex: 2, child: SizedBox.shrink()),
             Expanded(
               flex: 1,
               child: _StationCell(
+                cityName: trip.terminalDropoffStop.cityName,
                 station: trip.terminalDropoffStop.name,
                 extra: dropoffExtra,
                 textAlign: TextAlign.end,
+                accentColor: AppColors.secondary,
               ),
             ),
           ],
@@ -317,39 +326,79 @@ class _TimeCell extends StatelessWidget {
   }
 }
 
+/// A route endpoint: the governorate/city sits above the stop name so riders
+/// scan the macro destination first, then the specific stop below it.
 class _StationCell extends StatelessWidget {
   const _StationCell({
+    required this.cityName,
     required this.station,
     required this.extra,
     required this.textAlign,
+    required this.accentColor,
   });
 
+  final String cityName;
   final String station;
   final int extra;
   final TextAlign textAlign;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: TripCard._stationRowHeight,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Text(
-              station,
-              textAlign: textAlign,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: AppTypography.caption.copyWith(color: AppColors.textMuted),
-            ),
+    final crossAlign = textAlign == TextAlign.start
+        ? CrossAxisAlignment.start
+        : CrossAxisAlignment.end;
+
+    return Column(
+      crossAxisAlignment: crossAlign,
+      children: [
+        SizedBox(
+          height: TripCard._cityRowHeight,
+          child: cityName.trim().isEmpty
+              ? null
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(AppIcons.locationTo, size: 11, color: accentColor),
+                    const SizedBox(width: AppSpacing.xxs),
+                    Flexible(
+                      child: Text(
+                        cityName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+        const SizedBox(height: AppSpacing.xxs),
+        SizedBox(
+          height: TripCard._stationRowHeight,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  station,
+                  textAlign: textAlign,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.overline
+                      .copyWith(color: AppColors.textMuted),
+                ),
+              ),
+              if (extra > 0) ...[
+                const SizedBox(width: AppSpacing.xs),
+                _StationCountChip(extra: extra),
+              ],
+            ],
           ),
-          if (extra > 0) ...[
-            const SizedBox(width: AppSpacing.xs),
-            _StationCountChip(extra: extra),
-          ],
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -99,6 +99,20 @@ void main() {
     expect(find.text('11:30'), findsNothing);
   });
 
+  testWidgets(
+      'shows the governorate above the boarding and drop-off stop names',
+      (tester) async {
+    await _pumpCard(tester, _buildTrip());
+
+    final cairoTop = _textTopLeft(tester, 'Cairo').dy;
+    final boardStopTop = _textTopLeft(tester, 'Ramsis').dy;
+    expect(cairoTop, lessThan(boardStopTop));
+
+    final alexandriaTop = _textTopLeft(tester, 'Alexandria').dy;
+    final dropStopTop = _textTopLeft(tester, 'Moharam Bek').dy;
+    expect(alexandriaTop, lessThan(dropStopTop));
+  });
+
   testWidgets('renders operator, fare stub and select without overflow',
       (tester) async {
     await _pumpCard(tester, _buildTrip());
