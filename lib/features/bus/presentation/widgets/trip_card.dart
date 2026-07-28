@@ -4,10 +4,12 @@ import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/presentation/widgets/amenity_icons_row.dart';
 import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
+import 'package:safaria/features/bus/presentation/widgets/trip_stops_sheet.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 
@@ -15,16 +17,17 @@ import 'package:safaria/shared/widgets/ltr_text.dart';
 ///
 /// The card is split by a perforated tear line: the trip info sits above it,
 /// the fare stub below. See [TicketBorder] for the notch + dash geometry.
-class TripCard extends StatelessWidget {
+/// Local boarding/drop-off picks update the card until [onSelect] fires.
+class TripCard extends StatefulWidget {
   const TripCard({
     super.key,
     required this.trip,
-    required this.onTap,
+    required this.onSelect,
     this.loading = false,
   });
 
   final BusTripSummary trip;
-  final VoidCallback onTap;
+  final void Function({required BusStop from, required BusStop to}) onSelect;
 
   /// Shows a spinner in the Select button and disables this card's tap.
   /// Other cards in the list stay fully interactive — see [_SelectButton].
@@ -49,12 +52,84 @@ class TripCard extends StatelessWidget {
   static const double _stubHeight = 64;
 
   @override
+  State<TripCard> createState() => _TripCardState();
+}
+
+class _TripCardState extends State<TripCard> {
+  late BusStop _from;
+  late BusStop _to;
+
+  @override
+  void initState() {
+    super.initState();
+    _resetStops(widget.trip);
+  }
+
+  @override
+  void didUpdateWidget(covariant TripCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.trip.id != widget.trip.id) {
+      _resetStops(widget.trip);
+    }
+  }
+
+  void _resetStops(BusTripSummary trip) {
+    _from = trip.defaultBoardingStop;
+    _to = trip.terminalDropoffStop;
+  }
+
+  String _formatTime(DateTime dt) {
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+
+  DateTime get _departTime => _from.arrivalAt ?? widget.trip.dateTime;
+
+  DateTime get _arriveTime => _to.arrivalAt ?? widget.trip.dateTime;
+
+  String get _departLabel => _formatTime(_departTime);
+
+  String get _arriveLabel => _formatTime(_arriveTime);
+
+  String get _durationLabel {
+    final diff = _arriveTime.difference(_departTime).inMinutes;
+    final mins = diff > 0 ? diff : 0;
+    final h = mins ~/ 60;
+    final m = mins % 60;
+    return m == 0 ? '${h}h' : '${h}h ${m}m';
+  }
+
+  int get _fareEgp => _to.finalPrice.round();
+
+  void _emitSelect() {
+    if (widget.loading) return;
+    widget.onSelect(from: _from, to: _to);
+  }
+
+  Future<void> _openStopsSheet() async {
+    await showTripStopsSheet(
+      context,
+      trip: widget.trip,
+      initialFrom: _from,
+      initialTo: _to,
+      onChanged: ({required from, required to}) {
+        if (!mounted) return;
+        setState(() {
+          _from = from;
+          _to = to;
+        });
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     const shape = TicketBorder(
       radius: AppRadius.xl,
       notchRadius: 10,
-      notchOffsetFromBottom: _stubHeight,
+      notchOffsetFromBottom: TripCard._stubHeight,
       dashColor: AppColors.border,
     );
 
@@ -66,7 +141,7 @@ class TripCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         customBorder: shape,
-        onTap: loading ? null : onTap,
+        onTap: widget.loading ? null : _emitSelect,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -80,14 +155,24 @@ class TripCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _Header(trip: trip, l10n: l10n),
+                  _Header(trip: widget.trip),
                   const SizedBox(height: AppSpacing.md),
-                  _Timeline(trip: trip, l10n: l10n),
+                  _Timeline(
+                    trip: widget.trip,
+                    l10n: l10n,
+                    from: _from,
+                    to: _to,
+                    departLabel: _departLabel,
+                    arriveLabel: _arriveLabel,
+                    durationLabel: _durationLabel,
+                    onStopsTap:
+                        widget.trip.stopsCount > 0 ? _openStopsSheet : null,
+                  ),
                 ],
               ),
             ),
             SizedBox(
-              height: _stubHeight,
+              height: TripCard._stubHeight,
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(
                   AppSpacing.md,
@@ -97,10 +182,11 @@ class TripCard extends StatelessWidget {
                 ),
                 child: Center(
                   child: _FareStub(
-                    trip: trip,
+                    fareEgp: _fareEgp,
+                    currency: widget.trip.currency,
                     l10n: l10n,
-                    onTap: onTap,
-                    loading: loading,
+                    onTap: _emitSelect,
+                    loading: widget.loading,
                   ),
                 ),
               ),
@@ -115,14 +201,12 @@ class TripCard extends StatelessWidget {
 // ── Header ────────────────────────────────────────────────────────────────────
 
 class _Header extends StatelessWidget {
-  const _Header({required this.trip, required this.l10n});
+  const _Header({required this.trip});
 
   final BusTripSummary trip;
-  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    // final bool lowSeats = trip.seatsLeft < 3;
     return SizedBox(
       height: TripCard._headerHeight,
       child: Row(
@@ -176,56 +260,34 @@ class _Header extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          // hide number of seats left till it ready from the backend
-          //_SeatsPill(seatsLeft: trip.seatsLeft, lowSeats: lowSeats, l10n: l10n),
         ],
       ),
     );
   }
 }
 
-// class _SeatsPill extends StatelessWidget {
-//   const _SeatsPill({
-//     required this.seatsLeft,
-//     required this.lowSeats,
-//     required this.l10n,
-//   });
-
-//   final int seatsLeft;
-//   final bool lowSeats;
-//   final AppLocalizations l10n;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: const EdgeInsetsDirectional.symmetric(
-//         horizontal: AppSpacing.sm,
-//         vertical: AppSpacing.xs,
-//       ),
-//       decoration: BoxDecoration(
-//         color: lowSeats
-//             ? AppColors.error.withValues(alpha: 0.12)
-//             : AppColors.secondaryTint,
-//         borderRadius: BorderRadius.circular(AppRadius.sm),
-//       ),
-//       child: Text(
-//         l10n.bookingSeatsLeft(seatsLeft),
-//         style: AppTypography.caption.copyWith(
-//           color: lowSeats ? AppColors.error : AppColors.onSecondary,
-//           fontWeight: FontWeight.w700,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 // ── Timeline ──────────────────────────────────────────────────────────────────
 
 class _Timeline extends StatelessWidget {
-  const _Timeline({required this.trip, required this.l10n});
+  const _Timeline({
+    required this.trip,
+    required this.l10n,
+    required this.from,
+    required this.to,
+    required this.departLabel,
+    required this.arriveLabel,
+    required this.durationLabel,
+    this.onStopsTap,
+  });
 
   final BusTripSummary trip;
   final AppLocalizations l10n;
+  final BusStop from;
+  final BusStop to;
+  final String departLabel;
+  final String arriveLabel;
+  final String durationLabel;
+  final VoidCallback? onStopsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +300,7 @@ class _Timeline extends StatelessWidget {
             Expanded(
               flex: 1,
               child: _TimeCell(
-                time: trip.departLabel,
+                time: departLabel,
                 alignment: AlignmentDirectional.topStart,
               ),
             ),
@@ -255,7 +317,7 @@ class _Timeline extends StatelessWidget {
             Expanded(
               flex: 1,
               child: _TimeCell(
-                time: trip.terminalArriveLabel,
+                time: arriveLabel,
                 alignment: AlignmentDirectional.topEnd,
               ),
             ),
@@ -270,9 +332,10 @@ class _Timeline extends StatelessWidget {
                 flex: 2,
                 child: Center(
                   child: _DurationStopsLabel(
-                    duration: trip.terminalDurationLabel,
+                    duration: durationLabel,
                     stopsCount: trip.stopsCount,
                     l10n: l10n,
+                    onStopsTap: onStopsTap,
                   ),
                 ),
               ),
@@ -286,8 +349,8 @@ class _Timeline extends StatelessWidget {
             Expanded(
               flex: 1,
               child: _StationCell(
-                cityName: trip.defaultBoardingStop.cityName,
-                station: trip.defaultBoardingStop.name,
+                cityName: from.cityName,
+                station: from.name,
                 textAlign: TextAlign.start,
                 accentColor: AppColors.primary,
               ),
@@ -296,8 +359,8 @@ class _Timeline extends StatelessWidget {
             Expanded(
               flex: 1,
               child: _StationCell(
-                cityName: trip.terminalDropoffStop.cityName,
-                station: trip.terminalDropoffStop.name,
+                cityName: to.cityName,
+                station: to.name,
                 textAlign: TextAlign.end,
                 accentColor: AppColors.secondary,
               ),
@@ -316,11 +379,13 @@ class _DurationStopsLabel extends StatelessWidget {
     required this.duration,
     required this.stopsCount,
     required this.l10n,
+    this.onStopsTap,
   });
 
   final String duration;
   final int stopsCount;
   final AppLocalizations l10n;
+  final VoidCallback? onStopsTap;
 
   @override
   Widget build(BuildContext context) {
@@ -342,12 +407,38 @@ class _DurationStopsLabel extends StatelessWidget {
         if (stopsCount > 0) ...[
           Text(' · ', style: style),
           Flexible(
-            child: Text(
-              l10n.tripResultsStopsCount(stopsCount),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
-              style: style,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onStopsTap,
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs,
+                    vertical: AppSpacing.xxs,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          l10n.tripResultsStopsCount(stopsCount),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: style,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xxs),
+                      const Icon(
+                        AppIcons.chevronDown,
+                        size: 14,
+                        color: AppColors.textMuted,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -468,13 +559,15 @@ class _ConnectorLine extends StatelessWidget {
 
 class _FareStub extends StatelessWidget {
   const _FareStub({
-    required this.trip,
+    required this.fareEgp,
+    required this.currency,
     required this.l10n,
     required this.onTap,
     this.loading = false,
   });
 
-  final BusTripSummary trip;
+  final int fareEgp;
+  final String currency;
   final AppLocalizations l10n;
   final VoidCallback onTap;
   final bool loading;
@@ -500,14 +593,14 @@ class _FareStub extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: '${trip.terminalPriceEgp}',
+                      text: '$fareEgp',
                       style: AppTypography.h1.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     TextSpan(
-                      text: ' ${trip.currency}',
+                      text: ' $currency',
                       style: AppTypography.caption.copyWith(
                         color: AppColors.textMuted,
                         fontWeight: FontWeight.w700,

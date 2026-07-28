@@ -26,6 +26,9 @@ class RouteTimeline extends StatelessWidget {
     this.headerTrailing,
     this.firstBoardingRowKey,
     this.dropOffRowKey,
+    this.showSectionTitle = true,
+    this.enableMapsLongPress = true,
+    this.embedded = false,
   });
 
   final List<BusStop> boardingStops;
@@ -39,6 +42,15 @@ class RouteTimeline extends StatelessWidget {
   final GlobalKey? firstBoardingRowKey;
   final GlobalKey? dropOffRowKey;
 
+  /// When false, omits the "Route" section title (e.g. sheet already titled).
+  final bool showSectionTitle;
+
+  /// Long-press → Google Maps confirm. Disable in results preview sheet.
+  final bool enableMapsLongPress;
+
+  /// Flat layout without elevated card chrome (for bottom sheets).
+  final bool embedded;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -51,6 +63,61 @@ class RouteTimeline extends StatelessWidget {
       dropoffStops: dropoffStops,
     );
 
+    final body = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (showSectionTitle) ...[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.tripDetailRouteSection,
+                  style:
+                      AppTypography.title.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              if (headerTrailing != null) headerTrailing!,
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
+        _ZoneHeader(label: l10n.tripDetailBoardAt, color: AppColors.primary),
+        for (var i = 0; i < board.length; i++)
+          _TimelineRow(
+            coachKey: i == 0 ? firstBoardingRowKey : null,
+            stop: board[i],
+            accent: AppColors.primary,
+            isSelected: board[i].locationId == selectedFrom.locationId,
+            isDimmed: board[i].locationId != selectedFrom.locationId,
+            selectedPill: l10n.tripDetailBoardHere,
+            showLine: i < board.length - 1 || drop.isNotEmpty,
+            enableMapsLongPress: enableMapsLongPress,
+            onTap: () => onBoardSelected(board[i]),
+          ),
+        const SizedBox(height: AppSpacing.md),
+        _ZoneHeader(
+          label: l10n.tripDetailDropOffAt,
+          color: AppColors.secondary,
+        ),
+        for (var i = 0; i < drop.length; i++)
+          _TimelineRow(
+            coachKey: i == 0 ? dropOffRowKey : null,
+            stop: drop[i],
+            accent: AppColors.secondary,
+            isSelected: drop[i].locationId == selectedTo.locationId,
+            isDimmed: drop[i].locationId != selectedTo.locationId,
+            selectedPill: l10n.tripDetailDropOffHere,
+            showLine: i < drop.length - 1,
+            fareLabel: '${drop[i].finalPrice.round()} $currency',
+            enableMapsLongPress: enableMapsLongPress,
+            onTap: () => onDropoffSelected(drop[i]),
+          ),
+      ],
+    );
+
+    if (embedded) return body;
+
     return Material(
       color: AppColors.bgElevated,
       borderRadius: BorderRadius.circular(AppRadius.card),
@@ -58,55 +125,7 @@ class RouteTimeline extends StatelessWidget {
       shadowColor: AppColors.primary.withValues(alpha: 0.1),
       child: Padding(
         padding: AppSpacing.cardPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.tripDetailRouteSection,
-                    style: AppTypography.title
-                        .copyWith(fontWeight: FontWeight.w700),
-                  ),
-                ),
-                if (headerTrailing != null) headerTrailing!,
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _ZoneHeader(
-                label: l10n.tripDetailBoardAt, color: AppColors.primary),
-            for (var i = 0; i < board.length; i++)
-              _TimelineRow(
-                coachKey: i == 0 ? firstBoardingRowKey : null,
-                stop: board[i],
-                accent: AppColors.primary,
-                isSelected: board[i].locationId == selectedFrom.locationId,
-                isDimmed: board[i].locationId != selectedFrom.locationId,
-                selectedPill: l10n.tripDetailBoardHere,
-                showLine: i < board.length - 1 || drop.isNotEmpty,
-                onTap: () => onBoardSelected(board[i]),
-              ),
-            const SizedBox(height: AppSpacing.md),
-            _ZoneHeader(
-              label: l10n.tripDetailDropOffAt,
-              color: AppColors.secondary,
-            ),
-            for (var i = 0; i < drop.length; i++)
-              _TimelineRow(
-                coachKey: i == 0 ? dropOffRowKey : null,
-                stop: drop[i],
-                accent: AppColors.secondary,
-                isSelected: drop[i].locationId == selectedTo.locationId,
-                isDimmed: drop[i].locationId != selectedTo.locationId,
-                selectedPill: l10n.tripDetailDropOffHere,
-                showLine: i < drop.length - 1,
-                fareLabel: '${drop[i].finalPrice.round()} $currency',
-                onTap: () => onDropoffSelected(drop[i]),
-              ),
-          ],
-        ),
+        child: body,
       ),
     );
   }
@@ -144,6 +163,7 @@ class _TimelineRow extends StatelessWidget {
     required this.onTap,
     this.fareLabel,
     this.coachKey,
+    this.enableMapsLongPress = true,
   });
 
   final BusStop stop;
@@ -155,6 +175,7 @@ class _TimelineRow extends StatelessWidget {
   final String? fareLabel;
   final VoidCallback onTap;
   final GlobalKey? coachKey;
+  final bool enableMapsLongPress;
 
   String? _formatTime(DateTime? dt) {
     if (dt == null) return null;
@@ -173,13 +194,15 @@ class _TimelineRow extends StatelessWidget {
 
     return Semantics(
       key: coachKey,
-      hint: l10n.tripDetailOpenMapsStopHint,
+      hint: enableMapsLongPress ? l10n.tripDetailOpenMapsStopHint : null,
       child: InkWell(
         onTap: onTap,
-        onLongPress: () {
-          HapticFeedback.mediumImpact();
-          confirmAndOpenStopInGoogleMaps(context, stop: stop);
-        },
+        onLongPress: enableMapsLongPress
+            ? () {
+                HapticFeedback.mediumImpact();
+                confirmAndOpenStopInGoogleMaps(context, stop: stop);
+              }
+            : null,
         borderRadius: BorderRadius.circular(AppRadius.sm),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 2),

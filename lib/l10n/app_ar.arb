@@ -110,6 +110,8 @@
   "tripResultsRetry": "حاول مجدداً",
   "tripResultsFareLabel": "السعر",
   "tripResultsStopsCount": "{count, plural, =1{محطة واحدة} other{{count} محطات}}",
+  "tripResultsStopsSheetTitle": "المحطات",
+  "tripResultsStopsApply": "تطبيق",
   "tripResultsNoMatchingTrips": "لا توجد رحلات تطابق التصفية",
   "tripResultsClearFilters": "مسح التصفية",
   "tripFilterSheetTitle": "تصفية الرحلات",

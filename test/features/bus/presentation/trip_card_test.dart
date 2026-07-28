@@ -56,7 +56,7 @@ Future<void> _pumpCard(
   WidgetTester tester,
   BusTripSummary trip, {
   Locale locale = const Locale('en'),
-  VoidCallback? onTap,
+  void Function({required BusStop from, required BusStop to})? onSelect,
   bool loading = false,
 }) async {
   await tester.pumpWidget(
@@ -71,7 +71,7 @@ Future<void> _pumpCard(
             width: 360,
             child: TripCard(
               trip: trip,
-              onTap: onTap ?? () {},
+              onSelect: onSelect ?? ({required from, required to}) {},
               loading: loading,
             ),
           ),
@@ -79,8 +79,6 @@ Future<void> _pumpCard(
       ),
     ),
   );
-  // The Select-button spinner animates indefinitely while loading, so
-  // pumpAndSettle would time out — a single pump is enough to lay out.
   if (loading) {
     await tester.pump();
   } else {
@@ -121,9 +119,7 @@ void main() {
     expect(find.textContaining('250', findRichText: true), findsWidgets);
     expect(find.text('Fare'), findsOneWidget);
     expect(find.text('Select'), findsOneWidget);
-    // Seats pill is hidden until the backend count is reliable.
     expect(find.text('6 seats left'), findsNothing);
-    // Total boarding + drop-off stations next to duration (separate widgets).
     expect(find.text('4 stops'), findsOneWidget);
     expect(find.textContaining('+1', findRichText: true), findsNothing);
   });
@@ -134,21 +130,81 @@ void main() {
     expect(find.text('2 seats left'), findsNothing);
   });
 
-  testWidgets('tapping the card invokes onTap', (tester) async {
-    var tapped = 0;
-    await _pumpCard(tester, _buildTrip(), onTap: () => tapped++);
+  testWidgets('tapping the card invokes onSelect with default pair',
+      (tester) async {
+    BusStop? selectedFrom;
+    BusStop? selectedTo;
+    await _pumpCard(
+      tester,
+      _buildTrip(),
+      onSelect: ({required from, required to}) {
+        selectedFrom = from;
+        selectedTo = to;
+      },
+    );
 
     await tester.tap(find.byType(TripCard));
     await tester.pumpAndSettle();
 
-    expect(tapped, 1);
+    expect(selectedFrom?.locationId, '1');
+    expect(selectedTo?.locationId, '10');
+  });
+
+  testWidgets('tapping stops count opens sheet without selecting trip',
+      (tester) async {
+    var selected = 0;
+    await _pumpCard(
+      tester,
+      _buildTrip(),
+      onSelect: ({required from, required to}) => selected++,
+    );
+
+    await tester.tap(find.text('4 stops'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Stops'), findsOneWidget);
+    expect(selected, 0);
+  });
+
+  testWidgets('tapping a stop applies fare immediately; Select keeps pair',
+      (tester) async {
+    BusStop? selectedFrom;
+    BusStop? selectedTo;
+    await _pumpCard(
+      tester,
+      _buildTrip(),
+      onSelect: ({required from, required to}) {
+        selectedFrom = from;
+        selectedTo = to;
+      },
+    );
+
+    await tester.tap(find.text('4 stops'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Giza'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sidi Gaber'));
+    await tester.pumpAndSettle();
+
+    // Card under the sheet already reflects the live pick.
+    expect(find.textContaining('180', findRichText: true), findsWidgets);
+
+    Navigator.of(tester.element(find.text('Stops'))).pop();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Giza'), findsWidgets);
+
+    await tester.tap(find.text('Select'));
+    await tester.pumpAndSettle();
+
+    expect(selectedFrom?.locationId, '2');
+    expect(selectedTo?.locationId, '9');
   });
 
   testWidgets('shows combined stops count on the duration line in Arabic',
       (tester) async {
     await _pumpCard(tester, _buildTrip(), locale: const Locale('ar'));
 
-    // Stops stay in their own widget so BiDi cannot split `4` from `محطات`.
     expect(find.text('4 محطات'), findsOneWidget);
     expect(find.text('4h 45m'), findsOneWidget);
   });
@@ -156,8 +212,8 @@ void main() {
   testWidgets('paints and lays out in RTL (Arabic)', (tester) async {
     await _pumpCard(tester, _buildTrip(), locale: const Locale('ar'));
 
-    expect(find.text('السعر'), findsOneWidget); // Fare
-    expect(find.text('اختر'), findsOneWidget); // Select
+    expect(find.text('السعر'), findsOneWidget);
+    expect(find.text('اختر'), findsOneWidget);
     expect(find.text('Go Bus'), findsOneWidget);
     expect(find.text('VIP'), findsOneWidget);
   });
@@ -210,9 +266,15 @@ void main() {
               width: 360,
               child: Column(
                 children: [
-                  TripCard(trip: shortTrip, onTap: () {}),
+                  TripCard(
+                    trip: shortTrip,
+                    onSelect: ({required from, required to}) {},
+                  ),
                   const SizedBox(height: 16),
-                  TripCard(trip: longTrip, onTap: () {}),
+                  TripCard(
+                    trip: longTrip,
+                    onSelect: ({required from, required to}) {},
+                  ),
                 ],
               ),
             ),
@@ -282,7 +344,7 @@ void main() {
     await _pumpCard(
       tester,
       _buildTrip(),
-      onTap: () => tapped++,
+      onSelect: ({required from, required to}) => tapped++,
       loading: true,
     );
 

@@ -171,7 +171,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Filter trips'), findsOneWidget);
-    expect(find.text('Blue Bus'), findsOneWidget);
+    // Card behind the sheet + operator chip in the sheet both show the name.
+    expect(find.text('Blue Bus'), findsAtLeastNWidgets(1));
   });
 
   testWidgets('applying operator filter shows chip and narrows list', (
@@ -216,7 +217,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(TripCard), findsOneWidget);
 
-    await tester.tap(find.text('Blue Bus'));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(ActiveFilterChips),
+        matching: find.text('Blue Bus'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.byType(ActiveFilterChips), findsNothing);

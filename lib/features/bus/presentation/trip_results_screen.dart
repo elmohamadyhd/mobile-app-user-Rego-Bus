@@ -9,6 +9,7 @@ import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
 import 'package:safaria/features/bus/domain/utils/apply_bus_trip_filters.dart';
@@ -110,9 +111,11 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
             itemCount: trips.length,
             separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
             itemBuilder: (context, i) => TripCard(
+              key: ValueKey(trips[i].id),
               trip: trips[i],
               loading: _loadingTripId == trips[i].id,
-              onTap: () => _selectTrip(trips[i]),
+              onSelect: ({required from, required to}) =>
+                  _selectTrip(trips[i], from: from, to: to),
             ),
           ),
         ),
@@ -120,12 +123,20 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
     );
   }
 
-  Future<void> _selectTrip(BusTripSummary trip) async {
+  Future<void> _selectTrip(
+    BusTripSummary trip, {
+    required BusStop from,
+    required BusStop to,
+  }) async {
     // Only one trip can be "loading" at a time — a second tap while one is
     // in flight is ignored rather than racing the notifier's state.
     if (_loadingTripId != null) return;
     setState(() => _loadingTripId = trip.id);
-    await ref.read(busBookingProvider.notifier).selectTrip(trip);
+    await ref.read(busBookingProvider.notifier).selectTrip(
+          trip,
+          from: from,
+          to: to,
+        );
     if (!mounted) return;
     setState(() => _loadingTripId = null);
     unawaited(context.push(BusRoutes.detail));

@@ -186,6 +186,14 @@
       }
     }
   },
+  "tripResultsStopsSheetTitle": "Stops",
+  "@tripResultsStopsSheetTitle": {
+    "description": "Title of the trip results stops picker bottom sheet."
+  },
+  "tripResultsStopsApply": "Apply",
+  "@tripResultsStopsApply": {
+    "description": "Primary CTA on the trip results stops picker sheet."
+  },
   "tripResultsNoMatchingTrips": "No trips match your filters",
   "tripResultsClearFilters": "Clear filters",
   "tripFilterSheetTitle": "Filter trips",

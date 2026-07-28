@@ -114,16 +114,21 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     );
   }
 
-  Future<void> selectTrip(BusTripSummary trip) async {
-    // Seed the default pair synchronously so the detail screen can open
-    // immediately, then enrich in the background behind a loading state.
-    final terminalDropoff = trip.terminalDropoffStop;
+  Future<void> selectTrip(
+    BusTripSummary trip, {
+    BusStop? from,
+    BusStop? to,
+  }) async {
+    // Seed the pair synchronously so the detail screen can open immediately,
+    // then enrich in the background behind a loading state.
+    final seedFrom = from ?? trip.defaultBoardingStop;
+    final seedTo = to ?? trip.terminalDropoffStop;
     state = state.copyWith(
       status: BusBookingStatus.loadingDetail,
       selectedTrip: trip,
-      fromStop: trip.defaultBoardingStop,
-      toStop: terminalDropoff,
-      segmentFare: terminalDropoff.finalPrice,
+      fromStop: seedFrom,
+      toStop: seedTo,
+      segmentFare: seedTo.finalPrice,
       selectedSeats: [],
       seatMap: null,
       error: null,
@@ -134,12 +139,21 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
       final detail = await _repo.tripById(trip.id, currency: currency);
       if (detail.id.isNotEmpty) {
         final merged = trip.mergeEnrichment(detail);
-        final enrichedTo = state.toStop ?? merged.terminalDropoffStop;
+        final keptFrom = _keepStopIfPresent(
+          state.fromStop,
+          merged.boardingStops,
+          fallback: merged.defaultBoardingStop,
+        );
+        final keptTo = _keepStopIfPresent(
+          state.toStop,
+          merged.dropoffStops,
+          fallback: merged.terminalDropoffStop,
+        );
         state = state.copyWith(
           selectedTrip: merged,
-          fromStop: state.fromStop ?? merged.defaultBoardingStop,
-          toStop: enrichedTo,
-          segmentFare: enrichedTo.finalPrice,
+          fromStop: keptFrom,
+          toStop: keptTo,
+          segmentFare: keptTo.finalPrice,
         );
       }
     } catch (_) {
@@ -149,6 +163,19 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
         state = state.copyWith(status: BusBookingStatus.idle);
       }
     }
+  }
+
+  /// Keep a user-seeded stop when enrichment still lists the same id.
+  BusStop _keepStopIfPresent(
+    BusStop? seeded,
+    List<BusStop> candidates, {
+    required BusStop fallback,
+  }) {
+    if (seeded == null || seeded.locationId.isEmpty) return fallback;
+    for (final stop in candidates) {
+      if (stop.locationId == seeded.locationId) return stop;
+    }
+    return fallback;
   }
 
   void setStops({required BusStop from, required BusStop to}) {

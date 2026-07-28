@@ -119,6 +119,33 @@ void main() {
       expect(state.segmentFare, 175);
     });
 
+    test('selectTrip seeds explicit from/to when provided', () async {
+      final trip = FakeBusRepository.sampleTrip;
+      final from = trip.boardingStops.first;
+      final to = trip.dropoffStops.first;
+      final container = makeContainer(FakeBusRepository());
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await notifier.selectTrip(trip, from: from, to: to);
+
+      final state = container.read(busBookingProvider);
+      expect(state.fromStop?.locationId, from.locationId);
+      expect(state.toStop?.locationId, to.locationId);
+      expect(state.segmentFare, to.finalPrice);
+    });
+
+    test('selectTrip without from/to keeps terminal drop-off default', () async {
+      final trip = FakeBusRepository.sampleTrip;
+      final container = makeContainer(FakeBusRepository());
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await notifier.selectTrip(trip);
+
+      final state = container.read(busBookingProvider);
+      expect(state.fromStop?.locationId, trip.defaultBoardingStop.locationId);
+      expect(state.toStop?.locationId, trip.terminalDropoffStop.locationId);
+    });
+
     test('selectTrip enters loadingDetail then settles to idle', () async {
       final repo = FakeBusRepository(
         tripsPage: BusTripsPage(
