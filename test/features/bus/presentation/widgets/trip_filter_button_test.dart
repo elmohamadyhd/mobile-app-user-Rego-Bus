@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_filter_button.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 void main() {
   group('BookingAppBar', () {
@@ -169,7 +169,7 @@ void main() {
         onTap: () => tapped = true,
       );
 
-      await tester.tap(find.byIcon(AppIcons.filter));
+      await tester.tap(find.byIcon(PhosphorIconsLight.fadersHorizontal));
       await tester.pump();
 
       expect(tapped, isTrue);

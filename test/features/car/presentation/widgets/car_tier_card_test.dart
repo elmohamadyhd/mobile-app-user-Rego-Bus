@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/features/car/presentation/widgets/car_tier_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
 import '../../fake_car_repository.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 void main() {
   testWidgets('shows company, price, seats chip, and forward chevron',
@@ -28,11 +28,11 @@ void main() {
     expect(find.text('Sky Travel'), findsOneWidget);
     expect(find.textContaining('69.87'), findsOneWidget);
     expect(find.text('Refundable'), findsOneWidget);
-    expect(find.byIcon(AppIcons.check), findsNothing);
-    expect(find.byIcon(AppIcons.forward), findsOneWidget);
-    expect(find.byIcon(AppIcons.seats), findsOneWidget);
-    expect(find.byIcon(AppIcons.luggage), findsOneWidget);
-    expect(find.byIcon(AppIcons.gear), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.check), findsNothing);
+    expect(find.byIcon(PhosphorIconsLight.caretRight), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.users), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.briefcase), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.steeringWheel), findsOneWidget);
   });
 
   testWidgets('tapping the card invokes onTap', (tester) async {
@@ -77,6 +77,6 @@ void main() {
 
     expect(find.text('Sky Travel'), findsOneWidget);
     expect(find.text('قابل للاسترداد'), findsOneWidget);
-    expect(find.byIcon(AppIcons.forward), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.caretRight), findsOneWidget);
   });
 }

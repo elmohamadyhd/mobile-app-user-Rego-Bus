@@ -141,7 +141,7 @@ void main() {
       args: const CarPlacePickerArgs(title: 'Pickup', showUseMyLocation: true),
     );
 
-    // GPS FAB uses AppIcons.locationFrom — verify pickup path opened without error.
+    // GPS FAB uses PhosphorIconsLight.crosshair — verify pickup path opened without error.
     expect(find.text('Confirm location'), findsOneWidget);
   });
 

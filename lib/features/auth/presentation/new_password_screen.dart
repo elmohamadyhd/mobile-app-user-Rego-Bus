@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/validators.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
@@ -16,6 +15,7 @@ import 'package:safaria/features/auth/presentation/widgets/auth_text_field.dart'
 import 'package:safaria/features/auth/presentation/widgets/icon_badge.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class NewPasswordScreen extends ConsumerStatefulWidget {
   const NewPasswordScreen({super.key, required this.args});
@@ -83,7 +83,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
         onTap: () => setState(() => _obscure = !_obscure),
         behavior: HitTestBehavior.opaque,
         child: Icon(
-          _obscure ? AppIcons.eye : AppIcons.eyeOff,
+          _obscure ? PhosphorIconsLight.eye : PhosphorIconsLight.eyeSlash,
           size: 20,
           color: AppColors.textMuted,
         ),
@@ -106,7 +106,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
               AuthBackButton(onTap: () => context.pop()),
               const SizedBox(height: 30),
               const IconBadge(
-                icon: AppIcons.shield,
+                icon: PhosphorIconsLight.shieldCheck,
                 background: AppColors.primaryTint,
                 foreground: AppColors.primary,
               ),
@@ -126,7 +126,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
               AuthTextField(
                 controller: _password,
                 hint: l10n.newPasswordHint,
-                icon: AppIcons.lock,
+                icon: PhosphorIconsLight.lock,
                 obscure: _obscure,
                 errorText: _passwordError,
                 textInputAction: TextInputAction.next,
@@ -137,7 +137,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
               AuthTextField(
                 controller: _confirm,
                 hint: l10n.confirmPasswordHint,
-                icon: AppIcons.lock,
+                icon: PhosphorIconsLight.lock,
                 obscure: _obscure,
                 errorText: _confirmError,
                 textInputAction: TextInputAction.done,

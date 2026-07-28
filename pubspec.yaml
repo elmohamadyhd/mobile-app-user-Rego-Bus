@@ -64,7 +64,7 @@ dependencies:
   image_picker: ^1.1.2
 
   # Icons (Tabler outline — design system source of truth)
-  tabler_icons_plus: ^3.44.0
+  phosphoricons_flutter: ^1.0.0
 
   # ── Optional: uncomment when needed ──────────────────────────────────────
   # Local database (Drift / SQLite)

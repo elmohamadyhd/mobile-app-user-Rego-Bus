@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/external_url_launcher.dart';
@@ -10,6 +9,7 @@ import 'package:safaria/core/utils/map_location.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/utils/order_trip_route_stops.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Compact map action on the trip route card header — confirms, then opens
 /// Google Maps.
@@ -48,7 +48,7 @@ class TripRouteMapFab extends StatelessWidget {
             child: const SizedBox(
               width: 40,
               height: 40,
-              child: Icon(AppIcons.map, size: 20, color: AppColors.onPrimary),
+              child: Icon(PhosphorIconsLight.mapTrifold, size: 20, color: AppColors.onPrimary),
             ),
           ),
         ),

@@ -7,7 +7,6 @@ import 'package:shimmer/shimmer.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
@@ -22,6 +21,7 @@ import 'package:safaria/features/car/presentation/widgets/car_order_detail_sheet
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class CarOrdersSection extends ConsumerWidget {
   const CarOrdersSection({super.key});
@@ -75,7 +75,7 @@ class _GuestSignInCard extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    AppIcons.user,
+                    PhosphorIconsLight.user,
                     size: 22,
                     color: AppColors.primary,
                   ),
@@ -89,7 +89,7 @@ class _GuestSignInCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Icon(AppIcons.forward,
+                const Icon(PhosphorIconsLight.caretRight,
                     size: 20, color: AppColors.textMuted),
               ],
             ),

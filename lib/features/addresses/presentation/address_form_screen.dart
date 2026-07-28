@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
@@ -16,6 +15,7 @@ import 'package:safaria/shared/models/map_place.dart';
 import 'package:safaria/shared/widgets/map_place_picker_args.dart';
 import 'package:safaria/shared/widgets/place_picker_routes.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class AddressFormScreen extends ConsumerStatefulWidget {
   const AddressFormScreen({super.key, this.addressId});
@@ -446,7 +446,7 @@ class _LocationField extends StatelessWidget {
               child: Row(
                 children: [
                   const Icon(
-                    AppIcons.locationTo,
+                    PhosphorIconsLight.mapPin,
                     size: 20,
                     color: AppColors.textMuted,
                   ),
@@ -466,7 +466,7 @@ class _LocationField extends StatelessWidget {
                   Transform.flip(
                     flipX: Directionality.of(context) == TextDirection.rtl,
                     child: const Icon(
-                      AppIcons.forward,
+                      PhosphorIconsLight.caretRight,
                       size: 18,
                       color: AppColors.textMuted,
                     ),

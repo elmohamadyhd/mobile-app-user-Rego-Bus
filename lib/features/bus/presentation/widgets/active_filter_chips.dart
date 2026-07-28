@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class ActiveFilterChips extends StatelessWidget {
   const ActiveFilterChips({
@@ -75,7 +75,7 @@ class _RemovableChip extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               const Icon(
-                AppIcons.close,
+                PhosphorIconsLight.x,
                 size: 14,
                 color: AppColors.primary,
               ),

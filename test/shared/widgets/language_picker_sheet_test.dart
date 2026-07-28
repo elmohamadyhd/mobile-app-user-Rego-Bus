@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:safaria/core/providers/locale_controller.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/language_picker_sheet.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 void main() {
   Future<ProviderContainer> pumpSheetHarness(WidgetTester tester) async {
@@ -50,7 +50,7 @@ void main() {
 
     expect(find.text('العربية'), findsOneWidget);
     expect(find.text('English'), findsOneWidget);
-    expect(find.byIcon(AppIcons.check), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.check), findsOneWidget);
   });
 
   testWidgets('tapping a language updates the locale and closes the sheet',

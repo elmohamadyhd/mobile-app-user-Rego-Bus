@@ -11,7 +11,6 @@ import 'package:safaria/core/places/place_prediction.dart';
 import 'package:safaria/core/places/places_client.dart';
 import 'package:safaria/core/places/places_providers.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
@@ -20,6 +19,7 @@ import 'package:safaria/shared/models/map_place.dart';
 import 'package:safaria/shared/widgets/map_place_picker_args.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class MapPlacePickerScreen extends ConsumerStatefulWidget {
   const MapPlacePickerScreen({
@@ -669,7 +669,7 @@ class _CenterPin extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.only(bottom: 28),
           child: Icon(
-            AppIcons.locationTo,
+            PhosphorIconsLight.mapPin,
             size: 40,
             color: AppColors.primary,
           ),
@@ -704,7 +704,7 @@ class _GpsFab extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(
-                  AppIcons.locationFrom,
+                  PhosphorIconsLight.crosshair,
                   color: AppColors.primary,
                 ),
         ),
@@ -811,7 +811,7 @@ class _PickerPanel extends StatelessWidget {
           child: Row(
             children: [
               const Icon(
-                AppIcons.search,
+                PhosphorIconsLight.magnifyingGlass,
                 color: AppColors.textMuted,
                 size: 20,
               ),
@@ -946,7 +946,7 @@ abstract final class _SearchResults {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(
-                  AppIcons.locationTo,
+                  PhosphorIconsLight.mapPin,
                   color: AppColors.textMuted,
                   size: 32,
                 ),
@@ -1013,7 +1013,7 @@ class _CurrentSelectionRow extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              AppIcons.locationTo,
+              PhosphorIconsLight.mapPin,
               color: AppColors.primary,
               size: 18,
             ),
@@ -1081,7 +1081,7 @@ class _PredictionRow extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  AppIcons.locationTo,
+                  PhosphorIconsLight.mapPin,
                   color: AppColors.textMuted,
                   size: 18,
                 ),

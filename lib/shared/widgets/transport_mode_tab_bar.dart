@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Segmented transport-mode selector shared by Home search and Tickets.
 class TransportModeTabBar extends StatelessWidget {
@@ -25,10 +25,10 @@ class TransportModeTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tabs = [
-      (l10n.homeTabBus, AppIcons.bus),
-      (l10n.homeTabPrivate, AppIcons.private),
-      (l10n.homeTabFlight, AppIcons.flight),
-      (l10n.homeTabTrain, AppIcons.train),
+      (l10n.homeTabBus, PhosphorIconsLight.bus),
+      (l10n.homeTabPrivate, PhosphorIconsLight.diamond),
+      (l10n.homeTabFlight, PhosphorIconsLight.airplane),
+      (l10n.homeTabTrain, PhosphorIconsLight.train),
     ];
 
     return Container(

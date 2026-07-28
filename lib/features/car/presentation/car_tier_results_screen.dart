@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/date_formatting.dart';
@@ -16,6 +15,7 @@ import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/features/car/presentation/widgets/car_tier_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class CarTierResultsScreen extends ConsumerStatefulWidget {
   const CarTierResultsScreen({super.key});
@@ -261,7 +261,7 @@ class _EmptyView extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                AppIcons.transfer,
+                PhosphorIconsLight.car,
                 color: AppColors.primary,
                 size: 32,
               ),
@@ -314,7 +314,7 @@ class _ErrorView extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                AppIcons.error,
+                PhosphorIconsLight.warningCircle,
                 color: AppColors.error,
                 size: 32,
               ),

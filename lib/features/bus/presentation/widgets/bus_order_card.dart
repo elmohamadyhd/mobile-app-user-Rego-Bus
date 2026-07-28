@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_order.dart';
@@ -11,6 +10,7 @@ import 'package:safaria/features/bus/presentation/widgets/order_status_badge.dar
 import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Card for one [BusOrder] in the My Tickets list: operator identity, route
 /// stops, status, key details, and contextual pay/e-ticket/cancel actions.
@@ -98,7 +98,7 @@ class BusOrderCard extends StatelessWidget {
                       Row(
                         children: [
                           const Icon(
-                            AppIcons.calendar,
+                            PhosphorIconsLight.calendarBlank,
                             size: 16,
                             color: AppColors.textMuted,
                           ),
@@ -236,7 +236,7 @@ class _OrderActions extends StatelessWidget {
                 Expanded(
                   child: _CardOutlinedAction(
                     onPressed: onOpenETicket,
-                    icon: AppIcons.download,
+                    icon: PhosphorIconsLight.downloadSimple,
                     label: l10n.eTicketDownload,
                     foregroundColor: AppColors.primary,
                     borderColor: AppColors.border,
@@ -248,7 +248,7 @@ class _OrderActions extends StatelessWidget {
                 Expanded(
                   child: _CardOutlinedAction(
                     onPressed: onCancel,
-                    icon: AppIcons.close,
+                    icon: PhosphorIconsLight.x,
                     label: l10n.ticketActionCancel,
                     foregroundColor: AppColors.error,
                     borderColor: AppColors.error.withValues(alpha: 0.4),

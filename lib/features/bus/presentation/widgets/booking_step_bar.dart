@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Ordered steps of the bus booking wizard, in flow order.
 enum BusBookingStep { route, seat, confirm }
@@ -70,9 +70,9 @@ class BookingStepBar extends StatelessWidget {
 
   IconData _iconFor(BusBookingStep step) {
     return switch (step) {
-      BusBookingStep.route => AppIcons.locationTo,
-      BusBookingStep.seat => AppIcons.ticket,
-      BusBookingStep.confirm => AppIcons.checkCircle,
+      BusBookingStep.route => PhosphorIconsLight.mapPin,
+      BusBookingStep.seat => PhosphorIconsLight.ticket,
+      BusBookingStep.confirm => PhosphorIconsLight.checkCircle,
     };
   }
 
@@ -123,7 +123,7 @@ class _StepNode extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: Icon(
-                isCompleted ? AppIcons.check : icon,
+                isCompleted ? PhosphorIconsLight.check : icon,
                 size: 15,
                 color: filled ? AppColors.onPrimary : AppColors.textMuted,
               ),

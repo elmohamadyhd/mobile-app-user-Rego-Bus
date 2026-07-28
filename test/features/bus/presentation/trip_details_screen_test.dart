@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:safaria/core/storage/secure_storage.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
@@ -13,6 +12,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
 import '../../../support/in_memory_secure_storage.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 BusTripSummary _buildTrip() {
   final board = BusStop(
@@ -150,7 +150,7 @@ void main() {
 
       expect(find.text('Amenities'), findsNothing);
 
-      await tester.tap(find.byIcon(AppIcons.chevronDown));
+      await tester.tap(find.byIcon(PhosphorIconsLight.caretDown));
       await tester.pumpAndSettle();
 
       expect(find.text('Amenities'), findsOneWidget);
@@ -168,14 +168,14 @@ void main() {
   testWidgets('shows the map FAB on the route card', (tester) async {
     await _pumpDetails(tester, _buildTrip());
 
-    expect(find.byIcon(AppIcons.map), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.mapTrifold), findsOneWidget);
   });
 
   testWidgets('tapping the map FAB shows the Google Maps confirmation dialog',
       (tester) async {
     await _pumpDetails(tester, _buildTrip());
 
-    final fab = find.byIcon(AppIcons.map);
+    final fab = find.byIcon(PhosphorIconsLight.mapTrifold);
     await tester.ensureVisible(fab);
     await tester.pumpAndSettle();
     await tester.tap(fab);
@@ -195,7 +195,7 @@ void main() {
       (tester) async {
     await _pumpDetails(tester, _buildTrip());
 
-    final fab = find.byIcon(AppIcons.map);
+    final fab = find.byIcon(PhosphorIconsLight.mapTrifold);
     await tester.ensureVisible(fab);
     await tester.pumpAndSettle();
     await tester.tap(fab);
@@ -271,7 +271,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(AppIcons.map));
+    await tester.tap(find.byIcon(PhosphorIconsLight.mapTrifold));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Open Google Maps'));
     await tester.pumpAndSettle();
@@ -345,7 +345,7 @@ void main() {
       await _pumpDetails(tester, _buildTrip(), coachSeen: true);
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(AppIcons.help), findsOneWidget);
+      expect(find.byIcon(PhosphorIconsLight.question), findsOneWidget);
     });
 
     testWidgets('tap help restarts the coach tour', (tester) async {
@@ -356,7 +356,7 @@ void main() {
 
       await tester.tap(
         find.ancestor(
-          of: find.byIcon(AppIcons.help),
+          of: find.byIcon(PhosphorIconsLight.question),
           matching: find.byType(IconButton),
         ),
       );
@@ -377,7 +377,7 @@ void main() {
 
       final helpButton = tester.widget<IconButton>(
         find.ancestor(
-          of: find.byIcon(AppIcons.help),
+          of: find.byIcon(PhosphorIconsLight.question),
           matching: find.byType(IconButton),
         ),
       );

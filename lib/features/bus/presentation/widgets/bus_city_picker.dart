@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_location.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_locations_provider.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Bottom-sheet picker backed by the cached `/buses/locations` list.
 Future<BusLocation?> showBusCityPicker(
@@ -105,7 +105,7 @@ class _BusCityPickerSheetState extends ConsumerState<_BusCityPickerSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(AppIcons.close),
+                    icon: const Icon(PhosphorIconsLight.x),
                     color: AppColors.textMuted,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
@@ -129,7 +129,7 @@ class _BusCityPickerSheetState extends ConsumerState<_BusCityPickerSheet> {
                 child: Row(
                   children: [
                     const Icon(
-                      AppIcons.search,
+                      PhosphorIconsLight.magnifyingGlass,
                       color: AppColors.textMuted,
                       size: 20,
                     ),

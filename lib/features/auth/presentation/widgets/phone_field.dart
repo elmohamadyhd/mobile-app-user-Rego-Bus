@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/phone_number_formatter.dart';
 import 'package:safaria/core/utils/validators.dart';
 import 'package:safaria/features/auth/presentation/widgets/country_picker.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Phone input with a tappable country-code chip, matching the Skyline design.
 class PhoneField extends StatefulWidget {
@@ -180,7 +180,7 @@ class _CountryChip extends StatelessWidget {
             if (onTap != null) ...[
               const SizedBox(width: 2),
               const Icon(
-                AppIcons.chevronDown,
+                PhosphorIconsLight.caretDown,
                 size: 16,
                 color: AppColors.textMuted,
               ),

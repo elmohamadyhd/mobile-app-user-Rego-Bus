@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
@@ -23,6 +22,7 @@ import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_filter_button.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_filter_sheet.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class TripResultsScreen extends ConsumerStatefulWidget {
   const TripResultsScreen({super.key});
@@ -325,7 +325,7 @@ class _ErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(AppIcons.error, color: AppColors.error, size: 48),
+          const Icon(PhosphorIconsLight.warningCircle, color: AppColors.error, size: 48),
           const SizedBox(height: AppSpacing.md),
           Text(
             message,

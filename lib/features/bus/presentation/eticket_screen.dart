@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
@@ -20,6 +19,7 @@ import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/providers/ticket_pdf_providers.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class BusTicketScreen extends ConsumerWidget {
   const BusTicketScreen({super.key});
@@ -144,7 +144,7 @@ class _HeroSection extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  AppIcons.checkCircle,
+                  PhosphorIconsLight.checkCircle,
                   color: AppColors.onHero,
                   size: 48,
                 ),
@@ -421,7 +421,7 @@ class _ConnectorLine extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const Icon(
-          AppIcons.bus,
+          PhosphorIconsLight.bus,
           color: AppColors.primary,
           size: 20,
         ),
@@ -563,7 +563,7 @@ class _ActionButtonsState extends ConsumerState<_ActionButtons> {
         Expanded(
           child: _GradientActionButton(
             onPressed: busy ? null : _downloadTicket,
-            icon: AppIcons.download,
+            icon: PhosphorIconsLight.downloadSimple,
             label: l10n.eTicketDownload,
             filled: true,
             loading: _downloading,
@@ -573,7 +573,7 @@ class _ActionButtonsState extends ConsumerState<_ActionButtons> {
         Expanded(
           child: _GradientActionButton(
             onPressed: busy ? null : _shareTicket,
-            icon: AppIcons.share,
+            icon: PhosphorIconsLight.shareNetwork,
             label: l10n.eTicketShare,
             filled: false,
             loading: _sharing,

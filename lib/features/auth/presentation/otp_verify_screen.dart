@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/auth/domain/value/otp_purpose.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
@@ -19,6 +18,7 @@ import 'package:safaria/features/auth/presentation/widgets/otp_input.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 const _otpLength = 4;
 const _resendSeconds = 59;
@@ -150,7 +150,7 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
               AuthBackButton(onTap: () => context.pop()),
               const SizedBox(height: 30),
               const IconBadge(
-                icon: AppIcons.mail,
+                icon: PhosphorIconsLight.envelopeSimple,
                 background: AppColors.primaryTint,
                 foreground: AppColors.primary,
               ),

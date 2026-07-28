@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/date_formatting.dart';
@@ -18,6 +17,7 @@ import 'package:safaria/features/car/presentation/widgets/car_place_field.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/models/trip_type.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class CarSearchForm extends ConsumerStatefulWidget {
   const CarSearchForm({
@@ -256,7 +256,7 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
                     placeholder: l10n.carPlaceSearchHint,
                     iconBg: AppColors.primaryTint,
                     iconColor: AppColors.primary,
-                    icon: AppIcons.locationFrom,
+                    icon: PhosphorIconsLight.crosshair,
                     value: _from,
                     onChanged: (p) => setState(() => _from = p),
                     showUseMyLocation: true,
@@ -272,7 +272,7 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
                     placeholder: l10n.carPlaceSearchHint,
                     iconBg: AppColors.secondaryTint,
                     iconColor: AppColors.secondary,
-                    icon: AppIcons.locationTo,
+                    icon: PhosphorIconsLight.mapPin,
                     value: _to,
                     onChanged: (p) => setState(() => _to = p),
                   ),
@@ -478,7 +478,7 @@ class _DateTimeField extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              AppIcons.calendar,
+              PhosphorIconsLight.calendarBlank,
               color: AppColors.textMuted,
               size: 18,
             ),
@@ -578,7 +578,7 @@ class _SwapButton extends StatelessWidget {
             width: 42,
             height: 42,
             child: Icon(
-              AppIcons.swap,
+              PhosphorIconsLight.arrowsDownUp,
               color: AppColors.onPrimary,
               size: 20,
             ),

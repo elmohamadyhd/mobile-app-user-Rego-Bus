@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_images_sheet.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Floating action on seat selection — opens bus photos when available.
 class BusImagesFab extends StatelessWidget {
@@ -31,7 +31,7 @@ class BusImagesFab extends StatelessWidget {
             child: const SizedBox(
               width: 40,
               height: 40,
-              child: Icon(AppIcons.eye, size: 20, color: AppColors.onPrimary),
+              child: Icon(PhosphorIconsLight.eye, size: 20, color: AppColors.onPrimary),
             ),
           ),
         ),

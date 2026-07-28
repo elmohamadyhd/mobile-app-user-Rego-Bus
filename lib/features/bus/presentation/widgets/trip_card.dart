@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
@@ -13,6 +12,7 @@ import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_stops_sheet.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Boarding-pass styled result card for a single [BusTripSummary].
 ///
@@ -474,7 +474,7 @@ class _StopsChip extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.xxs),
                 const Icon(
-                  AppIcons.chevronDown,
+                  PhosphorIconsLight.caretDown,
                   size: 14,
                   color: AppColors.primary,
                 ),
@@ -540,7 +540,7 @@ class _StationCell extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(AppIcons.locationTo, size: 11, color: accentColor),
+              Icon(PhosphorIconsLight.mapPin, size: 11, color: accentColor),
               const SizedBox(width: AppSpacing.xxs),
               Flexible(
                 child: Text(

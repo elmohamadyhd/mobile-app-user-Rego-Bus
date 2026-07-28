@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 enum ProfileAvatarSource { gallery, camera }
 
@@ -56,13 +56,13 @@ Future<ProfileAvatarSource?> showProfileAvatarPickerSheet(
             ),
             const SizedBox(height: AppSpacing.lg),
             _AvatarPickerTile(
-              icon: AppIcons.photo,
+              icon: PhosphorIconsLight.image,
               label: l10n.profileEditPickGallery,
               onTap: () => Navigator.of(context).pop(ProfileAvatarSource.gallery),
             ),
             const SizedBox(height: AppSpacing.sm),
             _AvatarPickerTile(
-              icon: AppIcons.camera,
+              icon: PhosphorIconsLight.camera,
               label: l10n.profileEditPickCamera,
               onTap: () => Navigator.of(context).pop(ProfileAvatarSource.camera),
             ),

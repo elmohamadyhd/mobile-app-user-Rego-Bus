@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/shared/widgets/language_picker_sheet.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Globe icon button that opens [showLanguagePickerSheet] on tap. Used on
 /// the app's start screens (onboarding, login) to switch languages.
@@ -13,7 +13,7 @@ class LanguageIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(AppIcons.language, color: color),
+      icon: Icon(PhosphorIconsLight.translate, color: color),
       onPressed: () => showLanguagePickerSheet(context),
     );
   }

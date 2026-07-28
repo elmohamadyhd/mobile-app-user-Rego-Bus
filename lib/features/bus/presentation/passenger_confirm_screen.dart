@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/date_formatting.dart';
@@ -19,6 +18,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/pages/cms_page_paths.dart';
 import 'package:safaria/shared/widgets/booking_terms_checkbox.dart';
 import 'package:safaria/shared/widgets/gated_primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 int _bookingTotalEgp(BusBookingState state) =>
     state.segmentFare.round() * state.selectedSeats.length;
@@ -325,7 +325,7 @@ class _ConfirmRouteRow extends StatelessWidget {
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-          child: Icon(AppIcons.forward, size: 18, color: AppColors.textMuted),
+          child: Icon(PhosphorIconsLight.caretRight, size: 18, color: AppColors.textMuted),
         ),
         Expanded(
           child: Column(
@@ -435,7 +435,7 @@ class _PaymentSection extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         _PaymentOption(
-          icon: AppIcons.ticket,
+          icon: PhosphorIconsLight.ticket,
           label: l10n.confirmPaymentCard,
           selected: isVisa,
           onTap: () {
@@ -446,7 +446,7 @@ class _PaymentSection extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         _PaymentOption(
-          icon: AppIcons.wallet,
+          icon: PhosphorIconsLight.wallet,
           label: l10n.confirmPaymentWallet,
           selected: isWallet,
           subtitle: walletSubtitle,
@@ -528,7 +528,7 @@ class _PaymentOption extends StatelessWidget {
               ),
               if (selected)
                 const Icon(
-                  AppIcons.check,
+                  PhosphorIconsLight.check,
                   size: 20,
                   color: AppColors.onPrimary,
                 ),

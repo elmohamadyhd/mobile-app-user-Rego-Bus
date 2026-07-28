@@ -3,8 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// Renders a brand logo (Google / Facebook / Apple) from `assets/brand/`.
 ///
-/// Brand marks are deliberately kept out of [AppIcons]: they're multi-color
-/// logos, not monochrome UI icons.
+/// Brand marks are deliberately multi-color SVG logos, not monochrome
+/// Phosphor UI icons — they must preserve each brand's official colors.
 class BrandMark extends StatelessWidget {
   const BrandMark(this.asset, {super.key, this.size = 28});
 

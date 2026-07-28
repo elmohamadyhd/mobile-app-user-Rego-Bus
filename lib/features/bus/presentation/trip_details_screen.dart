@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
@@ -23,6 +22,7 @@ import 'package:safaria/features/bus/presentation/widgets/trip_details_coach.dar
 import 'package:safaria/features/bus/presentation/widgets/trip_route_map_fab.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class BusTripDetailsScreen extends ConsumerStatefulWidget {
   const BusTripDetailsScreen({super.key});
@@ -73,7 +73,7 @@ class _BusTripDetailsScreenState extends ConsumerState<BusTripDetailsScreen> {
           subtitle: _routeLabel(state, fromStop, toStop),
           action: Builder(
             builder: (context) => IconButton(
-              icon: const Icon(AppIcons.help, color: AppColors.textPrimary),
+              icon: const Icon(PhosphorIconsLight.question, color: AppColors.textPrimary),
               tooltip: l10n.tripDetailCoachReplay,
               onPressed: TripDetailsCoachScope.isShowingOf(context)
                   ? null
@@ -260,7 +260,7 @@ class _TripHeaderCard extends StatelessWidget {
                           children: [
                             AmenityIconsRow(amenities: trip.amenities),
                             const Icon(
-                              AppIcons.chevronDown,
+                              PhosphorIconsLight.caretDown,
                               size: 16,
                               color: AppColors.textMuted,
                             ),

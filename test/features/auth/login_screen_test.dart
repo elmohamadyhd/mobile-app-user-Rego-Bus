@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_theme.dart';
 import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 import 'package:safaria/features/auth/domain/entities/auth_user.dart';
@@ -17,6 +16,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 
 import '../../support/fake_auth_repository.dart';
 import '../../support/in_memory_secure_storage.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 void main() {
   Future<ProviderContainer> pumpLogin(
@@ -220,7 +220,7 @@ void main() {
       (tester) async {
     await pumpLogin(tester, guestModeMemory: {});
 
-    await tester.tap(find.byIcon(AppIcons.language));
+    await tester.tap(find.byIcon(PhosphorIconsLight.translate));
     await tester.pumpAndSettle();
 
     expect(find.text('English'), findsOneWidget);

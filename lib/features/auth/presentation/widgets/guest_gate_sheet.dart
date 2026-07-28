@@ -3,12 +3,12 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Shows the guest sign-in gate as a bottom sheet over whatever screen
 /// [context] belongs to. [returnTo] is the route to land on after a
@@ -71,7 +71,7 @@ class _GuestGateSheet extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: const Icon(
-                AppIcons.lock,
+                PhosphorIconsLight.lock,
                 color: AppColors.secondary,
                 size: 26,
               ),
@@ -117,7 +117,7 @@ class _GuestGateSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(
-                  AppIcons.checkCircle,
+                  PhosphorIconsLight.checkCircle,
                   size: 16,
                   color: AppColors.success,
                 ),

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_theme.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/profile/presentation/widgets/profile_circle_avatar.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Skyline shell-tab hero: blue gradient, decorative blobs, curved bottom.
 ///
@@ -209,7 +209,7 @@ class SkylineTabHeroBellButton extends StatelessWidget {
                 width: 42,
                 height: 42,
                 child: Icon(
-                  AppIcons.bell,
+                  PhosphorIconsLight.bell,
                   color: AppColors.onHero,
                   size: 22,
                 ),

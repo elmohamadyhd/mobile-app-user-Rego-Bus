@@ -6,13 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/wallet/presentation/providers/wallet_providers.dart';
 import 'package:safaria/features/wallet/presentation/widgets/wallet_app_bar.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Terminal outcome signalled by a wallet top-up WebView navigation — same
 /// `success-payment`/`failed-payment` redirect targets as the bus payment
@@ -85,7 +85,7 @@ class _WalletLeavePaymentDialog extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    AppIcons.wallet,
+                    PhosphorIconsLight.wallet,
                     color: AppColors.secondary,
                     size: 36,
                   ),

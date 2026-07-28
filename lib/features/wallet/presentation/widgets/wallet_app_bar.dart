@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Wallet-owned pushed-screen app bar: title, back arrow, optional trailing
 /// action. Shape mirrors the bus feature's `BookingAppBar`, but wallet keeps
@@ -53,7 +53,7 @@ class WalletAppBar extends StatelessWidget implements PreferredSizeWidget {
                       icon: Transform.flip(
                         flipX: Directionality.of(context) == TextDirection.rtl,
                         child: const Icon(
-                          AppIcons.back,
+                          PhosphorIconsLight.caretLeft,
                           color: AppColors.textPrimary,
                         ),
                       ),

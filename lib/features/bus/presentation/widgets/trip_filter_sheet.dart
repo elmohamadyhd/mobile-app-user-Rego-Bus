@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
@@ -9,6 +8,7 @@ import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
 import 'package:safaria/features/bus/domain/utils/apply_bus_trip_filters.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Bottom sheet for client-side trip filters; resolves to applied [BusTripFilters]
 /// or null when dismissed without applying.
@@ -169,7 +169,7 @@ class _TripFilterSheetState extends State<_TripFilterSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(AppIcons.close),
+                    icon: const Icon(PhosphorIconsLight.x),
                     color: AppColors.textMuted,
                     onPressed: () => Navigator.of(context).pop(),
                   ),

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/date_formatting.dart';
@@ -20,6 +19,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/models/trip_type.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/transport_mode_tab_bar.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class HomeSearchCard extends ConsumerStatefulWidget {
   const HomeSearchCard({
@@ -469,7 +469,7 @@ class _DateField extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  AppIcons.calendar,
+                  PhosphorIconsLight.calendarBlank,
                   color: AppColors.textMuted,
                   size: 18,
                 ),
@@ -498,7 +498,7 @@ class _DateField extends StatelessWidget {
               ),
               if (!compact)
                 const Icon(
-                  AppIcons.chevronDown,
+                  PhosphorIconsLight.caretDown,
                   color: AppColors.textMuted,
                   size: 20,
                 ),
@@ -541,7 +541,7 @@ class _ClassField extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  AppIcons.flight,
+                  PhosphorIconsLight.airplane,
                   color: AppColors.textMuted,
                   size: 18,
                 ),
@@ -569,7 +569,7 @@ class _ClassField extends StatelessWidget {
                 ),
               ),
               const Icon(
-                AppIcons.chevronDown,
+                PhosphorIconsLight.caretDown,
                 color: AppColors.textMuted,
                 size: 20,
               ),
@@ -615,7 +615,7 @@ class _CityField extends StatelessWidget {
                   color: iconBg,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(AppIcons.locationTo, color: iconColor, size: 18),
+                child: Icon(PhosphorIconsLight.mapPin, color: iconColor, size: 18),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -642,7 +642,7 @@ class _CityField extends StatelessWidget {
                 ),
               ),
               const Icon(
-                AppIcons.chevronDown,
+                PhosphorIconsLight.caretDown,
                 color: AppColors.textMuted,
                 size: 20,
               ),
@@ -683,7 +683,7 @@ class _SwapButton extends StatelessWidget {
             width: 42,
             height: 42,
             child: Icon(
-              AppIcons.swap,
+              PhosphorIconsLight.arrowsDownUp,
               color: AppColors.onPrimary,
               size: 20,
             ),

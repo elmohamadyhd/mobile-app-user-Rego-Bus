@@ -5,11 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/language_icon_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class _Slide {
   const _Slide(this.icon, this.title, this.body);
@@ -56,9 +56,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final slides = [
-      _Slide(AppIcons.bus, l10n.onboarding1Title, l10n.onboarding1Body),
-      _Slide(AppIcons.ticket, l10n.onboarding2Title, l10n.onboarding2Body),
-      _Slide(AppIcons.wallet, l10n.onboarding3Title, l10n.onboarding3Body),
+      _Slide(PhosphorIconsLight.bus, l10n.onboarding1Title, l10n.onboarding1Body),
+      _Slide(PhosphorIconsLight.ticket, l10n.onboarding2Title, l10n.onboarding2Body),
+      _Slide(PhosphorIconsLight.wallet, l10n.onboarding3Title, l10n.onboarding3Body),
     ];
     final isLast = _index == slides.length - 1;
 
@@ -128,7 +128,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                     ),
-                    child: Icon(isLast ? AppIcons.check : AppIcons.forward),
+                    child: Icon(isLast ? PhosphorIconsLight.check : PhosphorIconsLight.caretRight),
                   ),
                 ],
               ),

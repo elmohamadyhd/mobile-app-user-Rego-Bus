@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// The soft rounded back button used on the OTP / password screens.
 /// Mirrors the chevron in RTL so it always points "back".
@@ -26,7 +26,7 @@ class AuthBackButton extends StatelessWidget {
           height: 44,
           child: Transform.flip(
             flipX: isRtl,
-            child: const Icon(AppIcons.back, color: AppColors.textPrimary),
+            child: const Icon(PhosphorIconsLight.caretLeft, color: AppColors.textPrimary),
           ),
         ),
       ),

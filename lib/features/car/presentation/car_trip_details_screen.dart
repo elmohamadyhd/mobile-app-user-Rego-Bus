@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
@@ -18,6 +17,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/pages/cms_page_paths.dart';
 import 'package:safaria/shared/widgets/booking_terms_checkbox.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class CarTripDetailsScreen extends ConsumerStatefulWidget {
   const CarTripDetailsScreen({super.key});
@@ -226,7 +226,7 @@ class _EmptyBody extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.md),
-            TextButton(onPressed: onBack, child: const Icon(AppIcons.back)),
+            TextButton(onPressed: onBack, child: const Icon(PhosphorIconsLight.caretLeft)),
           ],
         ),
       ),
@@ -263,7 +263,7 @@ class _HardErrorBody extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             PrimaryButton(label: retryLabel, onPressed: onRetry),
             const SizedBox(height: AppSpacing.sm),
-            TextButton(onPressed: onBack, child: const Icon(AppIcons.back)),
+            TextButton(onPressed: onBack, child: const Icon(PhosphorIconsLight.caretLeft)),
           ],
         ),
       ),
@@ -286,7 +286,7 @@ class _SoftErrorBanner extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(AppIcons.error, color: AppColors.warning, size: 20),
+            const Icon(PhosphorIconsLight.warningCircle, color: AppColors.warning, size: 20),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(
@@ -373,18 +373,18 @@ class _ExpandedQuoteCard extends StatelessWidget {
               runSpacing: AppSpacing.sm,
               children: [
                 _SpecChip(
-                  icon: AppIcons.seats,
+                  icon: PhosphorIconsLight.users,
                   label: l10n.carSeats(quote.vehicle.seatsNumber),
                 ),
                 _SpecChip(
-                  icon: AppIcons.luggage,
+                  icon: PhosphorIconsLight.briefcase,
                   label: l10n.carBags(
                     quote.vehicle.bigBagsCount ?? 0,
                     quote.vehicle.smallBagsCount ?? 0,
                   ),
                 ),
                 _SpecChip(
-                  icon: AppIcons.gear,
+                  icon: PhosphorIconsLight.steeringWheel,
                   label: _gearLabel(l10n, quote.vehicle.gearType),
                 ),
               ],
@@ -471,13 +471,13 @@ class _VehicleHero extends StatelessWidget {
                   url,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => const Icon(
-                    AppIcons.transfer,
+                    PhosphorIconsLight.car,
                     color: AppColors.primary,
                     size: 48,
                   ),
                 )
               : const Icon(
-                  AppIcons.transfer,
+                  PhosphorIconsLight.car,
                   color: AppColors.primary,
                   size: 48,
                 ),

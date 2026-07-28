@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
 import 'package:safaria/features/bus/domain/utils/apply_bus_trip_filters.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Skyline filter control for trip results — 42dp visual inside a 48dp target.
 class TripFilterButton extends StatelessWidget {
@@ -53,7 +53,7 @@ class TripFilterButton extends StatelessWidget {
                         width: _visualSize,
                         height: _visualSize,
                         child: Icon(
-                          AppIcons.filter,
+                          PhosphorIconsLight.fadersHorizontal,
                           color: AppColors.onPrimary,
                           size: iconSize,
                         ),

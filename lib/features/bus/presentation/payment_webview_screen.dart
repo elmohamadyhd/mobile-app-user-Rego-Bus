@@ -8,7 +8,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:safaria/core/providers/locale_controller.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
@@ -17,6 +16,7 @@ import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Terminal outcome signalled by a payment WebView navigation. The gateway's
 /// hosted checkout (MyFatoorah) redirects back to the REGO site at
@@ -94,7 +94,7 @@ class _LeavePaymentDialog extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    AppIcons.wallet,
+                    PhosphorIconsLight.wallet,
                     color: AppColors.secondary,
                     size: 36,
                   ),
@@ -136,7 +136,7 @@ class _LeavePaymentDialog extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      AppIcons.checkCircle,
+                      PhosphorIconsLight.checkCircle,
                       size: 16,
                       color: AppColors.success,
                     ),

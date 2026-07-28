@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/phone_number_formatter.dart';
@@ -23,6 +22,7 @@ import 'package:safaria/features/profile/presentation/widgets/profile_circle_ava
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class ProfileEditScreen extends ConsumerStatefulWidget {
   const ProfileEditScreen({super.key});
@@ -242,7 +242,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  AppIcons.error,
+                  PhosphorIconsLight.warningCircle,
                   size: 32,
                   color: AppColors.error,
                 ),
@@ -336,7 +336,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                             AuthTextField(
                               controller: _nameController,
                               hint: l10n.registerName,
-                              icon: AppIcons.user,
+                              icon: PhosphorIconsLight.user,
                               errorText: _nameError,
                               textInputAction: TextInputAction.next,
                               autofillHints: const [AutofillHints.name],
@@ -351,7 +351,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                             AuthTextField(
                               controller: _emailController,
                               hint: l10n.registerEmail,
-                              icon: AppIcons.mail,
+                              icon: PhosphorIconsLight.envelopeSimple,
                               keyboardType: TextInputType.emailAddress,
                               errorText: _emailError,
                               textInputAction: TextInputAction.next,
@@ -376,7 +376,7 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
                       const SizedBox(height: AppSpacing.xl),
                       PrimaryButton(
                         label: l10n.profileEditSave,
-                        icon: AppIcons.check,
+                        icon: PhosphorIconsLight.check,
                         loading: _submitting,
                         onPressed:
                             _submitting ? null : () => _save(l10n, user),
@@ -454,7 +454,7 @@ class _ProfileAvatarHeader extends StatelessWidget {
                       ],
                     ),
                     child: const Icon(
-                      AppIcons.camera,
+                      PhosphorIconsLight.camera,
                       size: 16,
                       color: AppColors.onPrimary,
                     ),
@@ -536,7 +536,7 @@ class _VerifiedBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(
-            AppIcons.shield,
+            PhosphorIconsLight.shieldCheck,
             size: 14,
             color: AppColors.success,
           ),

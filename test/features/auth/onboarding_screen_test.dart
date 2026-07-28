@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/features/auth/presentation/onboarding_screen.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 void main() {
   Future<ProviderContainer> pumpOnboarding(WidgetTester tester) async {
@@ -53,7 +53,7 @@ void main() {
       (tester) async {
     await pumpOnboarding(tester);
 
-    await tester.tap(find.byIcon(AppIcons.language));
+    await tester.tap(find.byIcon(PhosphorIconsLight.translate));
     await tester.pumpAndSettle();
 
     expect(find.text('English'), findsOneWidget);

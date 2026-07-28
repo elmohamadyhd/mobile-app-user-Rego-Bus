@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/repositories/bus_repository.dart';
@@ -17,6 +16,7 @@ import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Repository whose `tripById` never resolves until [detailCompleter]
 /// completes — used to hold the notifier in `loadingDetail` so the test can
@@ -171,7 +171,7 @@ void main() {
     );
     await _pumpResultsWithTrips(tester, [tripA, tripB]);
 
-    await tester.tap(find.byIcon(AppIcons.filter));
+    await tester.tap(find.byIcon(PhosphorIconsLight.fadersHorizontal));
     await tester.pumpAndSettle();
 
     expect(find.text('Filter trips'), findsOneWidget);
@@ -202,7 +202,7 @@ void main() {
     // Same duration → cheapest trip is Best deal when it also ties for fastest.
     expect(find.text('Best deal'), findsOneWidget);
 
-    await tester.tap(find.byIcon(AppIcons.filter));
+    await tester.tap(find.byIcon(PhosphorIconsLight.fadersHorizontal));
     await tester.pumpAndSettle();
     await tester.tap(
       find.descendant(
@@ -248,7 +248,7 @@ void main() {
     await _pumpResultsWithTrips(tester, [tripA, tripB]);
     expect(find.byType(TripCard), findsNWidgets(2));
 
-    await tester.tap(find.byIcon(AppIcons.filter));
+    await tester.tap(find.byIcon(PhosphorIconsLight.fadersHorizontal));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Blue Bus').last);
     await tester.pump();
@@ -270,7 +270,7 @@ void main() {
     );
     await _pumpResultsWithTrips(tester, [tripA, tripB]);
 
-    await tester.tap(find.byIcon(AppIcons.filter));
+    await tester.tap(find.byIcon(PhosphorIconsLight.fadersHorizontal));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Blue Bus').last);
     await tester.pump();

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/wallet/domain/entities/wallet.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// One row in the wallet's transaction history: icon by type, description,
 /// signed amount, and date when the backend sent one.
@@ -73,10 +73,10 @@ class WalletTransactionTile extends StatelessWidget {
               ),
               child: Icon(
                 isDeposit
-                    ? AppIcons.walletDeposit
+                    ? PhosphorIconsLight.arrowDownLeft
                     : isWithdraw
-                        ? AppIcons.walletWithdraw
-                        : AppIcons.wallet,
+                        ? PhosphorIconsLight.arrowUpRight
+                        : PhosphorIconsLight.wallet,
                 size: 20,
                 color: isDeposit
                     ? AppColors.success

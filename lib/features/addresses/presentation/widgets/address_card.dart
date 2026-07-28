@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/addresses/domain/entities/saved_address.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// One saved-address row in the addresses list.
 class AddressCard extends StatelessWidget {
@@ -70,7 +70,7 @@ class AddressCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     child: Icon(
-                      AppIcons.locationTo,
+                      PhosphorIconsLight.mapPin,
                       size: 20,
                       color: _iconColor(tint),
                     ),
@@ -103,7 +103,7 @@ class AddressCard extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(
-                      AppIcons.edit,
+                      PhosphorIconsLight.pencilSimple,
                       color: AppColors.textMuted,
                     ),
                     onPressed: onEdit,

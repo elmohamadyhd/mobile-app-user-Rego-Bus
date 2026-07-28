@@ -3,12 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_theme.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Immersive gradient header for the wallet screen: back navigation, title,
 /// and the available balance displayed on the hero.
@@ -157,7 +157,7 @@ class _HeroBackButton extends StatelessWidget {
           height: 44,
           child: Transform.flip(
             flipX: isRtl,
-            child: const Icon(AppIcons.back, color: AppColors.onHero),
+            child: const Icon(PhosphorIconsLight.caretLeft, color: AppColors.onHero),
           ),
         ),
       ),

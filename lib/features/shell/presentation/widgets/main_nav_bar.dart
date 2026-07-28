@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 // ── Nav-bar geometry (matches the Skyline design canvas) ─────────────────────
 const double _barRadius = 28;
@@ -65,9 +65,9 @@ class MainNavBar extends StatelessWidget {
     final barColor = Theme.of(context).colorScheme.surface;
 
     final destinations = <(IconData, String)>[
-      (AppIcons.home, l10n.navHome),
-      (AppIcons.ticket, l10n.navTickets),
-      (AppIcons.user, l10n.navProfile),
+      (PhosphorIconsLight.house, l10n.navHome),
+      (PhosphorIconsLight.ticket, l10n.navTickets),
+      (PhosphorIconsLight.user, l10n.navProfile),
     ];
 
     final selected = currentIndex.clamp(0, destinations.length - 1);

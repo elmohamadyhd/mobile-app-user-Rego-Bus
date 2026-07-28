@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
@@ -12,6 +11,7 @@ import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Shown when the rider returns from the payment gateway without a confirmed
 /// payment (cancelled, closed, or still processing). The seat is held and the
@@ -86,7 +86,7 @@ class _PendingHero extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: const Icon(
-            AppIcons.calendar,
+            PhosphorIconsLight.calendarBlank,
             color: AppColors.secondary,
             size: 36,
           ),

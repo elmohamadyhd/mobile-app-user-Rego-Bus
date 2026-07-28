@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class CarTierCard extends StatelessWidget {
   const CarTierCard({
@@ -86,18 +86,18 @@ class CarTierCard extends StatelessWidget {
                 runSpacing: AppSpacing.sm,
                 children: [
                   _SpecChip(
-                    icon: AppIcons.seats,
+                    icon: PhosphorIconsLight.users,
                     label: l10n.carSeats(quote.vehicle.seatsNumber),
                   ),
                   _SpecChip(
-                    icon: AppIcons.luggage,
+                    icon: PhosphorIconsLight.briefcase,
                     label: l10n.carBags(
                       quote.vehicle.bigBagsCount ?? 0,
                       quote.vehicle.smallBagsCount ?? 0,
                     ),
                   ),
                   _SpecChip(
-                    icon: AppIcons.gear,
+                    icon: PhosphorIconsLight.steeringWheel,
                     label: _gearLabel(l10n, quote.vehicle.gearType),
                   ),
                 ],
@@ -141,7 +141,7 @@ class CarTierCard extends StatelessWidget {
                     child: Transform.flip(
                       flipX: isRtl,
                       child: const Icon(
-                        AppIcons.forward,
+                        PhosphorIconsLight.caretRight,
                         size: 18,
                         color: AppColors.primary,
                       ),
@@ -262,13 +262,13 @@ class _VehicleImage extends StatelessWidget {
                 url,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => const Icon(
-                  AppIcons.transfer,
+                  PhosphorIconsLight.car,
                   color: AppColors.primary,
                   size: 28,
                 ),
               )
             : const Icon(
-                AppIcons.transfer,
+                PhosphorIconsLight.car,
                 color: AppColors.primary,
                 size: 28,
               ),

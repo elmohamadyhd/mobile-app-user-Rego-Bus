@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Dashed-style CTA to open the new-address form.
 class AddAddressButton extends StatelessWidget {
@@ -40,7 +40,7 @@ class AddAddressButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(
-                AppIcons.add,
+                PhosphorIconsLight.plus,
                 color: AppColors.primary,
                 size: 20,
               ),

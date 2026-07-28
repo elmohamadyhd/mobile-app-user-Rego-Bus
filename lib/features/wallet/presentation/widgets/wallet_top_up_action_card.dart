@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Full-width primary Top-up CTA on the page background below the hero.
 ///
@@ -22,7 +22,7 @@ class WalletTopUpActionCard extends StatelessWidget {
 
     return PrimaryButton(
       label: l10n.walletTopUpCta,
-      icon: AppIcons.plus,
+      icon: PhosphorIconsLight.plus,
       iconInSquare: true,
       onPressed: onTopUp,
     );

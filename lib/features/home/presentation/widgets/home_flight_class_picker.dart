@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// A flight cabin class. Static set for now; wire API later.
 class FlightClass {
@@ -66,7 +66,7 @@ Future<FlightClass?> showFlightClassPicker(
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(AppIcons.close),
+                  icon: const Icon(PhosphorIconsLight.x),
                   color: AppColors.textMuted,
                   onPressed: () => Navigator.of(context).pop(),
                 ),

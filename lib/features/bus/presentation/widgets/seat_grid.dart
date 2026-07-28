@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/seat_map.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_images_fab.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Shared square size for every grid cell — seats, icon markers (driver,
 /// door, WC), and blank aisle fillers — so rows stay aligned regardless of
@@ -131,11 +131,11 @@ class _SeatCellView extends StatelessWidget {
         // walkable space rather than a UI element.
         return const SizedBox(width: _cellSize, height: _cellSize);
       case SeatMapCellKind.driver:
-        return const _MarkerCell(icon: AppIcons.busFront);
+        return const _MarkerCell(icon: PhosphorIconsLight.steeringWheel);
       case SeatMapCellKind.door:
-        return const _MarkerCell(icon: AppIcons.logout);
+        return const _MarkerCell(icon: PhosphorIconsLight.signOut);
       case SeatMapCellKind.wc:
-        return const _MarkerCell(icon: AppIcons.amenityWc);
+        return const _MarkerCell(icon: PhosphorIconsLight.toilet);
       case SeatMapCellKind.available:
       case SeatMapCellKind.booked:
         return _SeatButton(cell: cell, selected: selected, onTap: onTap);

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
 import 'package:safaria/features/bus/domain/entities/seat_map.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
@@ -11,6 +10,7 @@ import 'package:safaria/features/bus/presentation/widgets/bus_images_fab.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
 import '../fake_bus_repository.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 const _mismatchedIdSeatMap = SeatMap(
   salon: SeatSalon(id: 1, name: 'Express', rows: 2, columns: 3),
@@ -166,7 +166,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(BusImagesFab), findsOneWidget);
-    expect(find.byIcon(AppIcons.eye), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.eye), findsOneWidget);
 
     await tester.tap(find.byType(BusImagesFab));
     await tester.pumpAndSettle();

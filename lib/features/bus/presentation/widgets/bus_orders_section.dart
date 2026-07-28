@@ -7,7 +7,6 @@ import 'package:shimmer/shimmer.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
@@ -23,6 +22,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/providers/ticket_pdf_providers.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// The bus-owned section dropped into the "My Tickets" tab shell
 /// (`TicketsScreen`). Renders guest/loading/error/empty/list states for the
@@ -84,7 +84,7 @@ class _GuestSignInCard extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    AppIcons.user,
+                    PhosphorIconsLight.user,
                     size: 22,
                     color: AppColors.primary,
                   ),
@@ -100,7 +100,7 @@ class _GuestSignInCard extends StatelessWidget {
                   ),
                 ),
                 const Icon(
-                  AppIcons.forward,
+                  PhosphorIconsLight.caretRight,
                   size: 20,
                   color: AppColors.textMuted,
                 ),
@@ -133,7 +133,7 @@ class _EmptyState extends StatelessWidget {
                 color: AppColors.primaryTint,
               ),
               child: const Icon(
-                AppIcons.ticket,
+                PhosphorIconsLight.ticket,
                 size: 40,
                 color: AppColors.primary,
               ),
@@ -178,7 +178,7 @@ class _ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(AppIcons.error, size: 40, color: AppColors.error),
+            const Icon(PhosphorIconsLight.warningCircle, size: 40, color: AppColors.error),
             const SizedBox(height: AppSpacing.md),
             Text(
               l10n.ticketsError,

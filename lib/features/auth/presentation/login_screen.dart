@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/validators.dart';
@@ -24,6 +23,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/double_back_to_exit.dart';
 import 'package:safaria/shared/widgets/language_icon_button.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key, this.gateArgs});
@@ -141,7 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     AuthTextField(
                       controller: _password,
                       hint: l10n.passwordHint,
-                      icon: AppIcons.lock,
+                      icon: PhosphorIconsLight.lock,
                       obscure: _obscure,
                       errorText: _passwordError,
                       textInputAction: TextInputAction.done,
@@ -236,7 +236,7 @@ class _EyeToggle extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Icon(
-        obscure ? AppIcons.eye : AppIcons.eyeOff,
+        obscure ? PhosphorIconsLight.eye : PhosphorIconsLight.eyeSlash,
         size: 20,
         color: AppColors.textMuted,
       ),

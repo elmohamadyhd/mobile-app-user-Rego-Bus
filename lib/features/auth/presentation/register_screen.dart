@@ -6,7 +6,6 @@ import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/validators.dart';
@@ -22,6 +21,7 @@ import 'package:safaria/features/auth/presentation/widgets/phone_field.dart';
 import 'package:safaria/features/auth/presentation/widgets/social_row.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key, this.gateArgs});
@@ -152,7 +152,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   AuthTextField(
                     controller: _name,
                     hint: l10n.registerName,
-                    icon: AppIcons.user,
+                    icon: PhosphorIconsLight.user,
                     errorText: _nameError,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.name],
@@ -167,7 +167,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   AuthTextField(
                     controller: _email,
                     hint: l10n.registerEmail,
-                    icon: AppIcons.mail,
+                    icon: PhosphorIconsLight.envelopeSimple,
                     keyboardType: TextInputType.emailAddress,
                     errorText: _emailError,
                     textInputAction: TextInputAction.next,
@@ -176,7 +176,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   AuthTextField(
                     controller: _password,
                     hint: l10n.passwordHint,
-                    icon: AppIcons.lock,
+                    icon: PhosphorIconsLight.lock,
                     obscure: _obscure,
                     errorText: _passwordError,
                     textInputAction: TextInputAction.done,
@@ -186,7 +186,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       onTap: () => setState(() => _obscure = !_obscure),
                       behavior: HitTestBehavior.opaque,
                       child: Icon(
-                        _obscure ? AppIcons.eye : AppIcons.eyeOff,
+                        _obscure ? PhosphorIconsLight.eye : PhosphorIconsLight.eyeSlash,
                         size: 20,
                         color: AppColors.textMuted,
                       ),

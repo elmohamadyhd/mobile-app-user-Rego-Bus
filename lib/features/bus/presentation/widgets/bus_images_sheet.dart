@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 Future<void> showBusImagesSheet(
   BuildContext context, {
@@ -63,7 +63,7 @@ Future<void> showBusImagesSheet(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
-                            AppIcons.error,
+                            PhosphorIconsLight.warningCircle,
                             color: AppColors.textMuted,
                             size: 32,
                           ),

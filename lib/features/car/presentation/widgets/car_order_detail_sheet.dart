@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/map_location.dart';
@@ -12,6 +11,7 @@ import 'package:safaria/features/car/presentation/providers/car_orders_provider.
 import 'package:safaria/features/car/presentation/widgets/car_order_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/open_location_in_google_maps.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Opens the private-order detail sheet, seeded from [order] while
 /// `GET /profile/private/orders/:id` refreshes in the background.
@@ -79,7 +79,7 @@ class _CarOrderDetailSheet extends ConsumerWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(AppIcons.close),
+                    icon: const Icon(PhosphorIconsLight.x),
                     color: AppColors.textMuted,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
@@ -285,7 +285,7 @@ class _RouteSection extends StatelessWidget {
               child: Transform.flip(
                 flipX: isRtl,
                 child: const Icon(
-                  AppIcons.forward,
+                  PhosphorIconsLight.caretRight,
                   size: 18,
                   color: AppColors.textMuted,
                 ),
@@ -337,7 +337,7 @@ class _RouteStopSide extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xxs),
               const Icon(
-                AppIcons.locationTo,
+                PhosphorIconsLight.mapPin,
                 size: 16,
                 color: AppColors.textMuted,
               ),

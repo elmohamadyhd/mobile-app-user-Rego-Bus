@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/seat_map.dart';
@@ -15,6 +14,7 @@ import 'package:safaria/features/bus/presentation/widgets/booking_step_bar.dart'
 import 'package:safaria/features/bus/presentation/widgets/seat_grid.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class SeatSelectionScreen extends ConsumerWidget {
   const SeatSelectionScreen({super.key});
@@ -216,7 +216,7 @@ class _SeatMapErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(AppIcons.error, color: AppColors.error, size: 40),
+          const Icon(PhosphorIconsLight.warningCircle, color: AppColors.error, size: 40),
           const SizedBox(height: AppSpacing.md),
           Text(
             message,

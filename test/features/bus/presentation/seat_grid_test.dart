@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/features/bus/domain/entities/seat_map.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_images_fab.dart';
 import 'package:safaria/features/bus/presentation/widgets/seat_grid.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 SeatMap _buildSeatMap() {
   const salon = SeatSalon(id: 1, name: 'Express', rows: 2, columns: 4);
@@ -111,7 +111,7 @@ void main() {
     );
 
     expect(find.byType(BusImagesFab), findsOneWidget);
-    expect(find.byIcon(AppIcons.eye), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.eye), findsOneWidget);
   });
 
   testWidgets('ltr salon keeps driver left when app locale is Arabic', (
@@ -154,7 +154,7 @@ void main() {
       ),
     );
 
-    final driverDx = tester.getTopLeft(find.byIcon(AppIcons.busFront)).dx;
+    final driverDx = tester.getTopLeft(find.byIcon(PhosphorIconsLight.steeringWheel)).dx;
     final seat1Dx = tester.getTopLeft(find.text('1')).dx;
     expect(driverDx, lessThan(seat1Dx));
   });

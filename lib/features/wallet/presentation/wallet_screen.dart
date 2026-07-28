@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
@@ -16,6 +15,7 @@ import 'package:safaria/features/wallet/presentation/widgets/wallet_transaction_
 import 'package:safaria/features/wallet/presentation/widgets/wallet_transactions_header.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
@@ -158,7 +158,7 @@ class _WalletErrorBody extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(AppIcons.error, size: 40, color: AppColors.error),
+                  const Icon(PhosphorIconsLight.warningCircle, size: 40, color: AppColors.error),
                   const SizedBox(height: AppSpacing.md),
                   Text(
                     l10n.walletError,
@@ -203,7 +203,7 @@ class _WalletEmptyState extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(AppIcons.wallet, size: 40, color: AppColors.textMuted),
+          const Icon(PhosphorIconsLight.wallet, size: 40, color: AppColors.textMuted),
           const SizedBox(height: AppSpacing.md),
           Text(
             l10n.walletEmptyTitle,

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/auth/domain/entities/auth_user.dart';
@@ -19,6 +18,7 @@ import 'package:safaria/shared/widgets/language_picker_sheet.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
 import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -45,7 +45,7 @@ class ProfileScreen extends ConsumerWidget {
             _ProfileMenuCard(
               items: [
                 _ProfileMenuItem(
-                  icon: AppIcons.locationTo,
+                  icon: PhosphorIconsLight.mapPin,
                   label: l10n.profileMenuAddresses,
                   onTap: () => isGuest
                       ? context.go(
@@ -57,7 +57,7 @@ class ProfileScreen extends ConsumerWidget {
                       : context.push(AddressesRoutes.list),
                 ),
                 _ProfileMenuItem(
-                  icon: AppIcons.wallet,
+                  icon: PhosphorIconsLight.wallet,
                   label: l10n.profileMenuWallet,
                   onTap: () => isGuest
                       ? context.go(
@@ -69,17 +69,17 @@ class ProfileScreen extends ConsumerWidget {
                       : context.push(WalletRoutes.wallet),
                 ),
                 _ProfileMenuItem(
-                  icon: AppIcons.language,
+                  icon: PhosphorIconsLight.translate,
                   label: l10n.profileMenuLanguage,
                   onTap: () => showLanguagePickerSheet(context),
                 ),
                 _ProfileMenuItem(
-                  icon: AppIcons.settings,
+                  icon: PhosphorIconsLight.gearSix,
                   label: l10n.profileMenuSettings,
                   onTap: () => _showComingSoon(context, l10n),
                 ),
                 _ProfileMenuItem(
-                  icon: AppIcons.help,
+                  icon: PhosphorIconsLight.question,
                   label: l10n.profileMenuHelp,
                   onTap: () => _showComingSoon(context, l10n),
                 ),
@@ -207,7 +207,7 @@ class _ProfileHeroContent extends StatelessWidget {
           Transform.flip(
             flipX: Directionality.of(context) == TextDirection.rtl,
             child: Icon(
-              AppIcons.edit,
+              PhosphorIconsLight.pencilSimple,
               size: 20,
               color: AppColors.onHero.withValues(alpha: 0.72),
             ),
@@ -339,7 +339,7 @@ class _ProfileLogoutCard extends StatelessWidget {
         ],
       ),
       child: _ProfileMenuTile(
-        icon: AppIcons.logout,
+        icon: PhosphorIconsLight.signOut,
         label: label,
         onTap: onTap,
         destructive: true,
@@ -370,7 +370,7 @@ class _ProfileSignInCard extends StatelessWidget {
         ],
       ),
       child: _ProfileMenuTile(
-        icon: AppIcons.user,
+        icon: PhosphorIconsLight.user,
         label: label,
         onTap: onTap,
       ),
@@ -435,7 +435,7 @@ class _ProfileMenuTile extends StatelessWidget {
               Transform.flip(
                 flipX: isRtl,
                 child: Icon(
-                  AppIcons.forward,
+                  PhosphorIconsLight.caretRight,
                   size: 20,
                   color: destructive
                       ? AppColors.error.withValues(alpha: 0.6)

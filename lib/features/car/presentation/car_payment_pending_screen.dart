@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class CarPaymentPendingScreen extends ConsumerWidget {
   const CarPaymentPendingScreen({super.key});
@@ -49,7 +49,7 @@ class CarPaymentPendingScreen extends ConsumerWidget {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    AppIcons.calendar,
+                    PhosphorIconsLight.calendarBlank,
                     color: AppColors.secondary,
                     size: 36,
                   ),
