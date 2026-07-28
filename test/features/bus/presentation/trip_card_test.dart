@@ -123,8 +123,9 @@ void main() {
     expect(find.text('Select'), findsOneWidget);
     // Seats pill is hidden until the backend count is reliable.
     expect(find.text('6 seats left'), findsNothing);
-    // Alternate boarding/drop-off stations collapse to a "+1" hint.
-    expect(find.textContaining('+1', findRichText: true), findsWidgets);
+    // Total boarding + drop-off stations next to duration (separate widgets).
+    expect(find.text('4 stops'), findsOneWidget);
+    expect(find.textContaining('+1', findRichText: true), findsNothing);
   });
 
   testWidgets('hides the seats-left pill until backend data is ready',
@@ -141,6 +142,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tapped, 1);
+  });
+
+  testWidgets('shows combined stops count on the duration line in Arabic',
+      (tester) async {
+    await _pumpCard(tester, _buildTrip(), locale: const Locale('ar'));
+
+    // Stops stay in their own widget so BiDi cannot split `4` from `محطات`.
+    expect(find.text('4 محطات'), findsOneWidget);
+    expect(find.text('4h 45m'), findsOneWidget);
   });
 
   testWidgets('paints and lays out in RTL (Arabic)', (tester) async {

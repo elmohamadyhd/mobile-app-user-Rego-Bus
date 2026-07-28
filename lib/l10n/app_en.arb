@@ -174,6 +174,18 @@
   "tripResultsError": "Couldn't load trips",
   "tripResultsRetry": "Try again",
   "tripResultsFareLabel": "Fare",
+  "@tripResultsFareLabel": {
+    "description": "Fare label on the trip card stub."
+  },
+  "tripResultsStopsCount": "{count, plural, =1{1 stop} other{{count} stops}}",
+  "@tripResultsStopsCount": {
+    "description": "Total boarding + drop-off stations on a trip results card.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "tripResultsNoMatchingTrips": "No trips match your filters",
   "tripResultsClearFilters": "Clear filters",
   "tripFilterSheetTitle": "Filter trips",

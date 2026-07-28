@@ -9,6 +9,7 @@ import 'package:safaria/features/bus/presentation/widgets/amenity_icons_row.dart
 import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/ltr_text.dart';
 
 /// Boarding-pass styled result card for a single [BusTripSummary].
 ///
@@ -41,7 +42,7 @@ class TripCard extends StatelessWidget {
   /// Governorate/city label pinned above the stop name.
   static const double _cityRowHeight = 16;
 
-  /// Two-line station name + optional `+N` chip.
+  /// Two-line station name.
   static const double _stationRowHeight = 34;
 
   /// Height of the fare stub (below the tear line). Drives the notch offset.
@@ -81,7 +82,7 @@ class TripCard extends StatelessWidget {
                 children: [
                   _Header(trip: trip, l10n: l10n),
                   const SizedBox(height: AppSpacing.md),
-                  _Timeline(trip: trip),
+                  _Timeline(trip: trip, l10n: l10n),
                 ],
               ),
             ),
@@ -209,15 +210,13 @@ class _Header extends StatelessWidget {
 // ── Timeline ──────────────────────────────────────────────────────────────────
 
 class _Timeline extends StatelessWidget {
-  const _Timeline({required this.trip});
+  const _Timeline({required this.trip, required this.l10n});
 
   final BusTripSummary trip;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    final int boardingExtra = trip.boardingStops.length - 1;
-    final int dropoffExtra = trip.dropoffStops.length - 1;
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -258,12 +257,10 @@ class _Timeline extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Center(
-                  child: Text(
-                    trip.terminalDurationLabel,
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.textMuted,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: _DurationStopsLabel(
+                    duration: trip.terminalDurationLabel,
+                    stopsCount: trip.stopsCount,
+                    l10n: l10n,
                   ),
                 ),
               ),
@@ -279,7 +276,6 @@ class _Timeline extends StatelessWidget {
               child: _StationCell(
                 cityName: trip.defaultBoardingStop.cityName,
                 station: trip.defaultBoardingStop.name,
-                extra: boardingExtra,
                 textAlign: TextAlign.start,
                 accentColor: AppColors.primary,
               ),
@@ -290,13 +286,59 @@ class _Timeline extends StatelessWidget {
               child: _StationCell(
                 cityName: trip.terminalDropoffStop.cityName,
                 station: trip.terminalDropoffStop.name,
-                extra: dropoffExtra,
                 textAlign: TextAlign.end,
                 accentColor: AppColors.secondary,
               ),
             ),
           ],
         ),
+      ],
+    );
+  }
+}
+
+/// Duration (Latin) and stops count as separate widgets so BiDi does not
+/// reorder Arabic around the LTR duration run (e.g. `6 · 3h 45m محطات`).
+class _DurationStopsLabel extends StatelessWidget {
+  const _DurationStopsLabel({
+    required this.duration,
+    required this.stopsCount,
+    required this.l10n,
+  });
+
+  final String duration;
+  final int stopsCount;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = AppTypography.caption.copyWith(
+      color: AppColors.textMuted,
+      fontWeight: FontWeight.w600,
+    );
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: LtrText(
+            duration,
+            style: style,
+            textAlign: TextAlign.center,
+          ),
+        ),
+        if (stopsCount > 0) ...[
+          Text(' · ', style: style),
+          Flexible(
+            child: Text(
+              l10n.tripResultsStopsCount(stopsCount),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+              style: style,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -332,14 +374,12 @@ class _StationCell extends StatelessWidget {
   const _StationCell({
     required this.cityName,
     required this.station,
-    required this.extra,
     required this.textAlign,
     required this.accentColor,
   });
 
   final String cityName;
   final String station;
-  final int extra;
   final TextAlign textAlign;
   final Color accentColor;
 
@@ -378,53 +418,15 @@ class _StationCell extends StatelessWidget {
         const SizedBox(height: AppSpacing.xxs),
         SizedBox(
           height: TripCard._stationRowHeight,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  station,
-                  textAlign: textAlign,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.overline
-                      .copyWith(color: AppColors.textMuted),
-                ),
-              ),
-              if (extra > 0) ...[
-                const SizedBox(width: AppSpacing.xs),
-                _StationCountChip(extra: extra),
-              ],
-            ],
+          child: Text(
+            station,
+            textAlign: textAlign,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.overline.copyWith(color: AppColors.textMuted),
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Small pill showing how many alternative boarding/drop-off stations exist
-/// beyond the default one (e.g. `+3`).
-class _StationCountChip extends StatelessWidget {
-  const _StationCountChip({required this.extra});
-
-  final int extra;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColors.primaryTint,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        '+$extra',
-        style: AppTypography.overline.copyWith(
-          color: AppColors.primary,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
     );
   }
 }
