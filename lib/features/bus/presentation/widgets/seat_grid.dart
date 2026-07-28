@@ -135,7 +135,7 @@ class _SeatCellView extends StatelessWidget {
       case SeatMapCellKind.door:
         return const _MarkerCell(icon: AppIcons.logout);
       case SeatMapCellKind.wc:
-        return const _MarkerCell(icon: AppIcons.amenityWater);
+        return const _MarkerCell(icon: AppIcons.amenityWc);
       case SeatMapCellKind.available:
       case SeatMapCellKind.booked:
         return _SeatButton(cell: cell, selected: selected, onTap: onTap);

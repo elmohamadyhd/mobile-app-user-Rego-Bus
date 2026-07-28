@@ -335,7 +335,9 @@ class _TripHeaderCard extends StatelessWidget {
       case 'sockets':
         return l10n.amenitySockets;
       case 'water':
-        return l10n.amenityWater;
+      case 'wc':
+      case 'w.c':
+        return l10n.amenityWc;
       default:
         return amenity;
     }

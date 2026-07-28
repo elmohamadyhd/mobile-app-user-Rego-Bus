@@ -31,7 +31,7 @@ class TripCard extends StatefulWidget {
   final BusTripSummary trip;
   final void Function({required BusStop from, required BusStop to}) onSelect;
 
-  /// Shows a spinner in the Select button and disables this card's tap.
+  /// Shows a spinner in the Select button and disables it.
   /// Other cards in the list stay fully interactive — see [_SelectButton].
   final bool loading;
 
@@ -129,60 +129,56 @@ class _TripCardState extends State<TripCard> {
       elevation: 6,
       shadowColor: AppColors.primary.withValues(alpha: 0.22),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        customBorder: shape,
-        onTap: widget.loading ? null : _emitSelect,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _Header(trip: widget.trip, highlight: widget.highlight),
+                const SizedBox(height: AppSpacing.md),
+                _Timeline(
+                  trip: widget.trip,
+                  l10n: l10n,
+                  from: _from,
+                  to: _to,
+                  departLabel: _departLabel,
+                  arriveLabel: _arriveLabel,
+                  durationLabel: _durationLabel,
+                  onStopsTap:
+                      widget.trip.stopsCount > 0 ? _openStopsSheet : null,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: TripCard._stubHeight,
+            child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.md,
+                0,
                 AppSpacing.md,
-                AppSpacing.md,
-                AppSpacing.sm,
+                0,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Header(trip: widget.trip, highlight: widget.highlight),
-                  const SizedBox(height: AppSpacing.md),
-                  _Timeline(
-                    trip: widget.trip,
-                    l10n: l10n,
-                    from: _from,
-                    to: _to,
-                    departLabel: _departLabel,
-                    arriveLabel: _arriveLabel,
-                    durationLabel: _durationLabel,
-                    onStopsTap:
-                        widget.trip.stopsCount > 0 ? _openStopsSheet : null,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: TripCard._stubHeight,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  AppSpacing.md,
-                  0,
-                  AppSpacing.md,
-                  0,
-                ),
-                child: Center(
-                  child: _FareStub(
-                    fareEgp: _fareEgp,
-                    currency: widget.trip.currency,
-                    l10n: l10n,
-                    onTap: _emitSelect,
-                    loading: widget.loading,
-                  ),
+              child: Center(
+                child: _FareStub(
+                  fareEgp: _fareEgp,
+                  currency: widget.trip.currency,
+                  l10n: l10n,
+                  onTap: _emitSelect,
+                  loading: widget.loading,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -356,7 +356,10 @@
   "amenityWifi": "Wi-Fi",
   "amenityAC": "A/C",
   "amenitySockets": "Sockets",
-  "amenityWater": "Water",
+  "amenityWc": "Bathroom",
+  "@amenityWc": {
+    "description": "Amenity label for onboard toilet / bathroom."
+  },
 
   "seatSelectionTitle": "Select seats",
   "seatSelectionContinue": "Continue",

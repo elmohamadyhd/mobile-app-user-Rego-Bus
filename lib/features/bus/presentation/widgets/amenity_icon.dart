@@ -24,8 +24,17 @@ IconData amenityIconFor(String amenity) {
       s.contains('شحن')) {
     return AppIcons.amenitySockets;
   }
-  if (s.contains('water') || s.contains('مياه') || s.contains('ماء')) {
-    return AppIcons.amenityWater;
+  if (s.contains('wc') ||
+      s.contains('w.c') ||
+      s.contains('toilet') ||
+      s.contains('bath') ||
+      s.contains('restroom') ||
+      s.contains('water') ||
+      s.contains('مياه') ||
+      s.contains('ماء') ||
+      s.contains('حمام') ||
+      s.contains('مرحاض')) {
+    return AppIcons.amenityWc;
   }
   return AppIcons.check;
 }

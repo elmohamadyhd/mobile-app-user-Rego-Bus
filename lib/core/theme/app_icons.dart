@@ -70,7 +70,7 @@ abstract final class AppIcons {
   static const IconData amenityWifi = TablerIcons.wifi;
   static const IconData amenityAC = TablerIcons.airConditioning;
   static const IconData amenitySockets = TablerIcons.plug;
-  static const IconData amenityWater = TablerIcons.droplet;
+  static const IconData amenityWc = TablerIcons.badgeWc;
   static const IconData spaceBar = TablerIcons.spacingHorizontal;
 
   // ── Actions ───────────────────────────────────────────────────────────────

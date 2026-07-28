@@ -149,7 +149,7 @@ void main() {
     expect(find.text('2 seats left'), findsNothing);
   });
 
-  testWidgets('tapping the card invokes onSelect with default pair',
+  testWidgets('tapping Select invokes onSelect with default pair',
       (tester) async {
     BusStop? selectedFrom;
     BusStop? selectedTo;
@@ -162,11 +162,26 @@ void main() {
       },
     );
 
-    await tester.tap(find.byType(TripCard));
+    await tester.tap(find.text('Select'));
     await tester.pumpAndSettle();
 
     expect(selectedFrom?.locationId, '1');
     expect(selectedTo?.locationId, '10');
+  });
+
+  testWidgets('tapping the card body does not invoke onSelect',
+      (tester) async {
+    var selected = 0;
+    await _pumpCard(
+      tester,
+      _buildTrip(),
+      onSelect: ({required from, required to}) => selected++,
+    );
+
+    await tester.tap(find.text('Go Bus'));
+    await tester.pumpAndSettle();
+
+    expect(selected, 0);
   });
 
   testWidgets('tapping stops count opens sheet without selecting trip',
@@ -397,7 +412,7 @@ void main() {
     expect(find.text('Select'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    await tester.tap(find.byType(TripCard));
+    await tester.tap(find.byType(CircularProgressIndicator));
     await tester.pump();
     expect(tapped, 0);
   });

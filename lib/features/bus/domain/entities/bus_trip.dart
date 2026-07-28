@@ -5,7 +5,7 @@ part 'bus_trip.freezed.dart';
 
 /// Placeholder amenities until the API exposes real data.
 abstract final class BusPlaceholderAmenities {
-  static const values = ['Wi-Fi', 'A/C', 'Sockets', 'Water'];
+  static const values = ['Wi-Fi', 'A/C', 'Sockets', 'Bathroom'];
 }
 
 @freezed
