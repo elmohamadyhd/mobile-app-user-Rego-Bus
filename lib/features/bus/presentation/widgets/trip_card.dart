@@ -135,28 +135,40 @@ class _Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: trip.operatorName,
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        trip.operatorName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.title.copyWith(
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      if (trip.serviceClass.trim().isNotEmpty)
-                        TextSpan(
-                          text: '  ·  ${trip.serviceClass}',
+                    ),
+                    if (trip.serviceClass.trim().isNotEmpty) ...[
+                      Text(
+                        '  ·  ',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textMuted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Flexible(
+                        child: Text(
+                          trip.serviceClass,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: AppTypography.caption.copyWith(
                             color: AppColors.textMuted,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                      ),
                     ],
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  ],
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 AmenityIconsRow(amenities: trip.amenities),

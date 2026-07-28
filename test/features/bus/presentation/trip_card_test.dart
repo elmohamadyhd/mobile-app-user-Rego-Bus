@@ -117,7 +117,7 @@ void main() {
       (tester) async {
     await _pumpCard(tester, _buildTrip());
 
-    expect(find.textContaining('Go Bus', findRichText: true), findsOneWidget);
+    expect(find.text('Go Bus'), findsOneWidget);
     expect(find.textContaining('250', findRichText: true), findsWidgets);
     expect(find.text('Fare'), findsOneWidget);
     expect(find.text('Select'), findsOneWidget);
@@ -158,7 +158,8 @@ void main() {
 
     expect(find.text('السعر'), findsOneWidget); // Fare
     expect(find.text('اختر'), findsOneWidget); // Select
-    expect(find.textContaining('Go Bus', findRichText: true), findsOneWidget);
+    expect(find.text('Go Bus'), findsOneWidget);
+    expect(find.text('VIP'), findsOneWidget);
   });
 
   testWidgets('cards with different content align times and fare rows',
