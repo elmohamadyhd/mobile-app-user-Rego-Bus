@@ -280,21 +280,23 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           backgroundColor: const Color(0xFFF4F7FB),
-          body: Center(
-            child: SizedBox(
-              width: 360,
-              child: Column(
-                children: [
-                  TripCard(
-                    trip: shortTrip,
-                    onSelect: ({required from, required to}) {},
-                  ),
-                  const SizedBox(height: 16),
-                  TripCard(
-                    trip: longTrip,
-                    onSelect: ({required from, required to}) {},
-                  ),
-                ],
+          body: SingleChildScrollView(
+            child: Center(
+              child: SizedBox(
+                width: 360,
+                child: Column(
+                  children: [
+                    TripCard(
+                      trip: shortTrip,
+                      onSelect: ({required from, required to}) {},
+                    ),
+                    const SizedBox(height: 16),
+                    TripCard(
+                      trip: longTrip,
+                      onSelect: ({required from, required to}) {},
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -354,6 +356,31 @@ void main() {
     );
     expect(stationText.maxLines, 2);
     expect(stationText.overflow, TextOverflow.ellipsis);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('lays out without overflow at large text scale', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+          child: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 360,
+                child: TripCard(
+                  trip: _buildTrip(),
+                  onSelect: ({required from, required to}) {},
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
 

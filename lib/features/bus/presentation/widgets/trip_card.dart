@@ -38,23 +38,8 @@ class TripCard extends StatefulWidget {
   /// Optional cheapest / fastest / best-deal mark for the header pill.
   final TripHighlight? highlight;
 
-  /// Operator row block — matches [OperatorAvatar] default size.
-  static const double _headerHeight = 42;
-
-  /// Slot for times + duration-over-line connector.
-  static const double _timeRowHeight = 36;
-
-  /// Centered stops chip under the connector.
-  static const double _stopsChipRowHeight = 32;
-
-  /// Governorate/city label pinned above the stop name.
-  static const double _cityRowHeight = 16;
-
-  /// Two-line station name.
-  static const double _stationRowHeight = 34;
-
   /// Height of the fare stub (below the tear line). Drives the notch offset.
-  static const double _stubHeight = 64;
+  static const double _stubHeight = 60;
 
   @override
   State<TripCard> createState() => _TripCardState();
@@ -151,11 +136,11 @@ class _TripCardState extends State<TripCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(
+              padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.md,
                 AppSpacing.md,
                 AppSpacing.md,
-                AppSpacing.md,
+                AppSpacing.sm,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,64 +199,61 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return SizedBox(
-      height: TripCard._headerHeight,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          OperatorAvatar(trip: trip),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        trip.operatorName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.title.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
-                        ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        OperatorAvatar(trip: trip),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      trip.operatorName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.title.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    if (trip.serviceClass.trim().isNotEmpty) ...[
-                      Text(
-                        '  ·  ',
+                  ),
+                  if (trip.serviceClass.trim().isNotEmpty) ...[
+                    Text(
+                      '  ·  ',
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        trip.serviceClass,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.caption.copyWith(
                           color: AppColors.textMuted,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Flexible(
-                        child: Text(
-                          trip.serviceClass,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textMuted,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ],
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                AmenityIconsRow(amenities: trip.amenities),
-              ],
-            ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              AmenityIconsRow(amenities: trip.amenities),
+            ],
           ),
-          if (highlight != null) ...[
-            const SizedBox(width: AppSpacing.sm),
-            _HighlightBadge(highlight: highlight!, l10n: l10n),
-          ],
+        ),
+        if (highlight != null) ...[
+          const SizedBox(width: AppSpacing.sm),
+          _HighlightBadge(highlight: highlight!, l10n: l10n),
         ],
-      ),
+      ],
     );
   }
 }
@@ -350,6 +332,8 @@ class _Timeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // One composed timeline unit (times | duration+line | times) so the card
+    // stays dense — separate bands left a hollow gap under the clocks.
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -366,11 +350,9 @@ class _Timeline extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                child: SizedBox(
-                  height: TripCard._timeRowHeight,
-                  child: _ConnectorWithDuration(duration: durationLabel),
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                child: _ConnectorWithDuration(duration: durationLabel),
               ),
             ),
             Expanded(
@@ -384,29 +366,26 @@ class _Timeline extends StatelessWidget {
         ),
         if (trip.stopsCount > 0) ...[
           const SizedBox(height: AppSpacing.xs),
-          SizedBox(
-            height: TripCard._stopsChipRowHeight,
-            child: Row(
-              children: [
-                const Expanded(flex: 1, child: SizedBox.shrink()),
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                    child: _StopsChip(
-                      stopsCount: trip.stopsCount,
-                      l10n: l10n,
-                      onTap: onStopsTap,
-                    ),
+          Row(
+            children: [
+              const Expanded(flex: 1, child: SizedBox.shrink()),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                  child: _StopsChip(
+                    stopsCount: trip.stopsCount,
+                    l10n: l10n,
+                    onTap: onStopsTap,
                   ),
                 ),
-                const Expanded(flex: 1, child: SizedBox.shrink()),
-              ],
-            ),
+              ),
+              const Expanded(flex: 1, child: SizedBox.shrink()),
+            ],
           ),
         ],
-        const SizedBox(height: AppSpacing.xs),
+        const SizedBox(height: AppSpacing.sm),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -445,7 +424,7 @@ class _ConnectorWithDuration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         LtrText(
           duration,
@@ -455,7 +434,7 @@ class _ConnectorWithDuration extends StatelessWidget {
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: AppSpacing.xxs),
+        const SizedBox(height: AppSpacing.xs),
         const _ConnectorLine(),
       ],
     );
@@ -527,23 +506,23 @@ class _StopsChip extends StatelessWidget {
 }
 
 class _TimeCell extends StatelessWidget {
-  const _TimeCell({required this.time, required this.alignment});
+  const _TimeCell({
+    required this.time,
+    required this.alignment,
+  });
 
   final String time;
   final AlignmentGeometry alignment;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: TripCard._timeRowHeight,
-      child: Align(
-        alignment: alignment,
-        child: Text(
-          time,
-          style: AppTypography.h2.copyWith(
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-          ),
+    return Align(
+      alignment: alignment,
+      child: Text(
+        time,
+        style: AppTypography.title.copyWith(
+          fontWeight: FontWeight.w800,
+          color: AppColors.textPrimary,
         ),
       ),
     );
@@ -573,39 +552,35 @@ class _StationCell extends StatelessWidget {
 
     return Column(
       crossAxisAlignment: crossAlign,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          height: TripCard._cityRowHeight,
-          child: cityName.trim().isEmpty
-              ? null
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(AppIcons.locationTo, size: 11, color: accentColor),
-                    const SizedBox(width: AppSpacing.xxs),
-                    Flexible(
-                      child: Text(
-                        cityName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ],
+        if (cityName.trim().isNotEmpty)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(AppIcons.locationTo, size: 11, color: accentColor),
+              const SizedBox(width: AppSpacing.xxs),
+              Flexible(
+                child: Text(
+                  cityName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.overline.copyWith(
+                    color: AppColors.textMuted,
+                  ),
                 ),
-        ),
-        const SizedBox(height: AppSpacing.xxs),
-        SizedBox(
-          height: TripCard._stationRowHeight,
-          child: Text(
-            station,
-            textAlign: textAlign,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.overline.copyWith(color: AppColors.textMuted),
+              ),
+            ],
+          ),
+        if (cityName.trim().isNotEmpty) const SizedBox(height: AppSpacing.xs),
+        Text(
+          station,
+          textAlign: textAlign,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.caption.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -667,13 +642,13 @@ class _FareStub extends StatelessWidget {
                   color: AppColors.textMuted,
                 ),
               ),
-              const SizedBox(height: 1),
+              const SizedBox(height: AppSpacing.xs),
               Text.rich(
                 TextSpan(
                   children: [
                     TextSpan(
                       text: '$fareEgp',
-                      style: AppTypography.h1.copyWith(
+                      style: AppTypography.h2.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w800,
                       ),
@@ -722,7 +697,10 @@ class _SelectButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.input),
         onTap: loading ? null : onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
           child: loading
               ? const SizedBox(
                   width: 18,
@@ -734,11 +712,9 @@ class _SelectButton extends StatelessWidget {
                 )
               : Text(
                   l10n.bookingSelect,
-                  style: const TextStyle(
-                    fontFamily: AppTypography.fontFamily,
+                  style: AppTypography.body.copyWith(
                     color: AppColors.onPrimary,
                     fontWeight: FontWeight.w800,
-                    fontSize: 14,
                   ),
                 ),
         ),
