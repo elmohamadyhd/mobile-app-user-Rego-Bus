@@ -13,6 +13,7 @@ import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
 import 'package:safaria/features/bus/domain/utils/apply_bus_trip_filters.dart';
+import 'package:safaria/features/bus/domain/utils/compute_trip_highlights.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/widgets/active_filter_chips.dart';
@@ -87,7 +88,12 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
         ),
       );
     }
-    final filtered = applyBusTripFilters(state.trips, _filters);
+    final highlights = computeTripHighlights(state.trips);
+    final filtered = applyBusTripFilters(
+      state.trips,
+      _filters,
+      highlights: highlights,
+    );
     if (filtered.isEmpty) {
       return _FilteredEmptyView(
         message: l10n.tripResultsNoMatchingTrips,
@@ -95,7 +101,10 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
         onClear: () => setState(() => _filters = const BusTripFilters()),
       );
     }
-    final trips = _byDepartureTime(filtered);
+    var trips = _byDepartureTime(filtered);
+    if (_filters.cheapest || _filters.fastest) {
+      trips = sortTripsWithHighlights(trips, highlights);
+    }
     return Column(
       children: [
         if (_filters.isActive)
@@ -113,6 +122,7 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
             itemBuilder: (context, i) => TripCard(
               key: ValueKey(trips[i].id),
               trip: trips[i],
+              highlight: highlights[trips[i].id],
               loading: _loadingTripId == trips[i].id,
               onSelect: ({required from, required to}) =>
                   _selectTrip(trips[i], from: from, to: to),

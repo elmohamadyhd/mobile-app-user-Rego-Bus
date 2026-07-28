@@ -183,6 +183,39 @@ class _TripFilterSheetState extends State<_TripFilterSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Text(
+                      l10n.tripFilterHighlights,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        l10n.tripResultsSortCheapest,
+                        style: AppTypography.body,
+                      ),
+                      value: _draft.cheapest,
+                      activeThumbColor: AppColors.primary,
+                      onChanged: (v) => setState(
+                        () => _draft = _draft.copyWith(cheapest: v),
+                      ),
+                    ),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        l10n.tripResultsHighlightFastest,
+                        style: AppTypography.body,
+                      ),
+                      value: _draft.fastest,
+                      activeThumbColor: AppColors.primary,
+                      onChanged: (v) => setState(
+                        () => _draft = _draft.copyWith(fastest: v),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
                     if (_operators.isNotEmpty) ...[
                       Text(
                         l10n.tripFilterOperators,
