@@ -128,7 +128,16 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Depart'));
+    final departValueFinder = find.descendant(
+      of: find
+          .ancestor(
+            of: find.text('Depart'),
+            matching: find.byType(Column),
+          )
+          .first,
+      matching: find.byType(InkWell),
+    );
+    await tester.tap(departValueFinder.first);
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);

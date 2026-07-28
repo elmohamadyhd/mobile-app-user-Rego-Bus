@@ -77,9 +77,10 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   DateTime get _effectiveTravelDate =>
       _travelDate.isBefore(_today) ? _today : _travelDate;
 
-  DateTime get _effectiveReturnDate => _returnDate.isBefore(_effectiveTravelDate)
-      ? _effectiveTravelDate
-      : _returnDate;
+  DateTime get _effectiveReturnDate =>
+      _returnDate.isBefore(_effectiveTravelDate)
+          ? _effectiveTravelDate
+          : _returnDate;
 
   String? _cityLabel(BusLocation? city) {
     if (city == null) return null;

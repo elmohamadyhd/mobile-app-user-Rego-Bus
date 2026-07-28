@@ -72,9 +72,10 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
   DateTime get _effectiveTravelDate =>
       _travelDate.isBefore(_today) ? _today : _travelDate;
 
-  DateTime get _effectiveReturnDate => _returnDate.isBefore(_effectiveTravelDate)
-      ? _effectiveTravelDate
-      : _returnDate;
+  DateTime get _effectiveReturnDate =>
+      _returnDate.isBefore(_effectiveTravelDate)
+          ? _effectiveTravelDate
+          : _returnDate;
 
   void _swapFields() {
     setState(() {
