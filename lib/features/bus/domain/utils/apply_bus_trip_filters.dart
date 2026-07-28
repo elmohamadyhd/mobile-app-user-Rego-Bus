@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
+import 'package:safaria/features/bus/domain/entities/trip_highlight.dart';
+import 'package:safaria/features/bus/domain/utils/compute_trip_highlights.dart';
 
 /// Active filter constraints (one per removable chip).
 int busTripFilterActiveCount(BusTripFilters filters) {
@@ -8,7 +10,9 @@ int busTripFilterActiveCount(BusTripFilters filters) {
       (filters.departAfter != null ? 1 : 0) +
       (filters.departBefore != null ? 1 : 0) +
       (filters.minPriceEgp != null ? 1 : 0) +
-      (filters.maxPriceEgp != null ? 1 : 0);
+      (filters.maxPriceEgp != null ? 1 : 0) +
+      (filters.cheapest ? 1 : 0) +
+      (filters.fastest ? 1 : 0);
 }
 
 /// Sorted, deduplicated operator names from [trips].
@@ -57,21 +61,38 @@ String formatTimeOfDay(TimeOfDay time) {
 }
 
 /// Client-side filter over already-loaded [trips].
+///
+/// Pass [highlights] from [computeTripHighlights] on the full search list
+/// when cheapest/fastest filters may be active.
 List<BusTripSummary> applyBusTripFilters(
   List<BusTripSummary> trips,
-  BusTripFilters filters,
-) {
+  BusTripFilters filters, {
+  Map<String, TripHighlight> highlights = const {},
+}) {
   if (!filters.isActive) return trips;
-  return trips.where((trip) => _matches(trip, filters)).toList();
+  return trips
+      .where((trip) => _matches(trip, filters, highlights: highlights))
+      .toList();
 }
 
-bool _matches(BusTripSummary trip, BusTripFilters filters) {
+bool _matches(
+  BusTripSummary trip,
+  BusTripFilters filters, {
+  required Map<String, TripHighlight> highlights,
+}) {
   if (filters.operators.isNotEmpty &&
       !filters.operators.contains(trip.operatorName)) {
     return false;
   }
   if (!_matchesDepartTime(trip.departTime, filters)) return false;
   if (!_matchesPrice(trip.terminalPriceEgp, filters)) return false;
+  if (!tripMatchesHighlightFilter(
+    highlight: highlights[trip.id],
+    cheapest: filters.cheapest,
+    fastest: filters.fastest,
+  )) {
+    return false;
+  }
   return true;
 }
 

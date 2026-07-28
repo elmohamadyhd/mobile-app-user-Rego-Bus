@@ -4,13 +4,16 @@ import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip_filters.dart';
 import 'package:safaria/features/bus/domain/utils/apply_bus_trip_filters.dart';
+import 'package:safaria/features/bus/domain/utils/compute_trip_highlights.dart';
 
 BusTripSummary _trip({
   required String id,
   required String operatorName,
   required DateTime depart,
   required int priceEgp,
+  DateTime? arrive,
 }) {
+  final arriveAt = arrive ?? depart.add(const Duration(hours: 4));
   return BusTripSummary(
     id: id,
     gatewayId: 'gw',
@@ -31,6 +34,7 @@ BusTripSummary _trip({
       name: 'Drop',
       cityId: 2,
       cityName: 'Alex',
+      arrivalAt: arriveAt,
       finalPrice: priceEgp.toDouble(),
     ),
   );
@@ -146,6 +150,88 @@ void main() {
         ),
       );
       expect(result.map((t) => t.id), ['a']);
+    });
+
+    test('cheapest filter keeps cheapest and bestDeal only', () {
+      final cheapFast = _trip(
+        id: 'cf',
+        operatorName: 'A',
+        depart: DateTime(2026, 7, 10, 8),
+        arrive: DateTime(2026, 7, 10, 10),
+        priceEgp: 100,
+      );
+      final cheapSlow = _trip(
+        id: 'cs',
+        operatorName: 'B',
+        depart: DateTime(2026, 7, 10, 9),
+        arrive: DateTime(2026, 7, 10, 14),
+        priceEgp: 100,
+      );
+      final priceyFast = _trip(
+        id: 'pf',
+        operatorName: 'C',
+        depart: DateTime(2026, 7, 10, 10),
+        arrive: DateTime(2026, 7, 10, 12),
+        priceEgp: 200,
+      );
+      final list = [cheapFast, cheapSlow, priceyFast];
+      final highlights = computeTripHighlights(list);
+      final result = applyBusTripFilters(
+        list,
+        const BusTripFilters(cheapest: true),
+        highlights: highlights,
+      );
+      expect(result.map((t) => t.id).toSet(), {'cf', 'cs'});
+    });
+
+    test('both highlight filters keep union', () {
+      final cheapFast = _trip(
+        id: 'cf',
+        operatorName: 'A',
+        depart: DateTime(2026, 7, 10, 8),
+        arrive: DateTime(2026, 7, 10, 10),
+        priceEgp: 100,
+      );
+      final cheapSlow = _trip(
+        id: 'cs',
+        operatorName: 'B',
+        depart: DateTime(2026, 7, 10, 9),
+        arrive: DateTime(2026, 7, 10, 14),
+        priceEgp: 100,
+      );
+      final priceyFast = _trip(
+        id: 'pf',
+        operatorName: 'C',
+        depart: DateTime(2026, 7, 10, 10),
+        arrive: DateTime(2026, 7, 10, 12),
+        priceEgp: 200,
+      );
+      final rest = _trip(
+        id: 'r',
+        operatorName: 'D',
+        depart: DateTime(2026, 7, 10, 11),
+        arrive: DateTime(2026, 7, 10, 16),
+        priceEgp: 300,
+      );
+      final list = [cheapFast, cheapSlow, priceyFast, rest];
+      final highlights = computeTripHighlights(list);
+      final result = applyBusTripFilters(
+        list,
+        const BusTripFilters(cheapest: true, fastest: true),
+        highlights: highlights,
+      );
+      expect(result.map((t) => t.id).toSet(), {'cf', 'cs', 'pf'});
+    });
+  });
+
+  group('busTripFilterActiveCount', () {
+    test('includes cheapest and fastest flags', () {
+      expect(
+        busTripFilterActiveCount(
+          const BusTripFilters(cheapest: true, fastest: true),
+        ),
+        2,
+      );
     });
   });
 }

@@ -169,6 +169,14 @@
   "tripResultsFilter": "Filter",
   "tripResultsSortTimes": "Times",
   "tripResultsSortCheapest": "Cheapest",
+  "tripResultsHighlightFastest": "Fastest",
+  "@tripResultsHighlightFastest": {
+    "description": "Badge/filter label for the shortest-duration trip(s)."
+  },
+  "tripResultsHighlightBestDeal": "Best deal",
+  "@tripResultsHighlightBestDeal": {
+    "description": "Badge when a trip is both cheapest and fastest."
+  },
   "tripResultsSortSeats": "Seats",
   "tripResultsNoTrips": "No trips found",
   "tripResultsError": "Couldn't load trips",
@@ -198,6 +206,10 @@
   "tripResultsClearFilters": "Clear filters",
   "tripFilterSheetTitle": "Filter trips",
   "tripFilterOperators": "Operators",
+  "tripFilterHighlights": "Highlights",
+  "@tripFilterHighlights": {
+    "description": "Filter sheet section for cheapest/fastest toggles."
+  },
   "tripFilterDepartTime": "Departure time",
   "tripFilterPrice": "Price",
   "tripFilterClearAll": "Clear all",

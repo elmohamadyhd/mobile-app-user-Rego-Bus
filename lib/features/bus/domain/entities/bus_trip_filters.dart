@@ -11,6 +11,8 @@ enum ActiveFilterChipKind {
   departBefore,
   minPrice,
   maxPrice,
+  cheapest,
+  fastest,
 }
 
 /// One removable chip shown on the results screen when a filter is active.
@@ -36,6 +38,8 @@ abstract class BusTripFilters with _$BusTripFilters {
     TimeOfDay? departBefore,
     int? minPriceEgp,
     int? maxPriceEgp,
+    @Default(false) bool cheapest,
+    @Default(false) bool fastest,
   }) = _BusTripFilters;
 
   const BusTripFilters._();
@@ -45,7 +49,9 @@ abstract class BusTripFilters with _$BusTripFilters {
       departAfter != null ||
       departBefore != null ||
       minPriceEgp != null ||
-      maxPriceEgp != null;
+      maxPriceEgp != null ||
+      cheapest ||
+      fastest;
 
   /// Builds the list of active chips for display (one chip per constraint).
   List<ActiveFilterChip> activeChips(AppLocalizations l10n) {
@@ -95,6 +101,22 @@ abstract class BusTripFilters with _$BusTripFilters {
         ),
       );
     }
+    if (cheapest) {
+      chips.add(
+        ActiveFilterChip(
+          kind: ActiveFilterChipKind.cheapest,
+          label: l10n.tripResultsSortCheapest,
+        ),
+      );
+    }
+    if (fastest) {
+      chips.add(
+        ActiveFilterChip(
+          kind: ActiveFilterChipKind.fastest,
+          label: l10n.tripResultsHighlightFastest,
+        ),
+      );
+    }
     return chips;
   }
 
@@ -108,6 +130,8 @@ abstract class BusTripFilters with _$BusTripFilters {
       ActiveFilterChipKind.departBefore => copyWith(departBefore: null),
       ActiveFilterChipKind.minPrice => copyWith(minPriceEgp: null),
       ActiveFilterChipKind.maxPrice => copyWith(maxPriceEgp: null),
+      ActiveFilterChipKind.cheapest => copyWith(cheapest: false),
+      ActiveFilterChipKind.fastest => copyWith(fastest: false),
     };
   }
 
