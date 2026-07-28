@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/trip_highlight.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
@@ -58,6 +59,7 @@ Future<void> _pumpCard(
   Locale locale = const Locale('en'),
   void Function({required BusStop from, required BusStop to})? onSelect,
   bool loading = false,
+  TripHighlight? highlight,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -73,6 +75,7 @@ Future<void> _pumpCard(
               trip: trip,
               onSelect: onSelect ?? ({required from, required to}) {},
               loading: loading,
+              highlight: highlight,
             ),
           ),
         ),
@@ -95,6 +98,22 @@ void main() {
     expect(find.text('Sidi Gaber'), findsNothing);
     expect(find.text('12:45'), findsOneWidget);
     expect(find.text('11:30'), findsNothing);
+  });
+
+  testWidgets('shows cheapest highlight badge in the header', (tester) async {
+    await _pumpCard(
+      tester,
+      _buildTrip(),
+      highlight: TripHighlight.cheapest,
+    );
+    expect(find.text('Cheapest'), findsOneWidget);
+  });
+
+  testWidgets('hides highlight badge when highlight is null', (tester) async {
+    await _pumpCard(tester, _buildTrip());
+    expect(find.text('Cheapest'), findsNothing);
+    expect(find.text('Fastest'), findsNothing);
+    expect(find.text('Best deal'), findsNothing);
   });
 
   testWidgets(

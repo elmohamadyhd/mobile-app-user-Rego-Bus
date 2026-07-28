@@ -6,6 +6,7 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/domain/entities/trip_highlight.dart';
 import 'package:safaria/features/bus/presentation/widgets/amenity_icons_row.dart';
 import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
@@ -24,6 +25,7 @@ class TripCard extends StatefulWidget {
     required this.trip,
     required this.onSelect,
     this.loading = false,
+    this.highlight,
   });
 
   final BusTripSummary trip;
@@ -33,14 +35,17 @@ class TripCard extends StatefulWidget {
   /// Other cards in the list stay fully interactive — see [_SelectButton].
   final bool loading;
 
+  /// Optional cheapest / fastest / best-deal mark for the header pill.
+  final TripHighlight? highlight;
+
   /// Operator row block — matches [OperatorAvatar] default size.
   static const double _headerHeight = 42;
 
-  /// Slot for [AppTypography.h2] departure/arrival times.
-  static const double _timeRowHeight = 28;
+  /// Slot for times + duration-over-line connector.
+  static const double _timeRowHeight = 36;
 
-  /// Duration label row under the connector.
-  static const double _durationRowHeight = 20;
+  /// Centered stops chip under the connector.
+  static const double _stopsChipRowHeight = 32;
 
   /// Governorate/city label pinned above the stop name.
   static const double _cityRowHeight = 16;
@@ -155,7 +160,7 @@ class _TripCardState extends State<TripCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _Header(trip: widget.trip),
+                  _Header(trip: widget.trip, highlight: widget.highlight),
                   const SizedBox(height: AppSpacing.md),
                   _Timeline(
                     trip: widget.trip,
@@ -201,12 +206,14 @@ class _TripCardState extends State<TripCard> {
 // ── Header ────────────────────────────────────────────────────────────────────
 
 class _Header extends StatelessWidget {
-  const _Header({required this.trip});
+  const _Header({required this.trip, this.highlight});
 
   final BusTripSummary trip;
+  final TripHighlight? highlight;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       height: TripCard._headerHeight,
       child: Row(
@@ -259,8 +266,60 @@ class _Header extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: AppSpacing.sm),
+          if (highlight != null) ...[
+            const SizedBox(width: AppSpacing.sm),
+            _HighlightBadge(highlight: highlight!, l10n: l10n),
+          ],
         ],
+      ),
+    );
+  }
+}
+
+class _HighlightBadge extends StatelessWidget {
+  const _HighlightBadge({required this.highlight, required this.l10n});
+
+  final TripHighlight highlight;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, bg, fg) = switch (highlight) {
+      TripHighlight.cheapest => (
+          l10n.tripResultsSortCheapest,
+          AppColors.secondaryTint,
+          AppColors.onSecondary,
+        ),
+      TripHighlight.fastest => (
+          l10n.tripResultsHighlightFastest,
+          AppColors.success.withValues(alpha: 0.14),
+          AppColors.success,
+        ),
+      TripHighlight.bestDeal => (
+          l10n.tripResultsHighlightBestDeal,
+          AppColors.primaryTint,
+          AppColors.primary,
+        ),
+    };
+
+    return Semantics(
+      label: label,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: 4,
+        ),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        child: Text(
+          label,
+          style: AppTypography.caption.copyWith(
+            color: fg,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }
@@ -301,16 +360,16 @@ class _Timeline extends StatelessWidget {
               flex: 1,
               child: _TimeCell(
                 time: departLabel,
-                alignment: AlignmentDirectional.topStart,
+                alignment: AlignmentDirectional.centerStart,
               ),
             ),
-            const Expanded(
+            Expanded(
               flex: 2,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 child: SizedBox(
                   height: TripCard._timeRowHeight,
-                  child: Center(child: _ConnectorLine()),
+                  child: _ConnectorWithDuration(duration: durationLabel),
                 ),
               ),
             ),
@@ -318,31 +377,36 @@ class _Timeline extends StatelessWidget {
               flex: 1,
               child: _TimeCell(
                 time: arriveLabel,
-                alignment: AlignmentDirectional.topEnd,
+                alignment: AlignmentDirectional.centerEnd,
               ),
             ),
           ],
         ),
-        SizedBox(
-          height: TripCard._durationRowHeight,
-          child: Row(
-            children: [
-              const Expanded(flex: 1, child: SizedBox.shrink()),
-              Expanded(
-                flex: 2,
-                child: Center(
-                  child: _DurationStopsLabel(
-                    duration: durationLabel,
-                    stopsCount: trip.stopsCount,
-                    l10n: l10n,
-                    onStopsTap: onStopsTap,
+        if (trip.stopsCount > 0) ...[
+          const SizedBox(height: AppSpacing.xs),
+          SizedBox(
+            height: TripCard._stopsChipRowHeight,
+            child: Row(
+              children: [
+                const Expanded(flex: 1, child: SizedBox.shrink()),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                    child: _StopsChip(
+                      stopsCount: trip.stopsCount,
+                      l10n: l10n,
+                      onTap: onStopsTap,
+                    ),
                   ),
                 ),
-              ),
-              const Expanded(flex: 1, child: SizedBox.shrink()),
-            ],
+                const Expanded(flex: 1, child: SizedBox.shrink()),
+              ],
+            ),
           ),
-        ),
+        ],
+        const SizedBox(height: AppSpacing.xs),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -372,77 +436,92 @@ class _Timeline extends StatelessWidget {
   }
 }
 
-/// Duration (Latin) and stops count as separate widgets so BiDi does not
-/// reorder Arabic around the LTR duration run (e.g. `6 · 3h 45m محطات`).
-class _DurationStopsLabel extends StatelessWidget {
-  const _DurationStopsLabel({
-    required this.duration,
-    required this.stopsCount,
-    required this.l10n,
-    this.onStopsTap,
-  });
+/// Duration centered above the route connector line.
+class _ConnectorWithDuration extends StatelessWidget {
+  const _ConnectorWithDuration({required this.duration});
 
   final String duration;
-  final int stopsCount;
-  final AppLocalizations l10n;
-  final VoidCallback? onStopsTap;
 
   @override
   Widget build(BuildContext context) {
-    final style = AppTypography.caption.copyWith(
-      color: AppColors.textMuted,
-      fontWeight: FontWeight.w600,
-    );
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Flexible(
-          child: LtrText(
-            duration,
-            style: style,
-            textAlign: TextAlign.center,
+        LtrText(
+          duration,
+          style: AppTypography.caption.copyWith(
+            color: AppColors.textMuted,
+            fontWeight: FontWeight.w700,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.xxs),
+        const _ConnectorLine(),
+      ],
+    );
+  }
+}
+
+/// Full-width centered pill — obvious tap target for the stops sheet.
+class _StopsChip extends StatelessWidget {
+  const _StopsChip({
+    required this.stopsCount,
+    required this.l10n,
+    this.onTap,
+  });
+
+  final int stopsCount;
+  final AppLocalizations l10n;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = l10n.tripResultsStopsCount(stopsCount);
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: AppColors.primaryTint,
+        shape: StadiumBorder(
+          side: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.28),
           ),
         ),
-        if (stopsCount > 0) ...[
-          Text(' · ', style: style),
-          Flexible(
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onStopsTap,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xs,
-                    vertical: AppSpacing.xxs,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          l10n.tripResultsStopsCount(stopsCount),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          style: style,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.xxs),
-                      const Icon(
-                        AppIcons.chevronDown,
-                        size: 14,
-                        color: AppColors.textMuted,
-                      ),
-                    ],
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const StadiumBorder(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.xs,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(width: AppSpacing.xs),
+                const Icon(
+                  AppIcons.chevronDown,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+              ],
             ),
           ),
-        ],
-      ],
+        ),
+      ),
     );
   }
 }
