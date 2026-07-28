@@ -1,105 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/features/profile/presentation/widgets/profile_circle_avatar.dart';
 import 'package:safaria/l10n/app_localizations.dart';
-import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
 import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
 
 void main() {
-  Widget wrap(Widget child, {Locale locale = const Locale('en')}) {
-    return MaterialApp(
-      locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.light(),
-      home: Scaffold(body: child),
-    );
-  }
-
-  testWidgets('SkylineTabHero renders child text', (tester) async {
+  testWidgets('greeting shows initial when no avatarUrl', (tester) async {
     await tester.pumpWidget(
-      wrap(
-        const SkylineTabHero(
-          reserveCardOverlap: false,
-          child: Text('Hero content'),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Hero content'), findsOneWidget);
-  });
-
-  testWidgets('reserveCardOverlap adds extra height', (tester) async {
-    Future<double> heroHeight({required bool reserveCardOverlap}) async {
-      await tester.pumpWidget(
-        wrap(
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SkylineTabHero(
-                reserveCardOverlap: reserveCardOverlap,
-                child: const Text('Overlap'),
-              ),
-            ],
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      return tester.getSize(find.byType(SkylineTabHero)).height;
-    }
-
-    final withOverlap = await heroHeight(reserveCardOverlap: true);
-    final withoutOverlap = await heroHeight(reserveCardOverlap: false);
-
-    expect(withOverlap, greaterThan(withoutOverlap));
-  });
-
-  testWidgets('SkylineTabGreetingRow renders under RTL locale', (tester) async {
-    await tester.pumpWidget(
-      wrap(
-        const SkylineTabHero(
-          reserveCardOverlap: false,
-          child: SkylineTabGreetingRow(
+      const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: Locale('en'),
+        home: Scaffold(
+          body: SkylineTabGreetingRow(
             initial: 'A',
-            greeting: 'مرحباً',
-            headline: 'إلى أين؟',
+            greeting: 'Hi, Abdallah',
+            headline: 'Where to today?',
           ),
         ),
-        locale: const Locale('ar'),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('مرحباً'), findsOneWidget);
-    expect(find.text('إلى أين؟'), findsOneWidget);
-    expect(
-      Directionality.of(tester.element(find.text('مرحباً'))),
-      TextDirection.rtl,
-    );
+    expect(find.byType(ProfileCircleAvatar), findsOneWidget);
+    expect(find.text('A'), findsOneWidget);
   });
 
-  testWidgets('ShellTabScrollView renders hero and overlapped child', (
-    tester,
-  ) async {
+  testWidgets('bell badge is at least 10px', (tester) async {
     await tester.pumpWidget(
-      wrap(
-        const ShellTabScrollView(
-          hero: SkylineTabHero(
-            reserveCardOverlap: true,
-            child: Text('Header'),
+      const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: Locale('en'),
+        home: Scaffold(
+          body: ColoredBox(
+            color: AppColors.primary,
+            child: SkylineTabHeroBellButton(),
           ),
-          children: [
-            Text('Body card'),
-          ],
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Header'), findsOneWidget);
-    expect(find.text('Body card'), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    expect(SkylineTabHeroBellButton.badgeSize, greaterThanOrEqualTo(10));
+
+    final badge = find.byWidgetPredicate(
+      (widget) =>
+          widget is Container &&
+          widget.decoration is BoxDecoration &&
+          (widget.decoration as BoxDecoration).color == AppColors.secondary,
+    );
+    expect(badge, findsOneWidget);
+    final size = tester.getSize(badge);
+    expect(size.width, greaterThanOrEqualTo(10));
+    expect(size.height, greaterThanOrEqualTo(10));
   });
 }

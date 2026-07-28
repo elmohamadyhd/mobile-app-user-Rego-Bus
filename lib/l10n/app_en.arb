@@ -99,6 +99,10 @@
   "@homeWhereTo": {
     "description": "Subtitle under the greeting on the home hero."
   },
+  "homeNotifications": "Notifications",
+  "@homeNotifications": {
+    "description": "Accessibility label for the home hero notification bell."
+  },
   "homeMockUser": "Ahmed",
   "homeHeroHeadline": "Book your trip in one tap",
   "homeTabBus": "Bus",

@@ -6,6 +6,8 @@ import 'package:safaria/core/theme/app_icons.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_theme.dart';
 import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/profile/presentation/widgets/profile_circle_avatar.dart';
+import 'package:safaria/l10n/app_localizations.dart';
 
 /// Skyline shell-tab hero: blue gradient, decorative blobs, curved bottom.
 ///
@@ -91,17 +93,19 @@ class SkylineTabHero extends StatelessWidget {
   }
 }
 
-/// Home-tab greeting row: initial avatar, caption, headline, optional trailing.
+/// Home-tab greeting row: avatar, caption, headline, optional trailing.
 class SkylineTabGreetingRow extends StatelessWidget {
   const SkylineTabGreetingRow({
     super.key,
     required this.initial,
     required this.greeting,
     required this.headline,
+    this.avatarUrl,
     this.trailing,
   });
 
   final String initial;
+  final String? avatarUrl;
   final String greeting;
   final String headline;
   final Widget? trailing;
@@ -110,24 +114,11 @@ class SkylineTabGreetingRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.18),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.25),
-            ),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            initial,
-            style: AppTypography.title.copyWith(
-              color: AppColors.onHero,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
+        ProfileCircleAvatar(
+          size: 42,
+          initial: initial,
+          networkUrl: avatarUrl,
+          style: ProfileCircleAvatarStyle.hero,
         ),
         const SizedBox(width: 11),
         Expanded(
@@ -197,45 +188,52 @@ class SkylineTabHeroBellButton extends StatelessWidget {
 
   final VoidCallback? onTap;
 
+  static const double badgeSize = 10;
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Material(
-          color: Colors.white.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(14),
-          child: InkWell(
+    final l10n = AppLocalizations.of(context);
+    return Semantics(
+      button: true,
+      label: l10n.homeNotifications,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Material(
+            color: Colors.white.withValues(alpha: 0.16),
             borderRadius: BorderRadius.circular(14),
-            onTap: onTap,
-            child: const SizedBox(
-              width: 42,
-              height: 42,
-              child: Icon(
-                AppIcons.bell,
-                color: AppColors.onHero,
-                size: 22,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: onTap,
+              child: const SizedBox(
+                width: 42,
+                height: 42,
+                child: Icon(
+                  AppIcons.bell,
+                  color: AppColors.onHero,
+                  size: 22,
+                ),
               ),
             ),
           ),
-        ),
-        PositionedDirectional(
-          top: 9,
-          end: 10,
-          child: Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.secondary,
-              border: Border.all(
-                color: AppColors.primary,
-                width: 1.5,
+          PositionedDirectional(
+            top: 8,
+            end: 9,
+            child: Container(
+              width: badgeSize,
+              height: badgeSize,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.secondary,
+                border: Border.all(
+                  color: AppColors.primary,
+                  width: 1.5,
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

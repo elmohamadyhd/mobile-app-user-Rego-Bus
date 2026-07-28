@@ -24,12 +24,15 @@ class CarSearchForm extends ConsumerStatefulWidget {
     super.key,
     @visibleForTesting this.initialFrom,
     @visibleForTesting this.initialTo,
+    @visibleForTesting this.initialTravelDate,
   });
 
   @visibleForTesting
   final CarPlace? initialFrom;
   @visibleForTesting
   final CarPlace? initialTo;
+  @visibleForTesting
+  final DateTime? initialTravelDate;
 
   @override
   ConsumerState<CarSearchForm> createState() => _CarSearchFormState();
@@ -39,10 +42,10 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
   CarPlace? _from;
   CarPlace? _to;
   TripType _tripType = TripType.oneWay;
-  DateTime _travelDate = dateOnly(DateTime.now());
-  DateTime _returnDate = dateOnly(DateTime.now().add(const Duration(days: 7)));
-  late TimeOfDay _departTime = defaultDepartTimeForDate(_travelDate);
-  late TimeOfDay _returnTime = defaultDepartTimeForDate(_returnDate);
+  late DateTime _travelDate;
+  late DateTime _returnDate;
+  late TimeOfDay _departTime;
+  late TimeOfDay _returnTime;
   bool _searching = false;
 
   static const _maxBookingDays = 90;
@@ -52,7 +55,26 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
     super.initState();
     _from = widget.initialFrom;
     _to = widget.initialTo;
+    _travelDate = dateOnly(
+      widget.initialTravelDate ?? DateTime.now(),
+    );
+    _returnDate = dateOnly(_travelDate.add(const Duration(days: 7)));
+    _departTime = defaultDepartTimeForDate(_travelDate);
+    _returnTime = defaultDepartTimeForDate(_returnDate);
   }
+
+  // `_travelDate`/`_returnDate` are cached fields, so if the screen stays
+  // alive across a midnight rollover they can fall behind the real "today".
+  // Read through these getters instead of the raw fields wherever "now"
+  // matters, so a stale cached date never gets treated as valid.
+  DateTime get _today => dateOnly(DateTime.now());
+
+  DateTime get _effectiveTravelDate =>
+      _travelDate.isBefore(_today) ? _today : _travelDate;
+
+  DateTime get _effectiveReturnDate => _returnDate.isBefore(_effectiveTravelDate)
+      ? _effectiveTravelDate
+      : _returnDate;
 
   void _swapFields() {
     setState(() {
@@ -65,18 +87,19 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
   void _setTripType(TripType type) {
     setState(() {
       _tripType = type;
-      if (type == TripType.roundTrip && _returnDate.isBefore(_travelDate)) {
-        _returnDate = _travelDate.add(const Duration(days: 7));
+      if (type == TripType.roundTrip &&
+          _returnDate.isBefore(_effectiveTravelDate)) {
+        _returnDate = _effectiveTravelDate.add(const Duration(days: 7));
         _returnTime = defaultDepartTimeForDate(_returnDate);
       }
     });
   }
 
   Future<void> _pickDepartDate() async {
-    final today = dateOnly(DateTime.now());
+    final today = _today;
     final picked = await showDatePicker(
       context: context,
-      initialDate: _travelDate,
+      initialDate: _effectiveTravelDate,
       firstDate: today,
       lastDate: today.add(const Duration(days: _maxBookingDays)),
     );
@@ -93,12 +116,12 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
   }
 
   Future<void> _pickReturnDate() async {
+    final travelDate = _effectiveTravelDate;
     final picked = await showDatePicker(
       context: context,
-      initialDate:
-          _returnDate.isBefore(_travelDate) ? _travelDate : _returnDate,
-      firstDate: _travelDate,
-      lastDate: _travelDate.add(const Duration(days: _maxBookingDays)),
+      initialDate: _effectiveReturnDate,
+      firstDate: travelDate,
+      lastDate: travelDate.add(const Duration(days: _maxBookingDays)),
     );
     if (picked == null) return;
     setState(() {
@@ -131,17 +154,7 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
 
   Future<void> _onSearch() async {
     final l10n = AppLocalizations.of(context);
-    if (_from == null || _to == null) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(l10n.carSearchSelectBothPlaces),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      return;
-    }
+    if (_from == null || _to == null) return;
     if (_from!.sameCoordinates(_to!)) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -213,8 +226,10 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
     final l10n = AppLocalizations.of(context);
     final localeName = Localizations.localeOf(context).toString();
     final isRoundTrip = _tripType == TripType.roundTrip;
-    final departDateTime = combineDateAndTime(_travelDate, _departTime);
-    final returnDateTime = combineDateAndTime(_returnDate, _returnTime);
+    final departDateTime =
+        combineDateAndTime(_effectiveTravelDate, _departTime);
+    final returnDateTime =
+        combineDateAndTime(_effectiveReturnDate, _returnTime);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -324,7 +339,7 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
         PrimaryButton(
           label: l10n.carRequestCar,
           loading: _searching,
-          onPressed: _onSearch,
+          onPressed: (_from != null && _to != null) ? _onSearch : null,
         ),
       ],
     );
@@ -421,11 +436,38 @@ class _DateTimeField extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateValue = formatSearchDateCell(dateTime, localeName);
     final timeValue = DateFormat.jm(localeName).format(dateTime);
+    final overlineStyle = AppTypography.overline.copyWith(
+      color: AppColors.textMuted,
+      fontWeight: FontWeight.w600,
+    );
+
+    if (compact) {
+      return Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.sm,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: overlineStyle),
+            const SizedBox(height: AppSpacing.xs),
+            _TappableValue(value: dateValue, onTap: onPickDate),
+            const SizedBox(height: AppSpacing.xs),
+            Text(timeLabel, style: overlineStyle),
+            const SizedBox(height: AppSpacing.xs),
+            _TappableValue(value: timeValue, onTap: onPickTime),
+          ],
+        ),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 34,
@@ -445,40 +487,30 @@ class _DateTimeField extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: AppTypography.overline.copyWith(
-                    color: AppColors.textMuted,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text(label, style: overlineStyle),
                 const SizedBox(height: AppSpacing.xs),
-                _TappableValue(
-                  value: dateValue,
-                  onTap: onPickDate,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  timeLabel,
-                  style: AppTypography.overline.copyWith(
-                    color: AppColors.textMuted,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                _TappableValue(
-                  value: timeValue,
-                  onTap: onPickTime,
-                ),
+                _TappableValue(value: dateValue, onTap: onPickDate),
               ],
             ),
           ),
-          if (!compact)
-            const Icon(
-              AppIcons.chevronDown,
-              color: AppColors.textMuted,
-              size: 20,
+          const SizedBox(
+            height: 40,
+            child: VerticalDivider(
+              color: AppColors.hairline,
+              width: 1,
             ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(timeLabel, style: overlineStyle),
+                const SizedBox(height: AppSpacing.xs),
+                _TappableValue(value: timeValue, onTap: onPickTime),
+              ],
+            ),
+          ),
         ],
       ),
     );

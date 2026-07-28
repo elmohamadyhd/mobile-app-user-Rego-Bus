@@ -65,6 +65,7 @@
   "bookingSeatsLeft": "{count} مقعد متاح",
   "homeGreeting": "مرحباً، {name}",
   "homeWhereTo": "إلى أين اليوم؟",
+  "homeNotifications": "الإشعارات",
   "homeMockUser": "أحمد",
   "homeHeroHeadline": "احجز رحلتك بنقرة واحدة",
   "homeTabBus": "باص",

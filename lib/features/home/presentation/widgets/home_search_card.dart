@@ -26,10 +26,20 @@ class HomeSearchCard extends ConsumerStatefulWidget {
     super.key,
     required this.selectedTab,
     required this.onTabChanged,
+    @visibleForTesting this.initialFromCity,
+    @visibleForTesting this.initialToCity,
+    @visibleForTesting this.initialTravelDate,
   });
 
   final int selectedTab;
   final ValueChanged<int> onTabChanged;
+
+  @visibleForTesting
+  final BusLocation? initialFromCity;
+  @visibleForTesting
+  final BusLocation? initialToCity;
+  @visibleForTesting
+  final DateTime? initialTravelDate;
 
   static const int flightTabIndex = TransportModeTabBar.flightTabIndex;
 
@@ -48,6 +58,29 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
 
   static const _maxBookingDays = 90;
 
+  @override
+  void initState() {
+    super.initState();
+    _fromCity = widget.initialFromCity;
+    _toCity = widget.initialToCity;
+    if (widget.initialTravelDate != null) {
+      _travelDate = dateOnly(widget.initialTravelDate!);
+    }
+  }
+
+  // `_travelDate`/`_returnDate` are cached fields, so if the screen stays
+  // alive across a midnight rollover they can fall behind the real "today".
+  // Read through these getters instead of the raw fields wherever "now"
+  // matters, so a stale cached date never gets treated as valid.
+  DateTime get _today => dateOnly(DateTime.now());
+
+  DateTime get _effectiveTravelDate =>
+      _travelDate.isBefore(_today) ? _today : _travelDate;
+
+  DateTime get _effectiveReturnDate => _returnDate.isBefore(_effectiveTravelDate)
+      ? _effectiveTravelDate
+      : _returnDate;
+
   String? _cityLabel(BusLocation? city) {
     if (city == null) return null;
     return city.displayName(Localizations.localeOf(context).languageCode);
@@ -64,8 +97,9 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   void _setTripType(TripType type) {
     setState(() {
       _tripType = type;
-      if (type == TripType.roundTrip && _returnDate.isBefore(_travelDate)) {
-        _returnDate = _travelDate.add(const Duration(days: 7));
+      if (type == TripType.roundTrip &&
+          _returnDate.isBefore(_effectiveTravelDate)) {
+        _returnDate = _effectiveTravelDate.add(const Duration(days: 7));
       }
     });
   }
@@ -91,10 +125,10 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   }
 
   Future<void> _pickDepart() async {
-    final today = dateOnly(DateTime.now());
+    final today = _today;
     final picked = await showDatePicker(
       context: context,
-      initialDate: _travelDate,
+      initialDate: _effectiveTravelDate,
       firstDate: today,
       lastDate: today.add(const Duration(days: _maxBookingDays)),
     );
@@ -109,12 +143,12 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   }
 
   Future<void> _pickReturn() async {
+    final travelDate = _effectiveTravelDate;
     final picked = await showDatePicker(
       context: context,
-      initialDate:
-          _returnDate.isBefore(_travelDate) ? _travelDate : _returnDate,
-      firstDate: _travelDate,
-      lastDate: _travelDate.add(const Duration(days: _maxBookingDays)),
+      initialDate: _effectiveReturnDate,
+      firstDate: travelDate,
+      lastDate: travelDate.add(const Duration(days: _maxBookingDays)),
     );
     if (picked != null) setState(() => _returnDate = dateOnly(picked));
   }
@@ -129,22 +163,11 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   }
 
   Future<void> _onSearch() async {
-    final l10n = AppLocalizations.of(context);
     if (widget.selectedTab != TransportModeTabBar.busTabIndex) {
       return;
     }
 
-    if (_fromCity == null || _toCity == null) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(l10n.homeBusSearchSelectCities),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      return;
-    }
+    if (_fromCity == null || _toCity == null) return;
 
     final from = _fromCity!;
     final to = _toCity!;
@@ -160,7 +183,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
         BusSearchParams(
           cityFromId: from.id,
           cityToId: to.id,
-          date: _travelDate,
+          date: _effectiveTravelDate,
         ),
       );
     } finally {
@@ -288,7 +311,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                       Expanded(
                         child: _DateField(
                           label: l10n.homeDepart,
-                          date: _travelDate,
+                          date: _effectiveTravelDate,
                           compact: true,
                           onTap: _pickDepart,
                         ),
@@ -300,7 +323,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                       Expanded(
                         child: _DateField(
                           label: l10n.homeReturn,
-                          date: _returnDate,
+                          date: _effectiveReturnDate,
                           compact: true,
                           onTap: _pickReturn,
                         ),
@@ -310,7 +333,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                 )
               : _DateField(
                   label: l10n.homeDepart,
-                  date: _travelDate,
+                  date: _effectiveTravelDate,
                   onTap: _pickDepart,
                 ),
         ),
@@ -332,7 +355,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
         PrimaryButton(
           label: l10n.homeSearch,
           loading: _searching,
-          onPressed: _onSearch,
+          onPressed: (_fromCity != null && _toCity != null) ? _onSearch : null,
         ),
       ],
     );

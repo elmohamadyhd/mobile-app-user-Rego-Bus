@@ -73,27 +73,27 @@ class _TransportModeTab extends StatelessWidget {
     return Material(
       color: active ? Colors.white : Colors.transparent,
       borderRadius: BorderRadius.circular(AppRadius.md),
-      elevation: active ? 1 : 0,
-      shadowColor: const Color(0x1A000000),
+      elevation: active ? 2 : 0,
+      shadowColor: AppColors.primary.withValues(alpha: 0.18),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.md),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 icon,
-                size: 19,
+                size: 20,
                 color: active ? AppColors.primary : AppColors.textMuted,
               ),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: AppTypography.overline.copyWith(
-                  color: active ? AppColors.textPrimary : AppColors.textMuted,
-                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                  color: active ? AppColors.primary : AppColors.textMuted,
+                  fontWeight: active ? FontWeight.w800 : FontWeight.w500,
                 ),
               ),
             ],

@@ -35,6 +35,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       hero: SkylineTabHero(
         child: SkylineTabGreetingRow(
           initial: initial,
+          avatarUrl: user?.avatarUrl,
           greeting: l10n.homeGreeting(userName),
           headline: l10n.homeWhereTo,
           trailing: const SkylineTabHeroBellButton(),
