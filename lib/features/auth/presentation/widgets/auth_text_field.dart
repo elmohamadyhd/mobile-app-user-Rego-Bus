@@ -101,7 +101,11 @@ class AuthTextField extends StatelessWidget {
         ),
         if (hasError)
           Padding(
-            padding: const EdgeInsets.only(top: 6, left: 6, right: 6),
+            padding: const EdgeInsetsDirectional.only(
+              top: AppSpacing.sm - 2,
+              start: AppSpacing.sm - 2,
+              end: AppSpacing.sm - 2,
+            ),
             child: Text(
               errorText!,
               style: AppTypography.caption.copyWith(color: AppColors.error),

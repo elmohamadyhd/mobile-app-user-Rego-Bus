@@ -10,6 +10,7 @@ import 'package:safaria/core/utils/validators.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_back_button.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_password_toggle.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:safaria/features/auth/presentation/widgets/icon_badge.dart';
@@ -79,14 +80,9 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
     }
   }
 
-  Widget _eye() => GestureDetector(
+  Widget _eye() => AuthPasswordToggle(
+        obscure: _obscure,
         onTap: () => setState(() => _obscure = !_obscure),
-        behavior: HitTestBehavior.opaque,
-        child: Icon(
-          _obscure ? PhosphorIconsLight.eye : PhosphorIconsLight.eyeSlash,
-          size: 20,
-          color: AppColors.textMuted,
-        ),
       );
 
   @override

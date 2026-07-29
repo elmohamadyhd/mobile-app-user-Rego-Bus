@@ -137,7 +137,11 @@ class _PhoneFieldState extends State<PhoneField> {
         ),
         if (hasError)
           Padding(
-            padding: const EdgeInsets.only(top: 6, left: 6, right: 6),
+            padding: const EdgeInsetsDirectional.only(
+              top: AppSpacing.sm - 2,
+              start: AppSpacing.sm - 2,
+              end: AppSpacing.sm - 2,
+            ),
             child: Text(
               widget.errorText!,
               style: AppTypography.caption.copyWith(color: AppColors.error),
@@ -156,41 +160,57 @@ class _CountryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
-        decoration: BoxDecoration(
-          color: onTap == null
-              ? AppColors.hairline.withValues(alpha: 0.45)
-              : AppColors.bgCard,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.hairline),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(country.emoji, style: const TextStyle(fontSize: 16)),
-            const SizedBox(width: 6),
-            Text(
-              '+${country.dial}',
-              style: AppTypography.caption.copyWith(
-                color: onTap == null
-                    ? AppColors.textMuted
-                    : AppColors.textPrimary,
-                fontWeight: FontWeight.w700,
-              ),
+    final radius = BorderRadius.circular(AppRadius.md);
+    final chip = Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm + 1,
+        vertical: AppSpacing.sm - 1,
+      ),
+      decoration: BoxDecoration(
+        color: onTap == null
+            ? AppColors.hairline.withValues(alpha: 0.45)
+            : AppColors.bgCard,
+        borderRadius: radius,
+        border: Border.all(color: AppColors.hairline),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(country.emoji, style: const TextStyle(fontSize: 16)),
+          const SizedBox(width: AppSpacing.sm - 2),
+          Text(
+            '+${country.dial}',
+            style: AppTypography.caption.copyWith(
+              color:
+                  onTap == null ? AppColors.textMuted : AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
             ),
-            if (onTap != null) ...[
-              const SizedBox(width: 2),
-              const Icon(
-                PhosphorIconsLight.caretDown,
-                size: 16,
-                color: AppColors.textMuted,
-              ),
-            ],
+          ),
+          if (onTap != null) ...[
+            const SizedBox(width: AppSpacing.xxs),
+            const Icon(
+              PhosphorIconsLight.caretDown,
+              size: 16,
+              color: AppColors.textMuted,
+            ),
           ],
+        ],
+      ),
+    );
+
+    if (onTap == null) return chip;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xs,
+            vertical: AppSpacing.xs,
+          ),
+          child: chip,
         ),
       ),
     );

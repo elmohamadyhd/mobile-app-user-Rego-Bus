@@ -24,6 +24,8 @@
 
   "phoneHint": "10 1234 5678",
   "passwordHint": "كلمة المرور",
+  "authShowPassword": "إظهار كلمة المرور",
+  "authHidePassword": "إخفاء كلمة المرور",
 
   "authOrContinueWith": "أو تابع عبر",
   "authOrSignUpWith": "أو سجّل عبر",

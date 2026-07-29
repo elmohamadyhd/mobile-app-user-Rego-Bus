@@ -27,7 +27,9 @@ class SocialRow extends StatelessWidget {
           children: [
             const Expanded(child: Divider(color: AppColors.hairline)),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm + AppSpacing.xs,
+              ),
               child: Text(
                 dividerLabel,
                 style: AppTypography.caption.copyWith(
@@ -38,7 +40,7 @@ class SocialRow extends StatelessWidget {
             const Expanded(child: Divider(color: AppColors.hairline)),
           ],
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.md),
         Row(
           children: [
             Expanded(child: _SocialButton(BrandMark.google, onDisabledTap)),

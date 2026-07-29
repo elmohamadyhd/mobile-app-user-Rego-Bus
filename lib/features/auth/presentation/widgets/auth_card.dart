@@ -8,8 +8,13 @@ class AuthCard extends StatelessWidget {
   const AuthCard({
     super.key,
     required this.children,
-    this.gap = 14,
-    this.margin = const EdgeInsetsDirectional.fromSTEB(18, 0, 18, 0),
+    this.gap = AppSpacing.md,
+    this.margin = const EdgeInsetsDirectional.fromSTEB(
+      AppSpacing.lg - 6,
+      0,
+      AppSpacing.lg - 6,
+      0,
+    ),
   });
 
   final List<Widget> children;
@@ -26,16 +31,16 @@ class AuthCard extends StatelessWidget {
 
     return Container(
       margin: margin,
-      padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
+      padding: const EdgeInsetsDirectional.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: AppColors.bgCard,
         borderRadius: BorderRadius.circular(AppRadius.card),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark.withValues(alpha: 0.20),
-            blurRadius: 40,
-            spreadRadius: -18,
-            offset: const Offset(0, 18),
+            color: AppColors.primaryDark.withValues(alpha: 0.12),
+            blurRadius: 28,
+            spreadRadius: -12,
+            offset: const Offset(0, 10),
           ),
         ],
       ),

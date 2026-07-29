@@ -36,6 +36,14 @@
 
   "phoneHint": "10 1234 5678",
   "passwordHint": "Password",
+  "authShowPassword": "Show password",
+  "@authShowPassword": {
+    "description": "A11y label for password visibility toggle when password is hidden"
+  },
+  "authHidePassword": "Hide password",
+  "@authHidePassword": {
+    "description": "A11y label for password visibility toggle when password is visible"
+  },
 
   "authOrContinueWith": "or continue with",
   "authOrSignUpWith": "or sign up with",

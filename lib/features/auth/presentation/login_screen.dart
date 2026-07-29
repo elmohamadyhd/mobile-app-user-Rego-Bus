@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/core/utils/validators.dart';
 import 'package:safaria/features/auth/domain/exceptions/account_not_verified_exception.dart';
 import 'package:safaria/features/auth/domain/value/otp_purpose.dart';
@@ -14,8 +16,9 @@ import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_card.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_hero_layout.dart';
-import 'package:safaria/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_password_toggle.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_text_link.dart';
 import 'package:safaria/features/auth/presentation/widgets/country_picker.dart';
 import 'package:safaria/features/auth/presentation/widgets/phone_field.dart';
 import 'package:safaria/features/auth/presentation/widgets/social_row.dart';
@@ -23,7 +26,6 @@ import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/double_back_to_exit.dart';
 import 'package:safaria/shared/widgets/language_icon_button.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
-import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key, this.gateArgs});
@@ -44,10 +46,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String? _passwordError;
 
   @override
+  void initState() {
+    super.initState();
+    _phone.addListener(_clearPhoneErrorOnEdit);
+    _password.addListener(_clearPasswordErrorOnEdit);
+  }
+
+  @override
   void dispose() {
-    _phone.dispose();
-    _password.dispose();
+    _phone
+      ..removeListener(_clearPhoneErrorOnEdit)
+      ..dispose();
+    _password
+      ..removeListener(_clearPasswordErrorOnEdit)
+      ..dispose();
     super.dispose();
+  }
+
+  void _clearPhoneErrorOnEdit() {
+    if (_phoneError == null) return;
+    setState(() => _phoneError = null);
+  }
+
+  void _clearPasswordErrorOnEdit() {
+    if (_passwordError == null) return;
+    setState(() => _passwordError = null);
   }
 
   Future<void> _pickCountry() async {
@@ -119,126 +142,139 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return DoubleBackToExit(
       alwaysIntercept: true,
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
         backgroundColor: AppColors.bgBase,
-        body: AuthPinnedBottomLayout(
-          bottomPadding: const EdgeInsets.all(AppSpacing.lg),
-          scrollChild: Column(
-            children: [
-              AuthHeroLayout(
-                title: l10n.loginTitle,
-                subtitle: l10n.loginSubtitle,
-                topEnd: const LanguageIconButton(color: AppColors.onHero),
-                child: AuthCard(
-                  children: [
-                    PhoneField(
-                      controller: _phone,
-                      country: _country,
-                      onTapCountry: _pickCountry,
-                      errorText: _phoneError,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    AuthTextField(
-                      controller: _password,
-                      hint: l10n.passwordHint,
-                      icon: PhosphorIconsLight.lock,
-                      obscure: _obscure,
-                      errorText: _passwordError,
-                      textInputAction: TextInputAction.done,
-                      onSubmitted: (_) => _submit(),
-                      autofillHints: const [AutofillHints.password],
-                      trailing: _EyeToggle(
-                        obscure: _obscure,
-                        onTap: () => setState(() => _obscure = !_obscure),
-                      ),
-                    ),
-                    Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: GestureDetector(
-                        onTap: () => context.push(AppRoutes.forgotPassword),
-                        child: Text(
-                          l10n.loginForgot,
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SocialRow(
-                      dividerLabel: l10n.authOrContinueWith,
-                      onDisabledTap: () => ScaffoldMessenger.of(context)
-                        ..hideCurrentSnackBar()
-                        ..showSnackBar(
-                          SnackBar(content: Text(l10n.socialComingSoon)),
-                        ),
-                    ),
-                  ],
+        body: SafeArea(
+          top: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  bottom:
+                      MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-          ),
-          bottom: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PrimaryButton(
-                label: l10n.loginButton,
-                loading: _submitting,
-                onPressed: _submit,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              PrimaryButton(
-                label: l10n.authContinueGuest,
-                variant: PrimaryButtonVariant.ghost,
-                onPressed: _submitting ? null : _continueAsGuest,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    l10n.loginNoAccount,
-                    style:
-                        AppTypography.body.copyWith(color: AppColors.textMuted),
-                  ),
-                  const SizedBox(width: 4),
-                  GestureDetector(
-                    onTap: () => context.push(AppRoutes.register,
-                        extra: widget.gateArgs),
-                    child: Text(
-                      l10n.loginSignUp,
-                      style: AppTypography.body.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: AppBreakpoints.maxContentWidth,
+                      ),
+                      child: Column(
+                        children: [
+                          AuthHeroLayout(
+                            title: l10n.loginTitle,
+                            subtitle: l10n.loginSubtitle,
+                            topEnd: const LanguageIconButton(
+                              color: AppColors.onHero,
+                            ),
+                            child: AuthCard(
+                              children: [
+                                PhoneField(
+                                  controller: _phone,
+                                  country: _country,
+                                  onTapCountry: _pickCountry,
+                                  errorText: _phoneError,
+                                  textInputAction: TextInputAction.next,
+                                ),
+                                AuthTextField(
+                                  controller: _password,
+                                  hint: l10n.passwordHint,
+                                  icon: PhosphorIconsLight.lock,
+                                  obscure: _obscure,
+                                  errorText: _passwordError,
+                                  textInputAction: TextInputAction.done,
+                                  onSubmitted: (_) => _submit(),
+                                  autofillHints: const [
+                                    AutofillHints.password,
+                                  ],
+                                  trailing: AuthPasswordToggle(
+                                    obscure: _obscure,
+                                    onTap: () => setState(
+                                      () => _obscure = !_obscure,
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: AuthTextLink(
+                                    label: l10n.loginForgot,
+                                    onTap: () => context.push(
+                                      AppRoutes.forgotPassword,
+                                    ),
+                                  ),
+                                ),
+                                PrimaryButton(
+                                  label: l10n.loginButton,
+                                  loading: _submitting,
+                                  onPressed: _submit,
+                                ),
+                                SocialRow(
+                                  dividerLabel: l10n.authOrContinueWith,
+                                  onDisabledTap: () =>
+                                      ScaffoldMessenger.of(context)
+                                        ..hideCurrentSnackBar()
+                                        ..showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              l10n.socialComingSoon,
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                              AppSpacing.lg,
+                              AppSpacing.md,
+                              AppSpacing.lg,
+                              AppSpacing.lg,
+                            ),
+                            child: Column(
+                              children: [
+                                PrimaryButton(
+                                  label: l10n.authContinueGuest,
+                                  variant: PrimaryButtonVariant.ghost,
+                                  onPressed:
+                                      _submitting ? null : _continueAsGuest,
+                                ),
+                                const SizedBox(height: AppSpacing.md),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      l10n.loginNoAccount,
+                                      style: AppTypography.body.copyWith(
+                                        color: AppColors.textMuted,
+                                      ),
+                                    ),
+                                    AuthTextLink(
+                                      label: l10n.loginSignUp,
+                                      style: AppTypography.body.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                      onTap: () => context.push(
+                                        AppRoutes.register,
+                                        extra: widget.gateArgs,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              );
+            },
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _EyeToggle extends StatelessWidget {
-  const _EyeToggle({required this.obscure, required this.onTap});
-
-  final bool obscure;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Icon(
-        obscure ? PhosphorIconsLight.eye : PhosphorIconsLight.eyeSlash,
-        size: 20,
-        color: AppColors.textMuted,
       ),
     );
   }

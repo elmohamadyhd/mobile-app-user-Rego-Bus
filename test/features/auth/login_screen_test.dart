@@ -66,6 +66,24 @@ void main() {
     return container;
   }
 
+  testWidgets('clears field errors when user edits after failed submit',
+      (tester) async {
+    await pumpLogin(tester, guestModeMemory: {});
+
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Enter a valid phone number'), findsOneWidget);
+    expect(find.text('This field is required'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).first, '1012345678');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Enter a valid phone number'), findsNothing);
+    expect(find.text('This field is required'), findsNothing);
+  });
+
   testWidgets('renders a "Continue as a guest" button below Sign in',
       (tester) async {
     await pumpLogin(tester, guestModeMemory: {});
@@ -73,11 +91,26 @@ void main() {
     expect(find.text('Continue as a guest'), findsOneWidget);
   });
 
+  testWidgets('Sign in CTA sits under Forgot password in the form card',
+      (tester) async {
+    await pumpLogin(tester, guestModeMemory: {});
+
+    final forgotY = tester.getTopLeft(find.text('Forgot password?')).dy;
+    final signInY = tester.getTopLeft(find.text('Sign in')).dy;
+    final guestY = tester.getTopLeft(find.text('Continue as a guest')).dy;
+
+    expect(signInY, greaterThan(forgotY));
+    expect(guestY, greaterThan(signInY));
+  });
+
   testWidgets('tapping the guest button enables guest mode and goes Home',
       (tester) async {
     final container = await pumpLogin(tester, guestModeMemory: {});
 
-    await tester.tap(find.text('Continue as a guest'));
+    final guest = find.text('Continue as a guest');
+    await tester.ensureVisible(guest);
+    await tester.pumpAndSettle();
+    await tester.tap(guest);
     await tester.pumpAndSettle();
 
     expect(find.text('HOME'), findsOneWidget);
@@ -207,7 +240,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Sign up'));
+    final signUp = find.text('Sign up');
+    await tester.ensureVisible(signUp);
+    await tester.pumpAndSettle();
+    await tester.tap(signUp);
     await tester.pumpAndSettle();
 
     expect(

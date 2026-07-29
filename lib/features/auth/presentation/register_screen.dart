@@ -14,8 +14,10 @@ import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_card.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_hero_layout.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_password_toggle.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:safaria/features/auth/presentation/widgets/auth_text_link.dart';
 import 'package:safaria/features/auth/presentation/widgets/country_picker.dart';
 import 'package:safaria/features/auth/presentation/widgets/phone_field.dart';
 import 'package:safaria/features/auth/presentation/widgets/social_row.dart';
@@ -46,12 +48,49 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   String? _passwordError;
 
   @override
+  void initState() {
+    super.initState();
+    _name.addListener(_clearNameErrorOnEdit);
+    _phone.addListener(_clearPhoneErrorOnEdit);
+    _email.addListener(_clearEmailErrorOnEdit);
+    _password.addListener(_clearPasswordErrorOnEdit);
+  }
+
+  @override
   void dispose() {
-    _name.dispose();
-    _phone.dispose();
-    _email.dispose();
-    _password.dispose();
+    _name
+      ..removeListener(_clearNameErrorOnEdit)
+      ..dispose();
+    _phone
+      ..removeListener(_clearPhoneErrorOnEdit)
+      ..dispose();
+    _email
+      ..removeListener(_clearEmailErrorOnEdit)
+      ..dispose();
+    _password
+      ..removeListener(_clearPasswordErrorOnEdit)
+      ..dispose();
     super.dispose();
+  }
+
+  void _clearNameErrorOnEdit() {
+    if (_nameError == null) return;
+    setState(() => _nameError = null);
+  }
+
+  void _clearPhoneErrorOnEdit() {
+    if (_phoneError == null) return;
+    setState(() => _phoneError = null);
+  }
+
+  void _clearEmailErrorOnEdit() {
+    if (_emailError == null) return;
+    setState(() => _emailError = null);
+  }
+
+  void _clearPasswordErrorOnEdit() {
+    if (_passwordError == null) return;
+    setState(() => _passwordError = null);
   }
 
   Future<void> _pickCountry() async {
@@ -147,7 +186,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               title: l10n.registerTitle,
               subtitle: l10n.registerSubtitle,
               child: AuthCard(
-                gap: 13,
                 children: [
                   AuthTextField(
                     controller: _name,
@@ -182,14 +220,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) => _submit(),
                     autofillHints: const [AutofillHints.newPassword],
-                    trailing: GestureDetector(
+                    trailing: AuthPasswordToggle(
+                      obscure: _obscure,
                       onTap: () => setState(() => _obscure = !_obscure),
-                      behavior: HitTestBehavior.opaque,
-                      child: Icon(
-                        _obscure ? PhosphorIconsLight.eye : PhosphorIconsLight.eyeSlash,
-                        size: 20,
-                        color: AppColors.textMuted,
-                      ),
                     ),
                   ),
                   SocialRow(
@@ -223,16 +256,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   style:
                       AppTypography.body.copyWith(color: AppColors.textMuted),
                 ),
-                const SizedBox(width: 4),
-                GestureDetector(
-                  onTap: () => context.pop(),
-                  child: Text(
-                    l10n.registerSignIn,
-                    style: AppTypography.body.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                AuthTextLink(
+                  label: l10n.registerSignIn,
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
                   ),
+                  onTap: () => context.pop(),
                 ),
               ],
             ),
