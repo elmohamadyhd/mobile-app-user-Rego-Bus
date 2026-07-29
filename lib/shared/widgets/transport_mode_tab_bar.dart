@@ -26,7 +26,7 @@ class TransportModeTabBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final tabs = [
       (l10n.homeTabBus, PhosphorIconsLight.bus),
-      (l10n.homeTabPrivate, PhosphorIconsLight.diamond),
+      (l10n.homeTabPrivate, PhosphorIconsLight.carProfile),
       (l10n.homeTabFlight, PhosphorIconsLight.airplane),
       (l10n.homeTabTrain, PhosphorIconsLight.train),
     ];
