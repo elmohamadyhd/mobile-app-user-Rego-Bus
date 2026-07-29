@@ -48,6 +48,18 @@
   "authOrContinueWith": "or continue with",
   "authOrSignUpWith": "or sign up with",
   "socialComingSoon": "Social sign-in is coming soon",
+  "googleSignInFailed": "Google sign-in failed. Please try again.",
+  "@googleSignInFailed": {
+    "description": "Error snackbar when Google Sign-In fails (non-cancel)"
+  },
+  "completeProfileTitle": "Complete your profile",
+  "@completeProfileTitle": {
+    "description": "Hero title on the post-Google phone completion screen"
+  },
+  "completeProfileSubtitle": "Add and verify your phone number to finish setting up your account.",
+  "@completeProfileSubtitle": {
+    "description": "Hero subtitle on the post-Google phone completion screen"
+  },
 
   "registerTitle": "Create new account",
   "registerSubtitle": "Join Safaria and travel smarter",
@@ -717,6 +729,14 @@
   "@carPlaceCurrentSelection": { "description": "Caption for already-selected place in picker idle state." },
   "carMapsNotConfigured": "Maps are not configured on this build.",
   "@carMapsNotConfigured": { "description": "Snackbar when user taps place field without Google Maps API key." },
+  "mapLoading": "Loading map…",
+  "@mapLoading": {
+    "description": "Overlay label while Google Map initializes on the place picker."
+  },
+  "mapLocateMe": "Locate me",
+  "@mapLocateMe": {
+    "description": "Accessibility label for the GPS / center-on-me FAB on the map place picker."
+  },
   "carAdjustOnMap": "Adjust on map",
   "@carAdjustOnMap": { "description": "Link to open map pin fine-tune sheet." },
   "carUseMyLocation": "Use my location",

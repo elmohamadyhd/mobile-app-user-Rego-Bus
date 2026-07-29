@@ -30,6 +30,9 @@
   "authOrContinueWith": "أو تابع عبر",
   "authOrSignUpWith": "أو سجّل عبر",
   "socialComingSoon": "تسجيل الدخول عبر مواقع التواصل قريباً",
+  "googleSignInFailed": "فشل تسجيل الدخول عبر جوجل. حاول مرة أخرى.",
+  "completeProfileTitle": "أكمل ملفك الشخصي",
+  "completeProfileSubtitle": "أضف رقم هاتفك وتحقق منه لإتمام إعداد حسابك.",
 
   "registerTitle": "إنشاء حساب جديد",
   "registerSubtitle": "انضم إلى Safaria وسافر بذكاء",
@@ -335,6 +338,8 @@
   "carPlaceQuickActions": "خيارات سريعة",
   "carPlaceCurrentSelection": "الموقع الحالي",
   "carMapsNotConfigured": "الخرائط غير مفعّلة في هذا الإصدار.",
+  "mapLoading": "جاري تحميل الخريطة",
+  "mapLocateMe": "موقعي الحالي",
   "carAdjustOnMap": "تعديل على الخريطة",
   "carUseMyLocation": "استخدم موقعي",
   "carRequestCar": "اطلب سيارة",
