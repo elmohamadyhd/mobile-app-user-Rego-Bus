@@ -137,4 +137,20 @@ class AuthApi {
     );
     return res.data;
   }
+
+  Future<dynamic> socialLogin({
+    required String provider,
+    required String idToken,
+    required String firebaseToken,
+  }) async {
+    final res = await _dio.post(
+      '/auth/social-login',
+      data: FormData.fromMap({
+        'provider': provider,
+        'id_token': idToken,
+        'firebase_token': firebaseToken,
+      }),
+    );
+    return res.data;
+  }
 }

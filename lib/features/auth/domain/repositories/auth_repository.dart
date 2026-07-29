@@ -59,4 +59,14 @@ abstract interface class AuthRepository {
     required String password,
     required String passwordConfirmation,
   });
+
+  /// Signs in (or creates an account) via a Google ID token, hitting
+  /// `POST /auth/social-login`. Returns the same envelope shape as [login].
+  /// New accounts created this way have no phone on file yet — check
+  /// `session.user?.isProfileCompleted`; when `false`, route to the
+  /// phone-completion flow instead of straight into the app.
+  Future<AuthSession> socialLoginWithGoogle({
+    required String idToken,
+    required String firebaseToken,
+  });
 }

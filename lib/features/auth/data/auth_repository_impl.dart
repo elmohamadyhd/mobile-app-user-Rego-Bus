@@ -140,6 +140,21 @@ class AuthRepositoryImpl implements AuthRepository {
     });
   }
 
+  @override
+  Future<AuthSession> socialLoginWithGoogle({
+    required String idToken,
+    required String firebaseToken,
+  }) {
+    return _guard(() async {
+      final envelope = await _api.socialLogin(
+        provider: 'google',
+        idToken: idToken,
+        firebaseToken: firebaseToken,
+      ) as Map<String, dynamic>;
+      return _parseSession(envelope);
+    });
+  }
+
   void _ensureSuccessEnvelope(dynamic body) {
     final envelope = body as Map<String, dynamic>;
     final innerStatus = envelope['status'];

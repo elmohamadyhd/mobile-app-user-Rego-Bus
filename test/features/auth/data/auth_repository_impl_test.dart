@@ -7,10 +7,12 @@ import 'package:safaria/features/auth/data/auth_repository_impl.dart';
 import 'package:safaria/features/auth/domain/exceptions/account_not_verified_exception.dart';
 
 class _FakeAuthApi extends AuthApi {
-  _FakeAuthApi({this.loginBody, this.registerBody}) : super(Dio());
+  _FakeAuthApi({this.loginBody, this.registerBody, this.socialLoginBody})
+      : super(Dio());
 
   final dynamic loginBody;
   final dynamic registerBody;
+  final dynamic socialLoginBody;
 
   @override
   Future<dynamic> login({
@@ -31,6 +33,14 @@ class _FakeAuthApi extends AuthApi {
     required String firebaseToken,
   }) async =>
       registerBody;
+
+  @override
+  Future<dynamic> socialLogin({
+    required String provider,
+    required String idToken,
+    required String firebaseToken,
+  }) async =>
+      socialLoginBody;
 }
 
 // The Wadeny login API uses `need_verfication` (backend typo). Do NOT rename
@@ -178,6 +188,58 @@ void main() {
                 'قيمة حقل الجوال مُستخدمة من قبل',
               ),
         ),
+      );
+    });
+  });
+
+  group('AuthRepositoryImpl.socialLoginWithGoogle', () {
+    test('returns a session with null mobile for a brand-new Google account',
+        () async {
+      const envelope = {
+        'status': 200,
+        'message': 'User data',
+        'errors': <String, dynamic>{},
+        'data': {
+          'id': 90,
+          'name': 'Abdallah',
+          'email': 'abdallah@gmail.com',
+          'mobile': null,
+          'phonecode': null,
+          'status': 'Active',
+          'avatar': '',
+          'api_token': 'tok123',
+          'is_profile_completed': false,
+        },
+      };
+
+      final repo = AuthRepositoryImpl(_FakeAuthApi(socialLoginBody: envelope));
+
+      final session = await repo.socialLoginWithGoogle(
+        idToken: 'google-id-token',
+        firebaseToken: 'device-token',
+      );
+
+      expect(session.token, 'tok123');
+      expect(session.user?.mobile, isNull);
+      expect(session.user?.isProfileCompleted, isFalse);
+    });
+
+    test('throws ApiException on an error envelope', () async {
+      const envelope = {
+        'status': 401,
+        'message': 'Invalid Google token',
+        'errors': <String, dynamic>{},
+        'data': <String, dynamic>{},
+      };
+
+      final repo = AuthRepositoryImpl(_FakeAuthApi(socialLoginBody: envelope));
+
+      await expectLater(
+        repo.socialLoginWithGoogle(
+          idToken: 'bad-token',
+          firebaseToken: 'device-token',
+        ),
+        throwsA(isA<ApiException>()),
       );
     });
   });
