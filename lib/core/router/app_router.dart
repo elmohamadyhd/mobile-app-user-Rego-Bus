@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/complete_phone_screen.dart';
 import 'package:safaria/features/auth/presentation/forgot_password_screen.dart';
 import 'package:safaria/features/auth/presentation/login_screen.dart';
 import 'package:safaria/features/auth/presentation/new_password_screen.dart';
@@ -35,6 +36,7 @@ abstract final class AppRoutes {
   static const otp = '/otp';
   static const forgotPassword = '/forgot-password';
   static const newPassword = '/new-password';
+  static const completeProfile = '/complete-profile';
   static const home = '/';
   static const tickets = '/tickets';
   static const profile = '/profile';
@@ -94,6 +96,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           final args = state.extra;
           if (args is! ResetArgs) return const LoginScreen();
           return NewPasswordScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.completeProfile,
+        builder: (context, state) {
+          final args = state.extra;
+          return CompletePhoneScreen(
+            args: args is CompleteProfileArgs ? args : null,
+          );
         },
       ),
       // Signed-in tab shell. Each tab is a branch with preserved state; the
@@ -185,9 +196,22 @@ class _RouterNotifier extends ChangeNotifier {
     final at = state.matchedLocation;
     final atAuthRoute = _authRoutes.contains(at);
 
+    // A Google sign-up with no phone on file yet: block everywhere except
+    // the completion screen itself and the OTP screen it pushes to.
+    final needsProfileCompletion =
+        loggedIn && (session.value?.user?.isProfileCompleted ?? true) == false;
+    final onCompleteProfileFlow =
+        at == AppRoutes.completeProfile || at == AppRoutes.otp;
+    if (needsProfileCompletion && !onCompleteProfileFlow) {
+      return AppRoutes.completeProfile;
+    }
+
     // Signed-in users should not linger on auth screens; guests may open
     // login/register voluntarily (profile CTA, guest gate sheet).
-    if (loggedIn && atAuthRoute && at != AppRoutes.splash) {
+    if (loggedIn &&
+        !needsProfileCompletion &&
+        atAuthRoute &&
+        at != AppRoutes.splash) {
       return AppRoutes.home;
     }
     if (!allowedInApp && !atAuthRoute) {

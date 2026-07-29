@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' show Size;
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,6 +39,13 @@ void main() {
   }
 
   Future<void> pumpApp(WidgetTester tester, SecureStorage storage) async {
+    // Taller than the default 800×600 so the Login guest CTA is on-screen,
+    // without shrinking width (phone widths overflow the login footer Row).
+    tester.view.physicalSize = const Size(800, 1200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -46,12 +55,19 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pump(const Duration(seconds: 2));
+    // Cover intro (1s) + min splash duration (2s). A second concurrent
+    // `_route` (session listen + post-frame) can leave a stray delay timer —
+    // advance past that too before asserting.
+    await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
   }
 
   Future<void> continueAsGuest(WidgetTester tester) async {
-    await tester.tap(find.text('Continue as a guest'));
+    final guest = find.text('Continue as a guest');
+    await tester.ensureVisible(guest);
+    await tester.pumpAndSettle();
+    await tester.tap(guest);
     await tester.pumpAndSettle();
   }
 
@@ -145,6 +161,29 @@ void main() {
       expect(find.text('Press back again to exit'), findsOneWidget);
       expect(find.text('Welcome back'), findsOneWidget);
       expect(find.text('Guest'), findsNothing);
+      expect(find.text('Where to today?'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'signed-in user with an incomplete profile is routed to Complete profile, not Home',
+    (tester) async {
+      final storage = testStorage();
+      await storage.writeToken('a-token');
+      await storage.writeUser(jsonEncode({
+        'id': 1,
+        'name': 'Abdallah',
+        'email': 'abdallah@gmail.com',
+        'mobile': null,
+        'phonecode': null,
+        'status': 'Active',
+        'avatar': '',
+        'is_profile_completed': false,
+      }));
+
+      await pumpApp(tester, storage);
+
+      expect(find.text('Complete your profile'), findsOneWidget);
       expect(find.text('Where to today?'), findsNothing);
     },
   );
