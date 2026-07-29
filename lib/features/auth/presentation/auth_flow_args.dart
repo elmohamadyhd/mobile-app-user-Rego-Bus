@@ -42,3 +42,13 @@ class AuthGateArgs {
 
   final String returnTo;
 }
+
+/// Arguments handed to the Complete-profile screen via go_router `extra`,
+/// carried through from whichever screen (or router redirect) sent the user
+/// there. [returnTo] is where to land after the phone is verified — the
+/// same semantics as [AuthGateArgs.returnTo].
+class CompleteProfileArgs {
+  const CompleteProfileArgs({this.returnTo});
+
+  final String? returnTo;
+}
