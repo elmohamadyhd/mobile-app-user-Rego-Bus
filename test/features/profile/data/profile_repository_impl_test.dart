@@ -2,16 +2,23 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/profile/data/profile_api.dart';
 import 'package:safaria/features/profile/data/profile_repository_impl.dart';
 
 import 'profile_fixtures.dart';
 
 class _FakeProfileApi extends ProfileApi {
-  _FakeProfileApi({this.fetchBody, this.updateBody, this.onUpdate}) : super(Dio());
+  _FakeProfileApi({
+    this.fetchBody,
+    this.updateBody,
+    this.onUpdate,
+    this.verifyAltPhoneBody,
+  }) : super(Dio());
 
   final dynamic fetchBody;
   final dynamic updateBody;
+  final dynamic verifyAltPhoneBody;
   final void Function(FormData body)? onUpdate;
 
   @override
@@ -22,6 +29,14 @@ class _FakeProfileApi extends ProfileApi {
     onUpdate?.call(body);
     return updateBody;
   }
+
+  @override
+  Future<dynamic> verifyAltPhone({
+    required String phoneCode,
+    required String mobile,
+    required String code,
+  }) async =>
+      verifyAltPhoneBody;
 }
 
 void main() {
@@ -83,6 +98,63 @@ void main() {
       expect(captured, isNotNull);
       expect(captured!.fields.map((e) => e.key), contains('id'));
       expect(captured!.files.map((e) => e.key), contains('avatar'));
+    });
+
+    group('verifyAltPhone', () {
+      test('returns the user with the phone now attached', () async {
+        const envelope = {
+          'status': 200,
+          'message': 'User data',
+          'errors': <String, dynamic>{},
+          'data': {
+            'id': 90,
+            'name': 'Abdallah',
+            'email': 'abdallah@gmail.com',
+            'mobile': '1276586027',
+            'phonecode': '20',
+            'status': 'Active',
+            'avatar': '',
+            'is_profile_completed': true,
+          },
+        };
+
+        final repo = ProfileRepositoryImpl(
+          _FakeProfileApi(verifyAltPhoneBody: envelope),
+        );
+
+        final user = await repo.verifyAltPhone(
+          phoneCode: '20',
+          mobile: '1276586027',
+          code: '1234',
+        );
+
+        expect(user.mobile, '1276586027');
+        expect(user.isProfileCompleted, isTrue);
+      });
+
+      test('throws ApiException on an error envelope', () async {
+        const envelope = {
+          'status': 400,
+          'message': 'Invalid verification code',
+          'errors': {
+            'code': 'Invalid verification code',
+          },
+          'data': <String, dynamic>{},
+        };
+
+        final repo = ProfileRepositoryImpl(
+          _FakeProfileApi(verifyAltPhoneBody: envelope),
+        );
+
+        await expectLater(
+          repo.verifyAltPhone(
+            phoneCode: '20',
+            mobile: '1276586027',
+            code: '0000',
+          ),
+          throwsA(isA<ApiException>()),
+        );
+      });
     });
   });
 }

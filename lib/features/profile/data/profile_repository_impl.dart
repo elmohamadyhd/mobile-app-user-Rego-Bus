@@ -45,6 +45,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
         return _userFromEnvelope(envelope);
       });
 
+  @override
+  Future<AuthUser> verifyAltPhone({
+    required String phoneCode,
+    required String mobile,
+    required String code,
+  }) =>
+      _guard(() async => _userFromEnvelope(
+            await _api.verifyAltPhone(
+              phoneCode: phoneCode,
+              mobile: mobile,
+              code: code,
+            ),
+          ));
+
   AuthUser _userFromEnvelope(dynamic body) {
     final envelope = body as Map<String, dynamic>;
     final innerStatus = envelope['status'];

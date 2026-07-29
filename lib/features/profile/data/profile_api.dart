@@ -15,4 +15,20 @@ class ProfileApi {
     final res = await _dio.post('/profile', data: body);
     return res.data;
   }
+
+  Future<dynamic> verifyAltPhone({
+    required String phoneCode,
+    required String mobile,
+    required String code,
+  }) async {
+    final res = await _dio.post(
+      '/profile/verify-alt-phone',
+      data: {
+        'mobile': int.tryParse(mobile) ?? mobile,
+        'phonecode': int.tryParse(phoneCode) ?? phoneCode,
+        'code': code,
+      },
+    );
+    return res.data;
+  }
 }
