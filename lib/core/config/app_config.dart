@@ -17,4 +17,11 @@ abstract final class AppConfig {
   static String get googleMapsApiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 
   static bool get isGoogleMapsConfigured => googleMapsApiKey.isNotEmpty;
+
+  /// OAuth 2.0 "Web application" client ID used to request a verifiable
+  /// Google ID token. Required for `GoogleSignIn.initialize`.
+  static String get googleWebClientId =>
+      dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
+
+  static bool get isGoogleSignInConfigured => googleWebClientId.isNotEmpty;
 }
