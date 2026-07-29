@@ -13,6 +13,7 @@ import 'package:safaria/core/utils/validators.dart';
 import 'package:safaria/features/auth/domain/exceptions/account_not_verified_exception.dart';
 import 'package:safaria/features/auth/domain/value/otp_purpose.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/google_sign_in_flow.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_card.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_hero_layout.dart';
@@ -42,6 +43,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   CountryCode _country = kDefaultCountry;
   bool _obscure = true;
   bool _submitting = false;
+  bool _socialSubmitting = false;
   String? _phoneError;
   String? _passwordError;
 
@@ -207,20 +209,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 PrimaryButton(
                                   label: l10n.loginButton,
                                   loading: _submitting,
-                                  onPressed: _submit,
+                                  onPressed:
+                                      _socialSubmitting ? null : _submit,
                                 ),
                                 SocialRow(
                                   dividerLabel: l10n.authOrContinueWith,
-                                  onDisabledTap: () =>
-                                      ScaffoldMessenger.of(context)
-                                        ..hideCurrentSnackBar()
-                                        ..showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              l10n.socialComingSoon,
-                                            ),
-                                          ),
-                                        ),
+                                  busy: _socialSubmitting,
+                                  onGoogleTap: () => handleGoogleSignIn(
+                                    context: context,
+                                    ref: ref,
+                                    gateArgs: widget.gateArgs,
+                                    setBusy: (v) =>
+                                        setState(() => _socialSubmitting = v),
+                                  ),
                                 ),
                               ],
                             ),
@@ -237,8 +238,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 PrimaryButton(
                                   label: l10n.authContinueGuest,
                                   variant: PrimaryButtonVariant.ghost,
-                                  onPressed:
-                                      _submitting ? null : _continueAsGuest,
+                                  onPressed: (_submitting || _socialSubmitting)
+                                      ? null
+                                      : _continueAsGuest,
                                 ),
                                 const SizedBox(height: AppSpacing.md),
                                 Row(

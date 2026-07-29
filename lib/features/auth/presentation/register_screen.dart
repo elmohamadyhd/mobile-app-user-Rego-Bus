@@ -11,6 +11,7 @@ import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/validators.dart';
 import 'package:safaria/features/auth/domain/value/otp_purpose.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/google_sign_in_flow.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_card.dart';
 import 'package:safaria/features/auth/presentation/widgets/auth_hero_layout.dart';
@@ -42,6 +43,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   CountryCode _country = kDefaultCountry;
   bool _obscure = true;
   bool _submitting = false;
+  bool _socialSubmitting = false;
   String? _nameError;
   String? _phoneError;
   String? _emailError;
@@ -227,11 +229,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   SocialRow(
                     dividerLabel: l10n.authOrSignUpWith,
-                    onDisabledTap: () => ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(
-                        SnackBar(content: Text(l10n.socialComingSoon)),
-                      ),
+                    busy: _socialSubmitting,
+                    onGoogleTap: () => handleGoogleSignIn(
+                      context: context,
+                      ref: ref,
+                      gateArgs: widget.gateArgs,
+                      setBusy: (v) => setState(() => _socialSubmitting = v),
+                    ),
                   ),
                 ],
               ),
@@ -245,7 +249,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             PrimaryButton(
               label: l10n.registerButton,
               loading: _submitting,
-              onPressed: _submit,
+              onPressed: _socialSubmitting ? null : _submit,
             ),
             const SizedBox(height: AppSpacing.lg),
             Row(

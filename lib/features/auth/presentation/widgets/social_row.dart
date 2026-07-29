@@ -5,19 +5,21 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/shared/widgets/brand_mark.dart';
 
-/// "or continue with" divider plus the three social brand buttons.
-///
-/// The buttons are shown for design fidelity but are not yet wired to social
-/// auth — tapping invokes [onDisabledTap] (a "coming soon" hint).
+/// "or continue with" divider plus the Google sign-in button.
 class SocialRow extends StatelessWidget {
   const SocialRow({
     super.key,
     required this.dividerLabel,
-    required this.onDisabledTap,
+    required this.onGoogleTap,
+    this.busy = false,
   });
 
   final String dividerLabel;
-  final VoidCallback onDisabledTap;
+  final VoidCallback onGoogleTap;
+
+  /// True while a Google sign-in is in flight — shows a spinner on the
+  /// button and ignores taps instead of firing [onGoogleTap] again.
+  final bool busy;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class SocialRow extends StatelessWidget {
         const SizedBox(height: AppSpacing.md),
         Row(
           children: [
-            Expanded(child: _SocialButton(BrandMark.google, onDisabledTap)),
+            Expanded(child: _SocialButton(BrandMark.google, onGoogleTap, busy)),
           ],
         ),
       ],
@@ -52,10 +54,11 @@ class SocialRow extends StatelessWidget {
 }
 
 class _SocialButton extends StatelessWidget {
-  const _SocialButton(this.asset, this.onTap);
+  const _SocialButton(this.asset, this.onTap, this.busy);
 
   final String asset;
   final VoidCallback onTap;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +67,9 @@ class _SocialButton extends StatelessWidget {
       color: AppColors.bgCard,
       borderRadius: radius,
       child: InkWell(
+        key: const Key('googleSignInButton'),
         borderRadius: radius,
-        onTap: onTap,
+        onTap: busy ? null : onTap,
         child: Container(
           height: 56,
           alignment: Alignment.center,
@@ -73,7 +77,13 @@ class _SocialButton extends StatelessWidget {
             borderRadius: radius,
             border: Border.all(color: AppColors.hairline),
           ),
-          child: BrandMark(asset, size: 26),
+          child: busy
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(strokeWidth: 2.4),
+                )
+              : BrandMark(asset, size: 26),
         ),
       ),
     );

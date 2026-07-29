@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
 import 'package:safaria/core/theme/app_theme.dart';
+import 'package:safaria/features/auth/data/google_sign_in_service.dart';
 import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 import 'package:safaria/features/auth/domain/entities/auth_user.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
@@ -16,9 +19,21 @@ import 'package:safaria/l10n/app_localizations.dart';
 
 import '../../support/fake_auth_repository.dart';
 import '../../support/in_memory_secure_storage.dart';
-import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
+
+class _FakeGoogleSignInService extends GoogleSignInService {
+  _FakeGoogleSignInService(this._idToken);
+
+  final String? _idToken;
+
+  @override
+  Future<String?> signIn() async => _idToken;
+}
 
 void main() {
+  setUpAll(() {
+    dotenv.testLoad(fileInput: 'GOOGLE_WEB_CLIENT_ID=test-client-id');
+  });
+
   Future<ProviderContainer> pumpLogin(
     WidgetTester tester, {
     required Map<String, String> guestModeMemory,
@@ -261,5 +276,185 @@ void main() {
 
     expect(find.text('English'), findsOneWidget);
     expect(find.text('العربية'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Google sign-in for an existing, complete account navigates to returnTo',
+      (tester) async {
+    const session = AuthSession(
+      token: 'g-token',
+      user: AuthUser(
+        mobile: '1012345678',
+        phoneCode: '20',
+        isProfileCompleted: true,
+      ),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        secureStorageProvider.overrideWithValue(
+          SecureStorage(storage: InMemorySecureStorage({})),
+        ),
+        authRepositoryProvider.overrideWithValue(FakeAuthRepository(session)),
+        googleSignInServiceProvider.overrideWithValue(
+          _FakeGoogleSignInService('a-google-id-token'),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(guestModeProvider.future);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.login,
+      routes: [
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) {
+            final args = state.extra;
+            return LoginScreen(gateArgs: args is AuthGateArgs ? args : null);
+          },
+        ),
+        GoRoute(
+          path: BusRoutes.confirm,
+          builder: (context, state) => const Text('CONFIRM'),
+        ),
+        GoRoute(
+          path: AppRoutes.home,
+          builder: (context, state) => const Text('HOME'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    router.go(
+      AppRoutes.login,
+      extra: const AuthGateArgs(returnTo: BusRoutes.confirm),
+    );
+    await tester.pumpAndSettle();
+
+    final google = find.byKey(const Key('googleSignInButton'));
+    await tester.ensureVisible(google);
+    await tester.pumpAndSettle();
+    await tester.tap(google);
+    await tester.pumpAndSettle();
+
+    expect(find.text('CONFIRM'), findsOneWidget);
+    expect(container.read(guestModeProvider).value, isFalse);
+  });
+
+  testWidgets(
+      'Google sign-in for a brand-new account navigates to Complete profile',
+      (tester) async {
+    const session = AuthSession(
+      token: 'g-token',
+      user: AuthUser(isProfileCompleted: false),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        secureStorageProvider.overrideWithValue(
+          SecureStorage(storage: InMemorySecureStorage({})),
+        ),
+        authRepositoryProvider.overrideWithValue(FakeAuthRepository(session)),
+        googleSignInServiceProvider.overrideWithValue(
+          _FakeGoogleSignInService('a-google-id-token'),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(guestModeProvider.future);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.login,
+      routes: [
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.completeProfile,
+          builder: (context, state) => const Text('COMPLETE PROFILE'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final google = find.byKey(const Key('googleSignInButton'));
+    await tester.ensureVisible(google);
+    await tester.pumpAndSettle();
+    await tester.tap(google);
+    await tester.pumpAndSettle();
+
+    expect(find.text('COMPLETE PROFILE'), findsOneWidget);
+  });
+
+  testWidgets('cancelling Google sign-in shows no error and stays on Login',
+      (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        secureStorageProvider.overrideWithValue(
+          SecureStorage(storage: InMemorySecureStorage({})),
+        ),
+        googleSignInServiceProvider.overrideWithValue(
+          _FakeGoogleSignInService(null),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(guestModeProvider.future);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.login,
+      routes: [
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) => const LoginScreen(),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final google = find.byKey(const Key('googleSignInButton'));
+    await tester.ensureVisible(google);
+    await tester.pumpAndSettle();
+    await tester.tap(google);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
   });
 }
