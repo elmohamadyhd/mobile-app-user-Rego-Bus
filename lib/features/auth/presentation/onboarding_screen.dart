@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:safaria/core/providers/locale_controller.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
 import 'package:safaria/core/theme/app_colors.dart';
@@ -9,6 +10,7 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/language_icon_button.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class _Slide {
@@ -61,6 +63,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       _Slide(PhosphorIconsLight.wallet, l10n.onboarding3Title, l10n.onboarding3Body),
     ];
     final isLast = _index == slides.length - 1;
+    // Drive from the language picker (localeController), not ambient
+    // Directionality — Phosphor carets also set matchTextDirection, so a
+    // plain caretLeft under RTL would auto-mirror back to pointing right.
+    final isRtl =
+        ref.watch(localeControllerProvider).languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: AppColors.bgElevated,
@@ -128,7 +135,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.lg),
                     ),
-                    child: Icon(isLast ? PhosphorIconsLight.check : PhosphorIconsLight.caretRight),
+                    child: isLast
+                        ? const LtrIcon(PhosphorIconsLight.check)
+                        : LtrIcon(
+                            isRtl
+                                ? PhosphorIconsLight.caretLeft
+                                : PhosphorIconsLight.caretRight,
+                          ),
                   ),
                 ],
               ),

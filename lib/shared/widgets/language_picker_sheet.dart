@@ -6,6 +6,7 @@ import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class _LanguageOption {
@@ -63,7 +64,10 @@ class _LanguagePickerSheet extends ConsumerWidget {
             ListTile(
               title: Text(option.autonym, style: AppTypography.title),
               trailing: option.locale.languageCode == current
-                  ? const Icon(PhosphorIconsLight.check, color: AppColors.primary)
+                  ? const LtrIcon(
+                      PhosphorIconsLight.check,
+                      color: AppColors.primary,
+                    )
                   : null,
               onTap: () {
                 if (option.locale.languageCode != current) {
