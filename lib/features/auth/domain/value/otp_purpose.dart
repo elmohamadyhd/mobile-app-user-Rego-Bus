@@ -8,4 +8,9 @@ enum OtpPurpose {
   /// Inside the forgot-password flow: validates the reset code via
   /// `/auth/validate-otp`, then continues to the New-password screen.
   passwordReset,
+
+  /// Completing a Google sign-up that has no phone on file yet: verifies
+  /// the code via the authenticated `/profile/verify-alt-phone`, attaching
+  /// the phone to the already-signed-in account.
+  linkGoogleAccountPhone,
 }

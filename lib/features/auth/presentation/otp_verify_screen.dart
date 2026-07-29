@@ -15,6 +15,7 @@ import 'package:safaria/features/auth/presentation/widgets/auth_back_button.dart
 import 'package:safaria/features/auth/presentation/widgets/auth_pinned_bottom_layout.dart';
 import 'package:safaria/features/auth/presentation/widgets/icon_badge.dart';
 import 'package:safaria/features/auth/presentation/widgets/otp_input.dart';
+import 'package:safaria/features/profile/presentation/providers/profile_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
@@ -73,36 +74,49 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
     }
 
     setState(() => _submitting = true);
-    final repo = ref.read(authRepositoryProvider);
     try {
-      if (widget.args.purpose == OtpPurpose.registration) {
-        final session = await repo.verifyOtp(
-          phoneCode: widget.args.phoneCode,
-          mobile: widget.args.mobile,
-          code: _code,
-        );
-        await ref.read(sessionControllerProvider.notifier).setSession(session);
-        await ref.read(guestModeProvider.notifier).disable();
-        if (mounted) {
-          context.go(widget.args.returnTo ?? AppRoutes.home);
-        }
-      } else {
-        await repo.validateOtp(
-          phoneCode: widget.args.phoneCode,
-          mobile: widget.args.mobile,
-          code: _code,
-        );
-        if (!mounted) return;
-        unawaited(
-          context.push(
-            AppRoutes.newPassword,
-            extra: ResetArgs(
-              phoneCode: widget.args.phoneCode,
-              mobile: widget.args.mobile,
-              code: _code,
+      switch (widget.args.purpose) {
+        case OtpPurpose.registration:
+          final session = await ref.read(authRepositoryProvider).verifyOtp(
+                phoneCode: widget.args.phoneCode,
+                mobile: widget.args.mobile,
+                code: _code,
+              );
+          await ref
+              .read(sessionControllerProvider.notifier)
+              .setSession(session);
+          await ref.read(guestModeProvider.notifier).disable();
+          if (mounted) {
+            context.go(widget.args.returnTo ?? AppRoutes.home);
+          }
+        case OtpPurpose.passwordReset:
+          await ref.read(authRepositoryProvider).validateOtp(
+                phoneCode: widget.args.phoneCode,
+                mobile: widget.args.mobile,
+                code: _code,
+              );
+          if (!mounted) return;
+          unawaited(
+            context.push(
+              AppRoutes.newPassword,
+              extra: ResetArgs(
+                phoneCode: widget.args.phoneCode,
+                mobile: widget.args.mobile,
+                code: _code,
+              ),
             ),
-          ),
-        );
+          );
+        case OtpPurpose.linkGoogleAccountPhone:
+          final user =
+              await ref.read(profileRepositoryProvider).verifyAltPhone(
+                    phoneCode: widget.args.phoneCode,
+                    mobile: widget.args.mobile,
+                    code: _code,
+                  );
+          await ref.read(sessionControllerProvider.notifier).updateUser(user);
+          if (mounted) {
+            context.go(widget.args.returnTo ?? AppRoutes.home);
+          }
       }
     } on ApiException catch (e) {
       setState(() => _hasError = true);
