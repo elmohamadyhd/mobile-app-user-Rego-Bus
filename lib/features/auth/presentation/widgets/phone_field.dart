@@ -53,7 +53,11 @@ class _PhoneFieldState extends State<PhoneField> {
   void _reformatController(List<int> groupSizes) {
     final digits = Validators.digitsOnly(widget.controller.text);
     if (digits.isEmpty) return;
-    final formatted = formatNationalPhone(digits, groupSizes);
+    final formatted = formatNationalPhone(
+      digits,
+      groupSizes,
+      dial: widget.country.dial,
+    );
     if (formatted == widget.controller.text) return;
     widget.controller.value = widget.controller.value.copyWith(
       text: formatted,
@@ -105,6 +109,7 @@ class _PhoneFieldState extends State<PhoneField> {
                         : [
                             NationalPhoneInputFormatter(
                               groupSizes: widget.country.groupSizes,
+                              dial: widget.country.dial,
                             ),
                           ],
                     style: AppTypography.body.copyWith(

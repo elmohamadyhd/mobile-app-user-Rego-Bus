@@ -74,7 +74,11 @@ class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   String _formatPhoneForField(String? mobile) {
     final digits = Validators.digitsOnly(mobile ?? '');
     if (digits.isEmpty) return '';
-    return formatNationalPhone(digits, _country.groupSizes);
+    return formatNationalPhone(
+      digits,
+      _country.groupSizes,
+      dial: _country.dial,
+    );
   }
 
   CountryCode _countryFromDial(String? dial) {

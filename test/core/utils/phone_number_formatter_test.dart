@@ -69,6 +69,23 @@ void main() {
       expect(formatNationalPhone('', egypt), '');
       expect(formatNationalPhone('   ', egypt), '');
     });
+
+    test('strips leading trunk 0 for Egypt dial 20', () {
+      expect(
+        formatNationalPhone('01012345678', egypt, dial: '20'),
+        '101 234 5678',
+      );
+      expect(formatNationalPhone('0', egypt, dial: '20'), '');
+      expect(formatNationalPhone('01', egypt, dial: '20'), '1');
+      expect(formatNationalPhone('012', egypt, dial: '20'), '12');
+    });
+
+    test('keeps leading 0 for non-Egypt dial codes', () {
+      expect(
+        formatNationalPhone('0501234567', gulfNine, dial: '966'),
+        '05 012 3456',
+      );
+    });
   });
 
   group('maxNationalDigits', () {
@@ -83,7 +100,10 @@ void main() {
     late NationalPhoneInputFormatter formatter;
 
     setUp(() {
-      formatter = NationalPhoneInputFormatter(groupSizes: [3, 3, 4]);
+      formatter = NationalPhoneInputFormatter(
+        groupSizes: [3, 3, 4],
+        dial: '20',
+      );
     });
 
     test('formats digits on edit', () {
@@ -97,6 +117,31 @@ void main() {
 
       expect(result.text, '101 234 5678');
       expect(result.selection.baseOffset, 12);
+    });
+
+    test('removes leading 0 as the first Egypt digit', () {
+      final result = formatter.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(
+          text: '0',
+          selection: TextSelection.collapsed(offset: 1),
+        ),
+      );
+
+      expect(result.text, '');
+      expect(result.selection.baseOffset, 0);
+    });
+
+    test('strips leading 0 when pasting a full Egypt national number', () {
+      final result = formatter.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(
+          text: '01012345678',
+          selection: TextSelection.collapsed(offset: 11),
+        ),
+      );
+
+      expect(result.text, '101 234 5678');
     });
   });
 }
