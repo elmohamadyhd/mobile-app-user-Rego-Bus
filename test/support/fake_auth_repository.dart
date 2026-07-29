@@ -2,9 +2,9 @@ import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 import 'package:safaria/features/auth/domain/repositories/auth_repository.dart';
 
 /// Minimal fake of [AuthRepository] for widget tests. Supports [login],
-/// [verifyOtp], and [socialLoginWithGoogle] (all return [_session]). All
-/// other methods throw [UnimplementedError] — tests that need them should
-/// use a different fake.
+/// [verifyOtp], [socialLoginWithGoogle] (all return [_session]), and
+/// [sendOtp] (succeeds as a no-op). All other methods throw
+/// [UnimplementedError] — tests that need them should use a different fake.
 class FakeAuthRepository implements AuthRepository {
   FakeAuthRepository(this._session);
   final AuthSession _session;
@@ -38,8 +38,10 @@ class FakeAuthRepository implements AuthRepository {
       _session;
 
   @override
-  Future<void> sendOtp({required String phoneCode, required String mobile}) =>
-      throw UnimplementedError();
+  Future<void> sendOtp({
+    required String phoneCode,
+    required String mobile,
+  }) async {}
 
   @override
   Future<void> resendOtp({
