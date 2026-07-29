@@ -209,8 +209,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 PrimaryButton(
                                   label: l10n.loginButton,
                                   loading: _submitting,
-                                  onPressed:
-                                      _socialSubmitting ? null : _submit,
+                                  onPressed: _socialSubmitting ? null : _submit,
                                 ),
                                 SocialRow(
                                   dividerLabel: l10n.authOrContinueWith,

@@ -75,6 +75,7 @@ class _CompletePhoneScreenState extends ConsumerState<CompletePhoneScreen> {
         ),
       );
     } on ApiException catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text(e.message)));
@@ -95,8 +96,7 @@ class _CompletePhoneScreenState extends ConsumerState<CompletePhoneScreen> {
           builder: (context, constraints) {
             return SingleChildScrollView(
               padding: EdgeInsets.only(
-                bottom:
-                    MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
+                bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minWidth: constraints.maxWidth),

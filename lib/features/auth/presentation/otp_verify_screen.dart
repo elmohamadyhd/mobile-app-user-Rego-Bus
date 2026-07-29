@@ -107,12 +107,11 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
             ),
           );
         case OtpPurpose.linkGoogleAccountPhone:
-          final user =
-              await ref.read(profileRepositoryProvider).verifyAltPhone(
-                    phoneCode: widget.args.phoneCode,
-                    mobile: widget.args.mobile,
-                    code: _code,
-                  );
+          final user = await ref.read(profileRepositoryProvider).verifyAltPhone(
+                phoneCode: widget.args.phoneCode,
+                mobile: widget.args.mobile,
+                code: _code,
+              );
           await ref.read(sessionControllerProvider.notifier).updateUser(user);
           if (mounted) {
             context.go(widget.args.returnTo ?? AppRoutes.home);

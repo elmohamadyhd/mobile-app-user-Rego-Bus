@@ -31,8 +31,7 @@ void main() {
     dotenv.testLoad(fileInput: 'GOOGLE_WEB_CLIENT_ID=test-client-id');
   });
 
-  testWidgets(
-      'Google sign-in for an existing, complete account navigates Home',
+  testWidgets('Google sign-in for an existing, complete account navigates Home',
       (tester) async {
     const session = AuthSession(
       token: 'g-token',
