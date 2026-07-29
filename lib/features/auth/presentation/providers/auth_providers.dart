@@ -6,6 +6,7 @@ import 'package:safaria/core/network/dio_client.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
 import 'package:safaria/features/auth/data/auth_api.dart';
 import 'package:safaria/features/auth/data/auth_repository_impl.dart';
+import 'package:safaria/features/auth/data/google_sign_in_service.dart';
 import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 import 'package:safaria/features/auth/domain/entities/auth_user.dart';
 import 'package:safaria/features/auth/domain/repositories/auth_repository.dart';
@@ -16,6 +17,9 @@ final authApiProvider =
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepositoryImpl(ref.watch(authApiProvider)),
 );
+
+final googleSignInServiceProvider =
+    Provider<GoogleSignInService>((ref) => GoogleSignInService());
 
 /// Owns the authenticated session. `null` data ⇒ signed out.
 ///
