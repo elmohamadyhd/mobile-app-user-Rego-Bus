@@ -20,6 +20,7 @@ import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/tickets/presentation/tickets_screen.dart';
 import 'package:safaria/features/addresses/presentation/addresses_routes.dart';
 import 'package:safaria/features/pages/presentation/pages_routes.dart';
+import 'package:safaria/features/notifications/presentation/notifications_routes.dart';
 import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
 import 'package:safaria/shared/widgets/map_place_picker_args.dart';
 import 'package:safaria/shared/widgets/map_place_picker_screen.dart';
@@ -132,6 +133,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ...carRoutes(),
       ...walletRoutes(),
       ...addressesRoutes(),
+      ...notificationsRoutes(),
       ...pagesRoutes(),
       ...profileRoutes(),
       GoRoute(

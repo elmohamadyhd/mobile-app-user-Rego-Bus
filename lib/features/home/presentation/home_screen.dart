@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_locations_provider.dart';
 import 'package:safaria/features/home/presentation/widgets/home_search_card.dart';
 import 'package:safaria/features/home/presentation/widgets/popular_destinations.dart';
+import 'package:safaria/features/notifications/presentation/notifications_routes.dart';
+import 'package:safaria/features/notifications/presentation/providers/notifications_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
 import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
@@ -26,6 +31,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(sessionControllerProvider).value?.user;
+    final isGuest = ref.watch(guestModeProvider).value ?? false;
+    final showBadge =
+        !isGuest && ref.watch(hasUnreadNotificationsProvider);
     final userName = (user?.name?.trim().isNotEmpty ?? false)
         ? user!.name!
         : l10n.homeMockUser;
@@ -38,7 +46,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           avatarUrl: user?.avatarUrl,
           greeting: l10n.homeGreeting(userName),
           headline: l10n.homeWhereTo,
-          trailing: const SkylineTabHeroBellButton(),
+          trailing: SkylineTabHeroBellButton(
+            showBadge: showBadge,
+            onTap: () {
+              if (isGuest) {
+                context.go(
+                  AppRoutes.login,
+                  extra: const AuthGateArgs(
+                    returnTo: NotificationsRoutes.list,
+                  ),
+                );
+              } else {
+                context.push(NotificationsRoutes.list);
+              }
+            },
+          ),
         ),
       ),
       children: [

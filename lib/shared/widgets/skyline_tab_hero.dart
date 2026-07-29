@@ -184,9 +184,16 @@ class SkylineTabHeroText extends StatelessWidget {
 
 /// Notification bell shown on the Home tab hero.
 class SkylineTabHeroBellButton extends StatelessWidget {
-  const SkylineTabHeroBellButton({super.key, this.onTap});
+  const SkylineTabHeroBellButton({
+    super.key,
+    this.onTap,
+    this.showBadge = true,
+  });
 
   final VoidCallback? onTap;
+
+  /// When true, shows the amber unread dot.
+  final bool showBadge;
 
   static const double badgeSize = 10;
 
@@ -216,22 +223,23 @@ class SkylineTabHeroBellButton extends StatelessWidget {
               ),
             ),
           ),
-          PositionedDirectional(
-            top: 8,
-            end: 9,
-            child: Container(
-              width: badgeSize,
-              height: badgeSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.secondary,
-                border: Border.all(
-                  color: AppColors.primary,
-                  width: 1.5,
+          if (showBadge)
+            PositionedDirectional(
+              top: 8,
+              end: 9,
+              child: Container(
+                width: badgeSize,
+                height: badgeSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.secondary,
+                  border: Border.all(
+                    color: AppColors.primary,
+                    width: 1.5,
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

@@ -422,5 +422,20 @@
   "carOrderDetailSeats": "المقاعد",
   "carOrderDetailBags": "الأمتعة",
   "carOrderDetailGear": "ناقل الحركة",
-  "carOrderDetailOrderId": "رقم الطلب"
+  "carOrderDetailOrderId": "رقم الطلب",
+
+  "notificationsScreenTitle": "الإشعارات",
+  "notificationsClearAll": "مسح الكل",
+  "notificationsClearAllConfirmTitle": "مسح كل الإشعارات؟",
+  "notificationsClearAllConfirmBody": "لا يمكن التراجع عن هذا الإجراء.",
+  "notificationsClearAllConfirmAction": "مسح",
+  "notificationsCancel": "إلغاء",
+  "notificationsSectionNew": "جديد",
+  "notificationsSectionEarlier": "سابق",
+  "notificationsEmptyTitle": "لا توجد إشعارات بعد",
+  "notificationsEmptySubtitle": "ستظهر هنا التحديثات المتعلقة برحلاتك",
+  "notificationsError": "تعذر تحميل الإشعارات",
+  "notificationsRetry": "حاول مرة أخرى",
+  "notificationsDeleteFailed": "تعذر حذف الإشعار",
+  "notificationsClearFailed": "تعذر مسح الإشعارات"
 }
