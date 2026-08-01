@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
@@ -14,7 +16,10 @@ final fcmRegistrarProvider = Provider<void>((ref) {
   final session = ref.watch(sessionControllerProvider).value;
   if (guest != false || session == null) return;
 
-  Future<void>(() async {
+  StreamSubscription<String>? refreshSub;
+  var disposed = false;
+
+  Future<void> syncToken() async {
     try {
       final token = await ref.read(pushTokenProvider).getToken();
       await ref
@@ -28,5 +33,29 @@ final fcmRegistrarProvider = Provider<void>((ref) {
         stackTrace: st,
       );
     }
+  }
+
+  Future<void>(() async {
+    try {
+      await FirebaseMessaging.instance.requestPermission();
+      if (disposed) return;
+      await syncToken();
+      if (disposed) return;
+      refreshSub = FirebaseMessaging.instance.onTokenRefresh.listen(
+        (_) => syncToken(),
+      );
+    } catch (e, st) {
+      developer.log(
+        'Failed to initialize push notifications',
+        name: 'fcmRegistrar',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  });
+
+  ref.onDispose(() {
+    disposed = true;
+    unawaited(refreshSub?.cancel());
   });
 });

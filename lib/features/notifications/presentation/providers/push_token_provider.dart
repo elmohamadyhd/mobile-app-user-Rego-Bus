@@ -1,15 +1,15 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/features/notifications/presentation/providers/fcm_push_token_provider.dart';
 
 /// Source of the device push token sent as `firebase_token`.
-///
-/// v1 uses the install UUID from [SecureStorage] (same as register). Swap the
-/// provider override when Firebase Messaging is configured.
 abstract interface class PushTokenProvider {
   Future<String> getToken();
 }
 
+/// Fallback when Firebase Messaging is unavailable (tests, unsupported platforms).
 final class DevicePushTokenProvider implements PushTokenProvider {
   DevicePushTokenProvider(this._storage);
 
@@ -20,5 +20,5 @@ final class DevicePushTokenProvider implements PushTokenProvider {
 }
 
 final pushTokenProvider = Provider<PushTokenProvider>(
-  (ref) => DevicePushTokenProvider(ref.watch(secureStorageProvider)),
+  (ref) => FcmPushTokenProvider(FirebaseMessaging.instance),
 );
