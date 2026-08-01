@@ -361,7 +361,7 @@ class _Timeline extends StatelessWidget {
           ],
         ),
         if (trip.stopsCount > 0) ...[
-          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: AppSpacing.md),
           Align(
             child: _StopsChip(
               stopsCount: trip.stopsCount,
