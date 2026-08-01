@@ -7,7 +7,7 @@ import 'package:safaria/features/car/domain/entities/car_search_params.dart';
 import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/car_tier_results_screen.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
-import 'package:safaria/features/car/presentation/widgets/car_tier_card.dart';
+import 'package:safaria/features/car/presentation/widgets/car_trip_ticket_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
@@ -70,7 +70,7 @@ void main() {
   testWidgets('shows quote card and no Continue button', (tester) async {
     await pumpResults(tester);
 
-    expect(find.byType(CarTierCard), findsOneWidget);
+    expect(find.byType(CarTripTicketCard), findsOneWidget);
     expect(find.text('Sky Travel'), findsOneWidget);
     expect(find.byType(PrimaryButton), findsNothing);
     expect(find.text('Continue'), findsNothing);
@@ -80,7 +80,7 @@ void main() {
       (tester) async {
     final (router, container) = await pumpResults(tester);
 
-    await tester.tap(find.byType(CarTierCard));
+    await tester.tap(find.byType(CarTripTicketCard));
     await tester.pumpAndSettle();
 
     expect(

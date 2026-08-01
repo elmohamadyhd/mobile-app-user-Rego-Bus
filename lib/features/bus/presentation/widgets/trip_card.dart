@@ -579,6 +579,15 @@ class _ConnectorLine extends StatelessWidget {
       children: [
         _dot(AppColors.primary),
         const Expanded(child: Divider(color: AppColors.hairline, height: 1)),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+          child: Icon(
+            PhosphorIconsLight.caretRight,
+            size: 14,
+            color: AppColors.primary,
+          ),
+        ),
+        const Expanded(child: Divider(color: AppColors.hairline, height: 1)),
         _dot(AppColors.secondary),
       ],
     );

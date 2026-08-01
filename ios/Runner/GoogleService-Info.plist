@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.teleferik</string>
+	<string>com.safaria.travel</string>
 	<key>PROJECT_ID</key>
 	<string>safaria-4724f</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:330804628656:ios:4cff0d4b2c8425ab757f75</string>
+	<string>1:330804628656:ios:842df0cd8c6656ab757f75</string>
 </dict>
 </plist>

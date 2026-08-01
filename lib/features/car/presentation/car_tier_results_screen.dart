@@ -13,7 +13,7 @@ import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/car/domain/entities/car_search_params.dart';
 import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
-import 'package:safaria/features/car/presentation/widgets/car_tier_card.dart';
+import 'package:safaria/features/car/presentation/widgets/car_trip_ticket_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
@@ -156,7 +156,7 @@ class _CarTierResultsScreenState extends ConsumerState<CarTierResultsScreen> {
             );
           }
           final quote = state.quotes[index - 1];
-          return CarTierCard(
+          return CarTripTicketCard(
             key: ValueKey(quote.id),
             quote: quote,
             rounded: rounded,

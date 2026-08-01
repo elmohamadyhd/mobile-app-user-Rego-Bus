@@ -4,6 +4,7 @@ import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/car/domain/entities/car_order.dart';
+import 'package:safaria/features/car/presentation/widgets/car_ticket_shell.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
@@ -39,8 +40,10 @@ class CarOrderStatusBadge extends StatelessWidget {
     };
 
     return Container(
-      padding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
+      padding: const EdgeInsetsDirectional.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 4,
+      ),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -70,6 +73,9 @@ class CarOrderCard extends StatelessWidget {
   final VoidCallback onCancel;
   final VoidCallback? onTap;
 
+  static const double _cardActionHeight = 40;
+  static const double _cardActionGap = AppSpacing.sm;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -80,103 +86,147 @@ class CarOrderCard extends StatelessWidget {
     final company = trip?.company.name ?? '';
     final showPay = order.statusKind == CarOrderStatusKind.pending;
     final showVoucher = order.statusKind == CarOrderStatusKind.confirmed;
-
-    final body = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                company.isEmpty ? l10n.carTicketSectionTitle : company,
-                style: AppTypography.title.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            CarOrderStatusBadge(statusKind: order.statusKind),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Text(routeLabel, style: AppTypography.body),
-        if (order.departureDate != null) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            order.departureDate!,
-            style: AppTypography.caption.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          '${order.currency} ${order.price}',
-          style: AppTypography.title.copyWith(color: AppColors.primary),
-        ),
-      ],
+    final showCancel = order.canBeCancel;
+    final stubHeight = _stubHeightFor(
+      showPay: showPay,
+      showVoucher: showVoucher,
+      showCancel: showCancel,
+    );
+    final shape = CarTicketBorder(
+      radius: AppRadius.card,
+      notchRadius: 10,
+      notchOffsetFromBottom: stubHeight > 0 ? stubHeight : 1,
+      dashColor: AppColors.border,
     );
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(AppRadius.card),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Material(
-            color: AppColors.bgCard,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppRadius.card),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: body,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              AppSpacing.md,
-              0,
-              AppSpacing.md,
-              AppSpacing.md,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (showPay)
-                  PrimaryButton(
-                    label: l10n.ticketActionPay,
-                    compact: true,
-                    onPressed: onPay,
-                  ),
-                if (showVoucher) ...[
-                  if (showPay) const SizedBox(height: AppSpacing.sm),
-                  PrimaryButton(
-                    label: l10n.carTicketActionVoucher,
-                    compact: true,
-                    onPressed: onOpenVoucher,
-                  ),
-                ],
-                if (order.canBeCancel) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  PrimaryButton(
-                    label: l10n.ticketCancelConfirm,
-                    compact: true,
-                    variant: PrimaryButtonVariant.ghost,
-                    onPressed: onCancel,
-                  ),
-                ],
-              ],
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryDark.withValues(alpha: 0.16),
+            blurRadius: 32,
+            spreadRadius: -14,
+            offset: const Offset(0, 14),
           ),
         ],
       ),
+      child: Material(
+        color: AppColors.bgCard,
+        shape: shape,
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onTap,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              company.isEmpty
+                                  ? l10n.carTicketSectionTitle
+                                  : company,
+                              style: AppTypography.title.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          CarOrderStatusBadge(statusKind: order.statusKind),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(routeLabel, style: AppTypography.body),
+                      if (order.departureDate != null) ...[
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          order.departureDate!,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        '${order.currency} ${order.price}',
+                        style: AppTypography.title.copyWith(
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (stubHeight > 0)
+              SizedBox(
+                height: stubHeight,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    AppSpacing.md,
+                    AppSpacing.xs,
+                    AppSpacing.md,
+                    AppSpacing.sm,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (showPay)
+                        PrimaryButton(
+                          label: l10n.ticketActionPay,
+                          compact: true,
+                          onPressed: onPay,
+                        ),
+                      if (showVoucher) ...[
+                        if (showPay) const SizedBox(height: _cardActionGap),
+                        PrimaryButton(
+                          label: l10n.carTicketActionVoucher,
+                          compact: true,
+                          onPressed: onOpenVoucher,
+                        ),
+                      ],
+                      if (showCancel) ...[
+                        if (showPay || showVoucher)
+                          const SizedBox(height: _cardActionGap),
+                        PrimaryButton(
+                          label: l10n.ticketCancelConfirm,
+                          compact: true,
+                          variant: PrimaryButtonVariant.ghost,
+                          onPressed: onCancel,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
+  }
+
+  static double _stubHeightFor({
+    required bool showPay,
+    required bool showVoucher,
+    required bool showCancel,
+  }) {
+    final actionCount =
+        (showPay ? 1 : 0) + (showVoucher ? 1 : 0) + (showCancel ? 1 : 0);
+    if (actionCount == 0) return 0;
+
+    var height = AppSpacing.xs + AppSpacing.sm;
+    height += actionCount * _cardActionHeight;
+    if (actionCount > 1) {
+      height += (actionCount - 1) * _cardActionGap;
+    }
+    return height;
   }
 }

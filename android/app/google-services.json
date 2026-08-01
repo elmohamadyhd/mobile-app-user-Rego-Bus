@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:330804628656:android:9aeea6911ee789af757f75",
+        "android_client_info": {
+          "package_name": "com.safaria.travel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFN4G2IORyLumRnXntHkzIx6eVmnMTdp4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:330804628656:android:e376dbabcc5488e7757f75",
         "android_client_info": {
           "package_name": "com.teleferik"
