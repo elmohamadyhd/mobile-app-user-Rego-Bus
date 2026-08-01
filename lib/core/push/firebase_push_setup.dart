@@ -5,6 +5,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 ///
 /// Call from [main] before [runApp]. Android reads config from
 /// `android/app/google-services.json`.
+///
+/// **Setup checklist (iOS APNs, backend FCM, release signing):**
+/// `docs/push-notifications-setup-checklist.md`
 Future<void> initializeFirebasePush() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
