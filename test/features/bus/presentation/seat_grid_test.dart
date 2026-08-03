@@ -91,7 +91,7 @@ void main() {
     expect(text.style?.color, AppColors.onPrimary);
   });
 
-  testWidgets('shows bus images FAB when busImageUrl is provided', (
+  testWidgets('shows bus images FAB when busImageUrls is provided', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -103,7 +103,7 @@ void main() {
           body: SeatGrid(
             seatMap: _buildSeatMap(),
             selectedSeats: const [],
-            busImageUrl: 'https://example.com/bus.jpeg',
+            busImageUrls: const ['https://example.com/bus.jpeg'],
             onToggle: (_) {},
           ),
         ),

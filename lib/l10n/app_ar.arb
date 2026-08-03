@@ -182,6 +182,7 @@
   "seatSelectionBusImagesLabel": "عرض صور الحافلة",
   "seatSelectionBusImagesTitle": "صور الحافلة",
   "seatSelectionBusImagesError": "تعذّر تحميل الصورة",
+  "seatSelectionBusImagesPage": "صورة {current} من {total}",
 
   "confirmTitle": "تأكيد الحجز",
   "confirmBook": "تأكيد والدفع",

@@ -80,10 +80,10 @@ abstract final class BusDtoMapper {
 
     final companyData = json['company_data'];
     String? logo;
-    String? busImageUrl;
+    String? legacyBusImage;
     if (companyData is Map<String, dynamic>) {
       logo = _nonEmptyUrl(companyData['avatar']);
-      busImageUrl = _nonEmptyUrl(companyData['bus_image']);
+      legacyBusImage = _nonEmptyUrl(companyData['bus_image']);
     }
 
     return BusTripSummary(
@@ -95,7 +95,7 @@ abstract final class BusDtoMapper {
               : null) ??
           '',
       operatorLogoUrl: logo,
-      busImageUrl: busImageUrl,
+      busImageUrls: _busImageUrls(json['images'], legacyBusImage),
       category: _string(json['category']) ?? '',
       dateTime: _parseDateTime(
             _string(json['date_time']),
@@ -464,6 +464,23 @@ abstract final class BusDtoMapper {
   static String? _nonEmptyUrl(dynamic value) {
     final url = _string(value);
     return (url != null && url.isNotEmpty) ? url : null;
+  }
+
+  /// Prefers the trip-level `images` list; falls back to a single legacy
+  /// `company_data.bus_image` when the list is absent or empty.
+  static List<String> _busImageUrls(dynamic raw, String? legacy) {
+    final fromList = <String>[];
+    if (raw is List) {
+      for (final item in raw) {
+        final url = _nonEmptyUrl(item);
+        if (url != null && !fromList.contains(url)) {
+          fromList.add(url);
+        }
+      }
+    }
+    if (fromList.isNotEmpty) return fromList;
+    if (legacy != null) return [legacy];
+    return const [];
   }
 
   static BusStop? _orderStationFromJson(dynamic value) {

@@ -22,13 +22,13 @@ class SeatGrid extends StatelessWidget {
     required this.seatMap,
     required this.selectedSeats,
     required this.onToggle,
-    this.busImageUrl,
+    this.busImageUrls = const [],
   });
 
   final SeatMap seatMap;
   final List<String> selectedSeats;
   final ValueChanged<String> onToggle;
-  final String? busImageUrl;
+  final List<String> busImageUrls;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class SeatGrid extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.only(
-              top: busImageUrl != null ? AppSpacing.xxl : 0,
+              top: busImageUrls.isNotEmpty ? AppSpacing.xxl : 0,
             ),
             child: Directionality(
               textDirection: rowDirection,
@@ -95,11 +95,11 @@ class SeatGrid extends StatelessWidget {
               ),
             ),
           ),
-          if (busImageUrl != null)
+          if (busImageUrls.isNotEmpty)
             PositionedDirectional(
               top: 0,
               end: 0,
-              child: BusImagesFab(imageUrl: busImageUrl!),
+              child: BusImagesFab(imageUrls: busImageUrls),
             ),
         ],
       ),

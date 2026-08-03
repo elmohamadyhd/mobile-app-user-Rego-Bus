@@ -130,10 +130,13 @@ void main() {
     expect(find.byType(BusImagesFab), findsNothing);
   });
 
-  testWidgets('shows bus images FAB and sheet when trip has bus image',
+  testWidgets('shows bus images FAB and sheet when trip has bus images',
       (tester) async {
     final tripWithImage = FakeBusRepository.sampleTrip.copyWith(
-      busImageUrl: 'https://example.com/bus.jpeg',
+      busImageUrls: const [
+        'https://example.com/bus-a.jpeg',
+        'https://example.com/bus-b.jpeg',
+      ],
     );
     final container = ProviderContainer(
       overrides: [

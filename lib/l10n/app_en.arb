@@ -401,6 +401,20 @@
   "@seatSelectionBusImagesError": {
     "description": "Shown when a bus photo fails to load in the bottom sheet."
   },
+  "seatSelectionBusImagesPage": "Photo {current} of {total}",
+  "@seatSelectionBusImagesPage": {
+    "description": "Accessibility label for a page in the bus photos carousel.",
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
 
   "confirmTitle": "Confirm booking",
   "confirmBook": "Confirm & pay",

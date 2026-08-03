@@ -7,9 +7,9 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Floating action on seat selection — opens bus photos when available.
 class BusImagesFab extends StatelessWidget {
-  const BusImagesFab({super.key, required this.imageUrl});
+  const BusImagesFab({super.key, required this.imageUrls});
 
-  final String imageUrl;
+  final List<String> imageUrls;
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +26,16 @@ class BusImagesFab extends StatelessWidget {
           elevation: 2,
           shadowColor: AppColors.primary.withValues(alpha: 0.25),
           child: InkWell(
-            onTap: () => showBusImagesSheet(context, imageUrl: imageUrl),
+            onTap: () => showBusImagesSheet(context, imageUrls: imageUrls),
             customBorder: const CircleBorder(),
             child: const SizedBox(
               width: 40,
               height: 40,
-              child: Icon(PhosphorIconsLight.eye, size: 20, color: AppColors.onPrimary),
+              child: Icon(
+                PhosphorIconsLight.eye,
+                size: 20,
+                color: AppColors.onPrimary,
+              ),
             ),
           ),
         ),

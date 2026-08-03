@@ -19,10 +19,10 @@ void main() {
       expect(trip.dropoffStops, hasLength(1));
       expect(trip.defaultDropoffStop.finalPrice, 148.5);
       expect(trip.priceEgp, 149);
-      expect(trip.busImageUrl, isNull);
+      expect(trip.busImageUrls, isEmpty);
     });
 
-    test('maps company_data.bus_image to busImageUrl when non-empty', () {
+    test('maps company_data.bus_image to busImageUrls when images absent', () {
       final envelope = Map<String, dynamic>.from(tripsSearchEnvelope);
       final data = List<Map<String, dynamic>>.from(
         envelope['data'] as List,
@@ -39,9 +39,37 @@ void main() {
 
       final trip = BusDtoMapper.tripsPageFromEnvelope(envelope).trips.first;
       expect(
-        trip.busImageUrl,
-        'https://example.com/bus.jpeg',
+        trip.busImageUrls,
+        ['https://example.com/bus.jpeg'],
       );
+    });
+
+    test('maps trip images list over legacy company_data.bus_image', () {
+      final envelope = Map<String, dynamic>.from(tripsSearchEnvelope);
+      final data = List<Map<String, dynamic>>.from(
+        envelope['data'] as List,
+      );
+      final tripJson = Map<String, dynamic>.from(data.first);
+      tripJson['images'] = [
+        'https://example.com/a.jpeg',
+        'https://example.com/b.jpeg',
+        '',
+        'https://example.com/a.jpeg',
+      ];
+      tripJson['company_data'] = {
+        'name': 'Blue Bus',
+        'avatar': '',
+        'bus_image': 'https://example.com/legacy.jpeg',
+        'pin': '',
+      };
+      data[0] = tripJson;
+      envelope['data'] = data;
+
+      final trip = BusDtoMapper.tripsPageFromEnvelope(envelope).trips.first;
+      expect(trip.busImageUrls, [
+        'https://example.com/a.jpeg',
+        'https://example.com/b.jpeg',
+      ]);
     });
 
     test('mergeEnrichment keeps cached stops when detail stations are empty',

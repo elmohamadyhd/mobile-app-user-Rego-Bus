@@ -15,7 +15,7 @@ abstract class BusTripSummary with _$BusTripSummary {
     required String gatewayId,
     required String operatorName,
     String? operatorLogoUrl,
-    String? busImageUrl,
+    @Default([]) List<String> busImageUrls,
     required String category,
     required DateTime dateTime,
     required String currency,
@@ -37,7 +37,8 @@ abstract class BusTripSummary with _$BusTripSummary {
       operatorName:
           detail.operatorName.isNotEmpty ? detail.operatorName : operatorName,
       operatorLogoUrl: detail.operatorLogoUrl ?? operatorLogoUrl,
-      busImageUrl: detail.busImageUrl ?? busImageUrl,
+      busImageUrls:
+          detail.busImageUrls.isNotEmpty ? detail.busImageUrls : busImageUrls,
       category: detail.category.isNotEmpty ? detail.category : category,
       currency: detail.currency.isNotEmpty ? detail.currency : currency,
       availableSeats:
