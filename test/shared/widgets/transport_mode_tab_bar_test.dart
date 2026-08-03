@@ -34,4 +34,32 @@ void main() {
     );
     expect(privateIcon.color, AppColors.primary);
   });
+
+  testWidgets('fits four Arabic tabs in a narrow card without overflow', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('ar'),
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 320,
+              child: TransportModeTabBar(
+                selectedIndex: TransportModeTabBar.busTabIndex,
+                onChanged: (_) {},
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('باص'), findsOneWidget);
+    expect(find.text('قطار'), findsOneWidget);
+  });
 }

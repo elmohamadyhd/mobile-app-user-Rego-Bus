@@ -79,24 +79,34 @@ class _TransportModeTab extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: active ? AppColors.primary : AppColors.textMuted,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: AppTypography.overline.copyWith(
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.sm + 2,
+            horizontal: AppSpacing.xs,
+          ),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 20,
                   color: active ? AppColors.primary : AppColors.textMuted,
-                  fontWeight: active ? FontWeight.w800 : FontWeight.w500,
                 ),
-              ),
-            ],
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.overline.copyWith(
+                    color: active ? AppColors.primary : AppColors.textMuted,
+                    fontWeight: active ? FontWeight.w800 : FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

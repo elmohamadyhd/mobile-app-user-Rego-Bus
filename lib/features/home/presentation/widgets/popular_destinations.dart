@@ -47,13 +47,14 @@ class PopularDestinations extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: AppSpacing.lg),
             Text(
               l10n.homePopularDestinations,
               style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.md),
             SizedBox(
               height: cardHeight,
               child: ListView.separated(
@@ -149,15 +150,18 @@ class _DestCard extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Text(
-                        city,
-                        style: AppTypography.h2.copyWith(
-                          color: AppColors.onPrimary,
-                          fontWeight: FontWeight.w800,
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      child: Align(
+                        alignment: AlignmentDirectional.topStart,
+                        child: Text(
+                          city,
+                          style: AppTypography.h2.copyWith(
+                            color: AppColors.onPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
