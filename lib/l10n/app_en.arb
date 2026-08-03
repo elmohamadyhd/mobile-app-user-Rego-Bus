@@ -151,12 +151,7 @@
   "homeOnePax": "1 passenger",
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
-  "homeSeeAll": "See all",
   "homeComingSoon": "Coming soon",
-  "homeCityLuxor": "Luxor",
-  "homeCityAswan": "Aswan",
-  "homeCityCairo": "Cairo",
-  "homeCityAlexandria": "Alexandria",
   "homeCitySearchHint": "Search city",
   "@homeCitySearchHint": {
     "description": "Placeholder in the home city picker search field."

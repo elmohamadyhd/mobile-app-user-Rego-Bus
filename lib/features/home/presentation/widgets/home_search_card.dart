@@ -29,6 +29,9 @@ class HomeSearchCard extends ConsumerStatefulWidget {
     @visibleForTesting this.initialFromCity,
     @visibleForTesting this.initialToCity,
     @visibleForTesting this.initialTravelDate,
+    this.toCity,
+    this.onFromCityChanged,
+    this.onToCityChanged,
   });
 
   final int selectedTab;
@@ -40,6 +43,9 @@ class HomeSearchCard extends ConsumerStatefulWidget {
   final BusLocation? initialToCity;
   @visibleForTesting
   final DateTime? initialTravelDate;
+  final BusLocation? toCity;
+  final ValueChanged<BusLocation?>? onFromCityChanged;
+  final ValueChanged<BusLocation?>? onToCityChanged;
 
   static const int flightTabIndex = TransportModeTabBar.flightTabIndex;
 
@@ -66,6 +72,29 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
     if (widget.initialTravelDate != null) {
       _travelDate = dateOnly(widget.initialTravelDate!);
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      widget.onFromCityChanged?.call(_fromCity);
+      widget.onToCityChanged?.call(_toCity);
+    });
+  }
+
+  @override
+  void didUpdateWidget(HomeSearchCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.toCity != oldWidget.toCity && widget.toCity != _toCity) {
+      setState(() => _toCity = widget.toCity);
+    }
+  }
+
+  void _setFromCity(BusLocation? city) {
+    setState(() => _fromCity = city);
+    widget.onFromCityChanged?.call(city);
+  }
+
+  void _setToCity(BusLocation? city) {
+    setState(() => _toCity = city);
+    widget.onToCityChanged?.call(city);
   }
 
   // `_travelDate`/`_returnDate` are cached fields, so if the screen stays
@@ -93,6 +122,8 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
       _fromCity = _toCity;
       _toCity = tmp;
     });
+    widget.onFromCityChanged?.call(_fromCity);
+    widget.onToCityChanged?.call(_toCity);
   }
 
   void _setTripType(TripType type) {
@@ -112,7 +143,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
       title: l10n.homeFrom,
       excludeCityId: _toCity?.id,
     );
-    if (picked != null) setState(() => _fromCity = picked);
+    if (picked != null) _setFromCity(picked);
   }
 
   Future<void> _pickTo() async {
@@ -122,7 +153,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
       title: l10n.homeTo,
       excludeCityId: _fromCity?.id,
     );
-    if (picked != null) setState(() => _toCity = picked);
+    if (picked != null) _setToCity(picked);
   }
 
   Future<void> _pickDepart() async {

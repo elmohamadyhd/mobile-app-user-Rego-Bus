@@ -119,6 +119,39 @@ void main() {
     expect(find.byType(DatePickerDialog), findsOneWidget);
   });
 
+  testWidgets('updates To when parent passes a new toCity', (tester) async {
+    BusLocation? reportedTo;
+    final to = FakeBusRepository.sampleLocations[1];
+    await tester.pumpWidget(
+      _wrap(
+        HomeSearchCard(
+          selectedTab: TransportModeTabBar.busTabIndex,
+          onTabChanged: (_) {},
+          initialFromCity: FakeBusRepository.sampleLocations.first,
+          toCity: null,
+          onToCityChanged: (c) => reportedTo = c,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.pumpWidget(
+      _wrap(
+        HomeSearchCard(
+          selectedTab: TransportModeTabBar.busTabIndex,
+          onTabChanged: (_) {},
+          initialFromCity: FakeBusRepository.sampleLocations.first,
+          toCity: to,
+          onToCityChanged: (c) => reportedTo = c,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text(to.displayName('en')), findsOneWidget);
+    expect(reportedTo, isNull);
+  });
+
   testWidgets('private tab shows request-car CTA label', (tester) async {
     await tester.pumpWidget(
       _wrap(
