@@ -240,8 +240,10 @@ class _Header extends StatelessWidget {
                   ],
                 ],
               ),
-              const SizedBox(height: AppSpacing.xs),
-              AmenityIconsRow(amenities: trip.amenities),
+              if (trip.features.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.xs),
+                AmenityIconsRow(features: trip.features),
+              ],
             ],
           ),
         ),

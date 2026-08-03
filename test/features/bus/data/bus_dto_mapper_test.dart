@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/bus/data/bus_dto_mapper.dart';
+import 'package:safaria/features/bus/domain/entities/bus_feature.dart';
 import 'package:safaria/features/bus/domain/entities/bus_order.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
@@ -83,6 +84,57 @@ void main() {
       expect(merged.boardingStops, isNotEmpty);
       expect(merged.dropoffStops, isNotEmpty);
       expect(merged.defaultDropoffStop.finalPrice, 148.5);
+    });
+
+    test('maps trip features list with icon urls', () {
+      final envelope = Map<String, dynamic>.from(tripsSearchEnvelope);
+      final data = List<Map<String, dynamic>>.from(envelope['data'] as List);
+      final tripJson = Map<String, dynamic>.from(data.first);
+      tripJson['features'] = [
+        {
+          'id': 'wifi',
+          'name': 'Wi Fi',
+          'icon': 'https://example.com/wifi.webp',
+        },
+        {
+          'id': 'ac',
+          'name': 'Air Conditioner',
+          'icon': 'https://example.com/ac.webp',
+        },
+        {'id': '', 'name': 'Bad'},
+        {'id': 'gps', 'name': 'GPS', 'icon': ''},
+      ];
+      data[0] = tripJson;
+      envelope['data'] = data;
+
+      final trip = BusDtoMapper.tripsPageFromEnvelope(envelope).trips.first;
+      expect(trip.features, hasLength(3));
+      expect(trip.features[0].id, 'wifi');
+      expect(trip.features[0].iconUrl, 'https://example.com/wifi.webp');
+      expect(trip.features[2].id, 'gps');
+      expect(trip.features[2].iconUrl, isNull);
+    });
+
+    test('absent features yields empty list not placeholders', () {
+      final trip =
+          BusDtoMapper.tripsPageFromEnvelope(tripsSearchEnvelope).trips.first;
+      expect(trip.features, isEmpty);
+    });
+
+    test('mergeEnrichment keeps cached features when detail features empty', () {
+      final cached = BusDtoMapper.tripsPageFromEnvelope(tripsSearchEnvelope)
+          .trips
+          .first
+          .copyWith(
+            features: const [
+              BusFeature(id: 'wifi', name: 'Wi Fi'),
+            ],
+          );
+      final detail =
+          BusDtoMapper.tripFromEnvelope(tripByIdEmptyStationsEnvelope);
+      final merged = cached.mergeEnrichment(detail);
+      expect(merged.features, hasLength(1));
+      expect(merged.features.first.id, 'wifi');
     });
 
     test('isPaidStatus recognizes paid states and rejects pending', () {

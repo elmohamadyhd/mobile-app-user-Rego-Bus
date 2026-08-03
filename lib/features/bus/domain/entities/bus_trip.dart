@@ -1,12 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:safaria/features/bus/domain/entities/bus_feature.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 
 part 'bus_trip.freezed.dart';
-
-/// Placeholder amenities until the API exposes real data.
-abstract final class BusPlaceholderAmenities {
-  static const values = ['Wi-Fi', 'A/C', 'Sockets', 'Bathroom'];
-}
 
 @freezed
 abstract class BusTripSummary with _$BusTripSummary {
@@ -25,7 +21,7 @@ abstract class BusTripSummary with _$BusTripSummary {
     required BusStop defaultDropoffStop,
     @Default([]) List<BusStop> boardingStops,
     @Default([]) List<BusStop> dropoffStops,
-    @Default(BusPlaceholderAmenities.values) List<String> amenities,
+    @Default([]) List<BusFeature> features,
   }) = _BusTripSummary;
 
   const BusTripSummary._();
@@ -54,6 +50,7 @@ abstract class BusTripSummary with _$BusTripSummary {
           : boardingStops,
       dropoffStops:
           detail.dropoffStops.isNotEmpty ? detail.dropoffStops : dropoffStops,
+      features: detail.features.isNotEmpty ? detail.features : features,
     );
   }
 

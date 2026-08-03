@@ -380,6 +380,14 @@
   "@amenityWc": {
     "description": "Amenity label for onboard toilet / bathroom."
   },
+  "amenityDvd": "DVD",
+  "@amenityDvd": {
+    "description": "Amenity label for onboard DVD / entertainment."
+  },
+  "amenityGps": "GPS",
+  "@amenityGps": {
+    "description": "Amenity label for GPS tracking."
+  },
 
   "seatSelectionTitle": "Select seats",
   "seatSelectionContinue": "Continue",

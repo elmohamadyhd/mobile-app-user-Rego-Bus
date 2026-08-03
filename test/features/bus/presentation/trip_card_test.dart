@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:safaria/features/bus/domain/entities/bus_feature.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/trip_highlight.dart';
+import 'package:safaria/features/bus/presentation/widgets/amenity_icons_row.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
@@ -397,6 +399,23 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('hides AmenityIconsRow when trip has no features', (tester) async {
+    await _pumpCard(tester, _buildTrip().copyWith(features: const []));
+    expect(find.byType(AmenityIconsRow), findsNothing);
+  });
+
+  testWidgets('shows AmenityIconsRow when trip has features', (tester) async {
+    await _pumpCard(
+      tester,
+      _buildTrip().copyWith(
+        features: const [
+          BusFeature(id: 'wifi', name: 'Wi Fi'),
+        ],
+      ),
+    );
+    expect(find.byType(AmenityIconsRow), findsOneWidget);
   });
 
   testWidgets('loading shows a spinner in place of Select and blocks taps',

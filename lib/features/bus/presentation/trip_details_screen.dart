@@ -12,8 +12,8 @@ import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/widgets/amenity_chip.dart';
-import 'package:safaria/features/bus/presentation/widgets/amenity_icon.dart';
 import 'package:safaria/features/bus/presentation/widgets/amenity_icons_row.dart';
+import 'package:safaria/features/bus/presentation/widgets/feature_label.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_step_bar.dart';
 import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
@@ -252,21 +252,22 @@ class _TripHeaderCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 6),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                        onTap: () => _showAmenitiesSheet(context, l10n),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AmenityIconsRow(amenities: trip.amenities),
-                            const Icon(
-                              PhosphorIconsLight.caretDown,
-                              size: 16,
-                              color: AppColors.textMuted,
-                            ),
-                          ],
+                      if (trip.features.isNotEmpty)
+                        InkWell(
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                          onTap: () => _showAmenitiesSheet(context, l10n),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AmenityIconsRow(features: trip.features),
+                              const Icon(
+                                PhosphorIconsLight.caretDown,
+                                size: 16,
+                                color: AppColors.textMuted,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -310,11 +311,11 @@ class _TripHeaderCard extends StatelessWidget {
             Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
-              children: trip.amenities
+              children: trip.features
                   .map(
-                    (a) => AmenityChip(
-                      icon: amenityIconFor(a),
-                      label: _amenityLabel(l10n, a),
+                    (f) => AmenityChip(
+                      feature: f,
+                      label: featureLabel(l10n, f),
                     ),
                   )
                   .toList(),
@@ -326,22 +327,6 @@ class _TripHeaderCard extends StatelessWidget {
     );
   }
 
-  String _amenityLabel(AppLocalizations l10n, String amenity) {
-    switch (amenity.toLowerCase()) {
-      case 'wi-fi':
-        return l10n.amenityWifi;
-      case 'a/c':
-        return l10n.amenityAC;
-      case 'sockets':
-        return l10n.amenitySockets;
-      case 'water':
-      case 'wc':
-      case 'w.c':
-        return l10n.amenityWc;
-      default:
-        return amenity;
-    }
-  }
 }
 
 // ── Footer ───────────────────────────────────────────────────────────────────

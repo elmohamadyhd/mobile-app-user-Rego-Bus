@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/bus/domain/entities/bus_feature.dart';
+import 'package:safaria/features/bus/presentation/widgets/feature_icon.dart';
 
 class AmenityChip extends StatelessWidget {
-  const AmenityChip({super.key, required this.icon, required this.label});
+  const AmenityChip({super.key, required this.feature, required this.label});
 
-  final IconData icon;
+  final BusFeature feature;
   final String label;
 
   @override
@@ -21,7 +23,11 @@ class AmenityChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: AppColors.primary),
+          FeatureIcon(
+            feature: feature,
+            size: 16,
+            color: AppColors.primary,
+          ),
           const SizedBox(width: 6),
           Text(
             label,

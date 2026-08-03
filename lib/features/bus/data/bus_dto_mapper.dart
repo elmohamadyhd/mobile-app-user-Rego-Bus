@@ -1,4 +1,5 @@
 import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/features/bus/domain/entities/bus_feature.dart';
 import 'package:safaria/features/bus/domain/entities/bus_location.dart';
 import 'package:safaria/features/bus/domain/entities/bus_order.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
@@ -109,6 +110,7 @@ abstract final class BusDtoMapper {
       defaultDropoffStop: defaultDropoff,
       boardingStops: boarding,
       dropoffStops: dropoff,
+      features: _featuresFromJson(json['features']),
     );
   }
 
@@ -123,6 +125,25 @@ abstract final class BusDtoMapper {
   static List<BusStop> _stopsFromJson(dynamic raw) {
     if (raw is! List) return const [];
     return raw.whereType<Map<String, dynamic>>().map(stopFromJson).toList();
+  }
+
+  static List<BusFeature> _featuresFromJson(dynamic raw) {
+    if (raw is! List) return const [];
+    final out = <BusFeature>[];
+    for (final item in raw) {
+      if (item is! Map<String, dynamic>) continue;
+      final id = _string(item['id'])?.trim() ?? '';
+      final name = _string(item['name'])?.trim() ?? '';
+      if (id.isEmpty || name.isEmpty) continue;
+      out.add(
+        BusFeature(
+          id: id,
+          name: name,
+          iconUrl: _nonEmptyUrl(item['icon']),
+        ),
+      );
+    }
+    return out;
   }
 
   static BusStop stopFromJson(Map<String, dynamic> json) {

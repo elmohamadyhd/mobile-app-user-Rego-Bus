@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/features/bus/domain/entities/bus_feature.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/trip_details_screen.dart';
+import 'package:safaria/features/bus/presentation/widgets/amenity_icons_row.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_route_map_fab.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
@@ -62,6 +64,13 @@ BusTripSummary _buildTrip() {
     defaultDropoffStop: dropDefault,
     boardingStops: [boardAlt, board],
     dropoffStops: [dropDefault, dropAlt],
+    features: const [
+      BusFeature(
+        id: 'wifi',
+        name: 'Wi Fi',
+        iconUrl: 'https://example.com/wifi.webp',
+      ),
+    ],
   );
 }
 
@@ -157,6 +166,14 @@ void main() {
       expect(find.text('Wi-Fi'), findsOneWidget);
     },
   );
+
+  testWidgets('hides amenities chrome when features empty', (tester) async {
+    final trip = _buildTrip().copyWith(features: const []);
+    await _pumpDetails(tester, trip);
+
+    expect(find.byType(AmenityIconsRow), findsNothing);
+    expect(find.byIcon(PhosphorIconsLight.caretDown), findsNothing);
+  });
 
   testWidgets('renders in RTL (Arabic)', (tester) async {
     await _pumpDetails(tester, _buildTrip(), locale: const Locale('ar'));
