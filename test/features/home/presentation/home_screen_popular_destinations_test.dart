@@ -86,6 +86,8 @@ void main() {
     expect(find.text('Popular destinations'), findsOneWidget);
     expect(find.text('Alexandria'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('Alexandria'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Alexandria'));
     await tester.pumpAndSettle();
 

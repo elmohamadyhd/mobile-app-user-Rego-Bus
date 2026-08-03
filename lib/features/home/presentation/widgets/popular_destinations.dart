@@ -13,6 +13,9 @@ const _amberGradientEnd = Color(0xFFE0871A);
 
 const _baseCardHeight = 118.0;
 
+/// Wider than half-viewport so the next card peeks (~2.2 slots visible).
+const _visibleCardSlots = 2.2;
+
 double _scaledCardHeight(BuildContext context) {
   final scale = MediaQuery.textScalerOf(context).scale(1);
   return (_baseCardHeight * scale).clamp(_baseCardHeight, 168);
@@ -41,9 +44,12 @@ class PopularDestinations extends ConsumerWidget {
         final l10n = AppLocalizations.of(context);
         final locale = Localizations.localeOf(context).languageCode;
         final screenWidth = MediaQuery.sizeOf(context).width;
+        final availableWidth = screenWidth - AppSpacing.lg * 2;
         final cardWidth =
-            (screenWidth - AppSpacing.lg * 2 - AppSpacing.sm) / 2;
+            (availableWidth - AppSpacing.sm) / _visibleCardSlots;
         final cardHeight = _scaledCardHeight(context);
+        final canScroll = locations.length > 2;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,42 +61,45 @@ class PopularDestinations extends ConsumerWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: AppSpacing.md),
-            SizedBox(
-              height: cardHeight,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: locations.length,
-                separatorBuilder: (_, __) =>
-                    const SizedBox(width: AppSpacing.sm),
-                itemBuilder: (context, i) {
-                  final city = locations[i];
-                  final excluded =
-                      excludeCityId != null && city.id == excludeCityId;
-                  return _DestCard(
-                    width: cardWidth,
-                    height: cardHeight,
-                    city: city.displayName(locale),
-                    gradient: i.isEven
-                        ? const LinearGradient(
-                            colors: [
-                              AppColors.primary,
-                              AppColors.primaryDeep,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : const LinearGradient(
-                            colors: [
-                              AppColors.secondary,
-                              _amberGradientEnd,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                    enabled: !excluded,
-                    onTap: () => onSelected(city),
-                  );
-                },
+            Semantics(
+              hint: canScroll ? l10n.homePopularDestinationsSwipeHint : null,
+              child: SizedBox(
+                height: cardHeight,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: locations.length,
+                  separatorBuilder: (_, __) =>
+                      const SizedBox(width: AppSpacing.sm),
+                  itemBuilder: (context, i) {
+                    final city = locations[i];
+                    final excluded =
+                        excludeCityId != null && city.id == excludeCityId;
+                    return _DestCard(
+                      width: cardWidth,
+                      height: cardHeight,
+                      city: city.displayName(locale),
+                      gradient: i.isEven
+                          ? const LinearGradient(
+                              colors: [
+                                AppColors.primary,
+                                AppColors.primaryDeep,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                          : const LinearGradient(
+                              colors: [
+                                AppColors.secondary,
+                                _amberGradientEnd,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                      enabled: !excluded,
+                      onTap: () => onSelected(city),
+                    );
+                  },
+                ),
               ),
             ),
           ],

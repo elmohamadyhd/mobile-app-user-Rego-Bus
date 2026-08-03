@@ -151,6 +151,13 @@
   "homeOnePax": "1 passenger",
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
+  "@homePopularDestinations": {
+    "description": "Home section title for the horizontal popular cities list."
+  },
+  "homePopularDestinationsSwipeHint": "Swipe to see more destinations",
+  "@homePopularDestinationsSwipeHint": {
+    "description": "Accessibility hint that the popular destinations row scrolls horizontally."
+  },
   "homeComingSoon": "Coming soon",
   "homeCitySearchHint": "Search city",
   "@homeCitySearchHint": {
