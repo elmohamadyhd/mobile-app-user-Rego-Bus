@@ -74,25 +74,23 @@ class _BusImagesSheetBodyState extends State<_BusImagesSheetBody> {
                     AppTypography.title.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: AppSpacing.md),
-              Flexible(
-                child: AspectRatio(
-                  aspectRatio: 16 / 10,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.card),
-                    child: PageView.builder(
-                      controller: _controller,
-                      itemCount: urls.length,
-                      onPageChanged: (i) => setState(() => _index = i),
-                      itemBuilder: (context, i) {
-                        return Semantics(
-                          label: l10n.seatSelectionBusImagesPage(
-                            i + 1,
-                            urls.length,
-                          ),
-                          child: _BusImagePage(url: urls[i], l10n: l10n),
-                        );
-                      },
-                    ),
+              AspectRatio(
+                aspectRatio: 16 / 10,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.card),
+                  child: PageView.builder(
+                    controller: _controller,
+                    itemCount: urls.length,
+                    onPageChanged: (i) => setState(() => _index = i),
+                    itemBuilder: (context, i) {
+                      return Semantics(
+                        label: l10n.seatSelectionBusImagesPage(
+                          i + 1,
+                          urls.length,
+                        ),
+                        child: _BusImagePage(url: urls[i], l10n: l10n),
+                      );
+                    },
                   ),
                 ),
               ),
