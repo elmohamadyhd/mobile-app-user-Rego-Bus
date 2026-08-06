@@ -28,7 +28,6 @@ class TransportModeTabBar extends StatelessWidget {
       (l10n.homeTabBus, PhosphorIconsLight.bus),
       (l10n.homeTabPrivate, PhosphorIconsLight.carProfile),
       (l10n.homeTabFlight, PhosphorIconsLight.airplane),
-      (l10n.homeTabTrain, PhosphorIconsLight.train),
     ];
 
     return Container(

@@ -35,7 +35,7 @@ void main() {
     expect(privateIcon.color, AppColors.primary);
   });
 
-  testWidgets('fits four Arabic tabs in a narrow card without overflow', (
+  testWidgets('fits three Arabic tabs in a narrow card without overflow', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -60,6 +60,6 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('باص'), findsOneWidget);
-    expect(find.text('قطار'), findsOneWidget);
+    expect(find.text('طيران'), findsOneWidget);
   });
 }

@@ -103,7 +103,6 @@ void main() {
     expect(find.text('Bus'), findsOneWidget);
     expect(find.text('Private'), findsOneWidget);
     expect(find.text('Flight'), findsOneWidget);
-    expect(find.text('Train'), findsOneWidget);
     expect(find.text('1 tickets'), findsOneWidget);
   });
 
