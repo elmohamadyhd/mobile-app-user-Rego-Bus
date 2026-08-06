@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/core/utils/date_formatting.dart';
 import 'package:safaria/features/flight/data/flight_api.dart';
 import 'package:safaria/features/flight/data/flight_dto_mapper.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
@@ -44,7 +45,7 @@ class FlightRepositoryImpl implements FlightRepository {
         FlightDtoMapper.searchRequestBody(
           origin: params.origin,
           destination: params.destination,
-          date: _yMd(params.date),
+          date: toIsoDate(params.date),
           passengers: params.passengers
               .map(
                 (p) => {
@@ -70,13 +71,6 @@ class FlightRepositoryImpl implements FlightRepository {
       final body = await _api.confirmOrder(offerId);
       return FlightDtoMapper.confirmedOrderFromEnvelope(body);
     });
-  }
-
-  static String _yMd(DateTime date) {
-    final y = date.year.toString().padLeft(4, '0');
-    final m = date.month.toString().padLeft(2, '0');
-    final d = date.day.toString().padLeft(2, '0');
-    return '$y-$m-$d';
   }
 
   Future<T> _guard<T>(Future<T> Function() action) async {
