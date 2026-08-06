@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
@@ -21,6 +23,15 @@ class FakeFlightRepository implements FlightRepository {
   bool airportSearchShouldThrow = false;
   ApiException? searchException;
   ApiException? airportSearchException;
+
+  /// Per-term overrides for simulating out-of-order network responses in
+  /// tests. When a term has a completer here, `searchAirportSuggestions`
+  /// awaits it instead of resolving immediately — the test controls exactly
+  /// when (and in what order) each in-flight search "returns" by completing
+  /// these directly, rather than racing against debounce/timer arithmetic.
+  Map<String, Completer<List<FlightAirportSuggestion>>>?
+      airportSearchCompleterByTerm;
+  Map<String, List<FlightAirportSuggestion>>? airportSuggestionsResultByTerm;
 
   static const sampleOrigin = FlightAirportSuggestion(
     iataCode: 'CAI',
@@ -92,15 +103,17 @@ class FakeFlightRepository implements FlightRepository {
   @override
   Future<List<FlightAirportSuggestion>> searchAirportSuggestions({
     required String term,
-  }) {
+  }) async {
     lastAirportTerm = term;
     if (airportSearchShouldThrow) {
       throw airportSearchException ??
           const ApiException('Something went wrong', statusCode: 500);
     }
-    return Future.value(
-      airportSuggestionsResult ?? [sampleOrigin, sampleDestination],
-    );
+    final completer = airportSearchCompleterByTerm?[term];
+    if (completer != null) return completer.future;
+    return airportSuggestionsResultByTerm?[term] ??
+        airportSuggestionsResult ??
+        [sampleOrigin, sampleDestination];
   }
 
   @override

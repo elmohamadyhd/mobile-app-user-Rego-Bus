@@ -86,14 +86,18 @@ class _FlightAirportPickerSheetState
       final results = await ref
           .read(flightRepositoryProvider)
           .searchAirportSuggestions(term: term);
-      if (!mounted) return;
+      // Discard a stale response: a newer search may have started (or the
+      // query may have dropped below the minimum length) while this one was
+      // in flight, and network responses aren't guaranteed to arrive in the
+      // order they were sent.
+      if (!mounted || term != _lastTerm) return;
       setState(() {
         _results = results;
         _loading = false;
         _error = null;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || term != _lastTerm) return;
       setState(() {
         _error = e;
         _loading = false;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -95,6 +97,69 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Cairo Intl Airport'), findsOneWidget);
+  });
+
+  testWidgets(
+      'discards a stale response that resolves after a newer search',
+      (tester) async {
+    const staleResult = [
+      FlightAirportSuggestion(
+        iataCode: 'DUS',
+        name: 'Duesseldorf Airport',
+        city: 'Duesseldorf',
+        countryCode: 'DE',
+        country: 'GERMANY',
+        isDomestic: false,
+        isAllAirport: false,
+        ranking: 10,
+      ),
+    ];
+    const freshResult = [
+      FlightAirportSuggestion(
+        iataCode: 'DXB',
+        name: 'Dubai Intl Airport',
+        city: 'Dubai',
+        countryCode: 'AE',
+        country: 'UNITED ARAB EMIRATES',
+        isDomestic: false,
+        isAllAirport: false,
+        ranking: 100,
+      ),
+    ];
+    // Completers give exact control over when each in-flight search
+    // "returns" and in what order — no fragile timer/debounce arithmetic.
+    final duCompleter = Completer<List<FlightAirportSuggestion>>();
+    final dubCompleter = Completer<List<FlightAirportSuggestion>>();
+    final repo = FakeFlightRepository()
+      ..airportSearchCompleterByTerm = {
+        'du': duCompleter,
+        'dub': dubCompleter,
+      };
+    await pumpPickerHost(tester, repo);
+
+    await tester.enterText(find.byType(TextField), 'du');
+    // Past the 300ms debounce: `_search('du')` has started and is now
+    // awaiting `duCompleter`, unresolved.
+    await tester.pump(const Duration(milliseconds: 350));
+
+    await tester.enterText(find.byType(TextField), 'dub');
+    // Past 'dub's debounce too: `_search('dub')` has started and is now
+    // awaiting `dubCompleter`. Both searches are in flight.
+    await tester.pump(const Duration(milliseconds: 350));
+
+    // 'dub' — the newer search — resolves first.
+    dubCompleter.complete(freshResult);
+    await tester.pump();
+    expect(find.text('Dubai Intl Airport'), findsOneWidget);
+    expect(find.text('Duesseldorf Airport'), findsNothing);
+
+    // 'du' — the older, now-stale search — resolves after it.
+    duCompleter.complete(staleResult);
+    await tester.pump();
+
+    // The stale response must not overwrite the fresher one.
+    expect(find.text('Dubai Intl Airport'), findsOneWidget);
+    expect(find.text('Duesseldorf Airport'), findsNothing);
   });
 
   testWidgets('returns tapped airport', (tester) async {
