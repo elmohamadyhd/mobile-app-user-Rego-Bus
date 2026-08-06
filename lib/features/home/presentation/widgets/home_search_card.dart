@@ -14,7 +14,7 @@ import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_city_picker.dart';
 import 'package:safaria/features/car/presentation/car_search_form.dart';
-import 'package:safaria/features/home/presentation/widgets/home_flight_class_picker.dart';
+import 'package:safaria/features/flight/presentation/flight_search_form.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/models/trip_type.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
@@ -59,7 +59,6 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
   TripType _tripType = TripType.oneWay;
   DateTime _travelDate = dateOnly(DateTime.now());
   DateTime _returnDate = dateOnly(DateTime.now().add(const Duration(days: 7)));
-  FlightClass _flightClass = kDefaultFlightClass;
   bool _searching = false;
 
   static const _maxBookingDays = 90;
@@ -185,15 +184,6 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
     if (picked != null) setState(() => _returnDate = dateOnly(picked));
   }
 
-  Future<void> _pickFlightClass() async {
-    final l10n = AppLocalizations.of(context);
-    final picked = await showFlightClassPicker(
-      context,
-      title: l10n.homeFlightClass,
-    );
-    if (picked != null) setState(() => _flightClass = picked);
-  }
-
   Future<void> _onSearch() async {
     if (widget.selectedTab != TransportModeTabBar.busTabIndex) {
       return;
@@ -251,21 +241,15 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
             selectedIndex: widget.selectedTab,
             onChanged: (i) {
               widget.onTabChanged(i);
-              if (i != TransportModeTabBar.busTabIndex &&
-                  i != TransportModeTabBar.privateTabIndex) {
-                ScaffoldMessenger.of(context)
-                  ..hideCurrentSnackBar()
-                  ..showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.homeComingSoon),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
-              }
             },
           ),
           const SizedBox(height: 12),
-          if (isPrivateTab) const CarSearchForm() else _buildBusForm(l10n),
+          if (isPrivateTab)
+            const CarSearchForm()
+          else if (widget.selectedTab == TransportModeTabBar.flightTabIndex)
+            const FlightSearchForm()
+          else
+            _buildBusForm(l10n),
         ],
       ),
     );
@@ -273,7 +257,6 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
 
   Widget _buildBusForm(AppLocalizations l10n) {
     final isRoundTrip = _tripType == TripType.roundTrip;
-    final showFlightClass = widget.selectedTab == HomeSearchCard.flightTabIndex;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -369,20 +352,6 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                   onTap: _pickDepart,
                 ),
         ),
-        if (showFlightClass) ...[
-          const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.hairline),
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-            ),
-            child: _ClassField(
-              label: l10n.homeFlightClass,
-              flightClass: _flightClass,
-              onTap: _pickFlightClass,
-            ),
-          ),
-        ],
         const SizedBox(height: 14),
         PrimaryButton(
           label: l10n.homeSearch,
@@ -533,77 +502,6 @@ class _DateField extends StatelessWidget {
                   color: AppColors.textMuted,
                   size: 20,
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ClassField extends StatelessWidget {
-  const _ClassField({
-    required this.label,
-    required this.flightClass,
-    required this.onTap,
-  });
-
-  final String label;
-  final FlightClass flightClass;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 14),
-          child: Row(
-            children: [
-              Container(
-                width: 34,
-                height: 34,
-                decoration: const BoxDecoration(
-                  color: AppColors.bgBase,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  PhosphorIconsLight.airplane,
-                  color: AppColors.textMuted,
-                  size: 18,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: AppTypography.overline.copyWith(
-                        color: AppColors.textMuted,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      flightClass.label(l10n),
-                      style: AppTypography.title.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                PhosphorIconsLight.caretDown,
-                color: AppColors.textMuted,
-                size: 20,
-              ),
             ],
           ),
         ),

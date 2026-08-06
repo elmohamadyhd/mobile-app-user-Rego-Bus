@@ -11,12 +11,14 @@ import 'package:safaria/core/places/places_providers.dart';
 import 'package:safaria/features/bus/domain/entities/bus_location.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
+import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/home/presentation/widgets/home_search_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/transport_mode_tab_bar.dart';
 
 import '../../bus/fake_bus_repository.dart';
 import '../../car/fake_car_repository.dart';
+import '../../flight/fake_flight_repository.dart';
 
 class _FakePlacesClient extends PlacesClient {
   _FakePlacesClient() : super(apiKey: 'test');
@@ -39,6 +41,7 @@ Widget _wrap(Widget child) {
     overrides: [
       busRepositoryProvider.overrideWithValue(FakeBusRepository()),
       carRepositoryProvider.overrideWithValue(FakeCarRepository()),
+      flightRepositoryProvider.overrideWithValue(FakeFlightRepository()),
       placesClientProvider.overrideWithValue(_FakePlacesClient()),
     ],
     child: MaterialApp(
@@ -165,5 +168,39 @@ void main() {
 
     expect(find.text('Request a car'), findsOneWidget);
     expect(find.text('Search trips'), findsNothing);
+  });
+
+  testWidgets('flight tab shows search-flights CTA label', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        HomeSearchCard(
+          selectedTab: TransportModeTabBar.flightTabIndex,
+          onTabChanged: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search flights'), findsOneWidget);
+    expect(find.text('Search trips'), findsNothing);
+    expect(find.text('Request a car'), findsNothing);
+  });
+
+  testWidgets('flight tab no longer shows the coming-soon snackbar',
+      (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        HomeSearchCard(
+          selectedTab: TransportModeTabBar.busTabIndex,
+          onTabChanged: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Flight'));
+    await tester.pump();
+
+    expect(find.text('Coming soon'), findsNothing);
   });
 }
