@@ -148,6 +148,101 @@
     }
   },
   "homeOnePax": "1 passenger",
+  "flightAirportSearchHint": "Search airport or city",
+  "@flightAirportSearchHint": {
+    "description": "Placeholder in the flight airport picker search field."
+  },
+  "flightAirportTypeToSearch": "Type at least 2 characters to search",
+  "@flightAirportTypeToSearch": {
+    "description": "Idle state in the flight airport picker before the minimum query length is reached."
+  },
+  "flightAirportSearchEmpty": "No airports found",
+  "@flightAirportSearchEmpty": {
+    "description": "Shown when the flight airport picker search has no matches."
+  },
+  "flightAllAirportsIn": "All airports in {city}",
+  "@flightAllAirportsIn": {
+    "description": "Subtitle for the \"all airports\" pseudo-entry the airports endpoint returns per city.",
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "flightPassengers": "Passengers",
+  "@flightPassengers": {
+    "description": "Label on the flight search form's passenger count field."
+  },
+  "flightPassengersCount": "{count} passengers",
+  "@flightPassengersCount": {
+    "description": "Passenger count value when more than one passenger is selected.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flightSearch": "Search flights",
+  "@flightSearch": {
+    "description": "Primary CTA on the flight search form."
+  },
+  "flightSearchSelectAirports": "Please select origin and destination airports",
+  "@flightSearchSelectAirports": {
+    "description": "Snackbar when flight search is tapped without both airports selected."
+  },
+  "flightSearchSamePlace": "Origin and destination must be different",
+  "@flightSearchSamePlace": {
+    "description": "Snackbar when the selected origin and destination airports are the same."
+  },
+  "flightResultsNoOffers": "No flights found",
+  "@flightResultsNoOffers": {
+    "description": "Empty state on the flight results screen."
+  },
+  "flightDirect": "Direct",
+  "@flightDirect": {
+    "description": "Stops label on a flight offer card with zero stops."
+  },
+  "flightOneStop": "1 stop",
+  "@flightOneStop": {
+    "description": "Stops label on a flight offer card with exactly one stop."
+  },
+  "flightStopsCount": "{count} stops",
+  "@flightStopsCount": {
+    "description": "Stops label on a flight offer card with two or more stops.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flightSelectThisFlight": "Select this flight",
+  "@flightSelectThisFlight": {
+    "description": "CTA on the flight offer details screen."
+  },
+  "flightBookingComingSoon": "Booking coming soon",
+  "@flightBookingComingSoon": {
+    "description": "Snackbar shown when \"Select this flight\" is tapped."
+  },
+  "flightFareRules": "Fare rules",
+  "@flightFareRules": {
+    "description": "Section heading for fare rule bullets on the offer details screen."
+  },
+  "flightPriceBase": "Base fare",
+  "@flightPriceBase": {
+    "description": "Price breakdown row label on the offer details screen."
+  },
+  "flightPriceTaxes": "Taxes & fees",
+  "@flightPriceTaxes": {
+    "description": "Price breakdown row label on the offer details screen."
+  },
+  "flightPriceDiscount": "Discount",
+  "@flightPriceDiscount": {
+    "description": "Price breakdown row label on the offer details screen."
+  },
+  "flightPriceTotal": "Total",
+  "@flightPriceTotal": {
+    "description": "Price breakdown row label and section heading on the offer details screen."
+  },
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
   "@homePopularDestinations": {
