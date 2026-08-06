@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
@@ -211,17 +212,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   loading: _submitting,
                                   onPressed: _socialSubmitting ? null : _submit,
                                 ),
-                                SocialRow(
-                                  dividerLabel: l10n.authOrContinueWith,
-                                  busy: _socialSubmitting,
-                                  onGoogleTap: () => handleGoogleSignIn(
-                                    context: context,
-                                    ref: ref,
-                                    gateArgs: widget.gateArgs,
-                                    setBusy: (v) =>
-                                        setState(() => _socialSubmitting = v),
+                                if (AppConfig.showSocialLogin)
+                                  SocialRow(
+                                    dividerLabel: l10n.authOrContinueWith,
+                                    busy: _socialSubmitting,
+                                    onGoogleTap: () => handleGoogleSignIn(
+                                      context: context,
+                                      ref: ref,
+                                      gateArgs: widget.gateArgs,
+                                      setBusy: (v) => setState(
+                                        () => _socialSubmitting = v,
+                                      ),
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
@@ -227,16 +228,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       onTap: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
-                  SocialRow(
-                    dividerLabel: l10n.authOrSignUpWith,
-                    busy: _socialSubmitting,
-                    onGoogleTap: () => handleGoogleSignIn(
-                      context: context,
-                      ref: ref,
-                      gateArgs: widget.gateArgs,
-                      setBusy: (v) => setState(() => _socialSubmitting = v),
+                  if (AppConfig.showSocialLogin)
+                    SocialRow(
+                      dividerLabel: l10n.authOrSignUpWith,
+                      busy: _socialSubmitting,
+                      onGoogleTap: () => handleGoogleSignIn(
+                        context: context,
+                        ref: ref,
+                        gateArgs: widget.gateArgs,
+                        setBusy: (v) =>
+                            setState(() => _socialSubmitting = v),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

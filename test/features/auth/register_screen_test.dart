@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
 import 'package:safaria/core/theme/app_theme.dart';
@@ -90,5 +91,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('HOME'), findsOneWidget);
-  });
+  }, skip: !AppConfig.showSocialLogin);
 }

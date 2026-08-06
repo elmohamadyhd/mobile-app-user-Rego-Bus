@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/storage/secure_storage.dart';
 import 'package:safaria/core/theme/app_theme.dart';
@@ -351,7 +352,7 @@ void main() {
 
     expect(find.text('CONFIRM'), findsOneWidget);
     expect(container.read(guestModeProvider).value, isFalse);
-  });
+  }, skip: !AppConfig.showSocialLogin);
 
   testWidgets(
       'Google sign-in for a brand-new account navigates to Complete profile',
@@ -408,7 +409,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('COMPLETE PROFILE'), findsOneWidget);
-  });
+  }, skip: !AppConfig.showSocialLogin);
 
   testWidgets('cancelling Google sign-in shows no error and stays on Login',
       (tester) async {
@@ -456,5 +457,5 @@ void main() {
 
     expect(find.text('Welcome back'), findsOneWidget);
     expect(find.byType(SnackBar), findsNothing);
-  });
+  }, skip: !AppConfig.showSocialLogin);
 }

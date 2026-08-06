@@ -24,4 +24,7 @@ abstract final class AppConfig {
       dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
 
   static bool get isGoogleSignInConfigured => googleWebClientId.isNotEmpty;
+
+  /// When false, login/register hide the Google sign-in row.
+  static const bool showSocialLogin = false;
 }
