@@ -18,6 +18,7 @@ import 'package:safaria/features/profile/presentation/profile_screen.dart';
 import 'package:safaria/features/shell/presentation/main_shell.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/car/presentation/car_routes.dart';
+import 'package:safaria/features/flight/presentation/flight_routes.dart';
 import 'package:safaria/features/tickets/presentation/tickets_screen.dart';
 import 'package:safaria/features/addresses/presentation/addresses_routes.dart';
 import 'package:safaria/features/pages/presentation/pages_routes.dart';
@@ -142,6 +143,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       ...busRoutes(),
       ...carRoutes(),
+      ...flightRoutes(),
       ...walletRoutes(),
       ...addressesRoutes(),
       ...notificationsRoutes(),
