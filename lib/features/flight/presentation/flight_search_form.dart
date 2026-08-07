@@ -134,7 +134,7 @@ class _FlightSearchFormState extends ConsumerState<FlightSearchForm> {
     }
 
     final notifier = ref.read(flightBookingProvider.notifier);
-    notifier.setSearchLabels(from: origin.iataCode, to: destination.iataCode);
+    notifier.setSearchLabels(from: origin.name, to: destination.name);
 
     final params = FlightSearchParams(
       origin: origin.iataCode,

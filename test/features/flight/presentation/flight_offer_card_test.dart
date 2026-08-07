@@ -50,7 +50,12 @@ Future<void> _pump(WidgetTester tester, {bool rtl = false}) {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: Locale(rtl ? 'ar' : 'en'),
       home: Scaffold(
-        body: FlightOfferCard(offer: _offer, onTap: () {}),
+        body: FlightOfferCard(
+          offer: _offer,
+          originLabel: 'Cairo International Airport',
+          destinationLabel: 'King Khalid International Airport',
+          onTap: () {},
+        ),
       ),
     ),
   );
@@ -62,11 +67,15 @@ void main() {
 
     expect(find.text('10:50'), findsOneWidget);
     expect(find.text('13:35'), findsOneWidget);
-    expect(find.text('CAI'), findsOneWidget);
-    expect(find.text('RUH'), findsOneWidget);
+    expect(find.text('Cairo International Airport'), findsOneWidget);
+    expect(find.text('King Khalid International Airport'), findsOneWidget);
+    expect(find.text('CAI'), findsNothing);
+    expect(find.text('RUH'), findsNothing);
     expect(find.text('Direct'), findsOneWidget);
     expect(find.text('2h 45m'), findsOneWidget);
-    expect(find.text('7601 EGP'), findsOneWidget);
+    expect(find.textContaining('7601'), findsOneWidget);
+    expect(find.textContaining('EGP'), findsOneWidget);
+    expect(find.text('Select'), findsOneWidget);
   });
 
   testWidgets('calls onTap when tapped', (tester) async {
@@ -77,7 +86,10 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('en'),
         home: Scaffold(
-          body: FlightOfferCard(offer: _offer, onTap: () => tapped = true),
+          body: FlightOfferCard(
+            offer: _offer,
+            onTap: () => tapped = true,
+          ),
         ),
       ),
     );
@@ -90,6 +102,6 @@ void main() {
       (tester) async {
     await _pump(tester, rtl: true);
     expect(tester.takeException(), isNull);
-    expect(find.text('CAI'), findsOneWidget);
+    expect(find.text('Cairo International Airport'), findsOneWidget);
   });
 }

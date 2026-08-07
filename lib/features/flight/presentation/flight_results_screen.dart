@@ -73,6 +73,8 @@ class FlightResultsScreen extends ConsumerWidget {
         return FlightOfferCard(
           key: ValueKey(offer.offerId),
           offer: offer,
+          originLabel: state.searchFromLabel,
+          destinationLabel: state.searchToLabel,
           onTap: () => context.push(FlightRoutes.offerDetails, extra: offer),
         );
       },
@@ -98,10 +100,10 @@ class _LoadingSkeleton extends StatelessWidget {
         itemCount: 3,
         separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
         itemBuilder: (_, __) => Container(
-          height: 140,
+          height: 180,
           decoration: BoxDecoration(
             color: AppColors.bgElevated,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
         ),
       ),
