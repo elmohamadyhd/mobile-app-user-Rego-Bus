@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
@@ -7,9 +8,6 @@ import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_location.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_locations_provider.dart';
 import 'package:safaria/l10n/app_localizations.dart';
-
-/// Amber gradient end — legacy card tone; no darker `AppColors.secondary` token.
-const _amberGradientEnd = Color(0xFFE0871A);
 
 const _baseCardHeight = 118.0;
 
@@ -45,8 +43,7 @@ class PopularDestinations extends ConsumerWidget {
         final locale = Localizations.localeOf(context).languageCode;
         final screenWidth = MediaQuery.sizeOf(context).width;
         final availableWidth = screenWidth - AppSpacing.lg * 2;
-        final cardWidth =
-            (availableWidth - AppSpacing.sm) / _visibleCardSlots;
+        final cardWidth = (availableWidth - AppSpacing.sm) / _visibleCardSlots;
         final cardHeight = _scaledCardHeight(context);
         final canScroll = locations.length > 2;
 
@@ -54,11 +51,20 @@ class PopularDestinations extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: AppSpacing.lg),
-            Text(
-              l10n.homePopularDestinations,
-              style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.homePopularDestinations,
+                    style: AppTypography.title.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: AppSpacing.md),
             Semantics(
@@ -84,16 +90,16 @@ class PopularDestinations extends ConsumerWidget {
                                 AppColors.primary,
                                 AppColors.primaryDeep,
                               ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+                              begin: Alignment(-0.5, -1),
+                              end: Alignment(1, 1),
                             )
                           : const LinearGradient(
                               colors: [
                                 AppColors.secondary,
-                                _amberGradientEnd,
+                                AppColors.secondaryDeep,
                               ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+                              begin: Alignment(-0.5, -1),
+                              end: Alignment(1, 1),
                             ),
                       enabled: !excluded,
                       onTap: () => onSelected(city),
@@ -111,7 +117,7 @@ class PopularDestinations extends ConsumerWidget {
   }
 }
 
-class _DestCard extends StatelessWidget {
+class _DestCard extends StatefulWidget {
   const _DestCard({
     required this.width,
     required this.height,
@@ -129,29 +135,68 @@ class _DestCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_DestCard> createState() => _DestCardState();
+}
+
+class _DestCardState extends State<_DestCard> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final scale = _pressed ? 0.97 : 1.0;
+
     return SizedBox(
-      width: width,
+      width: widget.width,
       child: Opacity(
-        opacity: enabled ? 1 : 0.45,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: enabled ? onTap : null,
-            borderRadius: BorderRadius.circular(AppRadius.xl),
+        opacity: widget.enabled ? 1 : 0.45,
+        child: GestureDetector(
+          onTapDown:
+              widget.enabled ? (_) => setState(() => _pressed = true) : null,
+          onTapUp:
+              widget.enabled ? (_) => setState(() => _pressed = false) : null,
+          onTapCancel:
+              widget.enabled ? () => setState(() => _pressed = false) : null,
+          onTap: widget.enabled ? widget.onTap : null,
+          child: AnimatedScale(
+            scale: scale,
+            duration: const Duration(milliseconds: 120),
+            curve: Curves.easeOut,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.xl),
               child: Container(
-                height: height,
-                decoration: BoxDecoration(gradient: gradient),
+                height: widget.height,
+                decoration: BoxDecoration(
+                  gradient: widget.gradient,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.cardShadowSoft,
+                      blurRadius: 22,
+                      spreadRadius: -10,
+                      offset: Offset(0, 10),
+                    ),
+                  ],
+                ),
                 child: Stack(
+                  clipBehavior: Clip.none,
                   children: [
                     PositionedDirectional(
-                      bottom: -24,
-                      end: -16,
+                      top: -18,
+                      end: -12,
                       child: Container(
-                        width: 80,
-                        height: 80,
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.08),
+                        ),
+                      ),
+                    ),
+                    PositionedDirectional(
+                      bottom: -28,
+                      end: -20,
+                      child: Container(
+                        width: 88,
+                        height: 88,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.white.withValues(alpha: 0.1),
@@ -159,18 +204,26 @@ class _DestCard extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      child: Align(
-                        alignment: AlignmentDirectional.topStart,
-                        child: Text(
-                          city,
-                          style: AppTypography.h2.copyWith(
-                            color: AppColors.onPrimary,
-                            fontWeight: FontWeight.w800,
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            PhosphorIconsLight.mapPin,
+                            color: AppColors.onHero.withValues(alpha: 0.72),
+                            size: 18,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                          const Spacer(),
+                          Text(
+                            widget.city,
+                            style: AppTypography.h2.copyWith(
+                              color: AppColors.onHero,
+                              fontWeight: FontWeight.w800,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
                   ],

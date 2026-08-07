@@ -22,6 +22,8 @@ abstract final class AppColors {
 
   // ── Accent: amber ────────────────────────────────────────────────────────
   static const secondary = Color(0xFFF0B256);
+  static const secondaryDeep = Color(0xFFE0871A); // amber gradient end
+  static const secondaryIcon = Color(0xFFD98A2B); // map-pin stroke on To field
   static const onSecondary = Color(0xFF231703);
 
   // ── Backgrounds (light-first) ────────────────────────────────────────────
@@ -49,6 +51,10 @@ abstract final class AppColors {
   static const hairline = Color(0xFFEEF1F6); // input border / dividers
   static const primaryTint = Color(0xFFE8F0FE); // filled OTP box / icon circle
   static const secondaryTint = Color(0xFFFBF0DE); // amber icon circle
+
+  // ── Elevation shadows (Skyline floating cards) ───────────────────────────
+  static const cardShadow = Color(0x59146CEC); // rgba(14,80,199,.35) @ 35%
+  static const cardShadowSoft = Color(0x29146CEC); // lighter lift for tiles
 
   // ── Dark-mode overrides (used by AppTheme.dark) ──────────────────────────
   static const darkBgBase = Color(0xFF0A1426);

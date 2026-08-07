@@ -8,6 +8,7 @@ import 'package:safaria/features/auth/presentation/providers/auth_providers.dart
 import 'package:safaria/features/bus/domain/entities/bus_location.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_locations_provider.dart';
 import 'package:safaria/features/home/presentation/widgets/home_search_card.dart';
+import 'package:safaria/features/home/presentation/widgets/home_staggered_entrance.dart';
 import 'package:safaria/features/home/presentation/widgets/popular_destinations.dart';
 import 'package:safaria/features/notifications/presentation/notifications_routes.dart';
 import 'package:safaria/features/notifications/presentation/providers/notifications_providers.dart';
@@ -36,8 +37,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(sessionControllerProvider).value?.user;
     final isGuest = ref.watch(guestModeProvider).value ?? false;
-    final showBadge =
-        !isGuest && ref.watch(hasUnreadNotificationsProvider);
+    final showBadge = !isGuest && ref.watch(hasUnreadNotificationsProvider);
     final userName = (user?.name?.trim().isNotEmpty ?? false)
         ? user!.name!
         : l10n.homeMockUser;
@@ -68,20 +68,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       children: [
-        HomeSearchCard(
-          selectedTab: _transportTab,
-          onTabChanged: (i) => setState(() => _transportTab = i),
-          toCity: _toCity,
-          onFromCityChanged: (c) => setState(() => _fromCity = c),
-          onToCityChanged: (c) => setState(() => _toCity = c),
+        HomeStaggeredEntrance(
+          index: 0,
+          child: HomeSearchCard(
+            selectedTab: _transportTab,
+            onTabChanged: (i) => setState(() => _transportTab = i),
+            toCity: _toCity,
+            onFromCityChanged: (c) => setState(() => _fromCity = c),
+            onToCityChanged: (c) => setState(() => _toCity = c),
+          ),
         ),
-        PopularDestinations(
-          visible: _transportTab == TransportModeTabBar.busTabIndex,
-          excludeCityId: _fromCity?.id,
-          onSelected: (city) {
-            if (_fromCity?.id == city.id) return;
-            setState(() => _toCity = city);
-          },
+        HomeStaggeredEntrance(
+          index: 1,
+          child: PopularDestinations(
+            visible: _transportTab == TransportModeTabBar.busTabIndex,
+            excludeCityId: _fromCity?.id,
+            onSelected: (city) {
+              if (_fromCity?.id == city.id) return;
+              setState(() => _toCity = city);
+            },
+          ),
         ),
       ],
     );

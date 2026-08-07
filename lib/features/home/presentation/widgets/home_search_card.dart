@@ -222,11 +222,12 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.bgElevated,
         borderRadius: BorderRadius.circular(AppRadius.card),
+        border: Border.all(color: AppColors.hairline.withValues(alpha: 0.6)),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x59146CEC),
+            color: AppColors.cardShadow,
             blurRadius: 40,
             spreadRadius: -18,
             offset: Offset(0, 18),
@@ -243,7 +244,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
               widget.onTabChanged(i);
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
           if (isPrivateTab)
             const CarSearchForm()
           else if (widget.selectedTab == TransportModeTabBar.flightTabIndex)
@@ -267,7 +268,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
           roundTripLabel: l10n.homeTripRoundTrip,
           onChanged: _setTripType,
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.sm + AppSpacing.xs + AppSpacing.xxs),
         Stack(
           children: [
             Container(
@@ -296,7 +297,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                     cityLabel: _cityLabel(_toCity),
                     placeholder: l10n.homeCitySelectPlaceholder,
                     iconBg: AppColors.secondaryTint,
-                    iconColor: const Color(0xFFD98A2B),
+                    iconColor: AppColors.secondaryIcon,
                     onTap: _pickTo,
                   ),
                 ],
@@ -312,7 +313,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
         Container(
           decoration: BoxDecoration(
             border: Border.all(color: AppColors.hairline),
@@ -352,7 +353,7 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
                   onTap: _pickDepart,
                 ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.sm + AppSpacing.xs + AppSpacing.xxs),
         PrimaryButton(
           label: l10n.homeSearch,
           loading: _searching,
@@ -544,7 +545,8 @@ class _CityField extends StatelessWidget {
                   color: iconBg,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(PhosphorIconsLight.mapPin, color: iconColor, size: 18),
+                child:
+                    Icon(PhosphorIconsLight.mapPin, color: iconColor, size: 18),
               ),
               const SizedBox(width: 12),
               Expanded(
