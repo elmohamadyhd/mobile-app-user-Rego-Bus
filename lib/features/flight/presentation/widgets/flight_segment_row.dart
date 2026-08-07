@@ -59,13 +59,10 @@ class FlightSegmentRow extends StatelessWidget {
                 '${segment.departureTerminal != null ? " T${segment.departureTerminal}" : ""}',
                 style: AppTypography.body,
               ),
-              Transform.flip(
-                flipX: Directionality.of(context) == TextDirection.rtl,
-                child: const Icon(
-                  PhosphorIconsLight.arrowRight,
-                  size: 16,
-                  color: AppColors.textMuted,
-                ),
+              const Icon(
+                PhosphorIconsLight.arrowRight,
+                size: 16,
+                color: AppColors.textMuted,
               ),
               Text(
                 '${_time(segment.arrivalDateTime)} · ${segment.destination}'
