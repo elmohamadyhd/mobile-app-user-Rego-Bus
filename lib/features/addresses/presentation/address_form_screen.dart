@@ -463,13 +463,10 @@ class _LocationField extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Transform.flip(
-                    flipX: Directionality.of(context) == TextDirection.rtl,
-                    child: const Icon(
-                      PhosphorIconsLight.caretRight,
-                      size: 18,
-                      color: AppColors.textMuted,
-                    ),
+                  const Icon(
+                    PhosphorIconsLight.caretRight,
+                    size: 18,
+                    color: AppColors.textMuted,
                   ),
                 ],
               ),

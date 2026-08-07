@@ -48,12 +48,9 @@ class AddressesAppBar extends StatelessWidget implements PreferredSizeWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Transform.flip(
-                        flipX: Directionality.of(context) == TextDirection.rtl,
-                        child: const Icon(
-                          PhosphorIconsLight.caretLeft,
-                          color: AppColors.textPrimary,
-                        ),
+                      icon: const Icon(
+                        PhosphorIconsLight.caretLeft,
+                        color: AppColors.textPrimary,
                       ),
                       onPressed: onBack ?? () => context.pop(),
                     ),

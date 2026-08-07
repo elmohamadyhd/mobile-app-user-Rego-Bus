@@ -84,12 +84,12 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Transform.flip(
-                        flipX: Directionality.of(context) == TextDirection.rtl,
-                        child: const Icon(
-                          PhosphorIconsLight.caretLeft,
-                          color: AppColors.textPrimary,
-                        ),
+                      // Phosphor glyphs carry matchTextDirection: true, so
+                      // Icon already auto-mirrors this in RTL — an extra
+                      // manual flip here cancels it back out.
+                      icon: const Icon(
+                        PhosphorIconsLight.caretLeft,
+                        color: AppColors.textPrimary,
                       ),
                       onPressed: onBack ?? () => context.pop(),
                     ),

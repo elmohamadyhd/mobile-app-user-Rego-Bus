@@ -262,8 +262,6 @@ class _RouteSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -277,18 +275,15 @@ class _RouteSection extends StatelessWidget {
                 alignEnd: false,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
+            const Padding(
+              padding: EdgeInsets.symmetric(
                 horizontal: AppSpacing.sm,
                 vertical: AppSpacing.sm,
               ),
-              child: Transform.flip(
-                flipX: isRtl,
-                child: const Icon(
-                  PhosphorIconsLight.caretRight,
-                  size: 18,
-                  color: AppColors.textMuted,
-                ),
+              child: Icon(
+                PhosphorIconsLight.caretRight,
+                size: 18,
+                color: AppColors.textMuted,
               ),
             ),
             Expanded(

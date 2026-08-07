@@ -393,7 +393,6 @@ class _ProfileMenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final iconColor = destructive ? AppColors.error : AppColors.primary;
     final textColor = destructive ? AppColors.error : AppColors.textPrimary;
 
@@ -432,15 +431,12 @@ class _ProfileMenuTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Transform.flip(
-                flipX: isRtl,
-                child: Icon(
-                  PhosphorIconsLight.caretRight,
-                  size: 20,
-                  color: destructive
-                      ? AppColors.error.withValues(alpha: 0.6)
-                      : AppColors.textMuted,
-                ),
+              Icon(
+                PhosphorIconsLight.caretRight,
+                size: 20,
+                color: destructive
+                    ? AppColors.error.withValues(alpha: 0.6)
+                    : AppColors.textMuted,
               ),
             ],
           ),

@@ -143,7 +143,6 @@ class _HeroBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final radius = BorderRadius.circular(AppRadius.lg);
 
     return Material(
@@ -152,13 +151,10 @@ class _HeroBackButton extends StatelessWidget {
       child: InkWell(
         borderRadius: radius,
         onTap: onTap,
-        child: SizedBox(
+        child: const SizedBox(
           width: 44,
           height: 44,
-          child: Transform.flip(
-            flipX: isRtl,
-            child: const Icon(PhosphorIconsLight.caretLeft, color: AppColors.onHero),
-          ),
+          child: Icon(PhosphorIconsLight.caretLeft, color: AppColors.onHero),
         ),
       ),
     );

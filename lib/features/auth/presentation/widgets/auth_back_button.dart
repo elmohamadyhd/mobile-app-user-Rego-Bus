@@ -5,7 +5,8 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// The soft rounded back button used on the OTP / password screens.
-/// Mirrors the chevron in RTL so it always points "back".
+/// `caretLeft` carries `matchTextDirection: true`, so [Icon] already mirrors
+/// it to point "back" in RTL on its own — don't wrap it in another flip.
 class AuthBackButton extends StatelessWidget {
   const AuthBackButton({super.key, required this.onTap});
 
@@ -13,7 +14,6 @@ class AuthBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final radius = BorderRadius.circular(AppRadius.lg);
     return Material(
       color: AppColors.inputFill,
@@ -21,13 +21,10 @@ class AuthBackButton extends StatelessWidget {
       child: InkWell(
         borderRadius: radius,
         onTap: onTap,
-        child: SizedBox(
+        child: const SizedBox(
           width: 44,
           height: 44,
-          child: Transform.flip(
-            flipX: isRtl,
-            child: const Icon(PhosphorIconsLight.caretLeft, color: AppColors.textPrimary),
-          ),
+          child: Icon(PhosphorIconsLight.caretLeft, color: AppColors.textPrimary),
         ),
       ),
     );
