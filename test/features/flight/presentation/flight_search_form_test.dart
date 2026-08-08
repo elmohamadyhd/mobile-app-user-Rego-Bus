@@ -111,8 +111,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repo.lastSearchParams, isNotNull);
-    expect(repo.lastSearchParams!.origin, 'CAI');
-    expect(repo.lastSearchParams!.destination, 'RUH');
+    expect(repo.lastSearchParams!.firstLeg.origin, 'CAI');
+    expect(repo.lastSearchParams!.firstLeg.destination, 'RUH');
     expect(find.text('Flight results'), findsOneWidget);
   });
 }

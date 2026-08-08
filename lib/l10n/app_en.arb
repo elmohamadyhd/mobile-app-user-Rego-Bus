@@ -205,6 +205,17 @@
   "@flightSearch": {
     "description": "Primary CTA on the flight search form."
   },
+  "flightTripOneWay": "One way",
+  "flightTripRound": "Round trip",
+  "flightTripMulti": "Multi-city",
+  "flightLegLabel": "Leg {number}",
+  "@flightLegLabel": {
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "flightAddLeg": "Add another leg",
+  "flightReturnDate": "Return date",
   "flightSearchSelectAirports": "Please select origin and destination airports",
   "@flightSearchSelectAirports": {
     "description": "Snackbar when flight search is tapped without both airports selected."
