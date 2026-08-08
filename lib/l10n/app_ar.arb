@@ -159,6 +159,8 @@
   "flightBundleLeg": "المسار {number}",
   "flightBundleChooseAll": "اختر حزمة لكل مسار",
   "flightViewDetails": "التفاصيل",
+  "flightCountrySearch": "دوّر على دولة",
+  "flightCountryEmpty": "مفيش دولة مطابقة",
   "homeSearch": "ابحث عن رحلات",
   "homePopularDestinations": "الوجهات الشائعة",
   "homePopularDestinationsSwipeHint": "اسحب لعرض المزيد من الوجهات",

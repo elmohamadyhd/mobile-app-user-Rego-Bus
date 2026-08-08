@@ -364,6 +364,14 @@
   "@flightViewDetails": {
     "description": "Secondary action on an offer card that opens the read-only preview."
   },
+  "flightCountrySearch": "Search countries",
+  "@flightCountrySearch": {
+    "description": "Search field hint in the passenger country picker sheet."
+  },
+  "flightCountryEmpty": "No countries match",
+  "@flightCountryEmpty": {
+    "description": "Empty state in the passenger country picker sheet when no country matches the search."
+  },
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
   "@homePopularDestinations": {
