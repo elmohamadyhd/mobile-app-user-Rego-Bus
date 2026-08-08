@@ -184,6 +184,23 @@
       }
     }
   },
+  "flightPaxTitle": "Passengers",
+  "flightPaxAdults": "Adults",
+  "flightPaxAdultsAge": "Aged 12 and over",
+  "flightPaxChildren": "Children",
+  "flightPaxChildrenAge": "Aged 2 to 11",
+  "flightPaxInfants": "Infants",
+  "flightPaxInfantsAge": "Under 2",
+  "flightPaxCount": "{used} of {max}",
+  "@flightPaxCount": {
+    "placeholders": {
+      "used": {"type": "int"},
+      "max": {"type": "int"}
+    }
+  },
+  "flightPaxLimitTotal": "9 passengers maximum",
+  "flightPaxLimitInfants": "One infant per adult",
+  "flightPaxApply": "Apply",
   "flightSearch": "Search flights",
   "@flightSearch": {
     "description": "Primary CTA on the flight search form."
