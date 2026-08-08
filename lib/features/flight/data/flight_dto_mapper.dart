@@ -4,6 +4,7 @@ import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.d
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
+import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 
 abstract final class FlightDtoMapper {
   static void ensureSuccess(Map<String, dynamic> envelope) {
@@ -299,27 +300,45 @@ abstract final class FlightDtoMapper {
   /// Builds the `POST /flights/search` body. Note the backend expects the
   /// misspelled `curreny` key, not `currency` — confirmed against the live
   /// API (`currency` is silently rejected as invalid).
+  /// Builds the `POST /flights/search` body.
+  ///
+  /// Multi-city replaces the flat `origin`/`destination`/`date` trio with a
+  /// `segments` array; round-trip keeps the trio and adds `return_date`.
+  ///
+  /// The backend expects the misspelled `curreny` key here — `currency` is
+  /// silently rejected. Note that the *order creation* endpoint wants the
+  /// correct spelling; the two endpoints genuinely disagree.
   static Map<String, dynamic> searchRequestBody({
-    required String origin,
-    required String destination,
-    required String date,
+    required FlightTripType tripType,
+    required List<Map<String, String>> legs,
     required List<Map<String, dynamic>> passengers,
     required String sortingCriteria,
     required String cabinClass,
     required bool directFlightsOnly,
-    required String tripType,
     required String currency,
+    String? returnDate,
   }) {
-    return {
-      'origin': origin,
-      'destination': destination,
-      'date': date,
+    final common = <String, dynamic>{
       'passengers': passengers,
       'sortingCriteria': sortingCriteria,
       'cabinClass': cabinClass,
       'directFlightsOnly': directFlightsOnly,
-      'trip_type': tripType,
+      'trip_type': tripType.wireValue,
       'curreny': currency,
+    };
+
+    if (tripType == FlightTripType.multiCity) {
+      return {'segments': legs, ...common};
+    }
+
+    final leg = legs.first;
+    return {
+      'origin': leg['origin'],
+      'destination': leg['destination'],
+      'date': leg['date'],
+      if (tripType == FlightTripType.roundTrip && returnDate != null)
+        'return_date': returnDate,
+      ...common,
     };
   }
 
