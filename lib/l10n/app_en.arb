@@ -228,6 +228,26 @@
   "@flightResultsNoOffers": {
     "description": "Empty state on the flight results screen."
   },
+  "flightFilterTitle": "Filter and sort",
+  "flightFilterServerGroup": "Sort and class",
+  "flightFilterServerBadge": "new search",
+  "flightFilterLocalGroup": "Refine",
+  "flightFilterLocalBadge": "instant",
+  "flightFilterDirectOnly": "Direct flights only",
+  "flightFilterRefundableOnly": "Refundable only",
+  "flightFilterPrice": "Price",
+  "flightFilterAirlines": "Airlines",
+  "flightFilterShow": "Show {count} flights",
+  "@flightFilterShow": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "flightFilterNoMatches": "No flights match your filters",
+  "flightFilterClear": "Clear filters",
+  "flightSortCheapest": "Cheapest",
+  "flightSortFastest": "Fastest",
+  "flightSortEarliest": "Earliest",
   "flightDirect": "Direct",
   "@flightDirect": {
     "description": "Stops label on a flight offer card with zero stops."
