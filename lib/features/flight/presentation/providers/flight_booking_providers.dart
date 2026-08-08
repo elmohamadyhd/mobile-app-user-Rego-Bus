@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:safaria/core/network/dio_client.dart';
 import 'package:safaria/features/flight/data/flight_api.dart';
 import 'package:safaria/features/flight/data/flight_repository_impl.dart';
+import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer_filters.dart';
@@ -37,6 +38,7 @@ abstract class FlightBookingState with _$FlightBookingState {
     FlightOffer? selectedOffer,
     FlightConfirmedOrder? confirmedOrder,
     @Default(<String, String>{}) Map<String, String> selectedBundleCodes,
+    @Default([]) List<FlightJourneyBundles> journeyBundles,
   }) = _FlightBookingState;
 
   /// The offer id later steps must send. Confirm mints a new one and every
@@ -99,6 +101,7 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
     state = state.copyWith(
       selectedOffer: offer,
       confirmedOrder: null,
+      journeyBundles: [],
       selectedBundleCodes: {},
       error: null,
     );

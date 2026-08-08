@@ -68,11 +68,8 @@ abstract class FlightPriceDetails with _$FlightPriceDetails {
 
 /// The order snapshot returned by `POST /flights/{offer_id}/confirm`.
 ///
-/// NOTE: on the demo backend this endpoint returned `200 "Offer confirmed"`
-/// even for an offer already rejected as expired by the Bundles endpoint,
-/// with no prior Hold/Pending step. That strongly suggests Confirm is
-/// stubbed/mocked on demo rather than backed by a real booking — treat this
-/// shape as best-effort until verified against a real order.
+/// Confirm mints a **new** offer id. Every later call (bundles, passengers,
+/// order creation) must use that id — not the one from search.
 @freezed
 abstract class FlightConfirmedOrder with _$FlightConfirmedOrder {
   const factory FlightConfirmedOrder({

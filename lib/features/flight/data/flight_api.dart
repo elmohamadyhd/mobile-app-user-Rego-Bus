@@ -32,11 +32,12 @@ class FlightApi {
     return res.data;
   }
 
-  /// `GET /flights/{offer_id}/bundles` — response shape unconfirmed.
-  /// Every attempt against the demo backend (even immediately after a fresh
-  /// search) returned `400 "offer id is not valid or expired"`; the Postman
-  /// collection's own saved example is the same error. Do not build a DTO
-  /// mapper for this until a real success payload is available.
+  /// `GET /flights/{offer_id}/bundles`.
+  ///
+  /// Must be called with the offer id returned by **confirm**, not the one
+  /// from search. Passing the searched id is what produces
+  /// `400 "offer id is not valid or expired"` — the errors recorded here
+  /// previously were that mistake, not a broken endpoint.
   Future<dynamic> bundles(String offerId) async {
     final res = await _dio.get('/flights/${_encodeOfferId(offerId)}/bundles');
     return res.data;

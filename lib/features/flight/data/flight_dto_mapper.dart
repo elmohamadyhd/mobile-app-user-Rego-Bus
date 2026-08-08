@@ -1,5 +1,6 @@
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
+import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
@@ -303,6 +304,61 @@ abstract final class FlightDtoMapper {
       beforeDiscountAmount: _double(json['beforeDiscountAmount']) ?? 0,
       serviceChargeAmount: _double(json['serviceChargeAmount']) ?? 0,
       currency: _string(json['currency']) ?? '',
+    );
+  }
+
+  // ---- Bundles (GET /flights/{offer_id}/bundles) ----
+
+  static List<FlightJourneyBundles> journeyBundlesFromEnvelope(dynamic body) {
+    final data = body is Map ? body['data'] : null;
+    if (data is! List) return const [];
+    return data
+        .whereType<Map>()
+        .map(_journeyBundlesFromJson)
+        .toList(growable: false);
+  }
+
+  static FlightJourneyBundles _journeyBundlesFromJson(Map json) {
+    final bundles = json['bundles'];
+    return FlightJourneyBundles(
+      offerJourneyId: _string(json['offer_journey_id']) ?? '',
+      bundles: bundles is List
+          ? bundles.whereType<Map>().map(_bundleFromJson).toList()
+          : const [],
+    );
+  }
+
+  static FlightBundle _bundleFromJson(Map json) {
+    final services = json['included_services'];
+    return FlightBundle(
+      code: _string(json['bundle_code']) ?? '',
+      name: _string(json['bundle_name']) ?? '',
+      prices: _bundlePrices(json['bundle_prices']),
+      includedServices: services is List
+          ? services.map((s) => s.toString()).toList()
+          : const [],
+    );
+  }
+
+  /// `bundle_prices` arrives as a single object on some providers and an
+  /// array on others. Normalizing to a list here means the pricing rules
+  /// downstream only handle one shape.
+  static List<FlightBundlePrice> _bundlePrices(dynamic raw) {
+    if (raw is Map) return [_bundlePriceFromJson(raw)];
+    if (raw is List) {
+      return raw.whereType<Map>().map(_bundlePriceFromJson).toList();
+    }
+    return const [];
+  }
+
+  static FlightBundlePrice _bundlePriceFromJson(Map json) {
+    return FlightBundlePrice(
+      passengerTypeCode: _string(json['passenger_type_code']) ?? 'ADT',
+      totalAmount: _double(json['total_amount']) ?? 0,
+      taxesAmount: _double(json['taxes_amount']) ?? 0,
+      feeAmount: _double(json['fee_mount']) ?? 0,
+      currency: _string(json['currency']),
+      bundleReferences: _string(json['bundle_references']),
     );
   }
 
