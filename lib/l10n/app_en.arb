@@ -372,6 +372,102 @@
   "@flightCountryEmpty": {
     "description": "Empty state in the passenger country picker sheet when no country matches the search."
   },
+  "flightPassengersTitle": "Passenger details",
+  "@flightPassengersTitle": {
+    "description": "App bar title on the flight passenger list and form screens."
+  },
+  "flightContactSection": "Contact details",
+  "@flightContactSection": {
+    "description": "Section heading for the shared booking contact fields on the passenger list screen."
+  },
+  "flightContactOnce": "Entered once",
+  "@flightContactOnce": {
+    "description": "Subtitle clarifying the contact details are shared across every traveller."
+  },
+  "flightContactEmail": "Email",
+  "@flightContactEmail": {
+    "description": "Label for the booking contact email field."
+  },
+  "flightContactPhone": "Phone",
+  "@flightContactPhone": {
+    "description": "Label for the booking contact phone field."
+  },
+  "flightPassengerAdultN": "Adult {number}",
+  "@flightPassengerAdultN": {
+    "description": "Row label for an adult traveller, numbered within adults only.",
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "flightPassengerChildN": "Child {number}",
+  "@flightPassengerChildN": {
+    "description": "Row label for a child traveller, numbered within children only.",
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "flightPassengerInfantN": "Infant {number}",
+  "@flightPassengerInfantN": {
+    "description": "Row label for an infant traveller, numbered within infants only.",
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "flightPassengerMissing": "Missing {field}",
+  "@flightPassengerMissing": {
+    "description": "Passenger row subtitle naming the first field still needed to complete the traveller.",
+    "placeholders": {
+      "field": {"type": "String"}
+    }
+  },
+  "flightFieldTitle": "title",
+  "@flightFieldTitle": {
+    "description": "Passenger field name: title (Mr/Mrs/Ms)."
+  },
+  "flightFieldFirstName": "first name",
+  "@flightFieldFirstName": {
+    "description": "Passenger field name: first name."
+  },
+  "flightFieldLastName": "last name",
+  "@flightFieldLastName": {
+    "description": "Passenger field name: last name."
+  },
+  "flightFieldGender": "gender",
+  "@flightFieldGender": {
+    "description": "Passenger field name: gender."
+  },
+  "flightFieldBirthDate": "date of birth",
+  "@flightFieldBirthDate": {
+    "description": "Passenger field name: date of birth."
+  },
+  "flightFieldDocumentNumber": "national ID",
+  "@flightFieldDocumentNumber": {
+    "description": "Passenger field name: travel document / national ID number."
+  },
+  "flightFieldNationality": "nationality",
+  "@flightFieldNationality": {
+    "description": "Passenger field name: nationality."
+  },
+  "flightFieldResidence": "country of residence",
+  "@flightFieldResidence": {
+    "description": "Passenger field name: country of residence."
+  },
+  "flightFieldAddressCountry": "address country",
+  "@flightFieldAddressCountry": {
+    "description": "Passenger field name: home address country."
+  },
+  "flightFieldAddressCity": "city",
+  "@flightFieldAddressCity": {
+    "description": "Passenger field name: home address city code."
+  },
+  "flightFieldAddressLine1": "address line 1",
+  "@flightFieldAddressLine1": {
+    "description": "Passenger field name: first line of the home address."
+  },
+  "flightFieldAddressLine2": "address line 2",
+  "@flightFieldAddressLine2": {
+    "description": "Passenger field name: second line of the home address."
+  },
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
   "@homePopularDestinations": {

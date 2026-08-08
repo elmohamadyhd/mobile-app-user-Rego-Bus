@@ -4,9 +4,11 @@ import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
 import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
+import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
+import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/features/flight/domain/repositories/flight_repository.dart';
 
@@ -24,6 +26,11 @@ class FakeFlightRepository implements FlightRepository {
   bool airportSearchShouldThrow = false;
   ApiException? searchException;
   ApiException? airportSearchException;
+  List<FlightCountry>? countriesResult;
+  String? addPassengersResult;
+  ApiException? addPassengersException;
+  List<FlightPassengerDraft>? lastPassengers;
+  FlightContactDetails? lastContact;
 
   /// Per-term overrides for simulating out-of-order network responses in
   /// tests. When a term has a completer here, `searchAirportSuggestions`
@@ -135,5 +142,22 @@ class FakeFlightRepository implements FlightRepository {
   @override
   Future<List<FlightJourneyBundles>> bundles(String offerId) {
     return Future.value(const []);
+  }
+
+  @override
+  Future<List<FlightCountry>> countries() {
+    return Future.value(countriesResult ?? const []);
+  }
+
+  @override
+  Future<String> addPassengers({
+    required String offerId,
+    required List<FlightPassengerDraft> passengers,
+    required FlightContactDetails contact,
+  }) {
+    lastPassengers = passengers;
+    lastContact = contact;
+    if (addPassengersException != null) throw addPassengersException!;
+    return Future.value(addPassengersResult ?? offerId);
   }
 }
