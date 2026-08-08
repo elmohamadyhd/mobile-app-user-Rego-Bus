@@ -7,8 +7,8 @@ final secureStorageProvider = Provider<SecureStorage>((ref) => SecureStorage());
 
 /// Thin wrapper over [FlutterSecureStorage] for the handful of keys the app
 /// persists across launches: the auth token, a cached user blob, the
-/// "onboarding seen" flag, an optional locale override, a device token, and
-/// the trip-details coach flag.
+/// "onboarding seen" flag, an optional locale override, a device token,
+/// saved flight travellers, and the trip-details coach flag.
 /// A legacy guest-mode key may still be cleared on launch.
 class SecureStorage {
   SecureStorage({
@@ -36,6 +36,7 @@ class SecureStorage {
   static const _kLocaleOverride = 'locale_override';
   static const _kDeviceToken = 'device_token';
   static const _kGuestMode = 'guest_mode';
+  static const _kFlightTravellers = 'flight_saved_travellers';
 
   Future<String?> readToken() => _storage.read(key: _kToken);
   Future<void> writeToken(String token) =>
@@ -126,4 +127,16 @@ class SecureStorage {
     }
     await _storage.delete(key: _kGuestMode);
   }
+
+  /// Saved flight travellers, as a JSON array. Held here rather than in plain
+  /// preferences because the payload includes names, birth dates, and
+  /// national ID numbers.
+  Future<String?> readFlightTravellers() =>
+      _storage.read(key: _kFlightTravellers);
+
+  Future<void> writeFlightTravellers(String json) =>
+      _storage.write(key: _kFlightTravellers, value: json);
+
+  Future<void> clearFlightTravellers() =>
+      _storage.delete(key: _kFlightTravellers);
 }
