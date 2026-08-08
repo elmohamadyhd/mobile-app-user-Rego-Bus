@@ -69,6 +69,29 @@ void main() {
       expect(offers, isEmpty);
     });
 
+    test('maps "No available offers" 400 envelope to an empty list', () {
+      final offers =
+          FlightDtoMapper.offersFromEnvelope(flightSearchNoOffersEnvelope);
+      expect(offers, isEmpty);
+    });
+
+    test('recognises the no-offers message case-insensitively', () {
+      expect(
+        FlightDtoMapper.isNoOffersEnvelope({
+          'status': 400,
+          'message': 'no available offers',
+        }),
+        isTrue,
+      );
+      expect(
+        FlightDtoMapper.isNoOffersEnvelope({
+          'status': 400,
+          'message': 'offer id is not valid or expired',
+        }),
+        isFalse,
+      );
+    });
+
     test('search request body uses the curreny typo, not currency', () {
       final body = FlightDtoMapper.searchRequestBody(
         tripType: FlightTripType.oneWay,

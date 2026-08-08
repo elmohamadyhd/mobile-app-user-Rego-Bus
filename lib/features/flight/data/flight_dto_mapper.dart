@@ -93,8 +93,19 @@ abstract final class FlightDtoMapper {
 
   // ---- Search (POST /flights/search) ----
 
+  /// The demo backend answers an empty search with HTTP 400 and this message
+  /// instead of a 200 + empty list. Riders should see "no flights", not a
+  /// retryable load error.
+  static bool isNoOffersEnvelope(dynamic body) {
+    if (body is! Map) return false;
+    final message = body['message'];
+    if (message is! String) return false;
+    return message.toLowerCase().contains('no available offers');
+  }
+
   static List<FlightOffer> offersFromEnvelope(dynamic body) {
     final envelope = body as Map<String, dynamic>;
+    if (isNoOffersEnvelope(envelope)) return const [];
     ensureSuccess(envelope);
     final data = envelope['data'];
     if (data is! List) return const [];

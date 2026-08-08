@@ -41,35 +41,44 @@ class FlightRepositoryImpl implements FlightRepository {
   @override
   Future<List<FlightOffer>> search(FlightSearchParams params) {
     return _guard(() async {
-      final body = await _api.search(
-        FlightDtoMapper.searchRequestBody(
-          tripType: params.tripType,
-          legs: params.legs
-              .map(
-                (leg) => {
-                  'origin': leg.origin,
-                  'destination': leg.destination,
-                  'date': toIsoDate(leg.date),
-                },
-              )
-              .toList(),
-          returnDate:
-              params.returnDate == null ? null : toIsoDate(params.returnDate!),
-          passengers: params.passengers
-              .map(
-                (p) => {
-                  'passengerTypeCode': p.passengerTypeCode,
-                  'count': p.count,
-                },
-              )
-              .toList(),
-          sortingCriteria: params.sortingCriteria.wireValue,
-          cabinClass: params.cabinClass.wireValue,
-          directFlightsOnly: params.directFlightsOnly,
-          currency: params.currency,
-        ),
-      );
-      return FlightDtoMapper.offersFromEnvelope(body);
+      try {
+        final body = await _api.search(
+          FlightDtoMapper.searchRequestBody(
+            tripType: params.tripType,
+            legs: params.legs
+                .map(
+                  (leg) => {
+                    'origin': leg.origin,
+                    'destination': leg.destination,
+                    'date': toIsoDate(leg.date),
+                  },
+                )
+                .toList(),
+            returnDate: params.returnDate == null
+                ? null
+                : toIsoDate(params.returnDate!),
+            passengers: params.passengers
+                .map(
+                  (p) => {
+                    'passengerTypeCode': p.passengerTypeCode,
+                    'count': p.count,
+                  },
+                )
+                .toList(),
+            sortingCriteria: params.sortingCriteria.wireValue,
+            cabinClass: params.cabinClass.wireValue,
+            directFlightsOnly: params.directFlightsOnly,
+            currency: params.currency,
+          ),
+        );
+        return FlightDtoMapper.offersFromEnvelope(body);
+      } on DioException catch (e) {
+        // Backend uses HTTP 400 + "No available offers !" for empty results.
+        if (FlightDtoMapper.isNoOffersEnvelope(e.response?.data)) {
+          return const [];
+        }
+        rethrow;
+      }
     });
   }
 

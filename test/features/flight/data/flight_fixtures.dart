@@ -145,3 +145,12 @@ const flightSearchEmptyEnvelope = {
   'errors': <String, dynamic>{},
   'data': <Map<String, dynamic>>[],
 };
+
+/// Demo backend shape when a search finds nothing — HTTP 400, not an empty
+/// 200 list. Treated as "no offers" by the client, not as a load failure.
+const flightSearchNoOffersEnvelope = {
+  'status': 400,
+  'message': 'No available offers !',
+  'errors': <String, dynamic>{},
+  'data': <String, dynamic>{},
+};
