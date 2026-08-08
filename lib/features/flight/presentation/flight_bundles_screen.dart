@@ -166,9 +166,8 @@ class _FlightBundlesScreenState extends ConsumerState<FlightBundlesScreen> {
                         label: allChosen
                             ? l10n.flightContinue
                             : l10n.flightBundleChooseAll,
-                        // Passengers screen is Phase 3 — bounce to results.
                         onPressed: allChosen
-                            ? () => context.go(FlightRoutes.results)
+                            ? () => context.push(FlightRoutes.passengers)
                             : null,
                       ),
                     ],

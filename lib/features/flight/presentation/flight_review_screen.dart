@@ -137,16 +137,11 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
                       label: change == null
                           ? l10n.flightContinue
                           : l10n.flightAcceptAndContinue,
-                      onPressed: () {
-                        if (offer.haveBundles) {
-                          // Bundles screen lands in Task 8.
-                          context.push(FlightRoutes.bundles);
-                        } else {
-                          // Passengers screen is Phase 3 — bounce to results
-                          // until that route exists.
-                          context.go(FlightRoutes.results);
-                        }
-                      },
+                      onPressed: () => context.push(
+                        offer.haveBundles
+                            ? FlightRoutes.bundles
+                            : FlightRoutes.passengers,
+                      ),
                     ),
                   ),
               ],
