@@ -69,6 +69,18 @@ class ProfileScreen extends ConsumerWidget {
                       : context.push(WalletRoutes.wallet),
                 ),
                 _ProfileMenuItem(
+                  icon: PhosphorIconsLight.users,
+                  label: l10n.profileMenuSavedTravellers,
+                  onTap: () => isGuest
+                      ? context.go(
+                          AppRoutes.login,
+                          extra: const AuthGateArgs(
+                            returnTo: ProfileRoutes.savedTravellers,
+                          ),
+                        )
+                      : context.push(ProfileRoutes.savedTravellers),
+                ),
+                _ProfileMenuItem(
                   icon: PhosphorIconsLight.translate,
                   label: l10n.profileMenuLanguage,
                   onTap: () => showLanguagePickerSheet(context),

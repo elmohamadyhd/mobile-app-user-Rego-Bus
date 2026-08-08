@@ -524,6 +524,30 @@
   "@flightSave": {
     "description": "Primary CTA on the passenger form screen."
   },
+  "savedTravellersTitle": "Saved travellers",
+  "@savedTravellersTitle": {
+    "description": "App bar title on the saved travellers management screen."
+  },
+  "savedTravellersEmpty": "You have no saved travellers",
+  "@savedTravellersEmpty": {
+    "description": "Empty state on the saved travellers screen."
+  },
+  "savedTravellersDelete": "Delete",
+  "@savedTravellersDelete": {
+    "description": "Confirm-dialog action and per-row action to delete a saved traveller."
+  },
+  "savedTravellersDeleteAll": "Delete all",
+  "@savedTravellersDeleteAll": {
+    "description": "App bar action to delete every saved traveller."
+  },
+  "savedTravellersConfirm": "Delete this traveller's saved details?",
+  "@savedTravellersConfirm": {
+    "description": "Confirmation dialog message before deleting a saved traveller."
+  },
+  "savedTravellersCancel": "Cancel",
+  "@savedTravellersCancel": {
+    "description": "Confirmation dialog cancel action on the saved travellers screen."
+  },
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
   "@homePopularDestinations": {
@@ -958,6 +982,10 @@
   "profileMenuWallet": "Wallet",
   "@profileMenuWallet": {
     "description": "Profile menu row for wallet shortcut."
+  },
+  "profileMenuSavedTravellers": "Saved travellers",
+  "@profileMenuSavedTravellers": {
+    "description": "Profile menu row for managing saved flight travellers."
   },
   "profileMenuLanguage": "Language",
   "@profileMenuLanguage": {
