@@ -3516,8 +3516,14 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/airports/search` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/flights/airports/search` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/airports/search?term=دبي` |
 | **Auth** | Bearer token required |
+
+**Query parameters:**
+
+| Parameter | Example |
+|-----------|---------|
+| `term` | دبي |
 
 **Headers:**
 
@@ -3618,7 +3624,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
         }
     ],
     "sortingCriteria": "CheapestFirst", //FastestFirst,SlowestFirst,CheapestFirst,MostExpensiveFirst,EarliestDepartureFirst,LatestDepartureFirst
-    "cabinClass": "CABIN_CLASS_ECONOMY", //CABIN_CLASS_PREMIUM_ECONOMY,CABIN_CLASS_BUSINESS,CABIN_CLASS_FIRST,CABIN_CLASS_UNSPECIFIED
+    "cabinClass": "CABIN_CLASS_ECONOMY", //CABIN_CLASS_PREMIUM_ECONOMY,CABIN_CLASS_BUSINESS,CABIN_CLASS_FIRST,CABIN_CLASS_UNSPECIFIED, UNSBSifed
     "directFlightsOnly": false,
     "trip_type": "one_way", //one_way,round_trip,multi_city,,
     "curreny":"EGP"
@@ -3631,7 +3637,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 |-------|-----------------|
 | `passengerTypeCode` | `ADT`, `CHD`, `INF` |
 | `sortingCriteria` | `FastestFirst`, `SlowestFirst`, `CheapestFirst`, `MostExpensiveFirst`, `EarliestDepartureFirst`, `LatestDepartureFirst` |
-| `cabinClass` | `CABIN_CLASS_PREMIUM_ECONOMY`, `CABIN_CLASS_BUSINESS`, `CABIN_CLASS_FIRST`, `CABIN_CLASS_UNSPECIFIED` |
+| `cabinClass` | `CABIN_CLASS_PREMIUM_ECONOMY`, `CABIN_CLASS_BUSINESS`, `CABIN_CLASS_FIRST`, `CABIN_CLASS_UNSPECIFIED`, `UNSBSifed` |
 | `trip_type` | `one_way`, `round_trip`, `multi_city` |
 
 **Headers:**
@@ -4814,7 +4820,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
             "middleName": "Mostafa",
             "lastName": "Ahmed",
             "birthDate": "1990-01-02",
-            "documentNumber": "299060912312",
+            "documentNumber": "299060912312", // natinal id
             "nationalityCountryCode": "EGP",
             "residenceCountryCode": "EGP",
             "gender": "M", //M,F,
@@ -4836,6 +4842,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 
 | Field | Allowed / notes |
 |-------|-----------------|
+| `documentNumber` | `natinal id` |
 | `gender` | `M`, `F` |
 | `passengerTypeCode` | `ADT`, `CHD`, `INF` |
 
