@@ -6,6 +6,7 @@ import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.d
 import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
+import 'package:safaria/features/flight/domain/entities/flight_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
@@ -322,6 +323,73 @@ abstract final class FlightDtoMapper {
       beforeDiscountAmount: _double(json['beforeDiscountAmount']) ?? 0,
       serviceChargeAmount: _double(json['serviceChargeAmount']) ?? 0,
       currency: _string(json['currency']) ?? '',
+    );
+  }
+
+  // ---- Orders (POST /flights/{offer_id}, GET /profile/flights/orders*) ----
+
+  static List<FlightOrder> ordersFromEnvelope(dynamic body) {
+    final data = body is Map ? body['data'] : null;
+    if (data is! List) return const [];
+    return data
+        .whereType<Map>()
+        .map(_orderFromJson)
+        .toList(growable: false);
+  }
+
+  static FlightOrder? orderFromEnvelope(dynamic body) {
+    final data = body is Map ? body['data'] : null;
+    return data is Map ? _orderFromJson(data) : null;
+  }
+
+  static FlightOrder _orderFromJson(Map json) {
+    final transaction = json['transaction'];
+    final passengers = json['passengers'];
+    final segments = json['segments'];
+
+    return FlightOrder(
+      id: _string(json['id']) ?? '',
+      status: _string(json['status']) ?? '',
+      orderStatus: _string(json['order_status']) ?? '',
+      paymentStatus: transaction is Map
+          ? _string(transaction['status'])
+          : _string(json['payment_status']),
+      airlinePnr: _string(json['airline_pnr']),
+      gdsPnr: _string(json['gds_pnr']),
+      paidAt: transaction is Map ? _dateTime(transaction['paid_at']) : null,
+      totalAmount: _double(json['total_amount']) ?? 0,
+      currency: _string(json['currency']) ?? 'EGP',
+      checkoutUrl:
+          transaction is Map ? _string(transaction['invoice_url']) : null,
+      receiptUrl: _string(json['invoice_url']),
+      canBeCancelled: json['can_be_cancel'] == true,
+      passengers: passengers is List
+          ? passengers.whereType<Map>().map(_orderPassengerFromJson).toList()
+          : const [],
+      segments: segments is List
+          ? segments.whereType<Map>().map(_orderSegmentFromJson).toList()
+          : const [],
+    );
+  }
+
+  static FlightOrderPassenger _orderPassengerFromJson(Map json) {
+    return FlightOrderPassenger(
+      id: _string(json['id']) ?? '',
+      passengerTypeCode: _string(json['passenger_type_code']) ?? 'ADT',
+      firstName: _string(json['first_name']),
+      lastName: _string(json['last_name']),
+    );
+  }
+
+  static FlightOrderSegment _orderSegmentFromJson(Map json) {
+    return FlightOrderSegment(
+      id: _string(json['id']) ?? '',
+      origin: _string(json['origin']) ?? '',
+      destination: _string(json['destination']) ?? '',
+      departureDateTime: _dateTime(json['departure_datetime']),
+      arrivalDateTime: _dateTime(json['arrival_datetime']),
+      marketingCarrierCode: _string(json['marketing_carrier_code']),
+      marketingFlightNumber: _string(json['marketing_flight_number']),
     );
   }
 
