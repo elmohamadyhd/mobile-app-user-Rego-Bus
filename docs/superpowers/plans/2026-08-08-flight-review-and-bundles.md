@@ -66,11 +66,11 @@ A spike, not a feature. It produces a fixture file and a yes/no answer.
 **Files:**
 - Create: `test/features/flight/data/flight_bundles_fixture.dart`
 
-- [ ] **Step 1: Capture a search offer id**
+- [x] **Step 1: Capture a search offer id**
 
 Run the app against the demo backend, search `CAI` → `RUH` for a date about three weeks out, and copy the `offerId` of any result whose `haveBundles` is true. Add a temporary `debugPrint` in `FlightDtoMapper.offersFromEnvelope` if that is easier than reading the network log.
 
-- [ ] **Step 2: Confirm it, and capture the new offer id**
+- [x] **Step 2: Confirm it, and capture the new offer id**
 
 ```bash
 curl -s -X POST "https://demo.safaria.travel/api/v1/flights/$(python -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=''))" 'PASTE_SEARCH_OFFER_ID')/confirm" \
@@ -81,7 +81,7 @@ curl -s -X POST "https://demo.safaria.travel/api/v1/flights/$(python -c "import 
 
 Expected: `200` with `data.offerId`. **That value is offer id B.** It will differ from the one you pasted — if it does not, stop and report that, because the whole relay premise depends on it changing.
 
-- [ ] **Step 3: Call bundles with offer id B**
+- [x] **Step 3: Call bundles with offer id B**
 
 ```bash
 curl -s "https://demo.safaria.travel/api/v1/flights/$(python -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=''))" 'PASTE_OFFER_ID_B')/bundles" \
@@ -95,7 +95,7 @@ Two outcomes:
 - **`200` with a `data` array** — the relay theory holds. Continue to step 4.
 - **`400 "not valid or expired"`** — stop here. Tasks 6–9 are blocked. Report the exact request and response to the backend team, and note that offer id B was used, not A. Tasks 2–5 can still proceed and ship a working review step.
 
-- [ ] **Step 4: Also settle bundle pricing for mixed passenger types**
+- [x] **Step 4: Also settle bundle pricing for mixed passenger types**
 
 Repeat steps 1–3 with a search for **2 adults and 1 child**. Inspect `data[].bundles[].bundle_prices` in the response and record which shape it takes:
 
@@ -104,7 +104,7 @@ Repeat steps 1–3 with a search for **2 adults and 1 child**. Inspect `data[].b
 
 This is open question 2 in the spec. Task 7's mapper handles both shapes, so this does not block, but the answer decides whether Task 8's total is right.
 
-- [ ] **Step 5: Save the payload as a fixture**
+- [x] **Step 5: Save the payload as a fixture**
 
 Create `test/features/flight/data/flight_bundles_fixture.dart` with the captured body, trimmed to two journeys and two bundles each, following the style of `test/features/flight/data/flight_fixtures.dart`:
 
@@ -121,11 +121,11 @@ const bundlesEnvelope = {
 };
 ```
 
-- [ ] **Step 6: Record the outcome in the spec**
+- [x] **Step 6: Record the outcome in the spec**
 
 In `docs/superpowers/specs/2026-08-08-flight-booking-flow-design.md`, move item 2 out of "Still open" into the resolved table with what you observed, and note whether offer id B differed from A.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add test/features/flight/data/flight_bundles_fixture.dart docs/superpowers/specs/2026-08-08-flight-booking-flow-design.md
