@@ -1,0 +1,369 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
+import 'package:shimmer/shimmer.dart';
+
+import 'package:safaria/core/router/app_router.dart';
+import 'package:safaria/core/theme/app_colors.dart';
+import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/date_formatting.dart';
+import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
+import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/flight/domain/entities/flight_order.dart';
+import 'package:safaria/features/flight/domain/utils/flight_order_status.dart';
+import 'package:safaria/features/flight/presentation/flight_routes.dart';
+import 'package:safaria/features/flight/presentation/providers/flight_orders_provider.dart';
+import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:safaria/shared/widgets/skyline_float_card.dart';
+
+/// The flight-owned section dropped into the "My Tickets" tab shell
+/// (`TicketsScreen`), mirroring `BusOrdersSection`'s guest/loading/error/
+/// empty/list states.
+class FlightOrdersSection extends ConsumerWidget {
+  const FlightOrdersSection({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final guestModeValue = ref.watch(guestModeProvider).value;
+    if (guestModeValue == null) return const _OrdersSkeleton();
+    if (guestModeValue) return const _GuestSignInCard();
+
+    final ordersAsync = ref.watch(flightOrdersProvider);
+    return ordersAsync.when(
+      loading: () => const _OrdersSkeleton(),
+      error: (error, _) =>
+          _ErrorState(onRetry: () => ref.invalidate(flightOrdersProvider)),
+      data: (orders) =>
+          orders.isEmpty ? const _EmptyState() : _OrdersList(orders: orders),
+    );
+  }
+}
+
+class _GuestSignInCard extends StatelessWidget {
+  const _GuestSignInCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return SkylineFloatCard(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          onTap: () => context.go(
+            AppRoutes.login,
+            extra: const AuthGateArgs(returnTo: AppRoutes.tickets),
+          ),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.md,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryTint,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    PhosphorIconsLight.user,
+                    size: 22,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Text(
+                    l10n.profileGuestSignInCta,
+                    style: AppTypography.title.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const Icon(
+                  PhosphorIconsLight.caretRight,
+                  size: 20,
+                  color: AppColors.textMuted,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return SkylineFloatCard(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 88,
+              height: 88,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primaryTint,
+              ),
+              child: const Icon(
+                PhosphorIconsLight.airplane,
+                size: 40,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              l10n.ticketsEmptyTitle,
+              style: AppTypography.h1,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              l10n.ticketsEmptyBody,
+              textAlign: TextAlign.center,
+              style: AppTypography.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            PrimaryButton(
+              label: l10n.ticketsBookCta,
+              onPressed: () => context.go(AppRoutes.home),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return SkylineFloatCard(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              PhosphorIconsLight.warningCircle,
+              size: 40,
+              color: AppColors.error,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              l10n.ticketsError,
+              textAlign: TextAlign.center,
+              style: AppTypography.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            OutlinedButton(
+              onPressed: onRetry,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                side: const BorderSide(color: AppColors.border),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.button),
+                ),
+              ),
+              child: Text(l10n.tripResultsRetry),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OrdersSkeleton extends StatelessWidget {
+  const _OrdersSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: AppColors.hairline,
+      highlightColor: AppColors.bgElevated,
+      child: Container(
+        height: 140,
+        decoration: BoxDecoration(
+          color: AppColors.bgCard,
+          borderRadius: BorderRadius.circular(AppRadius.card),
+        ),
+      ),
+    );
+  }
+}
+
+class _OrdersList extends StatelessWidget {
+  const _OrdersList({required this.orders});
+
+  final List<FlightOrder> orders;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final order in orders) _FlightOrderCard(order: order),
+      ],
+    );
+  }
+}
+
+class _FlightOrderCard extends StatelessWidget {
+  const _FlightOrderCard({required this.order});
+
+  final FlightOrder order;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final localeName = Localizations.localeOf(context).toString();
+    final paid = isFlightOrderPaid(order);
+    final firstSegment = order.segments.isEmpty ? null : order.segments.first;
+    final departure = firstSegment?.departureDateTime;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryDark.withValues(alpha: 0.16),
+            blurRadius: 32,
+            spreadRadius: -14,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Material(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      firstSegment == null
+                          ? ''
+                          : '${firstSegment.origin} → ${firstSegment.destination}',
+                      style: AppTypography.title.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  _StatusBadge(paid: paid),
+                ],
+              ),
+              if (departure != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  children: [
+                    const Icon(
+                      PhosphorIconsLight.calendarBlank,
+                      size: 16,
+                      color: AppColors.textMuted,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      formatSearchDateTimeCell(departure, localeName),
+                      style: AppTypography.body.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: AppSpacing.sm),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.tripResultsFareLabel,
+                    style: AppTypography.caption
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                  Text(
+                    '${order.totalAmount.toStringAsFixed(0)} ${order.currency}',
+                    textDirection: TextDirection.ltr,
+                    style: AppTypography.title
+                        .copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+              if (!paid) ...[
+                const SizedBox(height: AppSpacing.sm),
+                PrimaryButton(
+                  label: l10n.ticketActionPay,
+                  compact: true,
+                  onPressed: () => context.push(FlightRoutes.pay, extra: order),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.paid});
+
+  final bool paid;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final bg = paid
+        ? AppColors.success.withValues(alpha: 0.14)
+        : AppColors.secondaryTint;
+    final fg = paid ? AppColors.success : AppColors.onSecondary;
+
+    return Container(
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
+      child: Text(
+        paid ? l10n.ticketStatusConfirmed : l10n.ticketStatusPending,
+        style: AppTypography.caption
+            .copyWith(color: fg, fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}

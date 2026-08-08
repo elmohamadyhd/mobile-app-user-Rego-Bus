@@ -351,10 +351,7 @@ abstract final class FlightDtoMapper {
   static List<FlightOrder> ordersFromEnvelope(dynamic body) {
     final data = body is Map ? body['data'] : null;
     if (data is! List) return const [];
-    return data
-        .whereType<Map>()
-        .map(_orderFromJson)
-        .toList(growable: false);
+    return data.whereType<Map>().map(_orderFromJson).toList(growable: false);
   }
 
   static FlightOrder? orderFromEnvelope(dynamic body) {

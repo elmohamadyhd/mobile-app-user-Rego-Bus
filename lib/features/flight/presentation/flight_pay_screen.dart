@@ -110,15 +110,13 @@ class _FlightPayScreenState extends ConsumerState<FlightPayScreen> {
               children: [
                 BookingTermsCheckbox(
                   value: _termsAccepted,
-                  onChanged: (value) =>
-                      setState(() => _termsAccepted = value),
+                  onChanged: (value) => setState(() => _termsAccepted = value),
                   onOpenTerms: () => context.push(CmsPagePaths.terms),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 PrimaryButton(
                   label: l10n.flightPayNow,
-                  loading:
-                      state.status == FlightBookingStatus.creatingOrder,
+                  loading: state.status == FlightBookingStatus.creatingOrder,
                   onPressed: _termsAccepted
                       ? () async {
                           final order = await ref
@@ -157,8 +155,8 @@ class _Section extends StatelessWidget {
         children: [
           Text(
             title,
-            style: AppTypography.caption
-                .copyWith(color: AppColors.textSecondary),
+            style:
+                AppTypography.caption.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.xs),
           ...children,

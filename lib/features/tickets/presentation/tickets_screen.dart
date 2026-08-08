@@ -7,6 +7,8 @@ import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.
 import 'package:safaria/features/bus/presentation/widgets/bus_orders_section.dart';
 import 'package:safaria/features/car/presentation/providers/car_orders_provider.dart';
 import 'package:safaria/features/car/presentation/widgets/car_orders_section.dart';
+import 'package:safaria/features/flight/presentation/providers/flight_orders_provider.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_orders_section.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
 import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
@@ -34,9 +36,14 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
     final carCount = guestModeValue == false
         ? ref.watch(carOrdersProvider).value?.length
         : null;
-    final count = _modeIndex == TransportModeTabBar.privateTabIndex
-        ? carCount
-        : busCount;
+    final flightCount = guestModeValue == false
+        ? ref.watch(flightOrdersProvider).value?.length
+        : null;
+    final count = switch (_modeIndex) {
+      TransportModeTabBar.privateTabIndex => carCount,
+      TransportModeTabBar.flightTabIndex => flightCount,
+      _ => busCount,
+    };
 
     return RefreshIndicator(
       onRefresh: guestModeValue == false
@@ -44,6 +51,7 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
               await Future.wait([
                 ref.read(busOrdersProvider.notifier).refresh(),
                 ref.read(carOrdersProvider.notifier).refresh(),
+                ref.refresh(flightOrdersProvider.future),
               ]);
             }
           : () async {},
@@ -75,26 +83,16 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
               children: [
                 TransportModeTabBar(
                   selectedIndex: _modeIndex,
-                  onChanged: (i) {
-                    if (i == TransportModeTabBar.flightTabIndex) {
-                      ScaffoldMessenger.of(context)
-                        ..hideCurrentSnackBar()
-                        ..showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.homeComingSoon),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      return;
-                    }
-                    setState(() => _modeIndex = i);
-                  },
+                  onChanged: (i) => setState(() => _modeIndex = i),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                if (_modeIndex == TransportModeTabBar.privateTabIndex)
-                  const CarOrdersSection()
-                else
-                  const BusOrdersSection(),
+                switch (_modeIndex) {
+                  TransportModeTabBar.privateTabIndex =>
+                    const CarOrdersSection(),
+                  TransportModeTabBar.flightTabIndex =>
+                    const FlightOrdersSection(),
+                  _ => const BusOrdersSection(),
+                },
               ],
             ),
           ),

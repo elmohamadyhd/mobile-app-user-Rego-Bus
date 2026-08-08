@@ -9,10 +9,13 @@ import 'package:safaria/features/bus/domain/entities/bus_order.dart';
 import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_order_card.dart';
+import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_orders_section.dart';
 import 'package:safaria/features/tickets/presentation/tickets_screen.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
 import '../bus/fake_bus_repository.dart';
+import '../flight/fake_flight_repository.dart';
 
 class _FakeSessionController extends SessionController {
   _FakeSessionController(this._initial);
@@ -59,6 +62,7 @@ Future<void> _pumpTickets(
   WidgetTester tester, {
   required bool isGuest,
   FakeBusRepository? repo,
+  FakeFlightRepository? flightRepo,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -70,6 +74,8 @@ Future<void> _pumpTickets(
         ),
         guestModeProvider.overrideWith(() => _FakeGuestController(isGuest)),
         busRepositoryProvider.overrideWithValue(repo ?? FakeBusRepository()),
+        flightRepositoryProvider
+            .overrideWithValue(flightRepo ?? FakeFlightRepository()),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -106,7 +112,7 @@ void main() {
     expect(find.text('1 tickets'), findsOneWidget);
   });
 
-  testWidgets('tapping a non-bus tab shows coming soon snackbar',
+  testWidgets('tapping the flight tab switches to the flight orders section',
       (tester) async {
     await _pumpTickets(
       tester,
@@ -115,11 +121,10 @@ void main() {
     );
 
     await tester.tap(find.text('Flight'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
-    expect(find.text('Coming soon'), findsOneWidget);
-    expect(find.text('SuperJet'), findsOneWidget);
+    expect(find.byType(FlightOrdersSection), findsOneWidget);
+    expect(find.text('SuperJet'), findsNothing);
   });
 
   testWidgets('empty list shows the empty state with a Book a trip CTA',
