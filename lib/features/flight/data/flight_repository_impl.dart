@@ -43,9 +43,18 @@ class FlightRepositoryImpl implements FlightRepository {
     return _guard(() async {
       final body = await _api.search(
         FlightDtoMapper.searchRequestBody(
-          origin: params.origin,
-          destination: params.destination,
-          date: toIsoDate(params.date),
+          tripType: params.tripType,
+          legs: params.legs
+              .map(
+                (leg) => {
+                  'origin': leg.origin,
+                  'destination': leg.destination,
+                  'date': toIsoDate(leg.date),
+                },
+              )
+              .toList(),
+          returnDate:
+              params.returnDate == null ? null : toIsoDate(params.returnDate!),
           passengers: params.passengers
               .map(
                 (p) => {
@@ -57,7 +66,6 @@ class FlightRepositoryImpl implements FlightRepository {
           sortingCriteria: params.sortingCriteria.wireValue,
           cabinClass: params.cabinClass.wireValue,
           directFlightsOnly: params.directFlightsOnly,
-          tripType: params.tripType.wireValue,
           currency: params.currency,
         ),
       );
