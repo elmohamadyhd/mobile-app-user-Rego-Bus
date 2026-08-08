@@ -8,8 +8,10 @@ import 'package:safaria/features/flight/presentation/flight_passenger_form_scree
 import 'package:safaria/features/flight/presentation/flight_passengers_screen.dart';
 import 'package:safaria/features/flight/presentation/flight_pay_screen.dart';
 import 'package:safaria/features/flight/presentation/flight_payment_webview_screen.dart';
+import 'package:safaria/features/flight/presentation/flight_pending_screen.dart';
 import 'package:safaria/features/flight/presentation/flight_results_screen.dart';
 import 'package:safaria/features/flight/presentation/flight_review_screen.dart';
+import 'package:safaria/features/flight/presentation/flight_ticket_screen.dart';
 
 abstract final class FlightRoutes {
   static const results = '/flight/results';
@@ -73,6 +75,22 @@ List<RouteBase> flightRoutes() => [
           final extra = state.extra;
           if (extra is! FlightOrder) return const FlightResultsScreen();
           return FlightPaymentWebViewScreen(order: extra);
+        },
+      ),
+      GoRoute(
+        path: FlightRoutes.ticket,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! FlightOrder) return const FlightResultsScreen();
+          return FlightTicketScreen(order: extra);
+        },
+      ),
+      GoRoute(
+        path: FlightRoutes.pending,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! FlightOrder) return const FlightResultsScreen();
+          return FlightPendingScreen(order: extra);
         },
       ),
     ];
