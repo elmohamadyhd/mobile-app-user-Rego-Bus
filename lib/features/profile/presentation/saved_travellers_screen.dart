@@ -92,8 +92,7 @@ class _SavedTravellersScreenState extends ConsumerState<SavedTravellersScreen> {
                 },
                 child: Text(
                   l10n.savedTravellersDeleteAll,
-                  style: AppTypography.caption
-                      .copyWith(color: AppColors.error),
+                  style: AppTypography.caption.copyWith(color: AppColors.error),
                 ),
               ),
       ),
@@ -103,8 +102,8 @@ class _SavedTravellersScreenState extends ConsumerState<SavedTravellersScreen> {
               ? Center(
                   child: Text(
                     l10n.savedTravellersEmpty,
-                    style: AppTypography.body
-                        .copyWith(color: AppColors.textMuted),
+                    style:
+                        AppTypography.body.copyWith(color: AppColors.textMuted),
                   ),
                 )
               : ListView.builder(

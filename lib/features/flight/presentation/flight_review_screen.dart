@@ -94,8 +94,7 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
                             PrimaryButton(
                               label: l10n.flightBackToResults,
                               variant: PrimaryButtonVariant.ghost,
-                              onPressed: () =>
-                                  context.go(FlightRoutes.results),
+                              onPressed: () => context.go(FlightRoutes.results),
                             ),
                           ],
                         ),
@@ -107,8 +106,7 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
                     child: ListView(
                       padding: const EdgeInsets.all(AppSpacing.lg),
                       children: [
-                        if (change != null)
-                          _PriceChangeBanner(change: change),
+                        if (change != null) _PriceChangeBanner(change: change),
                         for (final breakdown
                             in confirmed.passengerFareBreakdown)
                           _FareRow(

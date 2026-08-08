@@ -86,8 +86,7 @@ class _FlightPassengerFormScreenState
               Expanded(
                 child: DropdownButtonFormField<String>(
                   initialValue: _draft.title,
-                  decoration:
-                      InputDecoration(labelText: l10n.flightFieldTitle),
+                  decoration: InputDecoration(labelText: l10n.flightFieldTitle),
                   items: [
                     DropdownMenuItem(
                       value: 'MR',
@@ -125,8 +124,7 @@ class _FlightPassengerFormScreenState
                   onChanged: (value) => setState(() {
                     // Derive the title from gender only while the rider has
                     // not chosen one — never overwrite their choice.
-                    final title =
-                        _draft.title ?? (value == 'F' ? 'MRS' : 'MR');
+                    final title = _draft.title ?? (value == 'F' ? 'MRS' : 'MR');
                     _draft = _draft.copyWith(gender: value, title: title);
                   }),
                 ),
@@ -192,8 +190,7 @@ class _FlightPassengerFormScreenState
               padding: const EdgeInsetsDirectional.only(top: AppSpacing.xs),
               child: Text(
                 l10n.flightTypeMismatch,
-                style:
-                    AppTypography.caption.copyWith(color: AppColors.warning),
+                style: AppTypography.caption.copyWith(color: AppColors.warning),
               ),
             ),
           const SizedBox(height: AppSpacing.md),

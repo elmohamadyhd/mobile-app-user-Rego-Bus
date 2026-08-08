@@ -106,8 +106,7 @@ class _FlightBundlesScreenState extends ConsumerState<FlightBundlesScreen> {
                             PrimaryButton(
                               label: l10n.flightBackToResults,
                               variant: PrimaryButtonVariant.ghost,
-                              onPressed: () =>
-                                  context.go(FlightRoutes.results),
+                              onPressed: () => context.go(FlightRoutes.results),
                             ),
                           ],
                         ),
@@ -119,9 +118,7 @@ class _FlightBundlesScreenState extends ConsumerState<FlightBundlesScreen> {
                     child: ListView(
                       padding: const EdgeInsets.all(AppSpacing.lg),
                       children: [
-                        for (var i = 0;
-                            i < state.journeyBundles.length;
-                            i++)
+                        for (var i = 0; i < state.journeyBundles.length; i++)
                           _JourneySection(
                             key: ValueKey(
                               state.journeyBundles[i].offerJourneyId,
@@ -135,8 +132,8 @@ class _FlightBundlesScreenState extends ConsumerState<FlightBundlesScreen> {
                             onSelect: (code) => ref
                                 .read(flightBookingProvider.notifier)
                                 .selectBundle(
-                                  journeyId: state
-                                      .journeyBundles[i].offerJourneyId,
+                                  journeyId:
+                                      state.journeyBundles[i].offerJourneyId,
                                   bundleCode: code,
                                 ),
                           ),

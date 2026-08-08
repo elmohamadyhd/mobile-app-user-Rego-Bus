@@ -33,9 +33,7 @@ class ProfileScreen extends ConsumerWidget {
       hero: SkylineTabHero(
         child: _ProfileHeroContent(
           user: user,
-          onTap: isGuest
-              ? null
-              : () => context.push(ProfileRoutes.edit),
+          onTap: isGuest ? null : () => context.push(ProfileRoutes.edit),
         ),
       ),
       children: [

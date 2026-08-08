@@ -171,8 +171,7 @@ class _CountrySheetState extends State<_CountrySheet> {
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Text(
                 l10n.flightCountryEmpty,
-                style:
-                    AppTypography.body.copyWith(color: AppColors.textMuted),
+                style: AppTypography.body.copyWith(color: AppColors.textMuted),
               ),
             )
           else

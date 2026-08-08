@@ -125,8 +125,7 @@ class _FlightPassengersScreenState
                         FlightPassengerRow(
                           draft: drafts[i],
                           ordinal: _ordinalOf(drafts, i),
-                          serverError:
-                              state.passengerErrors[i]?.values.first,
+                          serverError: state.passengerErrors[i]?.values.first,
                           onTap: () => context.push(
                             FlightRoutes.passengerForm,
                             extra: i,
