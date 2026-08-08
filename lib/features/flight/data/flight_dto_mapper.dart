@@ -1,4 +1,5 @@
 import 'package:safaria/core/network/api_exception.dart';
+import 'package:safaria/core/utils/date_formatting.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
 import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
@@ -6,7 +7,9 @@ import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
+import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
+import 'package:safaria/features/flight/domain/utils/flight_passenger_rules.dart';
 
 abstract final class FlightDtoMapper {
   static void ensureSuccess(Map<String, dynamic> envelope) {
@@ -408,6 +411,50 @@ abstract final class FlightDtoMapper {
         'return_date': returnDate,
       ...common,
     };
+  }
+
+  /// Builds the `POST /flights/{offer_id}/passengers` body.
+  ///
+  /// [contact] is written onto every traveller: the endpoint takes an email
+  /// and phone per passenger, but they are the booker's in practice.
+  ///
+  /// Address is required by the live backend (Phase 3 Task 1 spike).
+  static Map<String, dynamic> passengersRequestBody({
+    required List<FlightPassengerDraft> passengers,
+    required FlightContactDetails contact,
+  }) {
+    return {
+      'passengers': [
+        for (final p in passengers)
+          {
+            'title': p.title ?? '',
+            'firstName': p.firstName ?? '',
+            'middleName': p.middleName ?? '',
+            'lastName': p.lastName ?? '',
+            'birthDate': p.birthDate == null ? '' : toIsoDate(p.birthDate!),
+            'documentNumber': p.documentNumber ?? '',
+            'nationalityCountryCode': p.nationalityCode ?? '',
+            'residenceCountryCode': p.residenceCode ?? '',
+            'gender': p.gender ?? '',
+            'email': contact.email,
+            'phone': contact.phone,
+            'passengerTypeCode': flightPassengerWireCode(p.type),
+            'address': {
+              'countryCode': p.addressCountryCode ?? '',
+              'cityCode': p.addressCityCode ?? '',
+              'line1': p.addressLine1 ?? '',
+              'line2': p.addressLine2 ?? '',
+            },
+          },
+      ],
+    };
+  }
+
+  /// Reads `data.offerId` — the id minted by confirm and again by adding
+  /// passengers. Every later call must use the most recent one.
+  static String? offerIdFromEnvelope(dynamic body) {
+    final data = body is Map ? body['data'] : null;
+    return data is Map ? _string(data['offerId']) : null;
   }
 
   // ---- Countries (GET /countries) ----

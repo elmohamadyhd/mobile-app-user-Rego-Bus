@@ -5,6 +5,7 @@ import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
+import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 
 abstract interface class FlightRepository {
@@ -32,4 +33,14 @@ abstract interface class FlightRepository {
 
   /// Countries for nationality, residence, and dial codes.
   Future<List<FlightCountry>> countries();
+
+  /// Attaches travellers to a confirmed offer.
+  ///
+  /// [offerId] must be the id from [confirmOrder]. Returns a **new** offer id
+  /// that order creation must use.
+  Future<String> addPassengers({
+    required String offerId,
+    required List<FlightPassengerDraft> passengers,
+    required FlightContactDetails contact,
+  });
 }

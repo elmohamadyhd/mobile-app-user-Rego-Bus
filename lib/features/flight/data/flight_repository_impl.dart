@@ -11,6 +11,7 @@ import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
+import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/features/flight/domain/repositories/flight_repository.dart';
 
@@ -105,6 +106,30 @@ class FlightRepositoryImpl implements FlightRepository {
     return _guard(() async {
       final body = await _api.countries();
       return FlightDtoMapper.countriesFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<String> addPassengers({
+    required String offerId,
+    required List<FlightPassengerDraft> passengers,
+    required FlightContactDetails contact,
+  }) {
+    return _guard(() async {
+      final body = await _api.addPassengers(
+        offerId: offerId,
+        body: FlightDtoMapper.passengersRequestBody(
+          passengers: passengers,
+          contact: contact,
+        ),
+      );
+      final newOfferId = FlightDtoMapper.offerIdFromEnvelope(body);
+      if (newOfferId == null || newOfferId.isEmpty) {
+        throw const ApiException(
+          'The booking did not return an offer reference. Please try again.',
+        );
+      }
+      return newOfferId;
     });
   }
 

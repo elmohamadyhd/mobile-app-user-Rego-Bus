@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/core/network/dio_client.dart';
 import 'package:safaria/features/flight/data/flight_api.dart';
 import 'package:safaria/features/flight/data/flight_repository_impl.dart';
@@ -9,13 +10,24 @@ import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.d
 import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer_filters.dart';
+import 'package:safaria/features/flight/domain/entities/flight_passenger_counts.dart';
+import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/features/flight/domain/repositories/flight_repository.dart';
 import 'package:safaria/features/flight/domain/utils/apply_flight_offer_filters.dart';
+import 'package:safaria/features/flight/domain/utils/flight_passenger_errors.dart';
+import 'package:safaria/features/flight/domain/utils/flight_passenger_rules.dart';
 
 part 'flight_booking_providers.freezed.dart';
 
-enum FlightBookingStatus { idle, searching, confirming, loadingBundles, error }
+enum FlightBookingStatus {
+  idle,
+  searching,
+  confirming,
+  loadingBundles,
+  submittingPassengers,
+  error,
+}
 
 final flightApiProvider =
     Provider<FlightApi>((ref) => FlightApi(ref.watch(dioProvider)));
@@ -46,14 +58,17 @@ abstract class FlightBookingState with _$FlightBookingState {
     FlightConfirmedOrder? confirmedOrder,
     @Default(<String, String>{}) Map<String, String> selectedBundleCodes,
     @Default([]) List<FlightJourneyBundles> journeyBundles,
+    @Default([]) List<FlightPassengerDraft> passengerDrafts,
+    @Default(FlightContactDetails()) FlightContactDetails contact,
+    String? passengersOfferId,
+    @Default(<int, Map<String, String>>{})
+    Map<int, Map<String, String>> passengerErrors,
   }) = _FlightBookingState;
 
-  /// The offer id later steps must send. Confirm mints a new one and every
-  /// call after it — bundles, passengers, order creation — must use that,
-  /// never the id from search. Sending the searched id is what produces
-  /// `400 "offer id is not valid or expired"`.
+  /// The offer id the next call must send. Each step that mints a new id
+  /// takes precedence over the one before it: search → confirm → passengers.
   String? get activeOfferId =>
-      confirmedOrder?.offerId ?? selectedOffer?.offerId;
+      passengersOfferId ?? confirmedOrder?.offerId ?? selectedOffer?.offerId;
 }
 
 class FlightBookingNotifier extends Notifier<FlightBookingState> {
@@ -110,6 +125,10 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
       confirmedOrder: null,
       journeyBundles: [],
       selectedBundleCodes: {},
+      passengerDrafts: [],
+      contact: const FlightContactDetails(),
+      passengersOfferId: null,
+      passengerErrors: {},
       error: null,
     );
   }
@@ -163,6 +182,71 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
         journeyId: bundleCode,
       },
     );
+  }
+
+  void seedPassengerDrafts() {
+    if (state.passengerDrafts.isNotEmpty) return;
+    final counts = flightPassengerCountsOf(state.searchParams);
+    state = state.copyWith(
+      passengerDrafts: [
+        for (var i = 0; i < counts.adults; i++)
+          const FlightPassengerDraft(type: FlightPassengerType.adult),
+        for (var i = 0; i < counts.children; i++)
+          const FlightPassengerDraft(type: FlightPassengerType.child),
+        for (var i = 0; i < counts.infants; i++)
+          const FlightPassengerDraft(type: FlightPassengerType.infant),
+      ],
+    );
+  }
+
+  void updatePassengerDraft(int index, FlightPassengerDraft draft) {
+    final drafts = List<FlightPassengerDraft>.from(state.passengerDrafts);
+    if (index < 0 || index >= drafts.length) return;
+    drafts[index] = draft;
+    final errors = Map<int, Map<String, String>>.from(state.passengerErrors)
+      ..remove(index);
+    state = state.copyWith(passengerDrafts: drafts, passengerErrors: errors);
+  }
+
+  void setContactDetails(FlightContactDetails contact) {
+    state = state.copyWith(contact: contact);
+  }
+
+  /// Submits every traveller. On validation failure the errors are pinned to
+  /// the passengers they belong to so the list can point at the right row.
+  Future<bool> submitPassengers() async {
+    final offerId = state.confirmedOrder?.offerId;
+    if (offerId == null) return false;
+    state = state.copyWith(
+      status: FlightBookingStatus.submittingPassengers,
+      error: null,
+      passengerErrors: {},
+    );
+    try {
+      final newOfferId = await _repo.addPassengers(
+        offerId: offerId,
+        passengers: state.passengerDrafts,
+        contact: state.contact,
+      );
+      state = state.copyWith(
+        status: FlightBookingStatus.idle,
+        passengersOfferId: newOfferId,
+      );
+      return true;
+    } on ApiException catch (e) {
+      state = state.copyWith(
+        status: FlightBookingStatus.error,
+        error: e.message,
+        passengerErrors: flightPassengerErrorsByIndex(e.errors),
+      );
+      return false;
+    } catch (e) {
+      state = state.copyWith(
+        status: FlightBookingStatus.error,
+        error: e.toString(),
+      );
+      return false;
+    }
   }
 }
 
