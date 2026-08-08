@@ -55,6 +55,7 @@ Future<void> _pump(WidgetTester tester, {bool rtl = false}) {
           originLabel: 'Cairo International Airport',
           destinationLabel: 'King Khalid International Airport',
           onTap: () {},
+          onSelect: () {},
         ),
       ),
     ),
@@ -75,11 +76,12 @@ void main() {
     expect(find.text('2h 45m'), findsOneWidget);
     expect(find.textContaining('7601'), findsOneWidget);
     expect(find.textContaining('EGP'), findsOneWidget);
-    expect(find.text('Select'), findsOneWidget);
+    expect(find.text('Details'), findsOneWidget);
+    expect(find.text('Select this flight'), findsOneWidget);
   });
 
-  testWidgets('calls onTap when tapped', (tester) async {
-    var tapped = false;
+  testWidgets('calls onSelect from the select button', (tester) async {
+    var selected = false;
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -88,14 +90,15 @@ void main() {
         home: Scaffold(
           body: FlightOfferCard(
             offer: _offer,
-            onTap: () => tapped = true,
+            onTap: () {},
+            onSelect: () => selected = true,
           ),
         ),
       ),
     );
 
-    await tester.tap(find.byType(FlightOfferCard));
-    expect(tapped, isTrue);
+    await tester.tap(find.text('Select this flight'));
+    expect(selected, isTrue);
   });
 
   testWidgets('renders under Arabic/RTL locale without crashing',

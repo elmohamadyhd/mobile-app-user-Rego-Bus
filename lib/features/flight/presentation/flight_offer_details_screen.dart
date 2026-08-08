@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
+import 'package:safaria/features/flight/presentation/flight_routes.dart';
+import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_segment_row.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
-class FlightOfferDetailsScreen extends StatelessWidget {
+class FlightOfferDetailsScreen extends ConsumerWidget {
   const FlightOfferDetailsScreen({super.key, required this.offer});
 
   final FlightOffer offer;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final journey = offer.journeys.first;
     final rules = offer.priceClasses
@@ -94,14 +98,8 @@ class FlightOfferDetailsScreen extends StatelessWidget {
           child: PrimaryButton(
             label: l10n.flightSelectThisFlight,
             onPressed: () {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.flightBookingComingSoon),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
+              ref.read(flightBookingProvider.notifier).selectOffer(offer);
+              context.push(FlightRoutes.review);
             },
           ),
         ),
@@ -122,15 +120,15 @@ class FlightOfferDetailsScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: AppTypography.body.copyWith(
-              fontWeight: bold ? FontWeight.w800 : FontWeight.w400,
-            ),
+            style: bold
+                ? AppTypography.body.copyWith(fontWeight: FontWeight.w800)
+                : AppTypography.body.copyWith(color: AppColors.textSecondary),
           ),
           Text(
-            '${amount.toStringAsFixed(2)} $currency',
-            style: AppTypography.body.copyWith(
-              fontWeight: bold ? FontWeight.w800 : FontWeight.w400,
-            ),
+            '${amount.toStringAsFixed(0)} $currency',
+            style: bold
+                ? AppTypography.body.copyWith(fontWeight: FontWeight.w800)
+                : AppTypography.body,
           ),
         ],
       ),

@@ -271,10 +271,6 @@
   "@flightSelectThisFlight": {
     "description": "CTA on the flight offer details screen."
   },
-  "flightBookingComingSoon": "Booking coming soon",
-  "@flightBookingComingSoon": {
-    "description": "Snackbar shown when \"Select this flight\" is tapped."
-  },
   "flightFareRules": "Fare rules",
   "@flightFareRules": {
     "description": "Section heading for fare rule bullets on the offer details screen."
@@ -363,6 +359,10 @@
   "flightBundleChooseAll": "Choose a bundle for every leg",
   "@flightBundleChooseAll": {
     "description": "Disabled primary CTA until every journey has a bundle."
+  },
+  "flightViewDetails": "Details",
+  "@flightViewDetails": {
+    "description": "Secondary action on an offer card that opens the read-only preview."
   },
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",

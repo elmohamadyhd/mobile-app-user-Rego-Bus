@@ -8,6 +8,7 @@ import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 /// Boarding-pass styled summary card for one [FlightOffer] on the results list.
 /// Every journey on the offer is shown — round-trip and multi-city are one
@@ -17,12 +18,19 @@ class FlightOfferCard extends StatelessWidget {
     super.key,
     required this.offer,
     required this.onTap,
+    required this.onSelect,
     this.originLabel,
     this.destinationLabel,
   });
 
   final FlightOffer offer;
+
+  /// Opens the read-only preview. No network call, no commitment — a rider
+  /// can compare several offers in detail without burning confirm calls.
   final VoidCallback onTap;
+
+  /// Enters the booking wizard, which confirms the offer.
+  final VoidCallback onSelect;
 
   /// Full airport name for the origin (falls back to the IATA code).
   final String? originLabel;
@@ -31,7 +39,7 @@ class FlightOfferCard extends StatelessWidget {
   final String? destinationLabel;
 
   /// Height of the fare stub (below the tear line). Drives the notch offset.
-  static const double _stubHeight = 60;
+  static const double _stubHeight = 72;
 
   // Hand-rolled like `TripCard._formatTime` — always 24-hour, independent of
   // locale/intl data initialization.
@@ -126,8 +134,10 @@ class FlightOfferCard extends StatelessWidget {
                     fareLabel: l10n.tripResultsFareLabel,
                     priceText: priceText,
                     currency: offer.currency,
-                    selectLabel: l10n.bookingSelect,
-                    onTap: onTap,
+                    detailsLabel: l10n.flightViewDetails,
+                    selectLabel: l10n.flightSelectThisFlight,
+                    onDetails: onTap,
+                    onSelect: onSelect,
                   ),
                 ),
               ),
@@ -426,15 +436,19 @@ class _FareStub extends StatelessWidget {
     required this.fareLabel,
     required this.priceText,
     required this.currency,
+    required this.detailsLabel,
     required this.selectLabel,
-    required this.onTap,
+    required this.onDetails,
+    required this.onSelect,
   });
 
   final String fareLabel;
   final String priceText;
   final String currency;
+  final String detailsLabel;
   final String selectLabel;
-  final VoidCallback onTap;
+  final VoidCallback onDetails;
+  final VoidCallback onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -477,28 +491,20 @@ class _FareStub extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: AppSpacing.sm),
-        Material(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(AppRadius.input),
-          elevation: 4,
-          shadowColor: AppColors.primary.withValues(alpha: 0.5),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(AppRadius.input),
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
-              ),
-              child: Text(
-                selectLabel,
-                style: AppTypography.body.copyWith(
-                  color: AppColors.onPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
+        const SizedBox(width: AppSpacing.xs),
+        TextButton(
+          onPressed: onDetails,
+          child: Text(
+            detailsLabel,
+            style: AppTypography.caption
+                .copyWith(color: AppColors.textSecondary),
+          ),
+        ),
+        Flexible(
+          child: PrimaryButton(
+            label: selectLabel,
+            compact: true,
+            onPressed: onSelect,
           ),
         ),
       ],
