@@ -548,6 +548,36 @@ Product asked to proceed on judgment for these. Each is cheap to change:
 1. **Paid-state enum** — which `order_status` / `payment_status` values mean
    "ticketed". Product is collecting the full list from backend. Blocks the
    success screen only; everything upstream can be built now.
+
+   **2026-08-09 live spike (Phase 4 Task 9).** Confirmed the **unpaid** side
+   on the demo environment: a naturally-pending order (id 76, created
+   2026-08-08) and a freshly created order (id 77) both read back as
+   `"status": "pending"`, `"order_status": "PendingPayment"`,
+   `"payment_status": "pending"`, `payment_transactions[0].status: "pending"`,
+   `paid_at: null`, `airline_pnr: null`, `gds_pnr: null`. This matches the
+   samples already in this doc and is now observed twice independently.
+
+   Attempted to also observe the **paid** side by completing order 77's
+   checkout (`transaction.invoice_url`, MyFatoorah/`eg.myfatoorah.com`) using
+   MyFatoorah's own published sandbox test cards
+   (`4508750015741019` and `5123450000000008`, per
+   [MyFatoorah's test-cards docs](https://docs.myfatoorah.com/docs/test-cards)) —
+   never a real card, and only on `demo.safaria.travel`. Both attempts were
+   declined by the gateway ("Payment failed", redirected to
+   `safaria.travel/en/failed-payment`), and re-reading order 77 afterwards
+   showed **no change**: still `"pending"` / `"PendingPayment"` / transaction
+   `"pending"` with `paid_at: null`. This demo merchant account does not
+   appear to accept MyFatoorah's documented sandbox cards the way a normal
+   MyFatoorah test account would (it may not be registered as a MyFatoorah
+   demo account per their activation step, or the two published card numbers
+   are gateway/currency-specific) — either way, no paid order has been
+   observed, live or otherwise.
+
+   `isFlightOrderPaid` (`lib/features/flight/domain/utils/flight_order_status.dart`)
+   is therefore **still provisional** — its paid-status sets are a reasonable
+   guess, not observed values, and this open question stays open. Do not
+   invent paid values; confirm with the backend team (Step 1 of Task 9)
+   before replacing the predicate's provisional sets.
 2. ~~**Round-trip confirm sample**~~ — resolved above (2026-08-08 live spike).
 3. ~~**`iso3` vs `iso2`**~~ — resolved above (2026-08-09 live spike).
 
