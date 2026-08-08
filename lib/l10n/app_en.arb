@@ -295,6 +295,56 @@
   "@flightPriceTotal": {
     "description": "Price breakdown row label and section heading on the offer details screen."
   },
+  "flightStepReview": "Review",
+  "@flightStepReview": {
+    "description": "Flight booking wizard step label for fare review."
+  },
+  "flightStepBundles": "Bundle",
+  "@flightStepBundles": {
+    "description": "Flight booking wizard step label for bundle selection."
+  },
+  "flightStepPassengers": "Passengers",
+  "@flightStepPassengers": {
+    "description": "Flight booking wizard step label for passenger details."
+  },
+  "flightStepPay": "Pay",
+  "@flightStepPay": {
+    "description": "Flight booking wizard step label for payment."
+  },
+  "flightReviewTitle": "Review your flight",
+  "@flightReviewTitle": {
+    "description": "App bar title on the flight review (confirm) screen."
+  },
+  "flightPriceChanged": "The airline changed this fare",
+  "@flightPriceChanged": {
+    "description": "Banner title when confirm returns a different total than search."
+  },
+  "flightPriceWas": "Was {old}",
+  "@flightPriceWas": {
+    "description": "Searched fare amount shown in the price-change banner.",
+    "placeholders": {
+      "old": {"type": "String"}
+    }
+  },
+  "flightPriceNow": "Now {amount}",
+  "@flightPriceNow": {
+    "description": "Confirmed fare amount shown in the price-change banner.",
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "flightAcceptAndContinue": "Accept and continue",
+  "@flightAcceptAndContinue": {
+    "description": "Primary CTA on review when the confirmed fare differs from search."
+  },
+  "flightContinue": "Continue",
+  "@flightContinue": {
+    "description": "Primary CTA on review when the confirmed fare matches search."
+  },
+  "flightBackToResults": "Back to results",
+  "@flightBackToResults": {
+    "description": "Secondary action returning to flight search results after a confirm error."
+  },
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
   "@homePopularDestinations": {
