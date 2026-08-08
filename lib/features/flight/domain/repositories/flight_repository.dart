@@ -7,8 +7,12 @@ import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
+import 'package:safaria/features/flight/domain/entities/flight_settings.dart';
 
 abstract interface class FlightRepository {
+  /// Booking currency and the single payment gateway.
+  Future<FlightSettings> settings();
+
   Future<(List<FlightIataAirport>, FlightPagination)> searchIataAirports({
     required String search,
     int page,

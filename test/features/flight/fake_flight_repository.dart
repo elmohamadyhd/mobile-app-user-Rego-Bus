@@ -10,6 +10,7 @@ import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
+import 'package:safaria/features/flight/domain/entities/flight_settings.dart';
 import 'package:safaria/features/flight/domain/repositories/flight_repository.dart';
 
 class FakeFlightRepository implements FlightRepository {
@@ -31,6 +32,7 @@ class FakeFlightRepository implements FlightRepository {
   ApiException? addPassengersException;
   List<FlightPassengerDraft>? lastPassengers;
   FlightContactDetails? lastContact;
+  FlightSettings? settingsResult;
 
   /// Per-term overrides for simulating out-of-order network responses in
   /// tests. When a term has a completer here, `searchAirportSuggestions`
@@ -99,6 +101,11 @@ class FakeFlightRepository implements FlightRepository {
     currency: 'EGP',
     priceClasses: [],
   );
+
+  @override
+  Future<FlightSettings> settings() {
+    return Future.value(settingsResult ?? const FlightSettings());
+  }
 
   @override
   Future<(List<FlightIataAirport>, FlightPagination)> searchIataAirports({

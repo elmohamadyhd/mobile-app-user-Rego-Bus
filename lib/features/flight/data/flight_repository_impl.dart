@@ -13,12 +13,21 @@ import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
+import 'package:safaria/features/flight/domain/entities/flight_settings.dart';
 import 'package:safaria/features/flight/domain/repositories/flight_repository.dart';
 
 class FlightRepositoryImpl implements FlightRepository {
   FlightRepositoryImpl(this._api);
 
   final FlightApi _api;
+
+  @override
+  Future<FlightSettings> settings() {
+    return _guard(() async {
+      final body = await _api.settings();
+      return FlightDtoMapper.settingsFromEnvelope(body);
+    });
+  }
 
   @override
   Future<(List<FlightIataAirport>, FlightPagination)> searchIataAirports({

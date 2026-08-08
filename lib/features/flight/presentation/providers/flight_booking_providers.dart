@@ -13,6 +13,7 @@ import 'package:safaria/features/flight/domain/entities/flight_offer_filters.dar
 import 'package:safaria/features/flight/domain/entities/flight_passenger_counts.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
+import 'package:safaria/features/flight/domain/entities/flight_settings.dart';
 import 'package:safaria/features/flight/domain/repositories/flight_repository.dart';
 import 'package:safaria/features/flight/domain/utils/apply_flight_offer_filters.dart';
 import 'package:safaria/features/flight/domain/utils/flight_passenger_errors.dart';
@@ -40,6 +41,12 @@ final flightRepositoryProvider = Provider<FlightRepository>(
 /// every passenger form.
 final flightCountriesProvider = FutureProvider<List<FlightCountry>>((ref) {
   return ref.watch(flightRepositoryProvider).countries();
+});
+
+/// Settings are static for a session; the pay screen reads the currency from
+/// here rather than hardcoding it.
+final flightSettingsProvider = FutureProvider<FlightSettings>((ref) {
+  return ref.watch(flightRepositoryProvider).settings();
 });
 
 @freezed

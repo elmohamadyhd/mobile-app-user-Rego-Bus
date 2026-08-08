@@ -9,6 +9,7 @@ import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
+import 'package:safaria/features/flight/domain/entities/flight_settings.dart';
 import 'package:safaria/features/flight/domain/utils/flight_passenger_rules.dart';
 
 abstract final class FlightDtoMapper {
@@ -187,6 +188,19 @@ abstract final class FlightDtoMapper {
       fareType: _string(json['fareType']) ?? '',
       rulesAndPenalties:
           rules is List ? rules.map((e) => e.toString()).toList() : null,
+    );
+  }
+
+  // ---- Settings (GET /settings) ----
+
+  /// Defaults to EGP rather than failing: a missing currency should not stop
+  /// a rider booking, and EGP is the only value the backend has ever sent.
+  static FlightSettings settingsFromEnvelope(dynamic body) {
+    final data = body is Map ? body['data'] : null;
+    if (data is! Map) return const FlightSettings();
+    return FlightSettings(
+      bookingCurrency: _string(data['default_booking_currency']) ?? 'EGP',
+      paymentGateway: _string(data['payment_gateway']) ?? '',
     );
   }
 

@@ -27,6 +27,12 @@ class FlightApi {
     return res.data;
   }
 
+  /// `GET /settings` — booking currency and the single payment gateway.
+  Future<dynamic> settings() async {
+    final res = await _dio.get('/settings');
+    return res.data;
+  }
+
   Future<dynamic> confirmOrder(String offerId) async {
     final res = await _dio.post('/flights/${_encodeOfferId(offerId)}/confirm');
     return res.data;
