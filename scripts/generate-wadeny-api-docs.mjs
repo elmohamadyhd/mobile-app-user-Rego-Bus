@@ -93,31 +93,115 @@ function normalizePath(raw) {
   return raw.replace(/\{\{url\}\}/g, "").split("?")[0];
 }
 
-function stripJsonComments(json) {
-  return json
-    .replace(/\/\/[^\n]*/g, "")
-    .replace(/,\s*([}\]])/g, "$1")
-    .replace(/\n\s*\n/g, "\n");
+/** Parse Postman-style // comments from raw JSON bodies into field notes. */
+function extractJsonFieldNotes(raw) {
+  if (!raw || !raw.includes("//")) return [];
+
+  const notes = [];
+  const lines = raw.split(/\r?\n/);
+  let pendingBlock = [];
+
+  const flushBlock = () => {
+    if (!pendingBlock.length) return;
+    const block = pendingBlock
+      .map((l) => l.replace(/^\s*\/\//, "").trimEnd())
+      .join("\n")
+      .trim();
+    pendingBlock = [];
+    if (!block) return;
+    notes.push({
+      field: "(commented example)",
+      comment: block,
+    });
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("//")) {
+      pendingBlock.push(line);
+      continue;
+    }
+    flushBlock();
+
+    const inline = line.match(
+      /"([^"]+)"\s*:\s*(?:("[^"]*")|([^,\n/{[]+))\s*,?\s*\/\/\s*(.+?)\s*$/,
+    );
+    if (inline) {
+      notes.push({
+        field: inline[1],
+        comment: inline[4].replace(/,+\s*$/, "").trim(),
+      });
+      continue;
+    }
+
+    // Trailing comment on a closing brace, e.g. `} //VCAI`
+    const trailing = line.match(/^\s*[}\]],?\s*\/\/\s*(.+?)\s*$/);
+    if (trailing) {
+      notes.push({
+        field: "(adjacent value)",
+        comment: trailing[1].replace(/,+\s*$/, "").trim(),
+      });
+    }
+  }
+  flushBlock();
+  return notes;
+}
+
+function formatBodyForDocs(raw) {
+  const trimmed = (raw || "").trim();
+  const hasComments = trimmed.includes("//");
+  if (!hasComments) {
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        return {
+          content: JSON.stringify(JSON.parse(trimmed), null, 2),
+          language: "json",
+          notes: [],
+        };
+      } catch {
+        /* keep as-is */
+      }
+    }
+    return { content: trimmed, language: "json", notes: [] };
+  }
+
+  // Keep Postman // comments — they document enums and alternate examples.
+  const content = trimmed
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\s+$/, ""))
+    .join("\n");
+  return {
+    content,
+    language: "jsonc",
+    notes: extractJsonFieldNotes(trimmed),
+  };
 }
 
 function extractBody(body) {
   if (!body) return null;
   if (body.mode === "formdata" && body.formdata) {
+    const fields = body.formdata
+      .filter((f) => f.key)
+      .map((f) => ({
+        key: f.key,
+        value: f.value ?? "",
+        description: (f.description || "").trim(),
+        type: f.type || "text",
+      }));
     return {
       type: "formdata",
-      keys: body.formdata.map((f) => f.key).filter(Boolean),
+      keys: fields.map((f) => f.key),
+      fields,
     };
   }
   if (body.mode === "raw" && body.raw) {
-    let raw = body.raw.trim();
-    if (raw.startsWith("{") || raw.startsWith("[")) {
-      try {
-        raw = JSON.stringify(JSON.parse(stripJsonComments(raw)), null, 2);
-      } catch {
-        raw = stripJsonComments(raw);
-      }
-    }
-    return { type: "raw", content: raw };
+    const formatted = formatBodyForDocs(body.raw);
+    return {
+      type: "raw",
+      content: formatted.content,
+      language: formatted.language,
+      notes: formatted.notes,
+    };
   }
   return null;
 }
@@ -311,6 +395,7 @@ function scenarioLabel(code, parsed, rawBody) {
     if (message.toLowerCase().includes("bundles")) {
       return "Fare bundles";
     }
+    if (message === "Currencies") return "Currencies list";
     if (message === "Account deleted") return "Account deleted";
     if (parsed?.data?.api_token) return "Success — user data";
     if (
@@ -418,7 +503,10 @@ function walk(items, folderPath, collectionAuth, apis) {
       const req = item.request;
       const url = req.url;
       const raw = typeof url === "string" ? url : url?.raw || "";
-      const query = typeof url === "object" && url?.query ? url.query : [];
+      const query =
+        typeof url === "object" && url?.query
+          ? url.query.filter((q) => q && !q.disabled && q.key)
+          : [];
       const pathOnly = normalizePath(raw);
       const parts = folderPath.filter((p) => p !== "V1");
       const section =
@@ -646,17 +734,78 @@ function renderEndpoint(api, responsesMode) {
 
   if (api.body) {
     if (api.body.type === "formdata") {
+      const withNotes = (api.body.fields || []).filter((f) => f.description);
+      if (withNotes.length) {
+        lines.push("**Body (form-data):**");
+        lines.push("");
+        lines.push("| Field | Example | Notes |");
+        lines.push("|-------|---------|-------|");
+        for (const f of api.body.fields) {
+          const note = f.description || "—";
+          const example = f.value ? `\`${f.value}\`` : "—";
+          lines.push(`| \`${f.key}\` | ${example} | ${note} |`);
+        }
+        lines.push("");
+      } else {
+        lines.push(
+          `**Body (form-data):** ${api.body.keys.map((k) => `\`${k}\``).join(", ")}`,
+        );
+        lines.push("");
+      }
+    } else if (api.body.type === "raw") {
+      const lang = api.body.language || "json";
       lines.push(
-        `**Body (form-data):** ${api.body.keys.map((k) => `\`${k}\``).join(", ")}`,
+        lang === "jsonc"
+          ? "**Body (JSON)** — inline `//` comments from Postman document allowed values:"
+          : "**Body (JSON):**",
       );
       lines.push("");
-    } else if (api.body.type === "raw") {
-      lines.push("**Body (JSON):**");
-      lines.push("");
-      lines.push("```json");
+      lines.push("```" + lang);
       lines.push(api.body.content);
       lines.push("```");
       lines.push("");
+
+      if (api.body.notes?.length) {
+        const inlineNotes = api.body.notes.filter(
+          (n) => !n.comment.includes("\n"),
+        );
+        const blockNotes = api.body.notes.filter((n) =>
+          n.comment.includes("\n"),
+        );
+
+        if (inlineNotes.length) {
+          lines.push("**Field notes (from Postman comments):**");
+          lines.push("");
+          lines.push("| Field | Allowed / notes |");
+          lines.push("|-------|-----------------|");
+          for (const note of inlineNotes) {
+            const comment = note.comment.replace(/\|/g, "\\|");
+            const values = comment
+              .split(",")
+              .map((v) => v.trim())
+              .filter(Boolean);
+            const looksLikeEnum =
+              values.length > 1 &&
+              values.every((v) => /^[A-Za-z0-9_]+$/.test(v));
+            const cell = looksLikeEnum
+              ? values.map((v) => `\`${v}\``).join(", ")
+              : `\`${comment}\``;
+            lines.push(`| \`${note.field}\` | ${cell} |`);
+          }
+          lines.push("");
+        }
+
+        for (const note of blockNotes) {
+          lines.push(
+            `**${note.field === "(commented example)" ? "Commented example from Postman" : note.field}:**`,
+          );
+          lines.push("");
+          lines.push("```json");
+          lines.push(note.comment);
+          lines.push("```");
+          lines.push("");
+        }
+      }
     }
   }
 
@@ -792,9 +941,8 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
   md.push("");
   md.push("| Item | Issue |");
   md.push("|------|-------|");
-  md.push("| Content → New Request | No URL configured (empty request) |");
   md.push(
-    '| Currencies | Named "Currencies" but URL is `/flights/iata?search=CAI` — likely copy-paste error |',
+    "| Flights → Search body | Key is spelled `curreny` (missing `c`) in the collection — confirm against the live API before treating as a typo vs. contract |",
   );
   md.push(
     "| Profile → Wallet / Orders (GET) | Postman copies form-data bodies from other requests — real API expects no body on these GET calls |",
@@ -809,7 +957,7 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
     "| Buses → Search details (404 HTML) | Saved example returned an HTML 404 page — likely captured against a removed trip ID |",
   );
   md.push(
-    "| Buses → cancel | `POST /buses/orders/:id/cancel` has no saved response example yet — request-only in docs until captured in Postman |",
+    "| Buses → cancel | `PUT /buses/orders/:id/cancel` has no saved response example yet — request-only in docs until captured in Postman |",
   );
   md.push("");
   md.push(
@@ -818,6 +966,10 @@ function generateMarkdown(data, apis, baseUrl, responsesMode) {
   md.push("");
   md.push(
     "Saved responses documented in each endpoint section are **real response examples** attached to the parent Postman request — not separate endpoints.",
+  );
+  md.push("");
+  md.push(
+    "Request body `//` comments from Postman are preserved in the docs (as `jsonc`) because they document enums and alternate examples.",
   );
   md.push("");
 

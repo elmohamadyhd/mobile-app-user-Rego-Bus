@@ -11,7 +11,7 @@
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
 | **Total requests** | 66 |
-| **Documented saved responses** | 102 |
+| **Documented saved responses** | 113 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -29,7 +29,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 |--------|------|--------------|
 | `DELETE` | `/profile` | Delete account |
 | `DELETE` | `/profile/address-book/12` | Delete |
-| `DELETE` | `/profile/notifications` | Delete |
+| `DELETE` | `/profile/notifications/:id` | Delete |
 | `GET` | `/banners` | Banners list |
 | `GET` | `/buses/carriers` | Carriers |
 | `GET` | `/buses/locations` | Locations |
@@ -38,6 +38,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `GET` | `/buses/trips/236510` | Search details |
 | `GET` | `/buses/trips/236510/seats` | Seats |
 | `GET` | `/countries` | Countries List |
+| `GET` | `/currencies` | Currencies |
 | `GET` | `/faq` | Faq |
 | `GET` | `/flights/:offer_id/bundles` | Bundels |
 | `GET` | `/flights/airports/search` | Airports |
@@ -700,7 +701,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | 3 | `PUT` | `/profile/address-book/22` | Update |
 | 4 | `DELETE` | `/profile/address-book/12` | Delete |
 | 5 | `GET` | `/profile/notifications` | List |
-| 6 | `DELETE` | `/profile/notifications` | Delete |
+| 6 | `DELETE` | `/profile/notifications/:id` | Delete |
 | 7 | `GET` | `/profile/tickets/6/replies` | List |
 | 8 | `POST` | `/profile/tickets/6/replies` | Create |
 | 9 | `GET` | `/profile/tickets` | Tickets list |
@@ -1133,8 +1134,8 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | | |
 |---|---|
 | **Method** | `DELETE` |
-| **Path** | `/profile/notifications` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/profile/notifications` |
+| **Path** | `/profile/notifications/:id` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/notifications/:id` |
 | **Auth** | Bearer token required |
 | **Folder** | Notifications |
 
@@ -1282,7 +1283,13 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | **Auth** | Bearer token required |
 | **Folder** | Tickets |
 
-**Body (form-data):** `title`, `description`, `section`
+**Body (form-data):**
+
+| Field | Example | Notes |
+|-------|---------|-------|
+| `title` | `missing button` | — |
+| `description` | `missing button on anything` | — |
+| `section` | `AppIssues` | use 'TripIssues' or 'AppIssues' |
 
 **Headers:**
 
@@ -1399,6 +1406,190 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Empty results | ar | — |
+| `200` | Flight orders | ar | — |
+
+#### 200 — Empty results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Flight orders",
+  "errors": {},
+  "data": [],
+  "pagination": {
+    "total": 0,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
+#### 200 — Flight orders (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Flight orders",
+  "errors": {},
+  "data": [
+    {
+      "id": 76,
+      "provider": "flywt",
+      "ndc_booking_reference": null,
+      "airline_pnr": null,
+      "gds_pnr": null,
+      "offer_id": "Rmx5TmFzI0VHWSNBMUMwSTAjNjQyNmExMjQtMjgzZC00YjFiLTg4OGUtY2QyM2M1Njc4YThmIzI2NWQyNDMzLTNjZDQtNGJiOS05NDIwLWI3OTMyOTcyYjZjNCZtc0RaSkdOak9UUmhZbVEyTFRaa01Ea3RORFF5TlMwNVlUZGhMVFl5Wm1JMllqTXlZbUk0TTVHWHdObHRXRmwrSURVM05YNGdmbjVEUVVsK01EZ3ZNekF2TWpBeU5pQXhOam9",
+      "status": "pending",
+      "order_status": "PendingPayment",
+      "refundability": null,
+      "total_amount": 13048.86,
+      "base_amount": 6446.36,
+      "taxes_amount": 6602.5,
+      "discount_amount": 0,
+      "before_discount_amount": 13048.86,
+      "service_charge_amount": 0,
+      "currency": "EGP",
+      "currency_id": 1,
+      "base_currency_id": 1,
+      "created_at": "2026-08-08 19:21:25",
+      "updated_at": "2026-08-08 19:21:25",
+      "customer": {
+        "id": 5049,
+        "name": "Abdallah",
+        "email": "Elmohamady82@gmail.com",
+        "mobile": "1276586027"
+      },
+      "agent_id": null,
+      "passengers": [
+        {
+          "id": 81,
+          "passenger_type_code": "ADT",
+          "title": "MR",
+          "first_name": "Ahmed",
+          "middle_name": "Mostafa",
+          "last_name": "Ahmed",
+          "birth_date": "1990-01-02",
+          "gender": "M",
+          "nationality_country_code": "EGP",
+          "email": "ahmed.mostafa.dev.eg@gmail.com",
+          "phone": "01090510796"
+        }
+      ],
+      "segments": [
+        {
+          "id": 105,
+          "origin": "CAI",
+          "destination": "MED",
+          "departure_datetime": "2026-08-30T16:30:00+03:00",
+          "arrival_datetime": "2026-08-30T18:20:00+03:00",
+          "departure_terminal": "",
+          "arrival_terminal": "",
+          "flight_time_in_minutes": 110,
+          "equipment": "320",
+          "operating_carrier_code": "XY",
+          "operating_flight_number": "575",
+          "marketing_carrier_code": "XY",
+          "marketing_flight_number": "575"
+        },
+        {
+          "id": 106,
+          "origin": "MED",
+          "destination": "RUH",
+          "departure_datetime": "2026-08-30T21:55:00+03:00",
+          "arrival_datetime": "2026-08-30T23:20:00+03:00",
+          "departure_terminal": "",
+          "arrival_terminal": "3",
+          "flight_time_in_minutes": 85,
+          "equipment": "320",
+          "operating_carrier_code": "XY",
+          "operating_flight_number": "98",
+          "marketing_carrier_code": "XY",
+          "marketing_flight_number": "98"
+        }
+      ],
+      "journeys": [
+        {
+          "id": 79,
+          "journey_reference_id": "Rmx5TmFzI0VHWSNYWX4gNTc1fiB+fkNBSX4wOC8zMC8yMDI2IDE2OjMwfk1FRH4wOC8zMC8yMDI2IDE4OjIwfn5eWFl+ICA5OH4gfn5NRUR+MDgvMzAvMjAyNiAyMTo1NX5SVUh+MDgvMzAvMjAyNiAyMzoyMH5+",
+          "origin": "CAI",
+          "destination": "RUH",
+          "number_of_stops": 1,
+          "segment_reference_ids": [
+            "Rmx5TmFzI0VHWSNOQV9DQUlfOC8zMC8yMDI2IDQ6MzA6MDDigK9QTV9NRURfOC8zMC8yMDI2IDY6MjA6MDDigK9QTQ==",
+            "Rmx5TmFzI0VHWSNOQV9NRURfOC8zMC8yMDI2IDk6NTU6MDDigK9QTV9SVUhfOC8zMC8yMDI2IDExOjIwOjAw4oCvUE0="
+          ],
+          "bundle_reference_ids": []
+        }
+      ],
+      "included_bundles": [],
+      "bundles_total": 0,
+      "payment_status": "pending",
+      "payment_transactions": [
+        {
+          "id": 120,
+          "gateway": "myfatoorah",
+          "status": "pending",
+          "paid_at": null,
+          "invoice_url": "https://eg.myfatoorah.com/EGY/ia/…",
+          "invoice_id": 8285523
+        }
+      ],
+      "can_be_cancel": true,
+      "confirmed_totals": null,
+      "totals_comparison": {
+        "currency_match": null,
+        "total_amount": null,
+        "base_amount": null,
+        "taxes_amount": null,
+        "discount_amount": null,
+        "before_discount_amount": null,
+        "service_charge_amount": null
+      },
+      "gds_pnr_response": null,
+      "provider_passengers": [
+        {
+          "email": "ahmed.mostafa.dev.eg@gmail.com",
+          "phone": "01090510796",
+          "title": "MR",
+          "gender": "M",
+          "address": {
+            "line1": "Sector 132, Logix Technova",
+            "line2": "Noida,UP",
+            "cityCode": "91 09305948255",
+            "countryCode": "EG"
+          },
+          "lastName": "Ahmed",
+          "birthDate": "1990-01-02",
+          "firstName": "Ahmed",
+          "middleName": "Mostafa",
+          "documentNumber": "299060912312",
+          "passengerTypeCode": "ADT",
+          "residenceCountryCode": "EGP",
+          "nationalityCountryCode": "EGP"
+        }
+      ],
+      "invoice_url": "https://demo.safaria.travel/flight-orders/76/…"
+    }
+  ],
+  "pagination": {
+    "total": 1,
+    "lastPage": 1,
+    "perPage": 15,
+    "currentPage": 1,
+    "nextPageUrl": null,
+    "previousPageUrl": null
+  }
+}
+```
+
 ### Show
 
 | | |
@@ -1417,6 +1608,160 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Flight order | ar | — |
+
+#### 200 — Flight order (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Flight order",
+  "errors": {},
+  "data": {
+    "id": 76,
+    "provider": "flywt",
+    "ndc_booking_reference": null,
+    "airline_pnr": null,
+    "gds_pnr": null,
+    "offer_id": "Rmx5TmFzI0VHWSNBMUMwSTAjNjQyNmExMjQtMjgzZC00YjFiLTg4OGUtY2QyM2M1Njc4YThmIzI2NWQyNDMzLTNjZDQtNGJiOS05NDIwLWI3OTMyOTcyYjZjNCZtc0RaSkdOak9UUmhZbVEyTFRaa01Ea3RORFF5TlMwNVlUZGhMVFl5Wm1JMllqTXlZbUk0TTVHWHdObHRXRmwrSURVM05YNGdmbjVEUVVsK01EZ3ZNekF2TWpBeU5pQXhOam9",
+    "status": "pending",
+    "order_status": "PendingPayment",
+    "refundability": null,
+    "total_amount": 13048.86,
+    "base_amount": 6446.36,
+    "taxes_amount": 6602.5,
+    "discount_amount": 0,
+    "before_discount_amount": 13048.86,
+    "service_charge_amount": 0,
+    "currency": "EGP",
+    "currency_id": 1,
+    "base_currency_id": 1,
+    "created_at": "2026-08-08 19:21:25",
+    "updated_at": "2026-08-08 19:21:25",
+    "customer": {
+      "id": 5049,
+      "name": "Abdallah",
+      "email": "Elmohamady82@gmail.com",
+      "mobile": "1276586027"
+    },
+    "agent_id": null,
+    "passengers": [
+      {
+        "id": 81,
+        "passenger_type_code": "ADT",
+        "title": "MR",
+        "first_name": "Ahmed",
+        "middle_name": "Mostafa",
+        "last_name": "Ahmed",
+        "birth_date": "1990-01-02",
+        "gender": "M",
+        "nationality_country_code": "EGP",
+        "email": "ahmed.mostafa.dev.eg@gmail.com",
+        "phone": "01090510796"
+      }
+    ],
+    "segments": [
+      {
+        "id": 105,
+        "origin": "CAI",
+        "destination": "MED",
+        "departure_datetime": "2026-08-30T16:30:00+03:00",
+        "arrival_datetime": "2026-08-30T18:20:00+03:00",
+        "departure_terminal": "",
+        "arrival_terminal": "",
+        "flight_time_in_minutes": 110,
+        "equipment": "320",
+        "operating_carrier_code": "XY",
+        "operating_flight_number": "575",
+        "marketing_carrier_code": "XY",
+        "marketing_flight_number": "575"
+      },
+      {
+        "id": 106,
+        "origin": "MED",
+        "destination": "RUH",
+        "departure_datetime": "2026-08-30T21:55:00+03:00",
+        "arrival_datetime": "2026-08-30T23:20:00+03:00",
+        "departure_terminal": "",
+        "arrival_terminal": "3",
+        "flight_time_in_minutes": 85,
+        "equipment": "320",
+        "operating_carrier_code": "XY",
+        "operating_flight_number": "98",
+        "marketing_carrier_code": "XY",
+        "marketing_flight_number": "98"
+      }
+    ],
+    "journeys": [
+      {
+        "id": 79,
+        "journey_reference_id": "Rmx5TmFzI0VHWSNYWX4gNTc1fiB+fkNBSX4wOC8zMC8yMDI2IDE2OjMwfk1FRH4wOC8zMC8yMDI2IDE4OjIwfn5eWFl+ICA5OH4gfn5NRUR+MDgvMzAvMjAyNiAyMTo1NX5SVUh+MDgvMzAvMjAyNiAyMzoyMH5+",
+        "origin": "CAI",
+        "destination": "RUH",
+        "number_of_stops": 1,
+        "segment_reference_ids": [
+          "Rmx5TmFzI0VHWSNOQV9DQUlfOC8zMC8yMDI2IDQ6MzA6MDDigK9QTV9NRURfOC8zMC8yMDI2IDY6MjA6MDDigK9QTQ==",
+          "Rmx5TmFzI0VHWSNOQV9NRURfOC8zMC8yMDI2IDk6NTU6MDDigK9QTV9SVUhfOC8zMC8yMDI2IDExOjIwOjAw4oCvUE0="
+        ],
+        "bundle_reference_ids": []
+      }
+    ],
+    "included_bundles": [],
+    "bundles_total": 0,
+    "payment_status": "pending",
+    "payment_transactions": [
+      {
+        "id": 120,
+        "gateway": "myfatoorah",
+        "status": "pending",
+        "paid_at": null,
+        "invoice_url": "https://eg.myfatoorah.com/EGY/ia/…",
+        "invoice_id": 8285523
+      }
+    ],
+    "can_be_cancel": true,
+    "confirmed_totals": null,
+    "totals_comparison": {
+      "currency_match": null,
+      "total_amount": null,
+      "base_amount": null,
+      "taxes_amount": null,
+      "discount_amount": null,
+      "before_discount_amount": null,
+      "service_charge_amount": null
+    },
+    "gds_pnr_response": null,
+    "provider_passengers": [
+      {
+        "email": "ahmed.mostafa.dev.eg@gmail.com",
+        "phone": "01090510796",
+        "title": "MR",
+        "gender": "M",
+        "address": {
+          "line1": "Sector 132, Logix Technova",
+          "line2": "Noida,UP",
+          "cityCode": "91 09305948255",
+          "countryCode": "EG"
+        },
+        "lastName": "Ahmed",
+        "birthDate": "1990-01-02",
+        "firstName": "Ahmed",
+        "middleName": "Mostafa",
+        "documentNumber": "299060912312",
+        "passengerTypeCode": "ADT",
+        "residenceCountryCode": "EGP",
+        "nationalityCountryCode": "EGP"
+      }
+    ],
+    "invoice_url": "https://demo.safaria.travel/flight-orders/76/…"
+  }
+}
+```
 
 #### Orders > Buses
 
@@ -1651,6 +1996,7 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 |------|----------|----------|--------------|
 | `200` | Bus order details | ar | — |
 | `404` | Bus order not found | ar | — |
+| `200` | Bus order details | ar | — |
 
 #### 200 — Bus order details (ar)
 
@@ -1724,6 +2070,88 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
   "message": "Bus order not found",
   "errors": {},
   "data": {}
+}
+```
+
+#### 200 — Bus order details (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Bus order",
+  "errors": {},
+  "data": {
+    "number": "000001455",
+    "id": 1455,
+    "trip_id": "121442",
+    "gateway_order_id": "1213166",
+    "parent_order_id": null,
+    "company_data": {
+      "name": "Blue Bus",
+      "avatar": "",
+      "bus_image": "",
+      "pin": ""
+    },
+    "status": "In Processing",
+    "status_code": "in_processing",
+    "gateway_id": "BlueBus",
+    "company_name": "Blue Bus",
+    "category": "business 40",
+    "can_be_cancel": false,
+    "trip_type": "Buses",
+    "is_confirmed": 0,
+    "review": null,
+    "can_review": false,
+    "payment_data": {
+      "status": "Success",
+      "status_code": "success",
+      "invoice_id": 6963616,
+      "gateway": "Myfatoorah",
+      "invoice_url": "https://demo.MyFatoorah.com/KWT/ia/…",
+      "data": {
+        "notes": ""
+      }
+    },
+    "invoice_url": "https://demo.safaria.travel/orders/1455/invoice/…",
+    "station_from": {
+      "id": "940",
+      "station_id": "940",
+      "name": "Sekka Club",
+      "city_id": 1,
+      "city_name": "Cairo",
+      "latitude": "30.057569550064",
+      "longitude": "31.304265372823",
+      "arrival_at": "2026-07-30 05:45 am"
+    },
+    "station_to": {
+      "id": "945",
+      "station_id": "945",
+      "name": "Moharam Bek",
+      "city_id": 2,
+      "city_name": "Alexandria",
+      "latitude": "31.178158",
+      "longitude": "29.915599",
+      "arrival_at": "2026-07-30 10:00 am"
+    },
+    "tickets": [
+      {
+        "id": 2052,
+        "seat_number": "15",
+        "price": "280.00"
+      }
+    ],
+    "date": "2026-07-30",
+    "date_time": "2026-07-30 12:01 AM",
+    "payment_url": "https://demo.safaria.travel/api/v1/buses/orders/1455/…",
+    "cancel_url": "https://demo.safaria.travel/api/v1/buses/orders/1455/cancel",
+    "original_tickets_totals": "EGP 280.00",
+    "discount": "EGP 0.00",
+    "wallet_discount": "EGP 0.00",
+    "tickets_totals_after_discount": "EGP 280.00",
+    "payment_fees": "EGP 19.60",
+    "total": "EGP 299.60",
+    "currency": "EGP"
+  }
 }
 ```
 
@@ -1984,8 +2412,6 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | **Full URL** | `https://demo.safaria.travel/api/v1/profile/private/orders/:id` |
 | **Auth** | Bearer token required |
 | **Folder** | Orders > Private |
-
-**Body (form-data):** `file`, `message`
 
 **Headers:**
 
@@ -2262,6 +2688,23 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Done | ar | — |
+
+#### 200 — Done (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Done",
+  "errors": {},
+  "data": {}
+}
+```
+
 ### Verify Alt phone
 
 | | |
@@ -2431,7 +2874,6 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 
 | Parameter | Example |
 |-----------|---------|
-| `term` |  |
 | `category_id` | 1 |
 
 **Body (JSON):**
@@ -2888,14 +3330,8 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/iata` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/flights/iata?search=CAI` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/iata` |
 | **Auth** | Bearer token required |
-
-**Query parameters:**
-
-| Parameter | Example |
-|-----------|---------|
-| `search` | CAI |
 
 **Headers:**
 
@@ -2910,6 +3346,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 |------|----------|----------|--------------|
 | `200` | Airports list | ar | — |
 | `200` | Airports list | ar | — |
+| `200` | Airports list | en | — |
 
 #### 200 — Airports list (ar)
 
@@ -3019,20 +3456,68 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 }
 ```
 
+#### 200 — Airports list (en)
+
+```json
+{
+  "status": 200,
+  "message": "Airports list",
+  "errors": {},
+  "data": [
+    {
+      "id": 50232,
+      "name": "Anaa Airport",
+      "city": "Anaa",
+      "country": "French Polynesia",
+      "iata_code": "AAA",
+      "icao_code": "NTGA",
+      "country_code": "PF",
+      "latitude": -17.3526,
+      "longitude": -145.509995
+    },
+    {
+      "id": 81953,
+      "name": "Arrabury Airport",
+      "city": "Tanbar",
+      "country": "Australia",
+      "iata_code": "AAB",
+      "icao_code": "YARY",
+      "country_code": "AU",
+      "latitude": -26.69639,
+      "longitude": 141.048718
+    },
+    {
+      "id": 30319,
+      "name": "El Arish International Airport",
+      "city": "El Arish",
+      "country": "Egypt",
+      "iata_code": "AAC",
+      "icao_code": "HEAR",
+      "country_code": "EG",
+      "latitude": 31.055324,
+      "longitude": 33.827964
+    },
+    "…47 more items"
+  ],
+  "pagination": {
+    "total": 9097,
+    "lastPage": 182,
+    "perPage": 50,
+    "currentPage": 1,
+    "nextPageUrl": "https://demo.safaria.travel/api/v1/flights/iata?page=2",
+    "previousPageUrl": null
+  }
+}
+```
+
 ### Airports
 
 | | |
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/airports/search` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/flights/airports/search?term=دبي` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/airports/search` |
 | **Auth** | Bearer token required |
-
-**Query parameters:**
-
-| Parameter | Example |
-|-----------|---------|
-| `term` | دبي |
 
 **Headers:**
 
@@ -3046,7 +3531,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
 | `200` | Airport search results | ar | — |
-| `400` | Missing search term | ar | `term` |
+| `400` | Missing search term (×2) | ar | `term` |
 
 #### 200 — Airport search results (ar)
 
@@ -3119,26 +3604,35 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | **Full URL** | `https://demo.safaria.travel/api/v1/flights/search` |
 | **Auth** | Bearer token required |
 
-**Body (JSON):**
+**Body (JSON)** — inline `//` comments from Postman document allowed values:
 
-```json
+```jsonc
 {
-  "origin": "CAI",
-  "destination": "RUH",
-  "date": "2026-06-30",
-  "passengers": [
-    {
-      "passengerTypeCode": "ADT",
-      "count": 1
-    }
-  ],
-  "sortingCriteria": "CheapestFirst",
-  "cabinClass": "CABIN_CLASS_ECONOMY",
-  "directFlightsOnly": false,
-  "trip_type": "one_way",
-  "curreny": "SAR"
+    "origin": "CAI",
+    "destination": "RUH",
+    "date": "2026-08-30",
+    "passengers": [
+        {
+            "passengerTypeCode": "ADT", //ADT,CHD,INF
+            "count": 1
+        }
+    ],
+    "sortingCriteria": "CheapestFirst", //FastestFirst,SlowestFirst,CheapestFirst,MostExpensiveFirst,EarliestDepartureFirst,LatestDepartureFirst
+    "cabinClass": "CABIN_CLASS_ECONOMY", //CABIN_CLASS_PREMIUM_ECONOMY,CABIN_CLASS_BUSINESS,CABIN_CLASS_FIRST,CABIN_CLASS_UNSPECIFIED
+    "directFlightsOnly": false,
+    "trip_type": "one_way", //one_way,round_trip,multi_city,,
+    "curreny":"EGP"
 }
 ```
+
+**Field notes (from Postman comments):**
+
+| Field | Allowed / notes |
+|-------|-----------------|
+| `passengerTypeCode` | `ADT`, `CHD`, `INF` |
+| `sortingCriteria` | `FastestFirst`, `SlowestFirst`, `CheapestFirst`, `MostExpensiveFirst`, `EarliestDepartureFirst`, `LatestDepartureFirst` |
+| `cabinClass` | `CABIN_CLASS_PREMIUM_ECONOMY`, `CABIN_CLASS_BUSINESS`, `CABIN_CLASS_FIRST`, `CABIN_CLASS_UNSPECIFIED` |
+| `trip_type` | `one_way`, `round_trip`, `multi_city` |
 
 **Headers:**
 
@@ -3151,6 +3645,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
+| `200` | Flight search results | ar | — |
 | `200` | Flight search results | ar | — |
 | `200` | Flight search results | ar | — |
 | `200` | Flight search results | ar | — |
@@ -3926,6 +4421,178 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 }
 ```
 
+#### 200 — Flight search results (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Flight search results",
+  "errors": {},
+  "data": [
+    {
+      "offerId": "R2FsaWxlbyNFR1kjQTFDMEkwIzcxZTdkYjJhLTg4OTktNGJjNy1iMzc2LWUyMWNlODlkZTgzMyN3bmd0MCtDRXVES0FFb3lUUWRBQUFBPT0mbWRra1lUVmpZV1kzTnpJdFl6ZGhOeTAwTXpZMkxXRTBOMkl0TUdVek5HSTBPRGszTUdabWtkd0FIYmgzYm1kME1DdERSWFZFUzBGR2IzbFVVV1JCUVVGQlBUMEFvazVGb3pFMk1xSXhSNk5EUVVtalVsVkl2VEl3TWpZdE1EZ3RNekJVTVRBNk16VTZNREF1TURBd0t6QXpPakF3dlRJd01qWXRNRGd0TXpCVU1UTTZNVFU2TURBdU1EQXdLekF6T2pBd296RTJNTUNoVTZNek1qSENvbFF4b2xRMW9VaTJSbUZ5WlNCVGFHOXdMMDl3ZEdsdFlXd2dVMmh2Y0tReE1EQXpwMFZqYjI1dmJYbkFrOERBd01La01EQXdNY0xDd01DblUwVkhUa1ZQVjVHU28wTkJTYU5TVlVpUUFRQUFxMFZIVURFeU56VTRMamd3cTBWSFVERXlOelU0TGpndw==",
+      "haveBundles": false,
+      "canBeHeld": true,
+      "refundability": "FullyRefundable",
+      "journeys": [
+        {
+          "id": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBRm95VFFkQUFBQT09",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 0,
+          "segment": [
+            {
+              "id": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBRm95VFFkQUFBQT09",
+              "origin": "CAI",
+              "destination": "RUH",
+              "departureDateTime": "2026-08-30T10:35:00+03:00",
+              "arrivalDateTime": "2026-08-30T13:15:00+03:00",
+              "departureTerminal": "T1",
+              "arrivalTerminal": "T5",
+              "flightTimeInMinutes": 160,
+              "operatingCarrierCode": "NE",
+              "operatingCarrierName": "Nile Air",
+              "operatingCarrierLogo": "https://pics.avs.io/200/200/NE.png",
+              "operatingFlightNumber": "162",
+              "marketingCarrierCode": "NE",
+              "marketingFlightNumber": "162",
+              "equipment": "321"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 12533.8,
+      "taxesAmount": 4268.8,
+      "baseAmount": 8265,
+      "discountAmount": 230,
+      "beforeDiscountAmount": 12763.8,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "departureDate": "2026-08-30T10:35:00+03:00",
+      "arrivalDate": "2026-08-30T13:15:00+03:00",
+      "priceClasses": [
+        {
+          "classId": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBV295VFFkQUFBQT09PzMyODY4Mg==",
+          "priceClassName": "Economy",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": [
+            "Enjoy Nesma airlines full economy service, Snack and drink are available for purchase.Economy Class fares include:• Checked baggage for 1 X 20KG • Hand baggage 1 x 5KG • Refund permitted if after departure at SAR 200 & less than 12 hours at SAR 140 & SAR 100 for more than 12 hours. • Rebooking permitted after departure at SAR140 & if less than 12 hours at 100 SAR and 70 SAR for more than 12 hours.",
+            "Economy"
+          ]
+        }
+      ]
+    },
+    {
+      "offerId": "R2FsaWxlbyNFR1kjQTFDMEkwIzcxZTdkYjJhLTg4OTktNGJjNy1iMzc2LWUyMWNlODlkZTgzMyN3bmd0MCtDRXVES0Fab3lUUWRBQUFBPT0mbWRra1lUVmpZV1kzTnpJdFl6ZGhOeTAwTXpZMkxXRTBOMkl0TUdVek5HSTBPRGszTUdabWtkd0FIYmgzYm1kME1DdERSWFZFUzBGaGIzbFVVV1JCUVVGQlBUMEFvazVGb3pFMk5xSXhSNk5EUVVtalVsVkl2VEl3TWpZdE1EZ3RNekJVTURJNk1EQTZNREF1TURBd0t6QXpPakF3dlRJd01qWXRNRGd0TXpCVU1EUTZOREE2TURBdU1EQXdLekF6T2pBd296RTJNTUNoVEtNek1qSENvbFF4b2xRMW9VaTJSbUZ5WlNCVGFHOXdMMDl3ZEdsdFlXd2dVMmh2Y0tReE1EQXpwMFZqYjI1dmJYbkFrOERBd01La01EQXdNY0xDd01DblRFVkhUa1ZQVjVHU28wTkJTYU5TVlVpUUFRQUFxMFZIVURFek16VTRMamd3cTBWSFVERXpNelU0TGpndw==",
+      "haveBundles": false,
+      "canBeHeld": true,
+      "refundability": "FullyRefundable",
+      "journeys": [
+        {
+          "id": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBYW95VFFkQUFBQT09",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 0,
+          "segment": [
+            {
+              "id": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBYW95VFFkQUFBQT09",
+              "origin": "CAI",
+              "destination": "RUH",
+              "departureDateTime": "2026-08-30T02:00:00+03:00",
+              "arrivalDateTime": "2026-08-30T04:40:00+03:00",
+              "departureTerminal": "T1",
+              "arrivalTerminal": "T5",
+              "flightTimeInMinutes": 160,
+              "operatingCarrierCode": "NE",
+              "operatingCarrierName": "Nile Air",
+              "operatingCarrierLogo": "https://pics.avs.io/200/200/NE.png",
+              "operatingFlightNumber": "166",
+              "marketingCarrierCode": "NE",
+              "marketingFlightNumber": "166",
+              "equipment": "321"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 13133.8,
+      "taxesAmount": 4268.8,
+      "baseAmount": 8865,
+      "discountAmount": 230,
+      "beforeDiscountAmount": 13363.8,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "departureDate": "2026-08-30T02:00:00+03:00",
+      "arrivalDate": "2026-08-30T04:40:00+03:00",
+      "priceClasses": [
+        {
+          "classId": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBcW95VFFkQUFBQT09PzMyODY4Mg==",
+          "priceClassName": "Economy",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": [
+            "Enjoy Nesma airlines full economy service, Snack and drink are available for purchase.Economy Class fares include:• Checked baggage for 1 X 20KG • Hand baggage 1 x 5KG • Refund permitted if after departure at SAR 200 & less than 12 hours at SAR 140 & SAR 100 for more than 12 hours. • Rebooking permitted after departure at SAR140 & if less than 12 hours at 100 SAR and 70 SAR for more than 12 hours.",
+            "Economy"
+          ]
+        }
+      ]
+    },
+    {
+      "offerId": "R2FsaWxlbyNFR1kjQTFDMEkwIzcxZTdkYjJhLTg4OTktNGJjNy1iMzc2LWUyMWNlODlkZTgzMyN3bmd0MCtDRXVES0Erb3lUUWRBQUFBPT0mbWRra1lUVmpZV1kzTnpJdFl6ZGhOeTAwTXpZMkxXRTBOMkl0TUdVek5HSTBPRGszTUdabWtkd0FIYmgzYm1kME1DdERSWFZFUzBFMmIzbFVVV1JCUVVGQlBUMEFvazVGb3pFMk1LSXhSNk5EUVVtalVsVkl2VEl3TWpZdE1EZ3RNekJVTVRNNk5EVTZNREF1TURBd0t6QXpPakF3dlRJd01qWXRNRGd0TXpCVU1UWTZNalU2TURBdU1EQXdLekF6T2pBd296RTJNTUNoVEtNek1qREN3TUNoU0xaR1lYSmxJRk5vYjNBdlQzQjBhVzFoYkNCVGFHOXdwREV3TURPblJXTnZibTl0ZWNDVHdNREF3cVF3TURBeHdzTEF3S2RNUlVkT1JVOVhrWktqUTBGSm8xSlZTSkFCQUFDclJVZFFNVE16TlRndU9EQ3JSVWRRTVRNek5UZ3VPREE9",
+      "haveBundles": false,
+      "canBeHeld": true,
+      "refundability": "FullyRefundable",
+      "journeys": [
+        {
+          "id": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBNm95VFFkQUFBQT09",
+          "origin": "CAI",
+          "destination": "RUH",
+          "numberOfStops": 0,
+          "segment": [
+            {
+              "id": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBNm95VFFkQUFBQT09",
+              "origin": "CAI",
+              "destination": "RUH",
+              "departureDateTime": "2026-08-30T13:45:00+03:00",
+              "arrivalDateTime": "2026-08-30T16:25:00+03:00",
+              "departureTerminal": null,
+              "arrivalTerminal": null,
+              "flightTimeInMinutes": 160,
+              "operatingCarrierCode": "NE",
+              "operatingCarrierName": "Nile Air",
+              "operatingCarrierLogo": "https://pics.avs.io/200/200/NE.png",
+              "operatingFlightNumber": "160",
+              "marketingCarrierCode": "NE",
+              "marketingFlightNumber": "160",
+              "equipment": "320"
+            }
+          ]
+        }
+      ],
+      "totalAmount": 13133.8,
+      "taxesAmount": 4268.8,
+      "baseAmount": 8865,
+      "discountAmount": 230,
+      "beforeDiscountAmount": 13363.8,
+      "serviceChargeAmount": 0,
+      "currency": "EGP",
+      "departureDate": "2026-08-30T13:45:00+03:00",
+      "arrivalDate": "2026-08-30T16:25:00+03:00",
+      "priceClasses": [
+        {
+          "classId": "R2FsaWxlbyNFR1kjd25ndDArQ0V1REtBcW95VFFkQUFBQT09PzMyODY4Mg==",
+          "priceClassName": "Economy",
+          "fareType": "PublicFare",
+          "rulesAndPenalties": [
+            "Enjoy Nesma airlines full economy service, Snack and drink are available for purchase.Economy Class fares include:• Checked baggage for 1 X 20KG • Hand baggage 1 x 5KG • Refund permitted if after departure at SAR 200 & less than 12 hours at SAR 140 & SAR 100 for more than 12 hours. • Rebooking permitted after departure at SAR140 & if less than 12 hours at 100 SAR and 70 SAR for more than 12 hours.",
+            "Economy"
+          ]
+        }
+      ]
+    },
+    "…597 more items"
+  ]
+}
+```
+
 ### Confirm Order
 
 | | |
@@ -3942,20 +4609,93 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Offer confirmed (×2) | ar | — |
+
+#### 200 — Offer confirmed (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Offer confirmed",
+  "errors": {},
+  "data": {
+    "offerId": "R2FsaWxlbyNFR1kjQTFDMEkwIzQyYzUzODhkLTQxMmEtNDczMy05ZWY4LTI5MDM2ZDZhNTliZiNQMnppMCt0M25ES0E2U2ZmVWRBQUFBPT0meUFWTFk5SUFBQWg4OFdDVDJTUTRPRGRtWkdZeVlTMDNOakppTFRRNU9UZ3RPREZpTlMxaU9XUXhabUl4WVRjeFpER1ltYmhRTW5wcE1DdDBNMjVFUzBFMlUyWm1WV1JCUVVGQlBUMnJSVWRRTVRJM05UZ3VPRENxUlVkUU9EUTVNQzR3TUt0RlIxQXhNamMxT0M0NE1LcEZSMUE0TkRrd0xqQWlBRFEwTWpZdEFBTUxBRUNuUlVkUUhnQlp3SkhjQUIxcUFCYzBhZ0R3RndDaVRrV2pNVFl5b2pGSG8wTkJTYU5TVlVpOU1qQXlOaTB3T0Mwek1GUXhNRG96TlRvd1NBQjVNQ3N3TXpvd01CNEFPak02TVI0QU1hTXhOZ1FBOFJDaFU2TXpNakhDb2xReG9sUTFvVXpaSVVaaGNtVWdVM0JsWTJsbWFXTWdEZ0Q1QVZGMWIzUmxJRlZ1WW05dmEyVmt3TUNrQUJjM3BBRHpSSk9pVGtYQXJrNWxjMjFoSUVGcGNteHBibVZ6d3NEQ3dzRFpQMDhnWVc1a0lFUWdZMkZqYUdVZ2IzSWdjRzlzYkdWa0lITjBZWFIxY3lCMWMyVmtJSGRwZEdnZ1pHbG1abVZ5Wlc1MElHeHZZMkZzSVFBQUhBRVpGb1lCRnpoNEFBK0dBVEg1T2NEQUFBT2lNVWZaTzBOQlNTQk9SU0JTVlVnZ09URXVOelZUUlVkT1JVOVhJRkVnUTBGSlVsVklPREF1TXpsT1ZVTXhOekl1TVRSRlRrUWdVazlGTkRrdU16RTJrZHdBRWFVQUprdFVLd0lUcDBrQVRhTkJSRlRDQVlrd04xUXlNVG8xT01JQllOYi9hcE55Z0RVQ0ExY0NUOExBd0pOZ0FBYi9WNkl4UjlvQjREWlZWVlp2VTJ4a2VIZHBhM0JQV1dreFRVVlhSV05pUzJvelJqaFVPVVY1ZUhOeFVHTlllRkF3VkV4SGVXODVlR1pGTDFKTmMzVlhSbVpZVm1ReFQwRnNlVFZ4ZUZvemNVeDNUMWhNYlhKR2JtVnZka0UxWTNWaGMxZGtObWs0UkNBQUF2L0hNVzVvYkV0dmRVcHVNek40VjJFeGRXRnhTVFUxYXpOaFUydDJhSEF5ZVdKWk1rOXlaRzkyVm5nNE4wRnJkWEl4VWxOMGJtVjRUak5LTTA1NVdYQjZObFZrVm1wc2FXTmpRVFpUVFhoak5sZHRjSFZ1YjBwRWJuWm5ja1ZNWkhkRGIxZ3JhRTVtU0VWWWIzaFZWak5pTW1JclkyMTJPV2RHU0ZaWFRtTmpTMmRoVlV4WU5DOHlkRU5DVlZGWlRtWllRVkIyVW5aQ2FHUldUek14Ym05d1NVbE5UakZSVUhGMk5VdHFaRGR4Y2tJemJtbDBiRFZSZVhvNFpGUTJMMnBoYzFWdWFHOW5jWEZsYTNGNU5WbFdPV1JXTTFVMFF3QUJGL1pkZW5wRU5GZGthbUZzTW1aSWJtRXhTRFZSYzB4a1IzcEtZbVp4TjJRMlEyWXdSSE5zY0dkc2JIWjFWazFpUzIxTU5YUmxWalZaUTBGVEx5dGFSVWd4ZFdKclZYTktNRlF4ZVdsbVNuVmllVkphZG1WT2FDODRRVlZ2VW1SMlZHVkZiRWh2V0c4emRUSjNRbENRRlFJRFNnUkpsYUpPUlJvRENYVUM5QWxGWTI5dWIyMTVwak15T0RZNE1xUXdNREF4QUpHVm9WTVpBQTg2QUFZSkdRQUlpUVFKR1FBSS9nTnduWldpUlVmQXFmc0VXVFV3TGpBd0tRQVhPYThEVXNDVm9rVlJLUUFCc1FRSktRQWFLeWtBTDBwTEtRQUZHaThwQUVGUE1zQ29ld0FNZWdBWFFZUURVY0NWb2s4NUtBQU9vZ0FhUWlnQWpGRTN3S2RGUjFBeVR3QWJReWNBSUVqQW9RTk1NVEkwTlNvQUdrUXFBQ0ZUTkhrQUxEazVLQUFhUlNnQUUxanlBQTZpQUJ0R0tRQVJURkVBU2pFd0xqaHNBUnBIS0FBalJUTkRBUncyZWdBYVNDa0FFbG1WQVMweU5LTUFHMGtwQUJKUzlRQXRPVGtmQVJoS0tnQXd3SkdTN2dUNEhOa2taREU0TURZNU5EWXRZMkppWVMwMFpUVTJMVGcwTVdVdFpqY3hNREF3WXprMVptVXpvazVGQU1LMUJsa3lNem8xT1JFRktaR1NLd0lJZlFMekJObC9SMFpDTVRBeE1ERkJSRlF3TVU5WE1ERndCUjhnQVFBTEVEQ0NBR0F4STBkR1FqSWRBd0FDQUxCT1FVUlVWak13TWpZd01CUUE4QVV6TURBd01ESTVPU05IUmsxRFJWSWdNREkyVGhvQWN5Qk9SU0JCUkZSbkFFL0F3SkNRN3dBVVVEazFabVV6",
+    "journey_id": "R2FsaWxlbyNFR1kjUDJ6aTArdDNuREtBNFNmZlVkQUFBQT09",
+    "haveBundles": false,
+    "canBeHeld": true,
+    "origin": "CAI",
+    "destination": "RUH",
+    "numberOfStops": 0,
+    "segments": [
+      {
+        "segmentId": "R2FsaWxlbyNFR1kjUDJ6aTArdDNuREtBNFNmZlVkQUFBQT09",
+        "origin": "CAI",
+        "destination": "RUH",
+        "departureDateTime": "2026-08-30T10:35:00",
+        "arrivalDateTime": "2026-08-30T13:15:00",
+        "departureTerminal": "T1",
+        "arrivalTerminal": "T5",
+        "flightTimeInMinutes": 160,
+        "operatingCarrierCode": "NE",
+        "operatingCarrierName": "Nile Air",
+        "operatingCarrierLogo": "https://pics.avs.io/200/200/NE.png",
+        "operatingFlightNumber": "162",
+        "marketingCarrierCode": "NE",
+        "marketingFlightNumber": "162",
+        "equipment": "321",
+        "priceClassReferenceId": "R2FsaWxlbyNFR1kjUDJ6aTArdDNuREtBS1RmZlVkQUFBQT09PzMyODY4Mg==",
+        "baggageDetailsReferenceId": "R2FsaWxlbyNFR1kjUDJ6aTArdDNuREtBOFNmZlVkQUFBQT09P1AyemkwK3QzbkRLQTRTZmZVZEFBQUE9PT9BRFQ=",
+        "cabinCode": "Economy",
+        "rbd": "S"
+      }
+    ],
+    "passengerFareBreakdown": [
+      {
+        "passengerTypeCode": "ADT",
+        "numberOfPassengers": 1,
+        "passengerTotalAmount": 12533.8,
+        "passengerTaxesAmount": 4268.8,
+        "passengerBaseAmount": 8265,
+        "passengerDiscountAmount": 230,
+        "passengerBeforeDiscountAmount": 12763.8,
+        "passengerServiceChargeAmount": 0,
+        "segmentDetails": [
+          {
+            "segmentReferenceId": "R2FsaWxlbyNFR1kjUDJ6aTArdDNuREtBNFNmZlVkQUFBQT09",
+            "priceClassReferenceId": "R2FsaWxlbyNFR1kjUDJ6aTArdDNuREtBS1RmZlVkQUFBQT09PzMyODY4Mg==",
+            "baggageDetailsReferenceId": "R2FsaWxlbyNFR1kjUDJ6aTArdDNuREtBOFNmZlVkQUFBQT09P1AyemkwK3QzbkRLQTRTZmZVZEFBQUE9PT9BRFQ=",
+            "cabinCode": "Economy",
+            "rbd": "S"
+          }
+        ]
+      }
+    ],
+    "priceDetails": {
+      "totalAmount": 12533.8,
+      "taxesAmount": 4268.8,
+      "baseAmount": 8265,
+      "discountAmount": 230,
+      "beforeDiscountAmount": 12763.8,
+      "serviceChargeAmount": 0,
+      "currency": "EGP"
+    },
+    "refundability": "FullyRefundable"
+  }
+}
+```
+
 ### Bundels
 
 | | |
 |---|---|
 | **Method** | `GET` |
 | **Path** | `/flights/:offer_id/bundles` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id/bundles?=` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id/bundles` |
 | **Auth** | Bearer token required |
-
-**Query parameters:**
-
-| Parameter | Example |
-|-----------|---------|
-| `` |  |
 
 **Headers:**
 
@@ -3969,6 +4709,7 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
 | `400` | The Provided Offer Id is not valid or expired. ... | ar | — |
+| `200` | Fare bundles | ar | — |
 
 #### 400 — The Provided Offer Id is not valid or expired. ... (ar)
 
@@ -3981,6 +4722,78 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 }
 ```
 
+#### 200 — Fare bundles (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Available bundles",
+  "errors": {},
+  "data": [
+    {
+      "offer_journey_id": "Rmx5TmFzI0VHWSNYWX4gNTc1fiB+fkNBSX4wOC8zMC8yMDI2IDE2OjMwfk1FRH4wOC8zMC8yMDI2IDE4OjIwfn5eWFl+ICA5OH4gfn5NRUR+MDgvMzAvMjAyNiAyMTo1NX5SVUh+MDgvMzAvMjAyNiAyMzoyMH5+JmtzQzVURVpZTXlZbEpWQkRRVWttSlNWU1EwRkpKaVVsVmtOQlNRPT0=",
+      "bundles": [
+        {
+          "bundle_code": "RCAI",
+          "bundle_name": "Light",
+          "bundle_prices": {
+            "bundle_references": "2",
+            "passenger_type_code": "ADT",
+            "total_amount": 0,
+            "taxes_amount": 0,
+            "fee_mount": 0,
+            "currency": "EGP"
+          },
+          "included_services": [
+            "15KG Check-in Baggage (BULK)",
+            "No meal",
+            "1x7KG carry-on baggage",
+            "…4 more items"
+          ]
+        },
+        {
+          "bundle_code": "LFX3",
+          "bundle_name": "Light Flex",
+          "bundle_prices": {
+            "bundle_references": "0",
+            "passenger_type_code": "ADT",
+            "total_amount": 208.361,
+            "taxes_amount": 0,
+            "fee_mount": 0,
+            "currency": "EGP"
+          },
+          "included_services": [
+            "15KG Check-in Baggage (BULK)",
+            "No meal",
+            "1x7KG carry-on baggage",
+            "…4 more items"
+          ]
+        },
+        {
+          "bundle_code": "VCAI",
+          "bundle_name": "Value",
+          "bundle_prices": {
+            "bundle_references": "3",
+            "passenger_type_code": "ADT",
+            "total_amount": 1730.272,
+            "taxes_amount": 0,
+            "fee_mount": 0,
+            "currency": "EGP"
+          },
+          "included_services": [
+            "30KG Check-in Baggage (PDBG)",
+            "BNST: ",
+            "1x7KG carry-on baggage",
+            "…4 more items"
+          ]
+        },
+        "…1 more items"
+      ]
+    }
+  ]
+}
+```
+
 ### Add Passenger
 
 | | |
@@ -3990,34 +4803,41 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id/passengers` |
 | **Auth** | Bearer token required |
 
-**Body (JSON):**
+**Body (JSON)** — inline `//` comments from Postman document allowed values:
 
-```json
+```jsonc
 {
-  "passengers": [
-    {
-      "title": "MR",
-      "firstName": "Ahmed",
-      "middleName": "Mostafa",
-      "lastName": "Ahmed",
-      "birthDate": "1990-01-02",
-      "documentNumber": "299060912312",
-      "nationalityCountryCode": "EGP",
-      "residenceCountryCode": "EGP",
-      "gender": "M",
-      "email": "ahmed.mostafa.dev.eg@gmail.com",
-      "phone": "01090510796",
-      "passengerTypeCode": "ADT",
-      "address": {
-        "countryCode": "EG",
-        "cityCode": "91 09305948255",
-        "line1": "Sector 132, Logix Technova",
-        "line2": "Noida,UP"
-      }
-    }
-  ]
+    "passengers": [
+        {
+            "title":"MR",
+            "firstName": "Ahmed",
+            "middleName": "Mostafa",
+            "lastName": "Ahmed",
+            "birthDate": "1990-01-02",
+            "documentNumber": "299060912312",
+            "nationalityCountryCode": "EGP",
+            "residenceCountryCode": "EGP",
+            "gender": "M", //M,F,
+            "email": "ahmed.mostafa.dev.eg@gmail.com",
+            "phone": "01090510796",
+            "passengerTypeCode": "ADT", //ADT,CHD,INF,
+            "address": {
+                "countryCode": "EG",
+                "cityCode": "91 09305948255",
+                "line1": "Sector 132, Logix Technova",
+                "line2": "Noida,UP"
+            }
+        }
+    ]
 }
 ```
+
+**Field notes (from Postman comments):**
+
+| Field | Allowed / notes |
+|-------|-----------------|
+| `gender` | `M`, `F` |
+| `passengerTypeCode` | `ADT`, `CHD`, `INF` |
 
 **Headers:**
 
@@ -4025,6 +4845,39 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 |--------|-------|
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Passengers added | ar | — |
+| `200` | Passengers added | ar | — |
+
+#### 200 — Passengers added (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Passengers added",
+  "errors": {},
+  "data": {
+    "offerId": "R2FsaWxlbyNFR1kjQTFDMEkwIzQyYzUzODhkLTQxMmEtNDczMy05ZWY4LTI5MDM2ZDZhNTliZiNQMnppMCt0M25ES0E2U2ZmVWRBQUFBPT0meUFWTFk5SUFBQWg4OFdDVDJTUTRPRGRtWkdZeVlTMDNOakppTFRRNU9UZ3RPREZpTlMxaU9XUXhabUl4WVRjeFpER1ltYmhRTW5wcE1DdDBNMjVFUzBFMlUyWm1WV1JCUVVGQlBUMnJSVWRRTVRJM05UZ3VPRENxUlVkUU9EUTVNQzR3TUt0RlIxQXhNamMxT0M0NE1LcEZSMUE0TkRrd0xqQWlBRFEwTWpZdEFBTUxBRUNuUlVkUUhnQlp3SkhjQUIxcUFCYzBhZ0R3RndDaVRrV2pNVFl5b2pGSG8wTkJTYU5TVlVpOU1qQXlOaTB3T0Mwek1GUXhNRG96TlRvd1NBQjVNQ3N3TXpvd01CNEFPak02TVI0QU1hTXhOZ1FBOFJDaFU2TXpNakhDb2xReG9sUTFvVXpaSVVaaGNtVWdVM0JsWTJsbWFXTWdEZ0Q1QVZGMWIzUmxJRlZ1WW05dmEyVmt3TUNrQUJjM3BBRHpSSk9pVGtYQXJrNWxjMjFoSUVGcGNteHBibVZ6d3NEQ3dzRFpQMDhnWVc1a0lFUWdZMkZqYUdVZ2IzSWdjRzlzYkdWa0lITjBZWFIxY3lCMWMyVmtJSGRwZEdnZ1pHbG1abVZ5Wlc1MElHeHZZMkZzSVFBQUhBRVpGb1lCRnpoNEFBK0dBVEg1T2NEQUFBT2lNVWZaTzBOQlNTQk9SU0JTVlVnZ09URXVOelZUUlVkT1JVOVhJRkVnUTBGSlVsVklPREF1TXpsT1ZVTXhOekl1TVRSRlRrUWdVazlGTkRrdU16RTJrZHdBRWFVQUprdFVLd0lUcDBrQVRhTkJSRlRDQVlrd04xUXlNVG8xT01JQllOYi9hcE55Z0RVQ0ExY0NUOExBd0pOZ0FBYi9WNkl4UjlvQjREWlZWVlp2VTJ4a2VIZHBhM0JQV1dreFRVVlhSV05pUzJvelJqaFVPVVY1ZUhOeFVHTlllRkF3VkV4SGVXODVlR1pGTDFKTmMzVlhSbVpZVm1ReFQwRnNlVFZ4ZUZvemNVeDNUMWhNYlhKR2JtVnZka0UxWTNWaGMxZGtObWs0UkNBQUF2L0hNVzVvYkV0dmRVcHVNek40VjJFeGRXRnhTVFUxYXpOaFUydDJhSEF5ZVdKWk1rOXlaRzkyVm5nNE4wRnJkWEl4VWxOMGJtVjRUak5LTTA1NVdYQjZObFZrVm1wc2FXTmpRVFpUVFhoak5sZHRjSFZ1YjBwRWJuWm5ja1ZNWkhkRGIxZ3JhRTVtU0VWWWIzaFZWak5pTW1JclkyMTJPV2RHU0ZaWFRtTmpTMmRoVlV4WU5DOHlkRU5DVlZGWlRtWllRVkIyVW5aQ2FHUldUek14Ym05d1NVbE5UakZSVUhGMk5VdHFaRGR4Y2tJemJtbDBiRFZSZVhvNFpGUTJMMnBoYzFWdWFHOW5jWEZsYTNGNU5WbFdPV1JXTTFVMFF3QUJGL1pkZW5wRU5GZGthbUZzTW1aSWJtRXhTRFZSYzB4a1IzcEtZbVp4TjJRMlEyWXdSSE5zY0dkc2JIWjFWazFpUzIxTU5YUmxWalZaUTBGVEx5dGFSVWd4ZFdKclZYTktNRlF4ZVdsbVNuVmllVkphZG1WT2FDODRRVlZ2VW1SMlZHVkZiRWh2V0c4emRUSjNRbENRRlFJRFNnUkpsYUpPUlJvRENYVUM5QWxGWTI5dWIyMTVwak15T0RZNE1xUXdNREF4QUpHVm9WTVpBQTg2QUFZSkdRQUlpUVFKR1FBSS9nTnduWldpUlVmQXFmc0VXVFV3TGpBd0tRQVhPYThEVXNDVm9rVlJLUUFCc1FRSktRQWFLeWtBTDBwTEtRQUZHaThwQUVGUE1zQ29ld0FNZWdBWFFZUURVY0NWb2s4NUtBQU9vZ0FhUWlnQWpGRTN3S2RGUjFBeVR3QWJReWNBSUVqQW9RTk1NVEkwTlNvQUdrUXFBQ0ZUTkhrQUxEazVLQUFhUlNnQUUxanlBQTZpQUJ0R0tRQVJURkVBU2pFd0xqaHNBUnBIS0FBalJUTkRBUncyZWdBYVNDa0FFbG1WQVMweU5LTUFHMGtwQUJKUzlRQXRPVGtmQVJoS0tnQXd3SkdTN2dUNEhOa2taREU0TURZNU5EWXRZMkppWVMwMFpUVTJMVGcwTVdVdFpqY3hNREF3WXprMVptVXpvazVGQU1LMUJsa3lNem8xT1JFRktaR1NLd0lJZlFMekJObC9SMFpDTVRBeE1ERkJSRlF3TVU5WE1ERndCUjhnQVFBTEVEQ0NBR0F4STBkR1FqSWRBd0FDQUxCT1FVUlVWak13TWpZd01CUUE4QVV6TURBd01ESTVPU05IUmsxRFJWSWdNREkyVGhvQWN5Qk9SU0JCUkZSbkFFL0F3SkNRN3dBVVVEazFabVV6I0FHTjQ3IzY4Yzc4NWVhMDdjZjk1MzBjZjU3N2MwNTlkMDQzODg2"
+  }
+}
+```
+
+#### 200 — Passengers added (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Passengers added",
+  "errors": {},
+  "data": {
+    "offerId": "Rmx5TmFzI0VHWSNBMUMwSTAjNjQyNmExMjQtMjgzZC00YjFiLTg4OGUtY2QyM2M1Njc4YThmIzI2NWQyNDMzLTNjZDQtNGJiOS05NDIwLWI3OTMyOTcyYjZjNCZtc0RaSkdOak9UUmhZbVEyTFRaa01Ea3RORFF5TlMwNVlUZGhMVFl5Wm1JMllqTXlZbUk0TTVHWHdObHRXRmwrSURVM05YNGdmbjVEUVVsK01EZ3ZNekF2TWpBeU5pQXhOam96TUg1TlJVUitNRGd2TXpBdk1qQXlOaUF4T0RveU1INStYbGhaZmlBZ09UaCtJSDUrVFVWRWZqQTRMek13THpJd01qWWdNakU2TlRWK1VsVklmakE0THpNd0x6SXdNallnTWpNNk1qQitmc0NTM0FBWndOazJXRmwrSURVM05YNGdmbjVEUVVsK01EZ3ZNekF2TWpBeU5pQXhOam96TUg1TlJVUitNRGd2TXpBdk1qQXlOaUF4T0RveU1INSt1ekYrVDM1K1dGbCtUME5HUVZKRmZqRXdNVE4rZmpCK016TitmcVFnTlRjMW9saFoxdjlxbEZxSTF2OXFsSFJRbzAxRlJLTkRRVW1pUlVPaFQ2RlBwREV3TVRNaEFLWlBRMFpCVWtYQ0FhQ2hUNkNnQUpHWndLTk5SVVNqUTBGSjF2OXFsSFJRMXY5cWxGcUlsTUNpV0Zta0lEVTNOY0RjQUNnQW96TXlNTUNnekxRQXdLRE10TUxDd2dEQTF2OXFsSFJRMXY5cWxGcUl3TUFBQUFEQXdLREF3cVl6TWpCTlF6SEN3c0REdzhEQXdNREF3TURBdzhQRDNBQVp3TmsyV0ZsK0lDQTVPSDRnZm41TlJVUitNRGd2TXpBdk1qQXlOaUF5TVRvMU5YNVNWVWgrTURndk16QXZNakF5TmlBeU16b3lNSDUrdmpKK1JUUitmbGhaZmtVMFEwWkJVa1YrTVRBd09YNStNSDQxTTM1K1dLUWdJRGs0b2xoWjF2OXFsS2EwMXY5cWxMcWdvMUpWU0tOTlJVU2lSVU9pUlRTaVJUU2tNVEF3T1RVQXAwVTBRMFpCVWtYQ0FxQ2lSVFNnb0FDUm1jQ2pVbFZJbzAxRlJOYi9hcFM2b05iL2FwU210SlRBb2xoWnBDQWdPVGpBM0FBb0FLTXpNakRBb1RQTXRBREFvTXkwd3NMQ0FNRFcvMnFVdXFEVy8ycVVwclRBd0FBQUFNREFvTURDb01MQ3dNUER3TURBd01EQXdNRER3OE9qVFVWRW8wMUZSQUtSazhDalFVUlVBYURBd01EQXdBPT0jQUdONDcjM2MxODBiY2RlMmYzMWNjNTlmZmI2ZjQyOTAwODBlNGY="
+  }
+}
+```
 
 ### Hold Trip
 
@@ -4035,18 +4888,24 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id/hold` |
 | **Auth** | Bearer token required |
 
-**Body (JSON):**
+**Body (JSON)** — inline `//` comments from Postman document allowed values:
 
-```json
+```jsonc
 {
-  "_selectedBundles": [
-    {
-      "journeyKey": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8yMy8yMDI2IDA4OjIwfkpFRH4wMi8yMy8yMDI2IDExOjM1fn4=",
-      "selectedBundleCode": "LCAI"
-    }
-  ]
+    "_selectedBundles": [
+        {
+            "journeyKey": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8yMy8yMDI2IDA4OjIwfkpFRH4wMi8yMy8yMDI2IDExOjM1fn4=",
+            "selectedBundleCode": "LCAI"
+        } //VCAI
+    ]
 }
 ```
+
+**Field notes (from Postman comments):**
+
+| Field | Allowed / notes |
+|-------|-----------------|
+| `(adjacent value)` | `VCAI` |
 
 **Headers:**
 
@@ -4064,19 +4923,26 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | **Full URL** | `https://demo.safaria.travel/api/v1/flights/:offer_id` |
 | **Auth** | Bearer token required |
 
-**Body (JSON):**
+**Body (JSON)** — inline `//` comments from Postman document allowed values:
 
-```json
+```jsonc
 {
-  "selectedBundles": [
-    {
-      "journeyKey": "Rmx5TmFzI0VHWSNYWX4gNTY2fiB+fkNBSX4wMi8yMy8yMDI2IDA4OjIwfkpFRH4wMi8yMy8yMDI2IDExOjM1fn4=",
-      "selectedBundleCode": "PCAI"
-    }
-  ],
-  "currency": "SAR"
+    "selectedBundles": [
+        {
+            "journeyKey": "Rmx5TmFzI0VHWSNYWX4gNTc1fiB+fkNBSX4wOC8zMC8yMDI2IDE2OjMwfk1FRH4wOC8zMC8yMDI2IDE4OjIwfn5eWFl+ICA5OH4gfn5NRUR+MDgvMzAvMjAyNiAyMTo1NX5SVUh+MDgvMzAvMjAyNiAyMzoyMH5+JmtzQzVURVpZTXlZbEpWQkRRVWttSlNWU1EwRkpKaVVsVmtOQlNRPT0=",
+            "selectedBundleCode": "RCAI"
+        } //VCAI
+    ],
+    "currency":"EGP"
+
 }
 ```
+
+**Field notes (from Postman comments):**
+
+| Field | Allowed / notes |
+|-------|-----------------|
+| `(adjacent value)` | `VCAI` |
 
 **Headers:**
 
@@ -4085,6 +4951,137 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
 | `Accept` | application/json |
 | `Accept-Language` | `ar` \| `en` (app locale) |
 | `Authorization` | Bearer {{token}} |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `200` | Booking pending payment | ar | — |
+
+#### 200 — Booking pending payment (ar)
+
+```json
+{
+  "status": 200,
+  "message": "Booking pending payment",
+  "errors": {},
+  "data": {
+    "id": 76,
+    "provider": "flywt",
+    "ndc_booking_reference": null,
+    "airline_pnr": null,
+    "gds_pnr": null,
+    "offer_id": "Rmx5TmFzI0VHWSNBMUMwSTAjNjQyNmExMjQtMjgzZC00YjFiLTg4OGUtY2QyM2M1Njc4YThmIzI2NWQyNDMzLTNjZDQtNGJiOS05NDIwLWI3OTMyOTcyYjZjNCZtc0RaSkdOak9UUmhZbVEyTFRaa01Ea3RORFF5TlMwNVlUZGhMVFl5Wm1JMllqTXlZbUk0TTVHWHdObHRXRmwrSURVM05YNGdmbjVEUVVsK01EZ3ZNekF2TWpBeU5pQXhOam9",
+    "status": "pending",
+    "order_status": "PendingPayment",
+    "refundability": null,
+    "total_amount": 13048.86,
+    "base_amount": 6446.36,
+    "taxes_amount": 6602.5,
+    "discount_amount": 0,
+    "before_discount_amount": 13048.86,
+    "service_charge_amount": 0,
+    "currency": "EGP",
+    "currency_id": 1,
+    "base_currency_id": 1,
+    "order_data": {
+      "priceDetails": {
+        "currency": "EGP",
+        "baseAmount": 6446.359,
+        "taxesAmount": 6602.5,
+        "totalAmount": {
+          "amount": 13048.86,
+          "currency": "EGP"
+        },
+        "total_amount": {
+          "amount": 13048.86,
+          "currency": "EGP"
+        },
+        "discountAmount": 0,
+        "serviceChargeAmount": 0,
+        "beforeDiscountAmount": 13048.859
+      },
+      "selectedBundles": [
+        {
+          "journeyKey": "Rmx5TmFzI0VHWSNYWX4gNTc1fiB+fkNBSX4wOC8zMC8yMDI2IDE2OjMwfk1FRH4wOC8zMC8yMDI2IDE4OjIwfn5eWFl+ICA5OH4gfn5NRUR+MDgvMzAvMjAyNiAyMTo1NX5SVUh+MDgvMzAvMjAyNiAyMzoyMH5+JmtzQzVURVpZTXlZbEpWQkRRVWttSlNWU1EwRkpKaVVsVmtOQlNRPT0=",
+          "selectedBundleCode": "RCAI"
+        }
+      ]
+    },
+    "passengers": [
+      {
+        "id": 81,
+        "passenger_type_code": "ADT",
+        "title": "MR",
+        "first_name": "Ahmed",
+        "middle_name": "Mostafa",
+        "last_name": "Ahmed",
+        "birth_date": "1990-01-02",
+        "gender": "M",
+        "nationality_country_code": "EGP",
+        "email": "ahmed.mostafa.dev.eg@gmail.com",
+        "phone": "01090510796"
+      }
+    ],
+    "segments": [
+      {
+        "id": 105,
+        "origin": "CAI",
+        "destination": "MED",
+        "departure_datetime": "2026-08-30T16:30:00+03:00",
+        "arrival_datetime": "2026-08-30T18:20:00+03:00",
+        "departure_terminal": "",
+        "arrival_terminal": "",
+        "flight_time_in_minutes": 110,
+        "equipment": "320",
+        "operating_carrier_code": "XY",
+        "operating_flight_number": "575",
+        "marketing_carrier_code": "XY",
+        "marketing_flight_number": "575"
+      },
+      {
+        "id": 106,
+        "origin": "MED",
+        "destination": "RUH",
+        "departure_datetime": "2026-08-30T21:55:00+03:00",
+        "arrival_datetime": "2026-08-30T23:20:00+03:00",
+        "departure_terminal": "",
+        "arrival_terminal": "3",
+        "flight_time_in_minutes": 85,
+        "equipment": "320",
+        "operating_carrier_code": "XY",
+        "operating_flight_number": "98",
+        "marketing_carrier_code": "XY",
+        "marketing_flight_number": "98"
+      }
+    ],
+    "journeys": [
+      {
+        "id": 79,
+        "journey_reference_id": "Rmx5TmFzI0VHWSNYWX4gNTc1fiB+fkNBSX4wOC8zMC8yMDI2IDE2OjMwfk1FRH4wOC8zMC8yMDI2IDE4OjIwfn5eWFl+ICA5OH4gfn5NRUR+MDgvMzAvMjAyNiAyMTo1NX5SVUh+MDgvMzAvMjAyNiAyMzoyMH5+",
+        "origin": "CAI",
+        "destination": "RUH",
+        "number_of_stops": 1,
+        "segment_reference_ids": [
+          "Rmx5TmFzI0VHWSNOQV9DQUlfOC8zMC8yMDI2IDQ6MzA6MDDigK9QTV9NRURfOC8zMC8yMDI2IDY6MjA6MDDigK9QTQ==",
+          "Rmx5TmFzI0VHWSNOQV9NRURfOC8zMC8yMDI2IDk6NTU6MDDigK9QTV9SVUhfOC8zMC8yMDI2IDExOjIwOjAw4oCvUE0="
+        ],
+        "bundle_reference_ids": []
+      }
+    ],
+    "transaction": {
+      "id": 120,
+      "gateway": "myfatoorah",
+      "status": "pending",
+      "paid_at": null,
+      "invoice_url": "https://eg.myfatoorah.com/EGY/ia/…",
+      "invoice_id": 8285523
+    },
+    "can_be_cancel": true,
+    "invoice_url": "https://demo.safaria.travel/flight-orders/76/…"
+  }
+}
+```
 
 ## Private
 
@@ -4721,13 +5718,6 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 | **Full URL** | `https://demo.safaria.travel/api/v1/buses/stations` |
 | **Auth** | Bearer token required |
 
-**Query parameters:**
-
-| Parameter | Example |
-|-----------|---------|
-| `term` | سوها |
-| `pagination` | false |
-
 **Headers:**
 
 | Header | Value |
@@ -4831,12 +5821,6 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 | **Full URL** | `https://demo.safaria.travel/api/v1/buses/carriers` |
 | **Auth** | Bearer token required |
 
-**Query parameters:**
-
-| Parameter | Example |
-|-----------|---------|
-| `term` | سوها |
-
 **Headers:**
 
 | Header | Value |
@@ -4901,7 +5885,6 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 | `city_to` | 2 |
 | `date` | 2026-07-29 |
 | `page` | 1 |
-| `page` | 2 |
 | `currency` | EGP |
 
 **Headers:**
@@ -5759,8 +6742,6 @@ All Buses endpoints return JSON with this shape (HTTP status may differ from the
 
 | Parameter | Example |
 |-----------|---------|
-| `page` | 1 |
-| `accept` |  |
 | `currency` | EGP |
 
 **Headers:**
@@ -6170,9 +7151,9 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 | **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/237747/create-ticket` |
 | **Auth** | Bearer token required |
 
-**Body (JSON):**
+**Body (JSON)** — inline `//` comments from Postman document allowed values:
 
-```json
+```jsonc
 // {
 //   "from_city_id": 1,
 //   "to_city_id": 2,
@@ -6203,6 +7184,26 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
   "payment_method": "myfatoorah",
   "currency": "EGP"
 }
+```
+
+**Commented example from Postman:**
+
+```json
+{
+   "from_city_id": 1,
+   "to_city_id": 2,
+   "from_location_id": "50",
+   "to_location_id": "22",
+   "date": "2026-07-29",
+   "seats": [
+     {
+       "seat_type_id": "3",
+       "seat_id": "3"
+     }
+   ],
+   "payment_method": "myfatoorah",
+   "currency": "EGP"
+ }
 ```
 
 **Headers:**
@@ -6445,22 +7446,16 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 
 | # | Method | Path | Name |
 |---|--------|------|------|
-| 1 | `GET` | `/flights/iata` | Currencies |
+| 1 | `GET` | `/currencies` | Currencies |
 
 ### Currencies
 
 | | |
 |---|---|
 | **Method** | `GET` |
-| **Path** | `/flights/iata` |
-| **Full URL** | `https://demo.safaria.travel/api/v1/flights/iata` |
+| **Path** | `/currencies` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/currencies` |
 | **Auth** | Bearer token required |
-
-**Query parameters:**
-
-| Parameter | Example |
-|-----------|---------|
-| `search` | CAI |
 
 **Headers:**
 
@@ -6473,114 +7468,22 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 
 | HTTP | Scenario | Language | Error fields |
 |------|----------|----------|--------------|
-| `200` | Airports list | ar | — |
-| `200` | Airports list | ar | — |
+| `200` | Currencies list | ar | — |
 
-#### 200 — Airports list (ar)
-
-```json
-{
-  "status": 200,
-  "message": "Airports list",
-  "errors": {},
-  "data": [
-    {
-      "id": 30325,
-      "name": "قاهره مطار دولي",
-      "city": "Cairo",
-      "country": "EGYPT",
-      "iata_code": "CAI",
-      "icao_code": "HECA",
-      "country_code": "EG",
-      "latitude": 30.04998,
-      "longitude": 31.2486
-    },
-    {
-      "id": 30326,
-      "name": "مطار العاصمه الدولي",
-      "city": "Cairo",
-      "country": "EGYPT",
-      "iata_code": "CCE",
-      "icao_code": "HECP",
-      "country_code": "EG",
-      "latitude": null,
-      "longitude": null
-    },
-    {
-      "id": 38383,
-      "name": "Cairo Regional Airport",
-      "city": "Cairo",
-      "country": "United States",
-      "iata_code": "CIR",
-      "icao_code": "KCIR",
-      "country_code": "US",
-      "latitude": 37.064499,
-      "longitude": -89.219597
-    },
-    "…18 more items"
-  ],
-  "pagination": {
-    "total": 21,
-    "lastPage": 1,
-    "perPage": 50,
-    "currentPage": 1,
-    "nextPageUrl": null,
-    "previousPageUrl": null
-  }
-}
-```
-
-#### 200 — Airports list (ar)
+#### 200 — Currencies list (ar)
 
 ```json
 {
   "status": 200,
-  "message": "Airports list",
+  "message": "Currencies",
   "errors": {},
   "data": [
     {
-      "id": 50232,
-      "name": "Anaa Airport",
-      "city": "Anaa",
-      "country": "French Polynesia",
-      "iata_code": "AAA",
-      "icao_code": "NTGA",
-      "country_code": "PF",
-      "latitude": -17.3526,
-      "longitude": -145.509995
-    },
-    {
-      "id": 81953,
-      "name": "Arrabury Airport",
-      "city": "Tanbar",
-      "country": "Australia",
-      "iata_code": "AAB",
-      "icao_code": "YARY",
-      "country_code": "AU",
-      "latitude": -26.69639,
-      "longitude": 141.048718
-    },
-    {
-      "id": 30319,
-      "name": "El Arish International Airport",
-      "city": "El Arish",
-      "country": "Egypt",
-      "iata_code": "AAC",
-      "icao_code": "HEAR",
-      "country_code": "EG",
-      "latitude": 31.055324,
-      "longitude": 33.827964
-    },
-    "…47 more items"
-  ],
-  "pagination": {
-    "total": 9097,
-    "lastPage": 182,
-    "perPage": 50,
-    "currentPage": 1,
-    "nextPageUrl": "https://portal.wdenytravel.com/api/v1/flights/iata?page=2",
-    "previousPageUrl": null
-  }
+      "id": 1,
+      "code": "EGP",
+      "name": "Egyptian Pound"
+    }
+  ]
 }
 ```
 
@@ -6590,14 +7493,15 @@ The following inconsistencies exist in the Postman collection and may not reflec
 
 | Item | Issue |
 |------|-------|
-| Content → New Request | No URL configured (empty request) |
-| Currencies | Named "Currencies" but URL is `/flights/iata?search=CAI` — likely copy-paste error |
+| Flights → Search body | Key is spelled `curreny` (missing `c`) in the collection — confirm against the live API before treating as a typo vs. contract |
 | Profile → Wallet / Orders (GET) | Postman copies form-data bodies from other requests — real API expects no body on these GET calls |
 | Buses saved examples | Some `originalRequest` URLs still point to legacy `/api/transports/*` paths — response bodies are valid; request snapshots are stale |
 | Buses → Create Ticket (500) | Known backend bug in `PayMobPayAction` (`Undefined array key "url"`) — not a client contract |
 | Buses → Search details (404 HTML) | Saved example returned an HTML 404 page — likely captured against a removed trip ID |
-| Buses → cancel | `POST /buses/orders/:id/cancel` has no saved response example yet — request-only in docs until captured in Postman |
+| Buses → cancel | `PUT /buses/orders/:id/cancel` has no saved response example yet — request-only in docs until captured in Postman |
 
 Nested items under Flights → Search (One Way, Round Trip, Multi City) and under Buses folders are **saved response examples**, not separate API endpoints. They all call the same endpoint as their parent request.
 
 Saved responses documented in each endpoint section are **real response examples** attached to the parent Postman request — not separate endpoints.
+
+Request body `//` comments from Postman are preserved in the docs (as `jsonc`) because they document enums and alternate examples.
