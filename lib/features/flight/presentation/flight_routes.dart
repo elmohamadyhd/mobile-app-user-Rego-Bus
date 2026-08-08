@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/presentation/flight_bundles_screen.dart';
 import 'package:safaria/features/flight/presentation/flight_offer_details_screen.dart';
+import 'package:safaria/features/flight/presentation/flight_passenger_form_screen.dart';
 import 'package:safaria/features/flight/presentation/flight_passengers_screen.dart';
 import 'package:safaria/features/flight/presentation/flight_results_screen.dart';
 import 'package:safaria/features/flight/presentation/flight_review_screen.dart';
@@ -42,5 +43,13 @@ List<RouteBase> flightRoutes() => [
       GoRoute(
         path: FlightRoutes.passengers,
         builder: (context, state) => const FlightPassengersScreen(),
+      ),
+      GoRoute(
+        path: FlightRoutes.passengerForm,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! int) return const FlightPassengersScreen();
+          return FlightPassengerFormScreen(index: extra);
+        },
       ),
     ];

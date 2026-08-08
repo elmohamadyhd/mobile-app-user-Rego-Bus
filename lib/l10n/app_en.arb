@@ -468,6 +468,62 @@
   "@flightFieldAddressLine2": {
     "description": "Passenger field name: second line of the home address."
   },
+  "flightNameAsPassport": "As printed on your passport",
+  "@flightNameAsPassport": {
+    "description": "Hint above the passenger name fields, explaining why they stay Latin script."
+  },
+  "flightFirstName": "First name",
+  "@flightFirstName": {
+    "description": "Passenger form field label: first name."
+  },
+  "flightMiddleName": "Middle name",
+  "@flightMiddleName": {
+    "description": "Passenger form field label: middle name (optional)."
+  },
+  "flightLastName": "Last name",
+  "@flightLastName": {
+    "description": "Passenger form field label: last name."
+  },
+  "flightTitleMr": "Mr",
+  "@flightTitleMr": {
+    "description": "Passenger title option: Mr."
+  },
+  "flightTitleMrs": "Mrs",
+  "@flightTitleMrs": {
+    "description": "Passenger title option: Mrs."
+  },
+  "flightTitleMs": "Ms",
+  "@flightTitleMs": {
+    "description": "Passenger title option: Ms."
+  },
+  "flightGenderMale": "Male",
+  "@flightGenderMale": {
+    "description": "Passenger gender option: male."
+  },
+  "flightGenderFemale": "Female",
+  "@flightGenderFemale": {
+    "description": "Passenger gender option: female."
+  },
+  "flightSavedTravellers": "Saved travellers",
+  "@flightSavedTravellers": {
+    "description": "Section heading for the saved-traveller chips on the passenger form."
+  },
+  "flightSaveForNextTime": "Save for next time",
+  "@flightSaveForNextTime": {
+    "description": "Checkbox label to persist this traveller for future bookings."
+  },
+  "flightNidLength": "The national ID is 14 digits",
+  "@flightNidLength": {
+    "description": "Validation message when the document number is not exactly 14 digits."
+  },
+  "flightTypeMismatch": "This date of birth does not match the fare booked for this traveller",
+  "@flightTypeMismatch": {
+    "description": "Warning shown when a passenger's birth date implies a different fare category than the slot booked."
+  },
+  "flightSave": "Save",
+  "@flightSave": {
+    "description": "Primary CTA on the passenger form screen."
+  },
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
   "@homePopularDestinations": {
