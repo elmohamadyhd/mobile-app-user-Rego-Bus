@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:safaria/core/storage/secure_storage.dart';
+import 'package:safaria/core/utils/device_token.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 
 final flightSavedTravellersStoreProvider =
@@ -43,11 +44,12 @@ class FlightSavedTravellersStore {
   /// carries a [FlightPassengerDraft.savedId] replaces its stored version.
   Future<FlightPassengerDraft> save(FlightPassengerDraft draft) async {
     final all = List<FlightPassengerDraft>.from(await read());
+    // A wall-clock timestamp collides when two travellers are saved back to
+    // back — Windows' clock resolution is coarser than a microsecond. The
+    // same random generator backing the device token has no such ceiling.
     final withId = draft.savedId != null
         ? draft
-        : draft.copyWith(
-            savedId: DateTime.now().microsecondsSinceEpoch.toString(),
-          );
+        : draft.copyWith(savedId: generateDeviceToken());
 
     final index = all.indexWhere((t) => t.savedId == withId.savedId);
     if (index == -1) {
