@@ -43,7 +43,13 @@ class FlightApi {
     return res.data;
   }
 
-  /// `POST /flights/{offer_id}/passengers` — response shape unconfirmed.
+  /// `GET /countries` — the source for nationality, residence, and dial codes.
+  Future<dynamic> countries() async {
+    final res = await _dio.get('/countries');
+    return res.data;
+  }
+
+  /// `POST /flights/{offer_id}/passengers`.
   /// [body] matches the documented request: `{"passengers": [...]}`.
   Future<dynamic> addPassengers({
     required String offerId,

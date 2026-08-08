@@ -6,6 +6,7 @@ import 'package:safaria/features/flight/data/flight_api.dart';
 import 'package:safaria/features/flight/data/flight_repository_impl.dart';
 import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
+import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer_filters.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
@@ -22,6 +23,12 @@ final flightApiProvider =
 final flightRepositoryProvider = Provider<FlightRepository>(
   (ref) => FlightRepositoryImpl(ref.watch(flightApiProvider)),
 );
+
+/// The country list is static for a session — fetch once and reuse across
+/// every passenger form.
+final flightCountriesProvider = FutureProvider<List<FlightCountry>>((ref) {
+  return ref.watch(flightRepositoryProvider).countries();
+});
 
 @freezed
 abstract class FlightBookingState with _$FlightBookingState {

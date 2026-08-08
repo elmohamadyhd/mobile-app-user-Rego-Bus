@@ -7,6 +7,7 @@ import 'package:safaria/features/flight/data/flight_dto_mapper.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
 import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
+import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
@@ -96,6 +97,14 @@ class FlightRepositoryImpl implements FlightRepository {
     return _guard(() async {
       final body = await _api.bundles(offerId);
       return FlightDtoMapper.journeyBundlesFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<List<FlightCountry>> countries() {
+    return _guard(() async {
+      final body = await _api.countries();
+      return FlightDtoMapper.countriesFromEnvelope(body);
     });
   }
 

@@ -2,6 +2,7 @@ import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
 import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
+import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
@@ -407,6 +408,33 @@ abstract final class FlightDtoMapper {
         'return_date': returnDate,
       ...common,
     };
+  }
+
+  // ---- Countries (GET /countries) ----
+
+  static List<FlightCountry> countriesFromEnvelope(dynamic body) {
+    final data = body is Map ? body['data'] : null;
+    if (data is! List) return const [];
+    return data
+        .whereType<Map>()
+        .map(_countryFromJson)
+        .whereType<FlightCountry>()
+        .toList(growable: false);
+  }
+
+  /// Rows missing a name or either ISO code are unusable in a picker, so they
+  /// are dropped rather than rendered as blanks.
+  static FlightCountry? _countryFromJson(Map<dynamic, dynamic> json) {
+    final name = _string(json['name']);
+    final iso2 = _string(json['iso2']);
+    final iso3 = _string(json['iso3']);
+    if (name == null || iso2 == null || iso3 == null) return null;
+    return FlightCountry(
+      name: name,
+      iso2: iso2,
+      iso3: iso3,
+      phoneCode: _string(json['phonecode']) ?? '',
+    );
   }
 
   // ---- primitives ----
