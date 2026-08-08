@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
@@ -14,19 +15,32 @@ class FlightClass {
 
   String label(AppLocalizations l10n) => switch (id) {
         'economy' => l10n.homeClassEconomy,
+        'premium_economy' => l10n.homeClassPremiumEconomy,
         'business' => l10n.homeClassBusiness,
         'first' => l10n.homeClassFirst,
+        'all' => l10n.homeClassAll,
         _ => id,
       };
 }
 
 const kFlightClasses = <FlightClass>[
   FlightClass(id: 'economy'),
+  FlightClass(id: 'premium_economy'),
   FlightClass(id: 'business'),
   FlightClass(id: 'first'),
+  FlightClass(id: 'all'),
 ];
 
 const kDefaultFlightClass = FlightClass(id: 'economy');
+
+/// Maps a picker entry to the value `POST /flights/search` expects.
+FlightCabinClass flightCabinClassFor(FlightClass value) => switch (value.id) {
+      'premium_economy' => FlightCabinClass.premiumEconomy,
+      'business' => FlightCabinClass.business,
+      'first' => FlightCabinClass.first,
+      'all' => FlightCabinClass.unspecified,
+      _ => FlightCabinClass.economy,
+    };
 
 /// Bottom-sheet picker; resolves to the chosen [FlightClass] or null.
 Future<FlightClass?> showFlightClassPicker(

@@ -138,6 +138,8 @@
   "homeClassEconomy": "Economy",
   "homeClassBusiness": "Business",
   "homeClassFirst": "First class",
+  "homeClassPremiumEconomy": "Premium economy",
+  "homeClassAll": "All classes",
   "homeSearchDateToday": "Today, {date}",
   "@homeSearchDateToday": {
     "description": "Home search date label when the selected day is today.",

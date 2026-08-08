@@ -86,6 +86,8 @@
   "homeClassEconomy": "الاقتصادية",
   "homeClassBusiness": "رجال الأعمال",
   "homeClassFirst": "الدرجة الأولى",
+  "homeClassPremiumEconomy": "الاقتصادية المميزة",
+  "homeClassAll": "كل الدرجات",
   "homeSearchDateToday": "اليوم، {date}",
   "homeOnePax": "راكب واحد",
   "flightAirportSearchHint": "ابحث عن مطار أو مدينة",
