@@ -10,6 +10,7 @@ import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.d
 import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
+import 'package:safaria/features/flight/domain/entities/flight_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
@@ -139,6 +140,46 @@ class FlightRepositoryImpl implements FlightRepository {
         );
       }
       return newOfferId;
+    });
+  }
+
+  @override
+  Future<FlightOrder> createOrder({
+    required String offerId,
+    required Map<String, String> selectedBundleCodes,
+    required String currency,
+  }) {
+    return _guard(() async {
+      final body = await _api.pending(
+        offerId: offerId,
+        body: FlightDtoMapper.createOrderBody(
+          selectedBundleCodes: selectedBundleCodes,
+          currency: currency,
+        ),
+      );
+      final order = FlightDtoMapper.orderFromEnvelope(body);
+      if (order == null) {
+        throw const ApiException(
+          'The booking was not created. Please try again.',
+        );
+      }
+      return order;
+    });
+  }
+
+  @override
+  Future<List<FlightOrder>> orders() {
+    return _guard(() async {
+      final body = await _api.orders();
+      return FlightDtoMapper.ordersFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<FlightOrder?> order(String id) {
+    return _guard(() async {
+      final body = await _api.order(id);
+      return FlightDtoMapper.orderFromEnvelope(body);
     });
   }
 

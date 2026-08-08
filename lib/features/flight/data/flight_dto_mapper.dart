@@ -328,6 +328,26 @@ abstract final class FlightDtoMapper {
 
   // ---- Orders (POST /flights/{offer_id}, GET /profile/flights/orders*) ----
 
+  /// Builds the `POST /flights/{offer_id}` body that creates the order.
+  ///
+  /// An offer without bundles sends `selectedBundles: []` — confirmed by
+  /// product. Do not omit the key.
+  ///
+  /// Note this endpoint takes `currency` spelled correctly, while
+  /// `POST /flights/search` takes `curreny`. The two genuinely disagree.
+  static Map<String, dynamic> createOrderBody({
+    required Map<String, String> selectedBundleCodes,
+    required String currency,
+  }) {
+    return {
+      'selectedBundles': [
+        for (final entry in selectedBundleCodes.entries)
+          {'journeyKey': entry.key, 'selectedBundleCode': entry.value},
+      ],
+      'currency': currency,
+    };
+  }
+
   static List<FlightOrder> ordersFromEnvelope(dynamic body) {
     final data = body is Map ? body['data'] : null;
     if (data is! List) return const [];

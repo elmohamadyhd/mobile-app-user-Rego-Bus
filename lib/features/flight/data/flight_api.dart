@@ -82,15 +82,29 @@ class FlightApi {
     return res.data;
   }
 
-  /// `POST /flights/{offer_id}` — response shape unconfirmed, and the route
-  /// as documented in Postman 404'd ("no url matched") against the demo
-  /// backend even with a valid, unencoded offer id. Confirm the real path
-  /// and method with the backend team before relying on this.
+  /// `POST /flights/{offer_id}` — creates the order and returns it with a
+  /// payment transaction.
+  ///
+  /// [offerId] must be the id returned by adding passengers. The 404 recorded
+  /// here previously came from sending an earlier id in the relay.
   Future<dynamic> pending({
     required String offerId,
     required Map<String, dynamic> body,
   }) async {
     final res = await _dio.post('/flights/${_encodeOfferId(offerId)}', data: body);
+    return res.data;
+  }
+
+  /// `GET /profile/flights/orders`
+  Future<dynamic> orders() async {
+    final res = await _dio.get('/profile/flights/orders');
+    return res.data;
+  }
+
+  /// `GET /profile/flights/orders/{id}` — the source of truth for whether an
+  /// order was actually paid. Never trust the WebView redirect alone.
+  Future<dynamic> order(String id) async {
+    final res = await _dio.get('/profile/flights/orders/$id');
     return res.data;
   }
 

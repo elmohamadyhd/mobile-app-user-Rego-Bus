@@ -7,6 +7,7 @@ import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.d
 import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
+import 'package:safaria/features/flight/domain/entities/flight_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
@@ -33,6 +34,14 @@ class FakeFlightRepository implements FlightRepository {
   List<FlightPassengerDraft>? lastPassengers;
   FlightContactDetails? lastContact;
   FlightSettings? settingsResult;
+  FlightOrder? createOrderResult;
+  ApiException? createOrderException;
+  Map<String, String>? lastSelectedBundleCodes;
+  String? lastCreateOrderOfferId;
+  String? lastCreateOrderCurrency;
+  List<FlightOrder>? ordersResult;
+  FlightOrder? orderResult;
+  String? lastOrderId;
 
   /// Per-term overrides for simulating out-of-order network responses in
   /// tests. When a term has a completer here, `searchAirportSuggestions`
@@ -166,5 +175,40 @@ class FakeFlightRepository implements FlightRepository {
     lastContact = contact;
     if (addPassengersException != null) throw addPassengersException!;
     return Future.value(addPassengersResult ?? offerId);
+  }
+
+  static const sampleOrder = FlightOrder(
+    id: '76',
+    status: 'pending',
+    orderStatus: 'PendingPayment',
+    paymentStatus: 'pending',
+    totalAmount: 13048.86,
+    currency: 'EGP',
+    checkoutUrl: 'https://eg.myfatoorah.com/EGY/ia/050714540828552362',
+    receiptUrl: 'https://demo.safaria.travel/flight-orders/76/invoice',
+  );
+
+  @override
+  Future<FlightOrder> createOrder({
+    required String offerId,
+    required Map<String, String> selectedBundleCodes,
+    required String currency,
+  }) {
+    lastCreateOrderOfferId = offerId;
+    lastSelectedBundleCodes = selectedBundleCodes;
+    lastCreateOrderCurrency = currency;
+    if (createOrderException != null) throw createOrderException!;
+    return Future.value(createOrderResult ?? sampleOrder);
+  }
+
+  @override
+  Future<List<FlightOrder>> orders() {
+    return Future.value(ordersResult ?? const []);
+  }
+
+  @override
+  Future<FlightOrder?> order(String id) {
+    lastOrderId = id;
+    return Future.value(orderResult ?? sampleOrder);
   }
 }

@@ -10,6 +10,7 @@ import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.d
 import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer_filters.dart';
+import 'package:safaria/features/flight/domain/entities/flight_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_counts.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
@@ -27,6 +28,7 @@ enum FlightBookingStatus {
   confirming,
   loadingBundles,
   submittingPassengers,
+  creatingOrder,
   error,
 }
 
@@ -70,6 +72,7 @@ abstract class FlightBookingState with _$FlightBookingState {
     String? passengersOfferId,
     @Default(<int, Map<String, String>>{})
     Map<int, Map<String, String>> passengerErrors,
+    FlightOrder? order,
   }) = _FlightBookingState;
 
   /// The offer id the next call must send. Each step that mints a new id
@@ -253,6 +256,35 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
         error: e.toString(),
       );
       return false;
+    }
+  }
+
+  /// Creates the order. Uses [FlightBookingState.activeOfferId], which by
+  /// this point is the id minted when passengers were added.
+  Future<FlightOrder?> createOrder({required String currency}) async {
+    final offerId = state.activeOfferId;
+    if (offerId == null) return null;
+    state = state.copyWith(
+      status: FlightBookingStatus.creatingOrder,
+      error: null,
+    );
+    try {
+      final order = await _repo.createOrder(
+        offerId: offerId,
+        selectedBundleCodes: state.selectedBundleCodes,
+        currency: currency,
+      );
+      state = state.copyWith(
+        status: FlightBookingStatus.idle,
+        order: order,
+      );
+      return order;
+    } catch (e) {
+      state = state.copyWith(
+        status: FlightBookingStatus.error,
+        error: e.toString(),
+      );
+      return null;
     }
   }
 }

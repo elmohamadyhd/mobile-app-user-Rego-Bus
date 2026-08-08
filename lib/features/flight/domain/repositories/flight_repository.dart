@@ -4,6 +4,7 @@ import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.d
 import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
+import 'package:safaria/features/flight/domain/entities/flight_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_pagination.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
@@ -47,4 +48,16 @@ abstract interface class FlightRepository {
     required List<FlightPassengerDraft> passengers,
     required FlightContactDetails contact,
   });
+
+  /// Creates the order. [offerId] must be the id returned by
+  /// [addPassengers] — the last hop of the relay.
+  Future<FlightOrder> createOrder({
+    required String offerId,
+    required Map<String, String> selectedBundleCodes,
+    required String currency,
+  });
+
+  Future<List<FlightOrder>> orders();
+
+  Future<FlightOrder?> order(String id);
 }
