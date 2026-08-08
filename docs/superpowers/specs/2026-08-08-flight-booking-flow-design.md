@@ -237,22 +237,17 @@ One object per traveller, matching the counts sent to search.
 |-------|-------|
 | `title` | `MR` / `MRS` / `MS` — **assumed set**, pending the full list from backend |
 | `documentNumber` | **national ID**, per the Postman comment — not a passport number |
-| `nationalityCountryCode` | Country code from **`GET /countries`** — most likely `iso3`, see below |
+| `nationalityCountryCode` | **`iso3`** from **`GET /countries`** (confirmed live — see Resolved) |
 | `residenceCountryCode` | Same source and same format as nationality |
 | `gender` | `M` \| `F` |
 | `passengerTypeCode` | `ADT` \| `CHD` \| `INF` — must match search counts |
-| `address` | **Assumed optional**; send it when available, prefilled from the profile address book. Pending confirmation. |
+| `address` | **Required** — `countryCode` (`iso2`), `cityCode`, `line1`, `line2`. Omitting it returns `400` naming those fields. |
 
-> **The sample value `"EGP"` is a typo — read it as `"EGY"`.** Egypt's `iso3`
-> is `EGY`; `EGP` is the currency. One letter apart, and the whole confusion
-> traces back to it. So both nationality and residence take **`iso3`**, while
-> `address.countryCode` takes **`iso2`** (`"EG"` in the same sample — which is
-> exactly what `iso2` returns).
->
-> This is an inference from the data, not something backend stated. It costs
-> one test request to confirm, and it is the only field-format risk left in
-> the passenger step — if the provider wants `iso2` everywhere, every booking
-> fails here.
+> **Live-confirmed 2026-08-09:** nationality and residence take **`iso3`**
+> (`"EGY"`). `address.countryCode` takes **`iso2`** (`"EG"`). Adding
+> passengers with that pair returns `200` and a new **offer id C** that
+> differs from confirm's B. Without `address`, the same call fails with
+> `The passengers.0.address field is required.`
 
 Returns only `{ "offerId": "…C…" }`.
 
@@ -529,12 +524,13 @@ Answered by product; folded into the sections above.
 | # | Question | Answer |
 |---|----------|--------|
 | 1 | `selectedBundles` with no bundles | Send `[]` — don't omit the key |
-| 3 | `nationalityCountryCode` / `residenceCountryCode` | Both are real country codes, both sourced from `GET /countries`. The sample's `"EGP"` is a typo for `iso3` `"EGY"` |
+| 3 | `iso3` vs `iso2` for passenger country fields | **Resolved 2026-08-09 (live spike).** Both fields are real country codes from `GET /countries`. Sample `"EGP"` was a typo for `iso3` `"EGY"`. Live: `nationalityCountryCode` / `residenceCountryCode` accept **`iso3`** with `200` and a new offer id **C ≠ B**. `address.countryCode` remains **`iso2`**. Constant: `kPassengerCountryCodeWidth = iso3`. |
 | 4 | Journey shape | One object per leg: 1 one-way, 2 round-trip, N multi-city |
 | 5 | Infant → adult pairing | Not needed — counts alone are enough |
 | 6 | Offer TTL | No TTL. Confirm secures the trip; expiry errors were a wrong-id bug |
 | 2 | Round-trip confirm / bundles sample | **Resolved 2026-08-08 (live spike).** Confirm mints a new offer id (A ≠ B). `GET …/bundles` with B returns 200 with **one `data[]` entry per leg** (2 for round-trip). Same call with A returns `400 "…not valid or expired"`. Fixture: `test/features/flight/data/flight_bundles_fixture.dart`. |
 | 7 | `bundle_prices` for mixed party | **Resolved 2026-08-08 (live spike, 2 ADT + 1 CHD).** Still a **single object** (not an array), carrying only `passenger_type_code: ADT`. No CHD price entry. Upgrade deltas matched prior 1-ADT samples — treat as **per passenger of that type** and multiply by matching headcount; CHD contributes 0 unless a CHD row appears. |
+| 8 | `address` requiredness | **Resolved 2026-08-09 (same spike).** Address is **required** — omitting it returns `400` for `address`, `countryCode`, `cityCode`, `line1`, `line2`. Passenger form must collect it. |
 
 ## Assumptions — decided here, confirm later
 
@@ -542,7 +538,7 @@ Product asked to proceed on judgment for these. Each is cheap to change:
 
 | Assumption | Decision | If wrong |
 |------------|----------|----------|
-| `address` requiredness | **Optional.** Send it when the profile has one, omit otherwise. No address fields in the passenger form. | Add an address block to the form |
+| ~~`address` requiredness~~ | **Resolved 2026-08-09** — required; form collects country/city/lines. | — |
 | `title` allowed values | **`MR` / `MRS` / `MS`.** Derive the default from `gender`, let the user override. | Extend the dropdown |
 | ~~Currency source~~ | **Resolved 2026-08-08** — `default_booking_currency` from `GET /settings`. No picker at all. | — |
 | Passenger form prefill | First adult prefills from the signed-in profile — name, email, phone. | — |
@@ -553,9 +549,7 @@ Product asked to proceed on judgment for these. Each is cheap to change:
    "ticketed". Product is collecting the full list from backend. Blocks the
    success screen only; everything upstream can be built now.
 2. ~~**Round-trip confirm sample**~~ — resolved above (2026-08-08 live spike).
-3. **`iso3` vs `iso2`** for the two passenger country fields. The sample points
-   at `iso3`, but it's an inference from a typo'd value — one test request
-   settles it.
+3. ~~**`iso3` vs `iso2`**~~ — resolved above (2026-08-09 live spike).
 
 ## Current repo state
 
