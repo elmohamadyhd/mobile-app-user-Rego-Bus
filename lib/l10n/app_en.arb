@@ -214,6 +214,8 @@
       "number": {"type": "int"}
     }
   },
+  "flightLegOutbound": "Outbound",
+  "flightLegReturn": "Return",
   "flightAddLeg": "Add another leg",
   "flightReturnDate": "Return date",
   "flightSearchSelectAirports": "Please select origin and destination airports",

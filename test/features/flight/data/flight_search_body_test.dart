@@ -74,7 +74,7 @@ void main() {
   test('every shape keeps the misspelled currency key', () {
     for (final tripType in FlightTripType.values) {
       final body = _body(tripType: tripType, legs: [_legCaiRuh]);
-      expect(body['curreny'], 'EGP', reason: '${tripType.wireValue}');
+      expect(body['curreny'], 'EGP', reason: tripType.wireValue);
       expect(body.containsKey('currency'), isFalse);
     }
   });

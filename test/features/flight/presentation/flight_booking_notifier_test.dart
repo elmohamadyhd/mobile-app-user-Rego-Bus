@@ -7,9 +7,13 @@ import '../fake_flight_repository.dart';
 
 void main() {
   FlightSearchParams params() => FlightSearchParams(
-        origin: 'CAI',
-        destination: 'RUH',
-        date: DateTime(2026, 9, 15),
+        legs: [
+          FlightSearchLeg(
+            origin: 'CAI',
+            destination: 'RUH',
+            date: DateTime(2026, 9, 15),
+          ),
+        ],
         passengers: const [
           FlightPassengerCount(passengerTypeCode: 'ADT', count: 1),
         ],

@@ -112,6 +112,8 @@
   "flightTripRound": "ذهاب وعودة",
   "flightTripMulti": "متعدد المدن",
   "flightLegLabel": "المسار {number}",
+  "flightLegOutbound": "الذهاب",
+  "flightLegReturn": "العودة",
   "flightAddLeg": "إضافة مسار",
   "flightReturnDate": "تاريخ العودة",
   "flightSearchSelectAirports": "يرجى اختيار مطار المغادرة والوصول",

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/flight/data/flight_dto_mapper.dart';
+import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 
 import 'flight_fixtures.dart';
 
@@ -70,16 +71,20 @@ void main() {
 
     test('search request body uses the curreny typo, not currency', () {
       final body = FlightDtoMapper.searchRequestBody(
-        origin: 'CAI',
-        destination: 'RUH',
-        date: '2026-09-15',
+        tripType: FlightTripType.oneWay,
+        legs: const [
+          {
+            'origin': 'CAI',
+            'destination': 'RUH',
+            'date': '2026-09-15',
+          },
+        ],
         passengers: const [
           {'passengerTypeCode': 'ADT', 'count': 1},
         ],
         sortingCriteria: 'CheapestFirst',
         cabinClass: 'CABIN_CLASS_ECONOMY',
         directFlightsOnly: false,
-        tripType: 'one_way',
         currency: 'EGP',
       );
 

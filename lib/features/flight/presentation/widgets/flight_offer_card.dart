@@ -10,7 +10,8 @@ import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 
 /// Boarding-pass styled summary card for one [FlightOffer] on the results list.
-/// Only the first journey is shown — one-way search always returns exactly one.
+/// Every journey on the offer is shown — round-trip and multi-city are one
+/// priced unit, so all legs belong on the same card.
 class FlightOfferCard extends StatelessWidget {
   const FlightOfferCard({
     super.key,
@@ -52,19 +53,20 @@ class FlightOfferCard extends StatelessWidget {
     return iataCode;
   }
 
+  /// Single-leg offers get no label. Two legs read as outbound and return;
+  /// more than two is a multi-city itinerary, so legs are simply numbered.
+  static String? _legLabel(AppLocalizations l10n, int index, int total) {
+    if (total < 2) return null;
+    if (total == 2) {
+      return index == 0 ? l10n.flightLegOutbound : l10n.flightLegReturn;
+    }
+    return l10n.flightLegLabel(index + 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final journey = offer.journeys.first;
-    final firstSegment = journey.segments.first;
-    final lastSegment = journey.segments.last;
-    final totalMinutes =
-        journey.segments.fold<int>(0, (sum, s) => sum + s.flightTimeInMinutes);
-    final stopsLabel = journey.numberOfStops == 0
-        ? l10n.flightDirect
-        : journey.numberOfStops == 1
-            ? l10n.flightOneStop
-            : l10n.flightStopsCount(journey.numberOfStops);
+    final headerSegment = offer.journeys.first.segments.first;
     final priceText = offer.totalAmount.toStringAsFixed(0);
 
     const shape = FlightTicketBorder(
@@ -96,17 +98,17 @@ class FlightOfferCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _Header(segment: firstSegment),
+                  _Header(segment: headerSegment),
                   const SizedBox(height: AppSpacing.md),
-                  _Timeline(
-                    departTime: _time(firstSegment.departureDateTime),
-                    arriveTime: _time(lastSegment.arrivalDateTime),
-                    origin: _placeLabel(originLabel, journey.origin),
-                    destination:
-                        _placeLabel(destinationLabel, journey.destination),
-                    duration: _duration(totalMinutes),
-                    stopsLabel: stopsLabel,
-                  ),
+                  for (var i = 0; i < offer.journeys.length; i++) ...[
+                    if (i > 0) const SizedBox(height: AppSpacing.sm),
+                    _JourneyBlock(
+                      journey: offer.journeys[i],
+                      label: _legLabel(l10n, i, offer.journeys.length),
+                      originLabel: i == 0 ? originLabel : null,
+                      destinationLabel: i == 0 ? destinationLabel : null,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -133,6 +135,65 @@ class FlightOfferCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// One leg of an offer: its route row, duration and stops. Repeated per
+/// journey — an offer is priced as a whole trip, so all of its legs belong on
+/// the same card.
+class _JourneyBlock extends StatelessWidget {
+  const _JourneyBlock({
+    required this.journey,
+    required this.label,
+    this.originLabel,
+    this.destinationLabel,
+  });
+
+  final FlightJourney journey;
+
+  /// Null for a single-leg offer, where a label would be noise.
+  final String? label;
+  final String? originLabel;
+  final String? destinationLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final firstSegment = journey.segments.first;
+    final lastSegment = journey.segments.last;
+    final totalMinutes =
+        journey.segments.fold<int>(0, (sum, s) => sum + s.flightTimeInMinutes);
+    final stopsLabel = journey.numberOfStops == 0
+        ? l10n.flightDirect
+        : journey.numberOfStops == 1
+            ? l10n.flightOneStop
+            : l10n.flightStopsCount(journey.numberOfStops);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (label != null)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.xs),
+            child: Text(
+              label!,
+              style: AppTypography.caption
+                  .copyWith(color: AppColors.textSecondary),
+            ),
+          ),
+        _Timeline(
+          departTime: FlightOfferCard._time(firstSegment.departureDateTime),
+          arriveTime: FlightOfferCard._time(lastSegment.arrivalDateTime),
+          origin: FlightOfferCard._placeLabel(originLabel, journey.origin),
+          destination: FlightOfferCard._placeLabel(
+            destinationLabel,
+            journey.destination,
+          ),
+          duration: FlightOfferCard._duration(totalMinutes),
+          stopsLabel: stopsLabel,
+        ),
+      ],
     );
   }
 }
