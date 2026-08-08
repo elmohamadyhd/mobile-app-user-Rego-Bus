@@ -45,18 +45,29 @@ abstract class FlightPassengerCount with _$FlightPassengerCount {
   }) = _FlightPassengerCount;
 }
 
-/// Params for `POST /flights/search`.
-///
-/// Only the one-way shape is confirmed against the live API. Round-trip and
-/// multi-city searches almost certainly need extra fields (e.g. multiple
-/// origin/destination/date legs) not present in the documented Postman
-/// request body — confirm the real shape before wiring those trip types up.
+/// One origin→destination hop on a given date. One-way and round-trip
+/// searches carry exactly one; multi-city carries one per city pair.
 @freezed
-abstract class FlightSearchParams with _$FlightSearchParams {
-  const factory FlightSearchParams({
+abstract class FlightSearchLeg with _$FlightSearchLeg {
+  const factory FlightSearchLeg({
     required String origin,
     required String destination,
     required DateTime date,
+  }) = _FlightSearchLeg;
+}
+
+/// Params for `POST /flights/search`.
+///
+/// [legs] is the single source of truth for the route. [returnDate] applies
+/// only to [FlightTripType.roundTrip]; multi-city expresses the return as
+/// another entry in [legs].
+@freezed
+abstract class FlightSearchParams with _$FlightSearchParams {
+  const FlightSearchParams._();
+
+  const factory FlightSearchParams({
+    required List<FlightSearchLeg> legs,
+    DateTime? returnDate,
     required List<FlightPassengerCount> passengers,
     @Default(FlightSortingCriteria.cheapestFirst)
     FlightSortingCriteria sortingCriteria,
@@ -65,4 +76,6 @@ abstract class FlightSearchParams with _$FlightSearchParams {
     @Default(FlightTripType.oneWay) FlightTripType tripType,
     required String currency,
   }) = _FlightSearchParams;
+
+  FlightSearchLeg get firstLeg => legs.first;
 }
