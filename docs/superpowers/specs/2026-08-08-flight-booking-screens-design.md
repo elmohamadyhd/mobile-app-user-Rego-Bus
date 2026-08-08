@@ -374,10 +374,13 @@ needed.
 
 1. **Paid-state values** — which `order_status` / `payment_status` mean
    ticketed. Blocks only the outcome branch; product is collecting them.
-2. **Bundle pricing across passenger types** — `bundle_prices` is a single
-   object carrying one `passenger_type_code`. For a mixed party, is it an
-   array per type, or one figure multiplied by head count? Getting this wrong
-   makes the displayed total disagree with the amount charged. Needs one
-   bundles call on a booking with more than one passenger type.
+2. ~~**Bundle pricing across passenger types**~~ — **Resolved 2026-08-08.**
+   Live `GET …/bundles` after confirm for 2 ADT + 1 CHD still returns a
+   **single `bundle_prices` object** (not an array), with
+   `passenger_type_code: ADT` only — no CHD row. Upgrade deltas matched
+   prior 1-ADT samples, so treat the amount as **per passenger of that
+   type** and multiply by matching headcount; CHD adds 0 until a CHD price
+   appears. Offer id after confirm differs from search (A ≠ B); bundles
+   with A 400s, with B 200s.
 3. **`iso3` vs `iso2`** for the passenger country fields — inferred, not
    stated. One test request settles it.

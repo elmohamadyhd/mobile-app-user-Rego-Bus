@@ -533,6 +533,8 @@ Answered by product; folded into the sections above.
 | 4 | Journey shape | One object per leg: 1 one-way, 2 round-trip, N multi-city |
 | 5 | Infant → adult pairing | Not needed — counts alone are enough |
 | 6 | Offer TTL | No TTL. Confirm secures the trip; expiry errors were a wrong-id bug |
+| 2 | Round-trip confirm / bundles sample | **Resolved 2026-08-08 (live spike).** Confirm mints a new offer id (A ≠ B). `GET …/bundles` with B returns 200 with **one `data[]` entry per leg** (2 for round-trip). Same call with A returns `400 "…not valid or expired"`. Fixture: `test/features/flight/data/flight_bundles_fixture.dart`. |
+| 7 | `bundle_prices` for mixed party | **Resolved 2026-08-08 (live spike, 2 ADT + 1 CHD).** Still a **single object** (not an array), carrying only `passenger_type_code: ADT`. No CHD price entry. Upgrade deltas matched prior 1-ADT samples — treat as **per passenger of that type** and multiply by matching headcount; CHD contributes 0 unless a CHD row appears. |
 
 ## Assumptions — decided here, confirm later
 
@@ -550,9 +552,7 @@ Product asked to proceed on judgment for these. Each is cheap to change:
 1. **Paid-state enum** — which `order_status` / `payment_status` values mean
    "ticketed". Product is collecting the full list from backend. Blocks the
    success screen only; everything upstream can be built now.
-2. **Round-trip confirm sample** — the leg model is settled, but no saved
-   round-trip confirm response exists to check against. Eyeball one before
-   building the bundle picker.
+2. ~~**Round-trip confirm sample**~~ — resolved above (2026-08-08 live spike).
 3. **`iso3` vs `iso2`** for the two passenger country fields. The sample points
    at `iso3`, but it's an inference from a typo'd value — one test request
    settles it.
