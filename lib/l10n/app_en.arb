@@ -345,6 +345,25 @@
   "@flightBackToResults": {
     "description": "Secondary action returning to flight search results after a confirm error."
   },
+  "flightBundlesTitle": "Choose your bundle",
+  "@flightBundlesTitle": {
+    "description": "App bar title on the flight bundle selection screen."
+  },
+  "flightBundleIncluded": "Included",
+  "@flightBundleIncluded": {
+    "description": "Shown instead of +0 when a bundle adds no fare delta."
+  },
+  "flightBundleLeg": "Leg {number}",
+  "@flightBundleLeg": {
+    "description": "Section heading for one journey's bundle choices.",
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "flightBundleChooseAll": "Choose a bundle for every leg",
+  "@flightBundleChooseAll": {
+    "description": "Disabled primary CTA until every journey has a bundle."
+  },
   "homeSearch": "Search trips",
   "homePopularDestinations": "Popular destinations",
   "@homePopularDestinations": {

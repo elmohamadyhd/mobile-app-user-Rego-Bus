@@ -127,6 +127,36 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
       );
     }
   }
+
+  Future<void> loadBundles() async {
+    final offerId = state.activeOfferId;
+    if (offerId == null || state.confirmedOrder == null) return;
+    state = state.copyWith(
+      status: FlightBookingStatus.loadingBundles,
+      error: null,
+    );
+    try {
+      final bundles = await _repo.bundles(offerId);
+      state = state.copyWith(
+        status: FlightBookingStatus.idle,
+        journeyBundles: bundles,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: FlightBookingStatus.error,
+        error: e.toString(),
+      );
+    }
+  }
+
+  void selectBundle({required String journeyId, required String bundleCode}) {
+    state = state.copyWith(
+      selectedBundleCodes: {
+        ...state.selectedBundleCodes,
+        journeyId: bundleCode,
+      },
+    );
+  }
 }
 
 final flightBookingProvider =

@@ -5,6 +5,7 @@ import 'package:safaria/core/utils/date_formatting.dart';
 import 'package:safaria/features/flight/data/flight_api.dart';
 import 'package:safaria/features/flight/data/flight_dto_mapper.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
+import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
@@ -87,6 +88,14 @@ class FlightRepositoryImpl implements FlightRepository {
     return _guard(() async {
       final body = await _api.confirmOrder(offerId);
       return FlightDtoMapper.confirmedOrderFromEnvelope(body);
+    });
+  }
+
+  @override
+  Future<List<FlightJourneyBundles>> bundles(String offerId) {
+    return _guard(() async {
+      final body = await _api.bundles(offerId);
+      return FlightDtoMapper.journeyBundlesFromEnvelope(body);
     });
   }
 

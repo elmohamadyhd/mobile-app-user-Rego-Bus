@@ -1,4 +1,5 @@
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
+import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
@@ -17,10 +18,14 @@ abstract interface class FlightRepository {
 
   Future<List<FlightOffer>> search(FlightSearchParams params);
 
-  /// Finalizes a searched offer into a booked order.
-  ///
-  /// Unverified on the demo backend as a real booking action — see the
-  /// warning on [FlightConfirmedOrder]. Do not surface this as a "confirmed"
-  /// state to users without server-side confirmation it actually persists.
+  /// Re-prices and secures a searched offer, returning a **new offer id**
+  /// that every later call must use. See the offer id relay in
+  /// `docs/superpowers/specs/2026-08-08-flight-booking-flow-design.md`.
   Future<FlightConfirmedOrder> confirmOrder(String offerId);
+
+  /// Fare bundles for a confirmed offer.
+  ///
+  /// [offerId] must be the id returned by [confirmOrder], not the one from
+  /// [search].
+  Future<List<FlightJourneyBundles>> bundles(String offerId);
 }

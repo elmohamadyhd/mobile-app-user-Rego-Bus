@@ -57,3 +57,17 @@ List<FlightPassengerCount> toWirePassengers(FlightPassengerCounts counts) {
       FlightPassengerCount(passengerTypeCode: 'INF', count: counts.infants),
   ];
 }
+
+/// Rebuilds the UI-side counts from the wire list held in search params.
+FlightPassengerCounts flightPassengerCountsOf(FlightSearchParams? params) {
+  if (params == null) return const FlightPassengerCounts();
+  var counts = const FlightPassengerCounts(adults: 0);
+  for (final passenger in params.passengers) {
+    counts = switch (passenger.passengerTypeCode) {
+      'CHD' => counts.copyWith(children: passenger.count),
+      'INF' => counts.copyWith(infants: passenger.count),
+      _ => counts.copyWith(adults: passenger.count),
+    };
+  }
+  return counts;
+}

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:safaria/core/network/api_exception.dart';
 import 'package:safaria/features/flight/domain/entities/flight_airport_suggestion.dart';
+import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_iata_airport.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
@@ -129,5 +130,10 @@ class FakeFlightRepository implements FlightRepository {
   @override
   Future<FlightConfirmedOrder> confirmOrder(String offerId) {
     throw UnimplementedError('Confirm order is out of scope for this slice');
+  }
+
+  @override
+  Future<List<FlightJourneyBundles>> bundles(String offerId) {
+    return Future.value(const []);
   }
 }
