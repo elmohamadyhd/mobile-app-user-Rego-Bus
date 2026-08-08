@@ -524,6 +524,54 @@
   "@flightSave": {
     "description": "Primary CTA on the passenger form screen."
   },
+  "flightPayTitle": "Review and pay",
+  "@flightPayTitle": {
+    "description": "App bar title on the flight review-and-pay screen (wizard step 4)."
+  },
+  "flightPayItinerary": "Itinerary",
+  "@flightPayItinerary": {
+    "description": "Section heading for the itinerary summary on the flight pay screen."
+  },
+  "flightPayTravellers": "Travellers",
+  "@flightPayTravellers": {
+    "description": "Section heading for the traveller names on the flight pay screen."
+  },
+  "flightPayBundles": "Selected bundles",
+  "@flightPayBundles": {
+    "description": "Section heading for the chosen bundles on the flight pay screen."
+  },
+  "flightPayNow": "Pay now",
+  "@flightPayNow": {
+    "description": "Primary CTA on the flight pay screen that creates the order and opens checkout."
+  },
+  "flightTicketTitle": "Your booking is confirmed",
+  "@flightTicketTitle": {
+    "description": "Title on the flight ticket (paid outcome) screen."
+  },
+  "flightTicketPnr": "Booking reference",
+  "@flightTicketPnr": {
+    "description": "Label above the airline PNR on the flight ticket screen."
+  },
+  "flightPendingTitle": "Payment not completed",
+  "@flightPendingTitle": {
+    "description": "Title on the flight pending (unpaid outcome) screen."
+  },
+  "flightPendingBody": "Your booking is held but not paid. You can finish paying from My Tickets.",
+  "@flightPendingBody": {
+    "description": "Body copy on the flight pending screen."
+  },
+  "flightPendingRetry": "Try paying again",
+  "@flightPendingRetry": {
+    "description": "Retry CTA on the flight pending screen that reopens checkout."
+  },
+  "flightGoToTickets": "Go to My Tickets",
+  "@flightGoToTickets": {
+    "description": "CTA on the flight ticket/pending screens that navigates to My Tickets."
+  },
+  "flightOrdersSection": "Flights",
+  "@flightOrdersSection": {
+    "description": "Section heading for flight orders on the My Tickets tab."
+  },
   "savedTravellersTitle": "Saved travellers",
   "@savedTravellersTitle": {
     "description": "App bar title on the saved travellers management screen."

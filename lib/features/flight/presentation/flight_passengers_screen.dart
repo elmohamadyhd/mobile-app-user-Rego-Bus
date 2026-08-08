@@ -144,7 +144,7 @@ class _FlightPassengersScreenState
                         ? () async {
                             final ok = await notifier.submitPassengers();
                             if (ok && context.mounted) {
-                              unawaited(context.push(FlightRoutes.results));
+                              unawaited(context.push(FlightRoutes.payReview));
                             }
                           }
                         : null,
