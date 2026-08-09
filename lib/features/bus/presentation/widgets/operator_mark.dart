@@ -31,12 +31,15 @@ class OperatorMark extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: hasLogo
-          ? Image.network(
-              logoUrl!,
-              width: size,
-              height: size,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _initials(),
+          ? Padding(
+              padding: const EdgeInsets.all(AppSpacing.xs),
+              child: Image.network(
+                logoUrl!,
+                width: size,
+                height: size,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => _initials(),
+              ),
             )
           : _initials(),
     );

@@ -27,12 +27,15 @@ class OperatorAvatar extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: hasLogo
-          ? Image.network(
-              trip.operatorLogoUrl!,
-              width: size,
-              height: size,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => _initials(),
+          ? Padding(
+              padding: const EdgeInsets.all(AppSpacing.xs),
+              child: Image.network(
+                trip.operatorLogoUrl!,
+                width: size,
+                height: size,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => _initials(),
+              ),
             )
           : _initials(),
     );
