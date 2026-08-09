@@ -39,7 +39,7 @@ class TripCard extends StatefulWidget {
   final TripHighlight? highlight;
 
   /// Height of the fare stub (below the tear line). Drives the notch offset.
-  static const double _stubHeight = 60;
+  static const double _stubHeight = 68;
 
   @override
   State<TripCard> createState() => _TripCardState();
@@ -137,7 +137,7 @@ class _TripCardState extends State<TripCard> {
               AppSpacing.md,
               AppSpacing.md,
               AppSpacing.md,
-              AppSpacing.sm,
+              AppSpacing.md,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,14 +158,14 @@ class _TripCardState extends State<TripCard> {
               ],
             ),
           ),
-          SizedBox(
-            height: TripCard._stubHeight,
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: TripCard._stubHeight),
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.md,
-                0,
+                AppSpacing.sm,
                 AppSpacing.md,
-                0,
+                AppSpacing.sm,
               ),
               child: Center(
                 child: _FareStub(
@@ -363,7 +363,7 @@ class _Timeline extends StatelessWidget {
           ],
         ),
         if (trip.stopsCount > 0) ...[
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.sm),
           Align(
             child: _StopsChip(
               stopsCount: trip.stopsCount,
@@ -577,16 +577,20 @@ class _ConnectorLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rtl = Directionality.of(context) == TextDirection.rtl;
     return Row(
       children: [
         _dot(AppColors.primary),
         const Expanded(child: Divider(color: AppColors.hairline, height: 1)),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-          child: Icon(
-            PhosphorIconsLight.caretRight,
-            size: 14,
-            color: AppColors.primary,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+          child: Transform.flip(
+            flipX: rtl,
+            child: const Icon(
+              PhosphorIconsLight.caretRight,
+              size: 14,
+              color: AppColors.primary,
+            ),
           ),
         ),
         const Expanded(child: Divider(color: AppColors.hairline, height: 1)),
@@ -635,7 +639,7 @@ class _FareStub extends StatelessWidget {
                   color: AppColors.textMuted,
                 ),
               ),
-              const SizedBox(height: AppSpacing.xs),
+              const SizedBox(height: AppSpacing.xxs),
               Text.rich(
                 TextSpan(
                   children: [
@@ -661,7 +665,7 @@ class _FareStub extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: AppSpacing.sm),
+        const SizedBox(width: AppSpacing.md),
         _SelectButton(l10n: l10n, onTap: onTap, loading: loading),
       ],
     );
