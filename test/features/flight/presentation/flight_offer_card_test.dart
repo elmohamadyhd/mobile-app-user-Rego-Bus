@@ -43,7 +43,11 @@ final _offer = FlightOffer(
   priceClasses: [],
 );
 
-Future<void> _pump(WidgetTester tester, {bool rtl = false}) {
+Future<void> _pump(
+  WidgetTester tester, {
+  bool rtl = false,
+  VoidCallback? onSelect,
+}) {
   return tester.pumpWidget(
     MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -54,8 +58,7 @@ Future<void> _pump(WidgetTester tester, {bool rtl = false}) {
           offer: _offer,
           originLabel: 'Cairo International Airport',
           destinationLabel: 'King Khalid International Airport',
-          onTap: () {},
-          onSelect: () {},
+          onSelect: onSelect ?? () {},
         ),
       ),
     ),
@@ -76,28 +79,23 @@ void main() {
     expect(find.text('2h 45m'), findsOneWidget);
     expect(find.textContaining('7601'), findsOneWidget);
     expect(find.textContaining('EGP'), findsOneWidget);
-    expect(find.text('Details'), findsOneWidget);
+    expect(find.text('Details'), findsNothing);
     expect(find.text('Select this flight'), findsOneWidget);
   });
 
   testWidgets('calls onSelect from the select button', (tester) async {
     var selected = false;
-    await tester.pumpWidget(
-      MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
-        home: Scaffold(
-          body: FlightOfferCard(
-            offer: _offer,
-            onTap: () {},
-            onSelect: () => selected = true,
-          ),
-        ),
-      ),
-    );
+    await _pump(tester, onSelect: () => selected = true);
 
     await tester.tap(find.text('Select this flight'));
+    expect(selected, isTrue);
+  });
+
+  testWidgets('calls onSelect when the card body is tapped', (tester) async {
+    var selected = false;
+    await _pump(tester, onSelect: () => selected = true);
+
+    await tester.tap(find.text('10:50'));
     expect(selected, isTrue);
   });
 

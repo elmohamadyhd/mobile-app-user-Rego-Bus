@@ -291,13 +291,34 @@
   "@flightPriceTotal": {
     "description": "Price breakdown row label and section heading on the offer details screen."
   },
+  "flightFareAdults": "{count} adults",
+  "@flightFareAdults": {
+    "description": "Review fare row for adult passengers.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "flightFareChildren": "{count} children",
+  "@flightFareChildren": {
+    "description": "Review fare row for child passengers.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "flightFareInfants": "{count} infants",
+  "@flightFareInfants": {
+    "description": "Review fare row for infant passengers.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "flightStepReview": "Review",
   "@flightStepReview": {
     "description": "Flight booking wizard step label for fare review."
   },
-  "flightStepBundles": "Bundle",
+  "flightStepBundles": "Packages",
   "@flightStepBundles": {
-    "description": "Flight booking wizard step label for bundle selection."
+    "description": "Flight booking wizard step label for bundle/package selection."
   },
   "flightStepPassengers": "Passengers",
   "@flightStepPassengers": {
@@ -359,10 +380,6 @@
   "flightBundleChooseAll": "Choose a bundle for every leg",
   "@flightBundleChooseAll": {
     "description": "Disabled primary CTA until every journey has a bundle."
-  },
-  "flightViewDetails": "Details",
-  "@flightViewDetails": {
-    "description": "Secondary action on an offer card that opens the read-only preview."
   },
   "flightCountrySearch": "Search countries",
   "@flightCountrySearch": {

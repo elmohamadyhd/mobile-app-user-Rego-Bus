@@ -30,13 +30,13 @@ class FlightBundleCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.md),
+      borderRadius: BorderRadius.circular(AppRadius.card),
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primaryTint : AppColors.bgElevated,
-          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderRadius: BorderRadius.circular(AppRadius.card),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.hairline,
             width: isSelected ? 2 : 1,
@@ -49,7 +49,12 @@ class FlightBundleCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(bundle.name, style: AppTypography.body),
+                  child: Text(
+                    bundle.name,
+                    style: AppTypography.body.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
                 Text(
                   delta == 0
@@ -59,6 +64,7 @@ class FlightBundleCard extends StatelessWidget {
                     color: isSelected
                         ? AppColors.primary
                         : AppColors.textSecondary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -68,10 +74,12 @@ class FlightBundleCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
+                  Icon(
                     PhosphorIconsLight.check,
                     size: 14,
-                    color: AppColors.textSecondary,
+                    color: isSelected
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   Expanded(

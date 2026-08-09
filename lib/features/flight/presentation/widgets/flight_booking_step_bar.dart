@@ -44,7 +44,7 @@ class FlightBookingStepBar extends StatelessWidget {
               Expanded(
                 child: Container(
                   height: 2,
-                  margin: const EdgeInsets.only(bottom: 20),
+                  margin: const EdgeInsets.only(bottom: 22),
                   color: i <= currentIndex
                       ? AppColors.primary
                       : AppColors.hairline,
@@ -54,9 +54,8 @@ class FlightBookingStepBar extends StatelessWidget {
               label: _labelFor(l10n, steps[i]),
               isCompleted: i < currentIndex,
               isCurrent: i == currentIndex,
-              onTap: i < currentIndex
-                  ? () => Navigator.of(context).pop()
-                  : null,
+              onTap:
+                  i < currentIndex ? () => Navigator.of(context).pop() : null,
             ),
           ],
         ],
@@ -90,37 +89,55 @@ class _StepNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final active = isCompleted || isCurrent;
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isCurrent ? AppColors.primary : Colors.transparent,
-              border: Border.all(
-                color: active ? AppColors.primary : AppColors.hairline,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isCurrent
+                      ? AppColors.primary
+                      : isCompleted
+                          ? AppColors.primaryTint
+                          : Colors.transparent,
+                  border: Border.all(
+                    color: active ? AppColors.primary : AppColors.hairline,
+                    width: 2,
+                  ),
+                ),
+                child: isCompleted
+                    ? const Icon(
+                        PhosphorIconsLight.check,
+                        size: 12,
+                        color: AppColors.primary,
+                      )
+                    : null,
               ),
-            ),
-            child: isCompleted
-                ? const Icon(
-                    PhosphorIconsLight.check,
-                    size: 12,
-                    color: AppColors.primary,
-                  )
-                : null,
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                label,
+                style: AppTypography.caption.copyWith(
+                  color: isCurrent
+                      ? AppColors.primary
+                      : active
+                          ? AppColors.textPrimary
+                          : AppColors.textMuted,
+                  fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            label,
-            style: AppTypography.caption.copyWith(
-              color: active ? AppColors.textPrimary : AppColors.textMuted,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

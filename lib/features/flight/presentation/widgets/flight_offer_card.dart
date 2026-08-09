@@ -17,17 +17,12 @@ class FlightOfferCard extends StatelessWidget {
   const FlightOfferCard({
     super.key,
     required this.offer,
-    required this.onTap,
     required this.onSelect,
     this.originLabel,
     this.destinationLabel,
   });
 
   final FlightOffer offer;
-
-  /// Opens the read-only preview. No network call, no commitment — a rider
-  /// can compare several offers in detail without burning confirm calls.
-  final VoidCallback onTap;
 
   /// Enters the booking wizard, which confirms the offer.
   final VoidCallback onSelect;
@@ -91,7 +86,7 @@ class FlightOfferCard extends StatelessWidget {
       shadowColor: AppColors.primary.withValues(alpha: 0.22),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: onTap,
+        onTap: onSelect,
         customBorder: shape,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -134,9 +129,7 @@ class FlightOfferCard extends StatelessWidget {
                     fareLabel: l10n.tripResultsFareLabel,
                     priceText: priceText,
                     currency: offer.currency,
-                    detailsLabel: l10n.flightViewDetails,
                     selectLabel: l10n.flightSelectThisFlight,
-                    onDetails: onTap,
                     onSelect: onSelect,
                   ),
                 ),
@@ -436,18 +429,14 @@ class _FareStub extends StatelessWidget {
     required this.fareLabel,
     required this.priceText,
     required this.currency,
-    required this.detailsLabel,
     required this.selectLabel,
-    required this.onDetails,
     required this.onSelect,
   });
 
   final String fareLabel;
   final String priceText;
   final String currency;
-  final String detailsLabel;
   final String selectLabel;
-  final VoidCallback onDetails;
   final VoidCallback onSelect;
 
   @override
@@ -491,15 +480,7 @@ class _FareStub extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: AppSpacing.xs),
-        TextButton(
-          onPressed: onDetails,
-          child: Text(
-            detailsLabel,
-            style: AppTypography.caption
-                .copyWith(color: AppColors.textSecondary),
-          ),
-        ),
+        const SizedBox(width: AppSpacing.sm),
         Flexible(
           child: PrimaryButton(
             label: selectLabel,

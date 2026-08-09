@@ -154,7 +154,6 @@ class _FlightResultsScreenState extends ConsumerState<FlightResultsScreen> {
             offer: offer,
             originLabel: state.searchFromLabel,
             destinationLabel: state.searchToLabel,
-            onTap: () => context.push(FlightRoutes.offerDetails, extra: offer),
             onSelect: () {
               ref.read(flightBookingProvider.notifier).selectOffer(offer);
               context.push(FlightRoutes.review);

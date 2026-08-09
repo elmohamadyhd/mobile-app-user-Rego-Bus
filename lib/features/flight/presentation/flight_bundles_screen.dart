@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
@@ -9,6 +8,7 @@ import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
+import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_counts.dart';
 import 'package:safaria/features/flight/domain/entities/flight_wizard_step.dart';
 import 'package:safaria/features/flight/domain/utils/flight_bundle_pricing.dart';
@@ -17,6 +17,7 @@ import 'package:safaria/features/flight/presentation/flight_routes.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_booking_step_bar.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_bundle_card.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_wizard_footer.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
@@ -38,11 +39,25 @@ class _FlightBundlesScreenState extends ConsumerState<FlightBundlesScreen> {
     });
   }
 
+  static String _sectionTitle(
+    AppLocalizations l10n,
+    int index,
+    int total,
+    FlightJourney? journey,
+  ) {
+    final leg = total == 2
+        ? (index == 0 ? l10n.flightLegOutbound : l10n.flightLegReturn)
+        : l10n.flightBundleLeg(index + 1);
+    if (journey == null) return leg;
+    return '$leg — ${journey.origin} → ${journey.destination}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(flightBookingProvider);
     final confirmed = state.confirmedOrder;
+    final offer = state.selectedOffer;
 
     if (confirmed == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -67,8 +82,11 @@ class _FlightBundlesScreenState extends ConsumerState<FlightBundlesScreen> {
       selected: selected,
       counts: counts,
     );
+    final showList = state.status != FlightBookingStatus.loadingBundles &&
+        state.status != FlightBookingStatus.error;
 
     return Scaffold(
+      backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(title: l10n.flightBundlesTitle),
       body: SafeArea(
         child: Align(
@@ -123,7 +141,14 @@ class _FlightBundlesScreenState extends ConsumerState<FlightBundlesScreen> {
                             key: ValueKey(
                               state.journeyBundles[i].offerJourneyId,
                             ),
-                            index: i,
+                            title: _sectionTitle(
+                              l10n,
+                              i,
+                              state.journeyBundles.length,
+                              offer != null && i < offer.journeys.length
+                                  ? offer.journeys[i]
+                                  : null,
+                            ),
                             journey: state.journeyBundles[i],
                             counts: counts,
                             currency: confirmed.priceDetails.currency,
@@ -140,49 +165,31 @@ class _FlightBundlesScreenState extends ConsumerState<FlightBundlesScreen> {
                       ],
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            l10n.flightPriceTotal,
-                            style: AppTypography.body,
-                          ),
-                          Text(
-                            '${total.toStringAsFixed(0)} '
-                            '${confirmed.priceDetails.currency}',
-                            style: AppTypography.h2,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      PrimaryButton(
-                        label: allChosen
-                            ? l10n.flightContinue
-                            : l10n.flightBundleChooseAll,
-                        onPressed: allChosen
-                            ? () => context.push(FlightRoutes.passengers)
-                            : null,
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
         ),
       ),
+      bottomNavigationBar: showList
+          ? FlightWizardFooter(
+              totalLabel: l10n.flightPriceTotal,
+              totalText:
+                  '${total.toStringAsFixed(0)} ${confirmed.priceDetails.currency}',
+              ctaLabel:
+                  allChosen ? l10n.flightContinue : l10n.flightBundleChooseAll,
+              onCta: allChosen
+                  ? () => context.push(FlightRoutes.passengers)
+                  : null,
+            )
+          : null,
     );
   }
 }
 
-class _JourneySection extends StatefulWidget {
+class _JourneySection extends StatelessWidget {
   const _JourneySection({
     super.key,
-    required this.index,
+    required this.title,
     required this.journey,
     required this.counts,
     required this.currency,
@@ -190,7 +197,7 @@ class _JourneySection extends StatefulWidget {
     required this.onSelect,
   });
 
-  final int index;
+  final String title;
   final FlightJourneyBundles journey;
   final FlightPassengerCounts counts;
   final String currency;
@@ -198,26 +205,7 @@ class _JourneySection extends StatefulWidget {
   final ValueChanged<String> onSelect;
 
   @override
-  State<_JourneySection> createState() => _JourneySectionState();
-}
-
-class _JourneySectionState extends State<_JourneySection> {
-  bool _expanded = false;
-
-  bool get _isCollapsed => widget.selectedCode != null && !_expanded;
-
-  FlightBundle? get _selected {
-    for (final bundle in widget.journey.bundles) {
-      if (bundle.code == widget.selectedCode) return bundle;
-    }
-    return null;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final selected = _selected;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.lg),
       child: Column(
@@ -226,53 +214,18 @@ class _JourneySectionState extends State<_JourneySection> {
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: Text(
-              l10n.flightBundleLeg(widget.index + 1),
-              style: AppTypography.caption
-                  .copyWith(color: AppColors.textSecondary),
+              title,
+              style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
             ),
           ),
-          if (_isCollapsed && selected != null)
-            InkWell(
-              onTap: () => setState(() => _expanded = true),
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  border: Border.all(color: AppColors.hairline),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      PhosphorIconsLight.checkCircle,
-                      size: 18,
-                      color: AppColors.success,
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(selected.name, style: AppTypography.body),
-                    ),
-                    const Icon(
-                      PhosphorIconsLight.caretDown,
-                      size: 16,
-                      color: AppColors.textSecondary,
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            for (final bundle in widget.journey.bundles)
-              FlightBundleCard(
-                bundle: bundle,
-                delta: flightBundleDelta(bundle, widget.counts),
-                currency: widget.currency,
-                isSelected: bundle.code == widget.selectedCode,
-                onTap: () {
-                  widget.onSelect(bundle.code);
-                  setState(() => _expanded = false);
-                },
-              ),
+          for (final bundle in journey.bundles)
+            FlightBundleCard(
+              bundle: bundle,
+              delta: flightBundleDelta(bundle, counts),
+              currency: currency,
+              isSelected: bundle.code == selectedCode,
+              onTap: () => onSelect(bundle.code),
+            ),
         ],
       ),
     );

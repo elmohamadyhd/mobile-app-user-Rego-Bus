@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
+import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_wizard_step.dart';
 import 'package:safaria/features/flight/domain/utils/flight_price_change.dart';
 import 'package:safaria/features/flight/presentation/flight_routes.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_booking_step_bar.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_trip_summary_card.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_wizard_footer.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
@@ -33,14 +38,33 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
     });
   }
 
+  static String? _legLabel(AppLocalizations l10n, int index, int total) {
+    if (total < 2) return null;
+    if (total == 2) {
+      return index == 0 ? l10n.flightLegOutbound : l10n.flightLegReturn;
+    }
+    return l10n.flightLegLabel(index + 1);
+  }
+
+  static String _passengerLabel(
+    AppLocalizations l10n,
+    FlightPassengerFareBreakdown breakdown,
+  ) {
+    final count = breakdown.numberOfPassengers;
+    return switch (breakdown.passengerTypeCode.toUpperCase()) {
+      'ADT' => l10n.flightFareAdults(count),
+      'CHD' => l10n.flightFareChildren(count),
+      'INF' => l10n.flightFareInfants(count),
+      _ => '$count × ${breakdown.passengerTypeCode}',
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(flightBookingProvider);
     final offer = state.selectedOffer;
 
-    // Guard: a restored route or an odd back-stack must not open a mid-flow
-    // step against empty state.
     if (offer == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.go(FlightRoutes.results);
@@ -57,6 +81,7 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
           );
 
     return Scaffold(
+      backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(title: l10n.flightReviewTitle),
       body: SafeArea(
         child: Align(
@@ -107,39 +132,44 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
                       padding: const EdgeInsets.all(AppSpacing.lg),
                       children: [
                         if (change != null) _PriceChangeBanner(change: change),
+                        for (var i = 0; i < offer.journeys.length; i++)
+                          FlightTripSummaryCard(
+                            key: ValueKey(offer.journeys[i].id),
+                            journey: offer.journeys[i],
+                            legLabel: _legLabel(
+                              l10n,
+                              i,
+                              offer.journeys.length,
+                            ),
+                          ),
+                        ..._fareRules(l10n, offer),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          l10n.flightPriceTotal,
+                          style: AppTypography.title.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
                         for (final breakdown
                             in confirmed.passengerFareBreakdown)
                           _FareRow(
-                            label:
-                                '${breakdown.numberOfPassengers} × ${breakdown.passengerTypeCode}',
+                            label: _passengerLabel(l10n, breakdown),
                             amount: breakdown.passengerTotalAmount,
                             currency: confirmed.priceDetails.currency,
                           ),
-                        const Divider(),
                         _FareRow(
-                          label: l10n.flightPriceTotal,
-                          amount: confirmed.priceDetails.totalAmount,
+                          label: l10n.flightPriceTaxes,
+                          amount: confirmed.priceDetails.taxesAmount,
                           currency: confirmed.priceDetails.currency,
-                          emphasized: true,
                         ),
+                        if (confirmed.priceDetails.discountAmount > 0)
+                          _FareRow(
+                            label: l10n.flightPriceDiscount,
+                            amount: -confirmed.priceDetails.discountAmount,
+                            currency: confirmed.priceDetails.currency,
+                          ),
                       ],
-                    ),
-                  ),
-                if (confirmed != null)
-                  Padding(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    child: PrimaryButton(
-                      // Wording carries the weight here: when the fare moved,
-                      // this must read as an explicit acceptance, not a
-                      // habitual next.
-                      label: change == null
-                          ? l10n.flightContinue
-                          : l10n.flightAcceptAndContinue,
-                      onPressed: () => context.push(
-                        offer.haveBundles
-                            ? FlightRoutes.bundles
-                            : FlightRoutes.passengers,
-                      ),
                     ),
                   ),
               ],
@@ -147,7 +177,48 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: confirmed == null
+          ? null
+          : FlightWizardFooter(
+              totalLabel: l10n.flightPriceTotal,
+              totalText:
+                  '${confirmed.priceDetails.totalAmount.toStringAsFixed(0)} '
+                  '${confirmed.priceDetails.currency}',
+              ctaLabel: change == null
+                  ? l10n.flightContinue
+                  : l10n.flightAcceptAndContinue,
+              onCta: () => context.push(
+                offer.haveBundles
+                    ? FlightRoutes.bundles
+                    : FlightRoutes.passengers,
+              ),
+            ),
     );
+  }
+
+  List<Widget> _fareRules(AppLocalizations l10n, FlightOffer offer) {
+    final rules = offer.priceClasses
+        .expand((c) => c.rulesAndPenalties ?? const <String>[])
+        .toList();
+    if (rules.isEmpty) return const [];
+    return [
+      const SizedBox(height: AppSpacing.sm),
+      Text(
+        l10n.flightFareRules,
+        style: AppTypography.title.copyWith(fontWeight: FontWeight.w800),
+      ),
+      const SizedBox(height: AppSpacing.sm),
+      for (final rule in rules)
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+          child: Text(
+            '•  $rule',
+            style: AppTypography.body.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+    ];
   }
 }
 
@@ -159,28 +230,45 @@ class _PriceChangeBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final was = change.wasSearched.toStringAsFixed(0);
+    final now = change.nowConfirmed.toStringAsFixed(0);
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.secondaryTint,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.flightPriceChanged,
-            style: AppTypography.body.copyWith(color: AppColors.secondary),
+          const Icon(
+            PhosphorIconsLight.warning,
+            size: 20,
+            color: AppColors.secondaryDeep,
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            l10n.flightPriceWas(change.wasSearched.toStringAsFixed(0)),
-            style: AppTypography.caption.copyWith(color: AppColors.secondary),
-          ),
-          Text(
-            l10n.flightPriceNow(change.nowConfirmed.toStringAsFixed(0)),
-            style: AppTypography.caption.copyWith(color: AppColors.secondary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.flightPriceChanged,
+                  style: AppTypography.body.copyWith(
+                    color: AppColors.secondaryDeep,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  '${l10n.flightPriceWas(was)} → ${l10n.flightPriceNow(now)}',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.secondaryDeep,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -193,24 +281,31 @@ class _FareRow extends StatelessWidget {
     required this.label,
     required this.amount,
     required this.currency,
-    this.emphasized = false,
   });
 
   final String label;
   final double amount;
   final String currency;
-  final bool emphasized;
 
   @override
   Widget build(BuildContext context) {
-    final style = emphasized ? AppTypography.h2 : AppTypography.body;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: style),
-          Text('${amount.toStringAsFixed(0)} $currency', style: style),
+          Expanded(
+            child: Text(
+              label,
+              style: AppTypography.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          Text(
+            '${amount.toStringAsFixed(0)} $currency',
+            style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
