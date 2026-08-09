@@ -13,6 +13,7 @@ import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_step_bar.dart';
+import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:safaria/features/wallet/presentation/providers/wallet_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/pages/cms_page_paths.dart';
@@ -48,13 +49,22 @@ _WalletPaymentSplit? _walletSplit({
   if (method != PaymentMethod.wallet || balance == null || currency == null) {
     return null;
   }
-  final walletApplied = balance < subtotal ? balance : subtotal.toDouble();
+  // Wallet is all-or-nothing: only when balance covers the full total.
+  if (balance < subtotal) return null;
   return _WalletPaymentSplit(
     subtotal: subtotal,
-    walletApplied: walletApplied,
-    cardRemainder: subtotal - walletApplied,
+    walletApplied: subtotal.toDouble(),
+    cardRemainder: 0,
     currency: currency,
   );
+}
+
+bool _walletCoversTrip({
+  required double? balance,
+  required int subtotal,
+}) {
+  if (balance == null) return false;
+  return balance >= subtotal;
 }
 
 class PassengerConfirmScreen extends ConsumerStatefulWidget {
@@ -186,23 +196,27 @@ class _BusTripSummaryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              // Operator code circle
-              Container(
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryTint,
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  trip?.operatorCode ?? 'R',
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
+              if (trip != null)
+                OperatorAvatar(trip: trip, size: 40)
+              else
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryTint,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(AppRadius.md),
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'R',
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-              ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
@@ -396,14 +410,21 @@ class _PaymentSection extends ConsumerWidget {
     final isWallet = state.paymentMethod == PaymentMethod.wallet;
     final walletAsync = ref.watch(walletProvider);
     final bookingTotal = _bookingTotalEgp(state);
-    final split = walletAsync.hasValue
-        ? _walletSplit(
-            method: state.paymentMethod,
-            balance: walletAsync.value!.balance,
-            currency: walletAsync.value!.currency,
-            subtotal: bookingTotal,
-          )
-        : null;
+    final balance = walletAsync.hasValue ? walletAsync.value!.balance : null;
+    final walletEnabled = _walletCoversTrip(
+      balance: balance,
+      subtotal: bookingTotal,
+    );
+
+    // If wallet was selected but no longer covers the total, fall back to card.
+    if (isWallet && !walletEnabled) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!context.mounted) return;
+        ref
+            .read(busBookingProvider.notifier)
+            .setPaymentMethod(PaymentMethod.visa);
+      });
+    }
 
     String? walletSubtitle;
     if (walletAsync.isLoading) {
@@ -412,12 +433,8 @@ class _PaymentSection extends ConsumerWidget {
       walletSubtitle = l10n.walletError;
     } else if (walletAsync.hasValue) {
       final wallet = walletAsync.value!;
-      if (isWallet && split != null && split.isPartial) {
-        walletSubtitle = l10n.confirmWalletPartialPay(
-          split.walletApplied.toStringAsFixed(2),
-          split.cardRemainder.toStringAsFixed(2),
-          wallet.currency,
-        );
+      if (!walletEnabled) {
+        walletSubtitle = l10n.confirmWalletInsufficient;
       } else {
         walletSubtitle = l10n.confirmPaymentWalletBalance(
           wallet.balance.toStringAsFixed(2),
@@ -437,7 +454,7 @@ class _PaymentSection extends ConsumerWidget {
         _PaymentOption(
           icon: PhosphorIconsLight.ticket,
           label: l10n.confirmPaymentCard,
-          selected: isVisa,
+          selected: isVisa || !walletEnabled,
           onTap: () {
             ref
                 .read(busBookingProvider.notifier)
@@ -448,7 +465,8 @@ class _PaymentSection extends ConsumerWidget {
         _PaymentOption(
           icon: PhosphorIconsLight.wallet,
           label: l10n.confirmPaymentWallet,
-          selected: isWallet,
+          selected: isWallet && walletEnabled,
+          enabled: walletEnabled,
           subtitle: walletSubtitle,
           onTap: () {
             ref
@@ -468,6 +486,7 @@ class _PaymentOption extends StatelessWidget {
     required this.selected,
     required this.onTap,
     this.subtitle,
+    this.enabled = true,
   });
 
   final IconData icon;
@@ -475,64 +494,86 @@ class _PaymentOption extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   final String? subtitle;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    final bg = selected ? AppColors.primary : AppColors.bgCard;
-    final fg = selected ? AppColors.onPrimary : AppColors.textPrimary;
-    final iconColor = selected ? AppColors.onPrimary : AppColors.primary;
-    final borderColor = selected ? AppColors.primary : AppColors.border;
-    final subtitleColor = selected
-        ? AppColors.onPrimary.withValues(alpha: 0.85)
-        : AppColors.textMuted;
+    final bg = !enabled
+        ? AppColors.bgCard
+        : selected
+            ? AppColors.primary
+            : AppColors.bgCard;
+    final fg = !enabled
+        ? AppColors.textMuted
+        : selected
+            ? AppColors.onPrimary
+            : AppColors.textPrimary;
+    final iconColor = !enabled
+        ? AppColors.textMuted
+        : selected
+            ? AppColors.onPrimary
+            : AppColors.primary;
+    final borderColor = !enabled
+        ? AppColors.hairline
+        : selected
+            ? AppColors.primary
+            : AppColors.border;
+    final subtitleColor = !enabled
+        ? AppColors.textMuted
+        : selected
+            ? AppColors.onPrimary.withValues(alpha: 0.85)
+            : AppColors.textMuted;
 
-    return Material(
-      color: bg,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: InkWell(
+    return Opacity(
+      opacity: enabled ? 1 : 0.72,
+      child: Material(
+        color: bg,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: borderColor),
-          ),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
-          ),
-          child: Row(
-            children: [
-              Icon(icon, size: 20, color: iconColor),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: AppTypography.body.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: fg,
-                      ),
-                    ),
-                    if (subtitle != null)
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          onTap: enabled ? onTap : null,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: borderColor),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: iconColor),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        subtitle!,
-                        style: AppTypography.caption.copyWith(
-                          color: subtitleColor,
+                        label,
+                        style: AppTypography.body.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: fg,
                         ),
                       ),
-                  ],
+                      if (subtitle != null)
+                        Text(
+                          subtitle!,
+                          style: AppTypography.caption.copyWith(
+                            color: subtitleColor,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              if (selected)
-                const Icon(
-                  PhosphorIconsLight.check,
-                  size: 20,
-                  color: AppColors.onPrimary,
-                ),
-            ],
+                if (selected && enabled)
+                  const Icon(
+                    PhosphorIconsLight.check,
+                    size: 20,
+                    color: AppColors.onPrimary,
+                  ),
+              ],
+            ),
           ),
         ),
       ),

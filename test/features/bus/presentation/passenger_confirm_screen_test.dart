@@ -105,9 +105,9 @@ void main() {
   });
 
   testWidgets(
-      'allows confirm and shows partial-pay hint when wallet balance is insufficient',
+      'disables wallet when balance is less than the trip total',
       (tester) async {
-    await _pumpConfirm(
+    final container = await _pumpConfirm(
       tester,
       walletRepo: FakeWalletRepository(
         walletResult: const Wallet(
@@ -119,23 +119,47 @@ void main() {
       ),
     );
 
+    expect(find.text('Insufficient wallet balance'), findsOneWidget);
+    expect(
+      find.textContaining('from wallet; pay'),
+      findsNothing,
+    );
+
     await tester.ensureVisible(find.text('Wallet'));
     await tester.tap(find.text('Wallet'));
     await tester.pumpAndSettle();
 
     expect(
-      find.text('25.00 EGP from wallet; pay 150.00 EGP by card'),
-      findsOneWidget,
+      container.read(busBookingProvider).paymentMethod,
+      PaymentMethod.visa,
     );
-    expect(find.text('Subtotal'), findsOneWidget);
-    expect(find.text('175 EGP'), findsNWidgets(2));
-    expect(find.text('−25.00 EGP'), findsOneWidget);
-    expect(find.text('Pay by card'), findsOneWidget);
-    expect(find.text('150.00 EGP'), findsNWidgets(2));
-    await _acceptTerms(tester);
+    expect(find.text('Subtotal'), findsNothing);
+    expect(find.text('Pay by card'), findsNothing);
+  });
+
+  testWidgets('enables wallet when balance equals the trip total',
+      (tester) async {
+    final container = await _pumpConfirm(
+      tester,
+      walletRepo: FakeWalletRepository(
+        walletResult: const Wallet(
+          id: 1,
+          balance: 175,
+          currency: 'EGP',
+          transactions: [],
+        ),
+      ),
+    );
+
+    expect(find.text('Insufficient wallet balance'), findsNothing);
+
+    await tester.ensureVisible(find.text('Wallet'));
+    await tester.tap(find.text('Wallet'));
+    await tester.pumpAndSettle();
+
     expect(
-      tester.widget<PrimaryButton>(find.byType(PrimaryButton)).onPressed,
-      isNotNull,
+      container.read(busBookingProvider).paymentMethod,
+      PaymentMethod.wallet,
     );
   });
 
@@ -172,7 +196,7 @@ void main() {
     expect(find.text('−25.00 EGP'), findsNothing);
   });
 
-  testWidgets('shows partial-pay hint in Arabic', (tester) async {
+  testWidgets('shows insufficient wallet message in Arabic', (tester) async {
     await _pumpConfirm(
       tester,
       locale: const Locale('ar'),
@@ -186,16 +210,8 @@ void main() {
       ),
     );
 
-    await tester.ensureVisible(find.text('محفظة'));
-    await tester.tap(find.text('محفظة'));
-    await tester.pumpAndSettle();
-
-    expect(
-      find.text('25.00 EGP من المحفظة؛ ادفع 150.00 EGP بالبطاقة'),
-      findsOneWidget,
-    );
-    expect(find.text('المجموع الفرعي'), findsOneWidget);
-    expect(find.text('الدفع بالبطاقة'), findsOneWidget);
+    expect(find.text('رصيد المحفظة غير كافٍ'), findsOneWidget);
+    expect(find.text('محفظة'), findsOneWidget);
   });
 
   testWidgets('shows wallet balance in Arabic', (tester) async {
