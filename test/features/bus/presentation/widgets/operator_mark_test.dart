@@ -87,7 +87,7 @@ void main() {
       final container = tester.widget<Container>(find.byType(Container).first);
       final decoration = container.decoration! as BoxDecoration;
       expect(decoration.color, AppColors.bgElevated);
-      expect(decoration.border?.top.color, AppColors.border);
+      expect(decoration.border, isNull);
     },
   );
 

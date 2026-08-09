@@ -216,7 +216,7 @@ class _BoardingPassCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                OperatorAvatar(trip: trip, size: 38),
+                OperatorAvatar(trip: trip, size: 44),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(

@@ -6,7 +6,7 @@ import 'package:safaria/features/bus/presentation/widgets/operator_mark.dart';
 /// Operator identity for trip search/details — thin wrapper over [OperatorMark]
 /// so logo treatment stays identical across cards, tickets, and e-tickets.
 class OperatorAvatar extends StatelessWidget {
-  const OperatorAvatar({super.key, required this.trip, this.size = 48});
+  const OperatorAvatar({super.key, required this.trip, this.size = 56});
 
   final BusTripSummary trip;
   final double size;

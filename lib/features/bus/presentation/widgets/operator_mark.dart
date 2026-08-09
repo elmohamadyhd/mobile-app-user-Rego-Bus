@@ -13,15 +13,15 @@ class OperatorMark extends StatelessWidget {
     super.key,
     required this.name,
     this.logoUrl,
-    this.size = 48,
+    this.size = 56,
   });
 
   final String name;
   final String? logoUrl;
   final double size;
 
-  /// Inset so logos keep brand clear-space inside the plate (~16% of size).
-  double get _logoInset => (size * 0.16).clamp(AppSpacing.xs, AppSpacing.sm);
+  /// Light inset so logos stay readable without eating the plate.
+  double get _logoInset => (size * 0.1).clamp(AppSpacing.xs, AppSpacing.sm);
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +30,6 @@ class OperatorMark extends StatelessWidget {
     final plateColor = hasLogo
         ? (isDark ? AppColors.darkBgCard : AppColors.bgElevated)
         : AppColors.primaryTint;
-    final borderColor = hasLogo
-        ? (isDark ? AppColors.darkBorder : AppColors.border)
-        : Colors.transparent;
 
     return Semantics(
       label: name,
@@ -45,7 +42,6 @@ class OperatorMark extends StatelessWidget {
         decoration: BoxDecoration(
           color: plateColor,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: borderColor),
         ),
         child: hasLogo
             ? Padding(

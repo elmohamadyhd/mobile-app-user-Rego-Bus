@@ -222,7 +222,7 @@ class _TripHeaderCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                OperatorAvatar(trip: trip, size: 46),
+                OperatorAvatar(trip: trip),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
