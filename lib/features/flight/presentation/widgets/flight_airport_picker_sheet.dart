@@ -27,10 +27,20 @@ Future<FlightAirportSuggestion?> showFlightAirportPicker(
       borderRadius:
           BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
     ),
-    builder: (context) => Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: _FlightAirportPickerSheet(title: title),
-    ),
+    builder: (context) {
+      // Fixed height above the keyboard — content swaps (hint → loading →
+      // N results) must not resize the sheet or it jitters while typing.
+      final media = MediaQuery.of(context);
+      final keyboard = media.viewInsets.bottom;
+      final sheetHeight = (media.size.height - keyboard) * 0.75;
+      return Padding(
+        padding: EdgeInsets.only(bottom: keyboard),
+        child: SizedBox(
+          height: sheetHeight,
+          child: _FlightAirportPickerSheet(title: title),
+        ),
+      );
+    },
   );
 }
 
@@ -113,151 +123,148 @@ class _FlightAirportPickerSheetState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final maxHeight = MediaQuery.sizeOf(context).height * 0.75;
 
     return SafeArea(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.md,
-                AppSpacing.sm,
-                AppSpacing.sm,
-                AppSpacing.sm,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.md,
+              AppSpacing.sm,
+              AppSpacing.sm,
+              AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.title,
+                    style: AppTypography.title.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(PhosphorIconsLight.x),
+                  color: AppColors.textMuted,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: AppColors.inputFill,
+                borderRadius: BorderRadius.circular(AppRadius.input),
+                border: Border.all(color: AppColors.hairline),
               ),
               child: Row(
                 children: [
+                  const Icon(
+                    PhosphorIconsLight.magnifyingGlass,
+                    color: AppColors.textMuted,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 11),
                   Expanded(
-                    child: Text(
-                      widget.title,
-                      style: AppTypography.title.copyWith(
-                        fontWeight: FontWeight.w800,
+                    child: TextField(
+                      controller: _query,
+                      focusNode: _focusNode,
+                      onChanged: _onQueryChanged,
+                      style: AppTypography.body.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                      decoration: InputDecoration(
+                        isCollapsed: true,
+                        filled: false,
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        hintText: l10n.flightAirportSearchHint,
+                        hintStyle: AppTypography.body.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(PhosphorIconsLight.x),
-                    color: AppColors.textMuted,
-                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.md,
-                0,
-                AppSpacing.md,
-                AppSpacing.sm,
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.inputFill,
-                  borderRadius: BorderRadius.circular(AppRadius.input),
-                  border: Border.all(color: AppColors.hairline),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      PhosphorIconsLight.magnifyingGlass,
-                      color: AppColors.textMuted,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 11),
-                    Expanded(
-                      child: TextField(
-                        controller: _query,
-                        focusNode: _focusNode,
-                        onChanged: _onQueryChanged,
-                        style: AppTypography.body.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                        decoration: InputDecoration(
-                          isCollapsed: true,
-                          filled: false,
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          hintText: l10n.flightAirportSearchHint,
-                          hintStyle: AppTypography.body.copyWith(
-                            color: AppColors.textMuted,
-                          ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 15),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const Divider(color: AppColors.hairline, height: 1),
-            Flexible(child: _body(l10n)),
-          ],
-        ),
+          ),
+          const Divider(color: AppColors.hairline, height: 1),
+          Expanded(child: _body(l10n)),
+        ],
       ),
     );
   }
 
   Widget _body(AppLocalizations l10n) {
     if (_loading) {
-      return const Padding(
-        padding: EdgeInsets.all(AppSpacing.lg),
-        child: Center(child: CircularProgressIndicator()),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
     if (_error != null) {
-      return Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              l10n.tripResultsError,
-              style: AppTypography.body.copyWith(
-                color: AppColors.textSecondary,
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.tripResultsError,
+                style: AppTypography.body.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            TextButton(
-              onPressed: _retry,
-              child: Text(l10n.tripResultsRetry),
-            ),
-          ],
+              const SizedBox(height: AppSpacing.md),
+              TextButton(
+                onPressed: _retry,
+                child: Text(l10n.tripResultsRetry),
+              ),
+            ],
+          ),
         ),
       );
     }
     final results = _results;
     if (results == null) {
-      return Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Text(
-          l10n.flightAirportTypeToSearch,
-          style: AppTypography.body.copyWith(color: AppColors.textMuted),
-          textAlign: TextAlign.center,
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Text(
+            l10n.flightAirportTypeToSearch,
+            style: AppTypography.body.copyWith(color: AppColors.textMuted),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
     if (results.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Text(
-          l10n.flightAirportSearchEmpty,
-          style: AppTypography.body.copyWith(color: AppColors.textMuted),
-          textAlign: TextAlign.center,
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Text(
+            l10n.flightAirportSearchEmpty,
+            style: AppTypography.body.copyWith(color: AppColors.textMuted),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
     return ListView.builder(
-      shrinkWrap: true,
       itemCount: results.length,
       itemBuilder: (context, index) {
         final airport = results[index];
