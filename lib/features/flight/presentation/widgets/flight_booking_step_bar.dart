@@ -6,6 +6,7 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/flight/domain/entities/flight_wizard_step.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 
 /// Progress header for the flight booking wizard. The step list is derived
 /// from the offer, so an offer without bundles shows three nodes rather than
@@ -116,7 +117,7 @@ class _StepNode extends StatelessWidget {
                   ),
                 ),
                 child: isCompleted
-                    ? const Icon(
+                    ? const LtrIcon(
                         PhosphorIconsLight.check,
                         size: 12,
                         color: AppColors.primary,

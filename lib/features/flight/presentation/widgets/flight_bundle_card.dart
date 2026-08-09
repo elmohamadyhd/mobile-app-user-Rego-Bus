@@ -6,6 +6,7 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/flight/domain/entities/flight_bundle.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 
 /// One selectable bundle. A zero delta reads as "included" rather than
 /// "+ 0" — the rider is picking what they get, not paying nothing.
@@ -74,7 +75,7 @@ class FlightBundleCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
+                  LtrIcon(
                     PhosphorIconsLight.check,
                     size: 14,
                     color: isSelected

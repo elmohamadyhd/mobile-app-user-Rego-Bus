@@ -19,6 +19,7 @@ import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/pages/cms_page_paths.dart';
 import 'package:safaria/shared/widgets/booking_terms_checkbox.dart';
 import 'package:safaria/shared/widgets/gated_primary_button.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 int _bookingTotalEgp(BusBookingState state) =>
@@ -567,7 +568,7 @@ class _PaymentOption extends StatelessWidget {
                   ),
                 ),
                 if (selected && enabled)
-                  const Icon(
+                  const LtrIcon(
                     PhosphorIconsLight.check,
                     size: 20,
                     color: AppColors.onPrimary,

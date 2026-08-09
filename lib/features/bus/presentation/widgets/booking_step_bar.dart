@@ -5,6 +5,7 @@ import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Ordered steps of the bus booking wizard, in flow order.
@@ -122,7 +123,7 @@ class _StepNode extends StatelessWidget {
                     : Border.all(color: AppColors.hairline, width: 1.5),
               ),
               alignment: Alignment.center,
-              child: Icon(
+              child: LtrIcon(
                 isCompleted ? PhosphorIconsLight.check : icon,
                 size: 15,
                 color: filled ? AppColors.onPrimary : AppColors.textMuted,
