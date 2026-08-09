@@ -46,7 +46,6 @@ abstract interface class FlightRepository {
   Future<String> addPassengers({
     required String offerId,
     required List<FlightPassengerDraft> passengers,
-    required FlightContactDetails contact,
   });
 
   /// Creates the order. [offerId] must be the id returned by

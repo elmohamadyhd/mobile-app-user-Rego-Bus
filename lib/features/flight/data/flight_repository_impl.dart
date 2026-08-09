@@ -123,14 +123,12 @@ class FlightRepositoryImpl implements FlightRepository {
   Future<String> addPassengers({
     required String offerId,
     required List<FlightPassengerDraft> passengers,
-    required FlightContactDetails contact,
   }) {
     return _guard(() async {
       final body = await _api.addPassengers(
         offerId: offerId,
         body: FlightDtoMapper.passengersRequestBody(
           passengers: passengers,
-          contact: contact,
         ),
       );
       final newOfferId = FlightDtoMapper.offerIdFromEnvelope(body);

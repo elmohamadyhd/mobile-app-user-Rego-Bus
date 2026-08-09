@@ -137,6 +137,8 @@ class FlightPassengerRow extends StatelessWidget {
       FlightPassengerField.addressCity => l10n.flightFieldAddressCity,
       FlightPassengerField.addressLine1 => l10n.flightFieldAddressLine1,
       FlightPassengerField.addressLine2 => l10n.flightFieldAddressLine2,
+      FlightPassengerField.email => l10n.flightFieldEmail,
+      FlightPassengerField.phone => l10n.flightFieldPhone,
     };
   }
 }

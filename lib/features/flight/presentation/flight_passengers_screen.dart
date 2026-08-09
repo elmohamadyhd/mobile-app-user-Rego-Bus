@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
-import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
@@ -62,11 +60,9 @@ class _FlightPassengersScreenState
     }
 
     final drafts = state.passengerDrafts;
-    final contactFilled = state.contact.email.trim().isNotEmpty &&
-        state.contact.phone.trim().isNotEmpty;
     final allComplete =
         drafts.isNotEmpty && drafts.every(isFlightPassengerComplete);
-    final canContinue = contactFilled && allComplete;
+    final canContinue = allComplete;
 
     return Scaffold(
       appBar: BookingAppBar(title: l10n.flightPassengersTitle),
@@ -87,40 +83,6 @@ class _FlightPassengersScreenState
                   child: ListView(
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     children: [
-                      Text(
-                        l10n.flightContactSection,
-                        style: AppTypography.body,
-                      ),
-                      Text(
-                        l10n.flightContactOnce,
-                        style: AppTypography.caption
-                            .copyWith(color: AppColors.textMuted),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      TextFormField(
-                        initialValue: state.contact.email,
-                        keyboardType: TextInputType.emailAddress,
-                        textDirection: TextDirection.ltr,
-                        decoration: InputDecoration(
-                          labelText: l10n.flightContactEmail,
-                        ),
-                        onChanged: (value) => notifier.setContactDetails(
-                          state.contact.copyWith(email: value),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      TextFormField(
-                        initialValue: state.contact.phone,
-                        keyboardType: TextInputType.phone,
-                        textDirection: TextDirection.ltr,
-                        decoration: InputDecoration(
-                          labelText: l10n.flightContactPhone,
-                        ),
-                        onChanged: (value) => notifier.setContactDetails(
-                          state.contact.copyWith(phone: value),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
                       for (var i = 0; i < drafts.length; i++)
                         FlightPassengerRow(
                           draft: drafts[i],
