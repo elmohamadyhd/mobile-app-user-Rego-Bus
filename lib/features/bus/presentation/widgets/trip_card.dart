@@ -330,11 +330,35 @@ class _Timeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // One composed timeline unit (times | duration+line | times) so the card
-    // stays dense — separate bands left a hollow gap under the clocks.
+    // Stations first, then clocks — riders scan place then schedule.
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: _StationCell(
+                cityName: from.cityName,
+                station: from.name,
+                textAlign: TextAlign.start,
+                accentColor: AppColors.primary,
+              ),
+            ),
+            const Expanded(flex: 2, child: SizedBox.shrink()),
+            Expanded(
+              flex: 1,
+              child: _StationCell(
+                cityName: to.cityName,
+                station: to.name,
+                textAlign: TextAlign.end,
+                accentColor: AppColors.secondary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -372,31 +396,6 @@ class _Timeline extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 1,
-              child: _StationCell(
-                cityName: from.cityName,
-                station: from.name,
-                textAlign: TextAlign.start,
-                accentColor: AppColors.primary,
-              ),
-            ),
-            const Expanded(flex: 2, child: SizedBox.shrink()),
-            Expanded(
-              flex: 1,
-              child: _StationCell(
-                cityName: to.cityName,
-                station: to.name,
-                textAlign: TextAlign.end,
-                accentColor: AppColors.secondary,
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -577,33 +576,40 @@ class _ConnectorLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rtl = Directionality.of(context) == TextDirection.rtl;
-    return Row(
+    // Phosphor carets set matchTextDirection — Icon already mirrors in RTL.
+    // An extra Transform.flip would cancel that and point the wrong way.
+    return const Row(
       children: [
-        _dot(AppColors.primary),
-        const Expanded(child: Divider(color: AppColors.hairline, height: 1)),
+        _ConnectorDot(AppColors.primary),
+        Expanded(child: Divider(color: AppColors.hairline, height: 1)),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-          child: Transform.flip(
-            flipX: rtl,
-            child: const Icon(
-              PhosphorIconsLight.caretRight,
-              size: 14,
-              color: AppColors.primary,
-            ),
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+          child: Icon(
+            PhosphorIconsLight.caretRight,
+            size: 14,
+            color: AppColors.primary,
           ),
         ),
-        const Expanded(child: Divider(color: AppColors.hairline, height: 1)),
-        _dot(AppColors.secondary),
+        Expanded(child: Divider(color: AppColors.hairline, height: 1)),
+        _ConnectorDot(AppColors.secondary),
       ],
     );
   }
+}
 
-  Widget _dot(Color color) => Container(
-        width: 7,
-        height: 7,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      );
+class _ConnectorDot extends StatelessWidget {
+  const _ConnectorDot(this.color);
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 7,
+      height: 7,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
 }
 
 // ── Fare stub ─────────────────────────────────────────────────────────────────

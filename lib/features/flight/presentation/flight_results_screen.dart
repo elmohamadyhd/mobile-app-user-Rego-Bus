@@ -18,6 +18,7 @@ import 'package:safaria/features/flight/presentation/widgets/flight_filter_sheet
 import 'package:safaria/features/flight/presentation/widgets/flight_offer_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:safaria/shared/widgets/route_arrow_label.dart';
 
 class FlightResultsScreen extends ConsumerStatefulWidget {
   const FlightResultsScreen({super.key});
@@ -69,8 +70,8 @@ class _FlightResultsScreenState extends ConsumerState<FlightResultsScreen> {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(flightBookingProvider);
     final offers = ref.watch(flightFilteredOffersProvider);
-    final title =
-        '${state.searchFromLabel ?? ''} → ${state.searchToLabel ?? ''}';
+    final from = state.searchFromLabel ?? '';
+    final to = state.searchToLabel ?? '';
 
     // A fresh result set restarts the window; without this, a re-search
     // inherits the previous scroll depth and renders far more than needed.
@@ -82,7 +83,7 @@ class _FlightResultsScreenState extends ConsumerState<FlightResultsScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(
-        title: title,
+        titleWidget: RouteArrowLabel(from: from, to: to),
         action: FlightFilterButton(
           activeCount: state.filters.activeCount,
           onTap: _openFilters,

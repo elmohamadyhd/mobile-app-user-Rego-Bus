@@ -22,6 +22,7 @@ import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_filter_button.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_filter_sheet.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/route_arrow_label.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class TripResultsScreen extends ConsumerStatefulWidget {
@@ -48,12 +49,11 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
     final state = ref.watch(busBookingProvider);
     final from = state.searchFromLabel ?? 'Cairo';
     final to = state.searchToLabel ?? 'Alexandria';
-    final title = '$from → $to';
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(
-        title: title,
+        titleWidget: RouteArrowLabel(from: from, to: to),
         action: TripFilterButton(
           filters: _filters,
           onTap: () => _openFilterSheet(context, state.trips),

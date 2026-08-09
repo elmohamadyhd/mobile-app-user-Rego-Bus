@@ -1,27 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
-import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BookingAppBar({
     super.key,
-    required this.title,
+    this.title,
+    this.titleWidget,
     this.subtitle,
+    this.subtitleWidget,
     this.action,
     this.onBack,
-  });
+  }) : assert(
+          title != null || titleWidget != null,
+          'Provide title or titleWidget',
+        );
 
-  final String title;
+  /// Plain centered title. Ignored when [titleWidget] is set.
+  final String? title;
+
+  /// Custom title (e.g. [RouteArrowLabel]) — preferred for from→to routes.
+  final Widget? titleWidget;
+
   final String? subtitle;
+  final Widget? subtitleWidget;
   final Widget? action;
   final VoidCallback? onBack;
 
   @override
-  Size get preferredSize => Size.fromHeight(subtitle != null ? 68.0 : 56.0);
+  Size get preferredSize =>
+      Size.fromHeight(subtitle != null || subtitleWidget != null ? 68.0 : 56.0);
 
   // Leave room for the leading back button and a trailing action so the
   // centered title never paints under either control.
@@ -30,6 +42,32 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasSubtitle = subtitle != null || subtitleWidget != null;
+    final titleStyle =
+        AppTypography.title.copyWith(fontWeight: FontWeight.w700);
+    final subtitleStyle =
+        AppTypography.caption.copyWith(color: AppColors.textMuted);
+
+    final resolvedTitle = titleWidget ??
+        Text(
+          title!,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: titleStyle,
+        );
+
+    final resolvedSubtitle = !hasSubtitle
+        ? null
+        : (subtitleWidget ??
+            Text(
+              subtitle!,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: subtitleStyle,
+            ));
+
     return ColoredBox(
       color: AppColors.bgElevated,
       child: SafeArea(
@@ -44,36 +82,24 @@ class BookingAppBar extends StatelessWidget implements PreferredSizeWidget {
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: _titleHorizontalInset,
                 ),
-                child: subtitle != null
+                child: resolvedSubtitle != null
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            title,
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTypography.title
-                                .copyWith(fontWeight: FontWeight.w700),
+                          DefaultTextStyle.merge(
+                            style: titleStyle,
+                            child: resolvedTitle,
                           ),
-                          Text(
-                            subtitle!,
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTypography.caption
-                                .copyWith(color: AppColors.textMuted),
+                          DefaultTextStyle.merge(
+                            style: subtitleStyle,
+                            child: resolvedSubtitle,
                           ),
                         ],
                       )
-                    : Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.title
-                            .copyWith(fontWeight: FontWeight.w700),
+                    : DefaultTextStyle.merge(
+                        style: titleStyle,
+                        child: resolvedTitle,
                       ),
               ),
               Padding(

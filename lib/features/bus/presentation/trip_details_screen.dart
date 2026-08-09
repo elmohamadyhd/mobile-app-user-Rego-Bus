@@ -22,6 +22,7 @@ import 'package:safaria/features/bus/presentation/widgets/trip_details_coach.dar
 import 'package:safaria/features/bus/presentation/widgets/trip_route_map_fab.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
+import 'package:safaria/shared/widgets/route_arrow_label.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class BusTripDetailsScreen extends ConsumerStatefulWidget {
@@ -70,7 +71,7 @@ class _BusTripDetailsScreenState extends ConsumerState<BusTripDetailsScreen> {
         backgroundColor: AppColors.bgBase,
         appBar: BookingAppBar(
           title: l10n.tripDetailTitle,
-          subtitle: _routeLabel(state, fromStop, toStop),
+          subtitleWidget: _routeSubtitle(state, fromStop, toStop),
           action: Builder(
             builder: (context) => IconButton(
               icon: const Icon(PhosphorIconsLight.question, color: AppColors.textPrimary),
@@ -152,10 +153,8 @@ class _BusTripDetailsScreenState extends ConsumerState<BusTripDetailsScreen> {
     );
   }
 
-  /// `"$from → $to"` using the search labels carried over from results, or
-  /// falling back to the selected stops' own city names — keeps the header
-  /// context continuous with the results screen the user just came from.
-  String? _routeLabel(
+  /// From→to under the details title — widget form so RTL doesn't flip the arrow.
+  Widget? _routeSubtitle(
     BusBookingState state,
     BusStop fromStop,
     BusStop toStop,
@@ -163,7 +162,7 @@ class _BusTripDetailsScreenState extends ConsumerState<BusTripDetailsScreen> {
     final from = state.searchFromLabel ?? fromStop.cityName;
     final to = state.searchToLabel ?? toStop.cityName;
     if (from.isEmpty || to.isEmpty) return null;
-    return '$from → $to';
+    return RouteArrowLabel(from: from, to: to);
   }
 
   Future<void> _onChooseSeats(BuildContext context, WidgetRef ref) async {

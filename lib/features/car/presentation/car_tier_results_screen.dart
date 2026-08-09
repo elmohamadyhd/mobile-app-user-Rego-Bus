@@ -15,6 +15,7 @@ import 'package:safaria/features/car/presentation/car_routes.dart';
 import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/features/car/presentation/widgets/car_trip_ticket_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/route_arrow_label.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class CarTierResultsScreen extends ConsumerStatefulWidget {
@@ -64,12 +65,14 @@ class _CarTierResultsScreenState extends ConsumerState<CarTierResultsScreen> {
     final params = state.searchParams;
     final from = params?.from.label ?? '';
     final to = params?.to.label ?? '';
-    final title = '$from → $to';
     final subtitle = _subtitle(context, params);
 
     return Scaffold(
       backgroundColor: AppColors.bgBase,
-      appBar: BookingAppBar(title: title, subtitle: subtitle),
+      appBar: BookingAppBar(
+        titleWidget: RouteArrowLabel(from: from, to: to),
+        subtitle: subtitle,
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth > AppBreakpoints.maxContentWidth
