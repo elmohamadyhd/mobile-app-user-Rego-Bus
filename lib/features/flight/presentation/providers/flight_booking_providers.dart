@@ -68,7 +68,6 @@ abstract class FlightBookingState with _$FlightBookingState {
     @Default(<String, String>{}) Map<String, String> selectedBundleCodes,
     @Default([]) List<FlightJourneyBundles> journeyBundles,
     @Default([]) List<FlightPassengerDraft> passengerDrafts,
-    @Default(FlightContactDetails()) FlightContactDetails contact,
     String? passengersOfferId,
     @Default(<int, Map<String, String>>{})
     Map<int, Map<String, String>> passengerErrors,
@@ -136,7 +135,6 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
       journeyBundles: [],
       selectedBundleCodes: {},
       passengerDrafts: [],
-      contact: const FlightContactDetails(),
       passengersOfferId: null,
       passengerErrors: {},
       error: null,
@@ -218,10 +216,6 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
     state = state.copyWith(passengerDrafts: drafts, passengerErrors: errors);
   }
 
-  void setContactDetails(FlightContactDetails contact) {
-    state = state.copyWith(contact: contact);
-  }
-
   /// Submits every traveller. On validation failure the errors are pinned to
   /// the passengers they belong to so the list can point at the right row.
   Future<bool> submitPassengers() async {
@@ -236,7 +230,6 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
       final newOfferId = await _repo.addPassengers(
         offerId: offerId,
         passengers: state.passengerDrafts,
-        contact: state.contact,
       );
       state = state.copyWith(
         status: FlightBookingStatus.idle,
