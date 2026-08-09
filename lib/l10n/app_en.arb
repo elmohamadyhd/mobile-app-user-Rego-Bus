@@ -393,21 +393,13 @@
   "@flightPassengersTitle": {
     "description": "App bar title on the flight passenger list and form screens."
   },
-  "flightContactSection": "Contact details",
-  "@flightContactSection": {
-    "description": "Section heading for the shared booking contact fields on the passenger list screen."
-  },
-  "flightContactOnce": "Entered once",
-  "@flightContactOnce": {
-    "description": "Subtitle clarifying the contact details are shared across every traveller."
-  },
   "flightContactEmail": "Email",
   "@flightContactEmail": {
-    "description": "Label for the booking contact email field."
+    "description": "Label for the passenger email field."
   },
   "flightContactPhone": "Phone",
   "@flightContactPhone": {
-    "description": "Label for the booking contact phone field."
+    "description": "Label for the passenger phone field."
   },
   "flightPassengerAdultN": "Adult {number}",
   "@flightPassengerAdultN": {
@@ -484,6 +476,14 @@
   "flightFieldAddressLine2": "address line 2",
   "@flightFieldAddressLine2": {
     "description": "Passenger field name: second line of the home address."
+  },
+  "flightFieldEmail": "email",
+  "@flightFieldEmail": {
+    "description": "Passenger field name: email address."
+  },
+  "flightFieldPhone": "phone",
+  "@flightFieldPhone": {
+    "description": "Passenger field name: phone number."
   },
   "flightNameAsPassport": "As printed on your passport",
   "@flightNameAsPassport": {

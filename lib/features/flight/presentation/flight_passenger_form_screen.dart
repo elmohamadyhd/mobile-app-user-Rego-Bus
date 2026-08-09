@@ -275,6 +275,30 @@ class _FlightPassengerFormScreenState
             onChanged: (v) =>
                 setState(() => _draft = _draft.copyWith(addressLine2: v)),
           ),
+          const SizedBox(height: AppSpacing.sm),
+          TextFormField(
+            initialValue: _draft.email,
+            keyboardType: TextInputType.emailAddress,
+            textDirection: TextDirection.ltr,
+            decoration: InputDecoration(
+              labelText: l10n.flightContactEmail,
+              errorText: errors['email'],
+            ),
+            onChanged: (v) =>
+                setState(() => _draft = _draft.copyWith(email: v)),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextFormField(
+            initialValue: _draft.phone,
+            keyboardType: TextInputType.phone,
+            textDirection: TextDirection.ltr,
+            decoration: InputDecoration(
+              labelText: l10n.flightContactPhone,
+              errorText: errors['phone'],
+            ),
+            onChanged: (v) =>
+                setState(() => _draft = _draft.copyWith(phone: v)),
+          ),
           const SizedBox(height: AppSpacing.md),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
