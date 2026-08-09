@@ -1,52 +1,22 @@
 import 'package:flutter/material.dart';
 
-import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_spacing.dart';
-import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
+import 'package:safaria/features/bus/presentation/widgets/operator_mark.dart';
 
-/// Rounded-square operator mark (logo, falling back to initials) shared by
-/// the results [TripCard] and the trip-details ticket so the same operator
-/// identity reads consistently across both screens.
+/// Operator identity for trip search/details — thin wrapper over [OperatorMark]
+/// so logo treatment stays identical across cards, tickets, and e-tickets.
 class OperatorAvatar extends StatelessWidget {
-  const OperatorAvatar({super.key, required this.trip, this.size = 42});
+  const OperatorAvatar({super.key, required this.trip, this.size = 48});
 
   final BusTripSummary trip;
   final double size;
 
   @override
   Widget build(BuildContext context) {
-    final bool hasLogo = trip.operatorLogoUrl != null;
-    return Container(
-      width: size,
-      height: size,
-      clipBehavior: Clip.antiAlias,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.primaryTint,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      child: hasLogo
-          ? Padding(
-              padding: const EdgeInsets.all(AppSpacing.xs),
-              child: Image.network(
-                trip.operatorLogoUrl!,
-                width: size,
-                height: size,
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => _initials(),
-              ),
-            )
-          : _initials(),
+    return OperatorMark(
+      name: trip.operatorName,
+      logoUrl: trip.operatorLogoUrl,
+      size: size,
     );
   }
-
-  Widget _initials() => Text(
-        trip.operatorCode,
-        style: AppTypography.body.copyWith(
-          color: AppColors.primary,
-          fontWeight: FontWeight.w800,
-          fontSize: size * 0.31,
-        ),
-      );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
@@ -66,6 +67,66 @@ void main() {
 
       final image = tester.widget<Image>(find.byType(Image));
       expect(image.fit, BoxFit.contain);
+    },
+  );
+
+  testWidgets(
+    'logo plate uses elevated surface not primary tint',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: OperatorMark(
+              name: 'SuperJet',
+              logoUrl: 'https://example.com/superjet.png',
+            ),
+          ),
+        ),
+      );
+
+      final container = tester.widget<Container>(find.byType(Container).first);
+      final decoration = container.decoration! as BoxDecoration;
+      expect(decoration.color, AppColors.bgElevated);
+      expect(decoration.border?.top.color, AppColors.border);
+    },
+  );
+
+  testWidgets(
+    'initials fallback keeps primary tint plate',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: OperatorMark(name: 'Go Bus'),
+          ),
+        ),
+      );
+
+      final container = tester.widget<Container>(find.byType(Container).first);
+      final decoration = container.decoration! as BoxDecoration;
+      expect(decoration.color, AppColors.primaryTint);
+      expect(find.text('GB'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'exposes operator name for accessibility',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: OperatorMark(
+              name: 'Blue Bus',
+              logoUrl: 'https://example.com/blue.png',
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(OperatorMark)),
+        matchesSemantics(label: 'Blue Bus', isImage: true),
+      );
     },
   );
 }
