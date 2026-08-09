@@ -32,7 +32,6 @@ class FakeFlightRepository implements FlightRepository {
   String? addPassengersResult;
   ApiException? addPassengersException;
   List<FlightPassengerDraft>? lastPassengers;
-  FlightContactDetails? lastContact;
   FlightSettings? settingsResult;
   FlightOrder? createOrderResult;
   ApiException? createOrderException;
@@ -169,10 +168,8 @@ class FakeFlightRepository implements FlightRepository {
   Future<String> addPassengers({
     required String offerId,
     required List<FlightPassengerDraft> passengers,
-    required FlightContactDetails contact,
   }) {
     lastPassengers = passengers;
-    lastContact = contact;
     if (addPassengersException != null) throw addPassengersException!;
     return Future.value(addPassengersResult ?? offerId);
   }

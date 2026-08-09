@@ -514,13 +514,11 @@ abstract final class FlightDtoMapper {
 
   /// Builds the `POST /flights/{offer_id}/passengers` body.
   ///
-  /// [contact] is written onto every traveller: the endpoint takes an email
-  /// and phone per passenger, but they are the booker's in practice.
+  /// Email and phone are taken from each traveller draft.
   ///
   /// Address is required by the live backend (Phase 3 Task 1 spike).
   static Map<String, dynamic> passengersRequestBody({
     required List<FlightPassengerDraft> passengers,
-    required FlightContactDetails contact,
   }) {
     return {
       'passengers': [
@@ -535,8 +533,8 @@ abstract final class FlightDtoMapper {
             'nationalityCountryCode': p.nationalityCode ?? '',
             'residenceCountryCode': p.residenceCode ?? '',
             'gender': p.gender ?? '',
-            'email': contact.email,
-            'phone': contact.phone,
+            'email': p.email ?? '',
+            'phone': p.phone ?? '',
             'passengerTypeCode': flightPassengerWireCode(p.type),
             'address': {
               'countryCode': p.addressCountryCode ?? '',
