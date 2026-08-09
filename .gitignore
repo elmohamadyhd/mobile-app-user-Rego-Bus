@@ -42,6 +42,9 @@ ios/Flutter/flutter_export_environment.sh
 # Web
 lib/generated_plugin_registrant.dart
 
+# Git worktrees (local isolated checkouts)
+.worktrees/
+
 # Superpowers brainstorming (visual companion, mockups)
 .superpowers/
 *.log
