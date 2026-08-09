@@ -16,6 +16,8 @@ enum FlightPassengerField {
   addressCity,
   addressLine1,
   addressLine2,
+  email,
+  phone,
 }
 
 bool _blank(String? value) => value == null || value.trim().isEmpty;
@@ -38,6 +40,8 @@ List<FlightPassengerField> missingFlightPassengerFields(
     if (_blank(draft.addressCityCode)) FlightPassengerField.addressCity,
     if (_blank(draft.addressLine1)) FlightPassengerField.addressLine1,
     if (_blank(draft.addressLine2)) FlightPassengerField.addressLine2,
+    if (_blank(draft.email)) FlightPassengerField.email,
+    if (_blank(draft.phone)) FlightPassengerField.phone,
   ];
 }
 

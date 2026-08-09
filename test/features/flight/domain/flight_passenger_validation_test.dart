@@ -8,6 +8,8 @@ final _departure = DateTime(2026, 8, 30);
 FlightPassengerDraft _adult({
   String? documentNumber = '29001021234567',
   DateTime? birthDate,
+  String? email = 'a@b.com',
+  String? phone = '01090510796',
 }) {
   return FlightPassengerDraft(
     type: FlightPassengerType.adult,
@@ -23,6 +25,8 @@ FlightPassengerDraft _adult({
     addressCityCode: 'CAI',
     addressLine1: 'Street 1',
     addressLine2: 'Apt 1',
+    email: email,
+    phone: phone,
   );
 }
 
@@ -92,6 +96,20 @@ void main() {
     test('a middle name is optional', () {
       final draft = _adult().copyWith(middleName: null);
       expect(missingFlightPassengerFields(draft), isEmpty);
+    });
+
+    test('a blank email is reported missing', () {
+      expect(
+        missingFlightPassengerFields(_adult(email: null)),
+        contains(FlightPassengerField.email),
+      );
+    });
+
+    test('a blank phone is reported missing', () {
+      expect(
+        missingFlightPassengerFields(_adult(phone: '  ')),
+        contains(FlightPassengerField.phone),
+      );
     });
   });
 
