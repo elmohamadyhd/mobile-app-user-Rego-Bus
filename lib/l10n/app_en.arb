@@ -1090,6 +1090,41 @@
   "@profileComingSoon": {
     "description": "Snackbar shown when a profile menu row is not yet implemented."
   },
+  "settingsDeleteAccount": "Delete account",
+  "@settingsDeleteAccount": {
+    "description": "Settings row that permanently deletes the rider account."
+  },
+  "settingsDeleteAccountTitle": "Delete account?",
+  "@settingsDeleteAccountTitle": {
+    "description": "Title of the delete-account confirmation dialog."
+  },
+  "settingsDeleteAccountMessage": "This permanently deletes your account and cannot be undone.",
+  "@settingsDeleteAccountMessage": {
+    "description": "Body of the delete-account confirmation dialog."
+  },
+  "settingsDeleteAccountTypePrompt": "Type {word} to confirm",
+  "@settingsDeleteAccountTypePrompt": {
+    "description": "Instruction to type the confirmation word before deleting.",
+    "placeholders": {
+      "word": { "type": "String" }
+    }
+  },
+  "settingsDeleteAccountConfirmWord": "DELETE",
+  "@settingsDeleteAccountConfirmWord": {
+    "description": "Exact word the user must type to enable delete (English)."
+  },
+  "settingsDeleteAccountCancel": "Cancel",
+  "@settingsDeleteAccountCancel": {
+    "description": "Cancel button on the delete-account dialog."
+  },
+  "settingsDeleteAccountConfirm": "Delete",
+  "@settingsDeleteAccountConfirm": {
+    "description": "Confirm button on the delete-account dialog."
+  },
+  "settingsDeleteAccountFailed": "Couldn't delete account",
+  "@settingsDeleteAccountFailed": {
+    "description": "Snackbar when DELETE /profile fails."
+  },
   "profileEditTitle": "Edit profile",
   "@profileEditTitle": {
     "description": "Title of the profile edit screen."

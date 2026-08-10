@@ -30,4 +30,7 @@ class FakeProfileRepository implements ProfileRepository {
     required String code,
   }) async =>
       _user;
+
+  @override
+  Future<void> deleteAccount() => throw UnimplementedError();
 }
