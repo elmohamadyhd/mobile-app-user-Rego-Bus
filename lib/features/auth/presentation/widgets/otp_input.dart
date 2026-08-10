@@ -104,21 +104,29 @@ class _OtpInputState extends State<OtpInput> {
     return KeyEventResult.ignored;
   }
 
+  bool get _anyFocused => _nodes.any((n) => n.hasFocus);
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < widget.length; i++) ...[
-          Expanded(child: _box(i)),
-          if (i != widget.length - 1) const SizedBox(width: 14),
+    // OTP digits are always LTR — RTL ambient layout reverses the row and
+    // confuses users about which box is first.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Row(
+        children: [
+          for (var i = 0; i < widget.length; i++) ...[
+            Expanded(child: _box(i)),
+            if (i != widget.length - 1) const SizedBox(width: 14),
+          ],
         ],
-      ],
+      ),
     );
   }
 
   Widget _box(int i) {
     final filled = _controllers[i].text.isNotEmpty;
-    final active = _nodes[i].hasFocus;
+    // Highlight the first box by default without requesting focus (no keyboard).
+    final active = _nodes[i].hasFocus || (!_anyFocused && i == 0);
     final borderColor = widget.hasError
         ? AppColors.error
         : (filled || active ? AppColors.primary : AppColors.hairline);
@@ -135,6 +143,7 @@ class _OtpInputState extends State<OtpInput> {
         controller: _controllers[i],
         focusNode: _nodes[i],
         textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr,
         keyboardType: TextInputType.number,
         maxLength: 1,
         showCursor: true,
