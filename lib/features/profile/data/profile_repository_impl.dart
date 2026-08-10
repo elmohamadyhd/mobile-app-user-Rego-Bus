@@ -59,6 +59,16 @@ class ProfileRepositoryImpl implements ProfileRepository {
             ),
           ));
 
+  @override
+  Future<void> deleteAccount() => _guard(() async {
+        final body = await _api.deleteAccount();
+        final envelope = body as Map<String, dynamic>;
+        final innerStatus = envelope['status'];
+        if (innerStatus is num && innerStatus.toInt() != 200) {
+          throw ApiException.fromEnvelope(envelope);
+        }
+      });
+
   AuthUser _userFromEnvelope(dynamic body) {
     final envelope = body as Map<String, dynamic>;
     final innerStatus = envelope['status'];

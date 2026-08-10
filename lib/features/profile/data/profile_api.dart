@@ -31,4 +31,9 @@ class ProfileApi {
     );
     return res.data;
   }
+
+  Future<dynamic> deleteAccount() async {
+    final res = await _dio.delete('/profile');
+    return res.data;
+  }
 }

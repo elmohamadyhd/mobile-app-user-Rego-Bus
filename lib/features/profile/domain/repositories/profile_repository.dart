@@ -21,4 +21,7 @@ abstract interface class ProfileRepository {
     required String mobile,
     required String code,
   });
+
+  /// Permanently deletes the signed-in account via `DELETE /profile`.
+  Future<void> deleteAccount();
 }

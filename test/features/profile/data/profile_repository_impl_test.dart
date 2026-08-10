@@ -14,11 +14,15 @@ class _FakeProfileApi extends ProfileApi {
     this.updateBody,
     this.onUpdate,
     this.verifyAltPhoneBody,
+    this.deleteAccountBody,
+    this.deleteAccountError,
   }) : super(Dio());
 
   final dynamic fetchBody;
   final dynamic updateBody;
   final dynamic verifyAltPhoneBody;
+  final dynamic deleteAccountBody;
+  final Object? deleteAccountError;
   final void Function(FormData body)? onUpdate;
 
   @override
@@ -37,6 +41,13 @@ class _FakeProfileApi extends ProfileApi {
     required String code,
   }) async =>
       verifyAltPhoneBody;
+
+  @override
+  Future<dynamic> deleteAccount() async {
+    final err = deleteAccountError;
+    if (err != null) throw err;
+    return deleteAccountBody;
+  }
 }
 
 void main() {
@@ -152,6 +163,57 @@ void main() {
             mobile: '1276586027',
             code: '0000',
           ),
+          throwsA(isA<ApiException>()),
+        );
+      });
+    });
+
+    group('deleteAccount', () {
+      test('completes when envelope status is 200', () async {
+        final repo = ProfileRepositoryImpl(
+          _FakeProfileApi(
+            deleteAccountBody: {
+              'status': 200,
+              'message': 'Account deleted',
+              'errors': <String, dynamic>{},
+              'data': <String, dynamic>{},
+            },
+          ),
+        );
+
+        await repo.deleteAccount();
+      });
+
+      test('throws ApiException on an error envelope', () async {
+        final repo = ProfileRepositoryImpl(
+          _FakeProfileApi(
+            deleteAccountBody: {
+              'status': 400,
+              'message': 'Cannot delete account',
+              'errors': <String, dynamic>{},
+              'data': <String, dynamic>{},
+            },
+          ),
+        );
+
+        await expectLater(
+          repo.deleteAccount(),
+          throwsA(isA<ApiException>()),
+        );
+      });
+
+      test('throws ApiException on DioException', () async {
+        final repo = ProfileRepositoryImpl(
+          _FakeProfileApi(
+            deleteAccountError: DioException(
+              requestOptions: RequestOptions(path: '/profile'),
+              type: DioExceptionType.connectionError,
+            ),
+          ),
+        );
+
+        await expectLater(
+          repo.deleteAccount(),
           throwsA(isA<ApiException>()),
         );
       });
