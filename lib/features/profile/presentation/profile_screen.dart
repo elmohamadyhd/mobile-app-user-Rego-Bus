@@ -14,7 +14,6 @@ import 'package:safaria/features/profile/presentation/profile_routes.dart';
 import 'package:safaria/features/profile/presentation/widgets/profile_circle_avatar.dart';
 import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
 import 'package:safaria/l10n/app_localizations.dart';
-import 'package:safaria/shared/widgets/language_picker_sheet.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 import 'package:safaria/shared/widgets/shell_tab_scroll_view.dart';
 import 'package:safaria/shared/widgets/skyline_tab_hero.dart';
@@ -79,14 +78,9 @@ class ProfileScreen extends ConsumerWidget {
                       : context.push(ProfileRoutes.savedTravellers),
                 ),
                 _ProfileMenuItem(
-                  icon: PhosphorIconsLight.translate,
-                  label: l10n.profileMenuLanguage,
-                  onTap: () => showLanguagePickerSheet(context),
-                ),
-                _ProfileMenuItem(
                   icon: PhosphorIconsLight.gearSix,
                   label: l10n.profileMenuSettings,
-                  onTap: () => _showComingSoon(context, l10n),
+                  onTap: () => context.push(ProfileRoutes.settings),
                 ),
                 _ProfileMenuItem(
                   icon: PhosphorIconsLight.question,

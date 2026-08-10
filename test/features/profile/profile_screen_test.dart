@@ -10,6 +10,7 @@ import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 import 'package:safaria/features/auth/domain/entities/auth_user.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
+import 'package:safaria/features/profile/presentation/profile_routes.dart';
 import 'package:safaria/features/profile/presentation/profile_screen.dart';
 import 'package:safaria/features/wallet/presentation/wallet_routes.dart';
 import 'package:safaria/l10n/app_localizations.dart';
@@ -165,8 +166,7 @@ void main() {
     expect(find.text('LOGIN returnTo=${AppRoutes.profile}'), findsOneWidget);
   });
 
-  testWidgets('tapping Language opens the language picker sheet',
-      (tester) async {
+  testWidgets('profile menu has Settings but not Language', (tester) async {
     tester.view.physicalSize = const Size(1170, 2532);
     tester.view.devicePixelRatio = 3.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -174,14 +174,55 @@ void main() {
 
     await pumpProfile(tester);
 
-    final languageTile = find.text('Language');
-    await tester.ensureVisible(languageTile);
-    await tester.pumpAndSettle();
-    await tester.tap(languageTile);
+    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('Language'), findsNothing);
+  });
+
+  testWidgets('tapping Settings pushes the settings screen', (tester) async {
+    final container = ProviderContainer(
+      overrides: [
+        sessionControllerProvider.overrideWith(
+          () => _FakeSessionController(session),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.profile,
+      routes: [
+        GoRoute(
+          path: AppRoutes.profile,
+          builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: ProfileRoutes.settings,
+          builder: (context, state) => const Text('SETTINGS'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.light(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
-    expect(find.text('English'), findsOneWidget);
-    expect(find.text('العربية'), findsOneWidget);
+    final settingsTile = find.text('Settings');
+    await tester.ensureVisible(settingsTile);
+    await tester.pumpAndSettle();
+    await tester.tap(settingsTile);
+    await tester.pumpAndSettle();
+
+    expect(find.text('SETTINGS'), findsOneWidget);
   });
 
   testWidgets('tapping Wallet pushes the wallet screen for a signed-in user',
@@ -291,8 +332,7 @@ void main() {
     );
   });
 
-  testWidgets(
-      'tapping Addresses pushes the address list for a signed-in user',
+  testWidgets('tapping Addresses pushes the address list for a signed-in user',
       (tester) async {
     final container = ProviderContainer(
       overrides: [
