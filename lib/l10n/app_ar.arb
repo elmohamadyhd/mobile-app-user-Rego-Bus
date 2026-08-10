@@ -219,6 +219,8 @@
   "homeSearch": "ابحث عن رحلات",
   "homePopularDestinations": "الوجهات الشائعة",
   "homePopularDestinationsSwipeHint": "اسحب لعرض المزيد من الوجهات",
+  "homeSavedAddresses": "العناوين المحفوظة",
+  "homeSavedAddressesSwipeHint": "اسحب لعرض المزيد من العناوين",
   "homeComingSoon": "قريباً",
   "homeCitySearchHint": "ابحث عن مدينة",
   "homeCitySearchEmpty": "لم يتم العثور على مدن",

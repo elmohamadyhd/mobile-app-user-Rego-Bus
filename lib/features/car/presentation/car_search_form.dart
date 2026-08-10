@@ -24,10 +24,18 @@ import 'package:safaria/shared/widgets/primary_button.dart';
 class CarSearchForm extends ConsumerStatefulWidget {
   const CarSearchForm({
     super.key,
+    this.toPlace,
+    this.onToPlaceChanged,
+    this.onFromPlaceChanged,
     @visibleForTesting this.initialFrom,
     @visibleForTesting this.initialTo,
     @visibleForTesting this.initialTravelDate,
   });
+
+  /// Controlled drop-off from parent (e.g. Home saved-addresses strip).
+  final CarPlace? toPlace;
+  final ValueChanged<CarPlace?>? onToPlaceChanged;
+  final ValueChanged<CarPlace?>? onFromPlaceChanged;
 
   @visibleForTesting
   final CarPlace? initialFrom;
@@ -56,17 +64,45 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
   void initState() {
     super.initState();
     _from = widget.initialFrom;
-    _to = widget.initialTo;
+    _to = widget.toPlace ?? widget.initialTo;
     _travelDate = dateOnly(
       widget.initialTravelDate ?? DateTime.now(),
     );
     _returnDate = dateOnly(_travelDate.add(const Duration(days: 7)));
     _departTime = defaultDepartTimeForDate(_travelDate);
     _returnTime = defaultDepartTimeForDate(_returnDate);
-    // Prefill pickup only when permission is already granted — never prompt.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      widget.onFromPlaceChanged?.call(_from);
+      widget.onToPlaceChanged?.call(_to);
       unawaited(_prefillPickupIfPermitted());
     });
+  }
+
+  @override
+  void didUpdateWidget(CarSearchForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final next = widget.toPlace;
+    if (next == oldWidget.toPlace) return;
+    if (next == null) {
+      if (_to != null) {
+        setState(() => _to = null);
+      }
+      return;
+    }
+    if (_to == null || !_to!.sameCoordinates(next) || _to!.label != next.label) {
+      setState(() => _to = next);
+    }
+  }
+
+  void _setFrom(CarPlace? place) {
+    setState(() => _from = place);
+    widget.onFromPlaceChanged?.call(place);
+  }
+
+  void _setTo(CarPlace? place) {
+    setState(() => _to = place);
+    widget.onToPlaceChanged?.call(place);
   }
 
   Future<void> _prefillPickupIfPermitted() async {
@@ -78,7 +114,7 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
               requestIfNeeded: false,
             );
     if (!mounted || place == null || _from != null) return;
-    setState(() => _from = place);
+    _setFrom(place);
   }
 
   // `_travelDate`/`_returnDate` are cached fields, so if the screen stays
@@ -101,6 +137,8 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
       _from = _to;
       _to = tmp;
     });
+    widget.onFromPlaceChanged?.call(_from);
+    widget.onToPlaceChanged?.call(_to);
   }
 
   void _setTripType(TripType type) {
@@ -276,7 +314,7 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
                     iconColor: AppColors.primary,
                     icon: PhosphorIconsLight.crosshair,
                     value: _from,
-                    onChanged: (p) => setState(() => _from = p),
+                    onChanged: _setFrom,
                     showUseMyLocation: true,
                   ),
                   const Divider(
@@ -292,7 +330,7 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
                     iconColor: AppColors.secondary,
                     icon: PhosphorIconsLight.mapPin,
                     value: _to,
-                    onChanged: (p) => setState(() => _to = p),
+                    onChanged: _setTo,
                   ),
                 ],
               ),

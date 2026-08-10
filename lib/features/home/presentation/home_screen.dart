@@ -7,9 +7,11 @@ import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/bus/domain/entities/bus_location.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_locations_provider.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
 import 'package:safaria/features/home/presentation/widgets/home_search_card.dart';
 import 'package:safaria/features/home/presentation/widgets/home_staggered_entrance.dart';
 import 'package:safaria/features/home/presentation/widgets/popular_destinations.dart';
+import 'package:safaria/features/home/presentation/widgets/saved_addresses_strip.dart';
 import 'package:safaria/features/notifications/presentation/notifications_routes.dart';
 import 'package:safaria/features/notifications/presentation/providers/notifications_providers.dart';
 import 'package:safaria/l10n/app_localizations.dart';
@@ -28,6 +30,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _transportTab = 0;
   BusLocation? _fromCity;
   BusLocation? _toCity;
+  CarPlace? _carFrom;
+  CarPlace? _carTo;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +80,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             toCity: _toCity,
             onFromCityChanged: (c) => setState(() => _fromCity = c),
             onToCityChanged: (c) => setState(() => _toCity = c),
+            toPlace: _carTo,
+            onFromPlaceChanged: (p) => setState(() => _carFrom = p),
+            onToPlaceChanged: (p) => setState(() => _carTo = p),
           ),
         ),
         HomeStaggeredEntrance(
@@ -86,6 +93,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onSelected: (city) {
               if (_fromCity?.id == city.id) return;
               setState(() => _toCity = city);
+            },
+          ),
+        ),
+        HomeStaggeredEntrance(
+          index: 2,
+          child: SavedAddressesStrip(
+            visible: _transportTab == TransportModeTabBar.privateTabIndex,
+            excludePlace: _carFrom,
+            onSelected: (place) {
+              if (_carFrom != null && place.sameCoordinates(_carFrom!)) {
+                return;
+              }
+              setState(() => _carTo = place);
             },
           ),
         ),

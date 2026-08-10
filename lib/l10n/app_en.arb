@@ -622,6 +622,14 @@
   "@homePopularDestinationsSwipeHint": {
     "description": "Accessibility hint that the popular destinations row scrolls horizontally."
   },
+  "homeSavedAddresses": "Saved addresses",
+  "@homeSavedAddresses": {
+    "description": "Home section title for saved addresses on the Private tab."
+  },
+  "homeSavedAddressesSwipeHint": "Swipe to see more addresses",
+  "@homeSavedAddressesSwipeHint": {
+    "description": "Accessibility hint that the saved addresses row scrolls horizontally."
+  },
   "homeComingSoon": "Coming soon",
   "homeCitySearchHint": "Search city",
   "@homeCitySearchHint": {

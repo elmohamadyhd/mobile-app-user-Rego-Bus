@@ -19,8 +19,8 @@ is hidden entirely.
 | Visibility | Private tab only; hide when guest, loading, error, or empty list |
 | Tap | Set car search **drop-off (To)** |
 | Same as pickup | Dim + non-tappable when coordinates match current pickup |
-| Card title | `SavedAddress.name` |
-| Card subtitle | `SavedAddress.mapLocation.addressName` (1 line, ellipsis) |
+| Card title | `SavedAddress.name` only (up to 2 lines, wraps) |
+| Card subtitle | None |
 | Field label | `CarPlace.label` = `mapLocation.addressName` |
 | “See all” / manage | None — address book stays under Profile |
 | State wiring | Approach 1 — `HomeScreen` coordinates strip ↔ search card (mirror bus) |
@@ -101,7 +101,7 @@ ShellTabScrollView
 - Section title: l10n key `homeSavedAddresses` (add to `app_en.arb` +
   `app_ar.arb`) — not `homePopularDestinations`
 - Cards: reuse visual language of `_DestCard` (gradient alternate, map-pin,
-  press scale, `AppRadius`, tokens) with title + subtitle
+  press scale, `AppRadius`, tokens) with name only (`maxLines: 2`, wraps)
 - Empty / loading / error / guest → `SizedBox.shrink()`
 - RTL: `EdgeInsetsDirectional`, auto-mirroring list scroll
 - Responsive: card width from viewport like popular destinations (`~2.2`

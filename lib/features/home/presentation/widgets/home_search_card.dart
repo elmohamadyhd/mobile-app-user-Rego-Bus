@@ -13,6 +13,7 @@ import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_city_picker.dart';
+import 'package:safaria/features/car/domain/entities/car_place.dart';
 import 'package:safaria/features/car/presentation/car_search_form.dart';
 import 'package:safaria/features/flight/presentation/flight_search_form.dart';
 import 'package:safaria/l10n/app_localizations.dart';
@@ -32,6 +33,9 @@ class HomeSearchCard extends ConsumerStatefulWidget {
     this.toCity,
     this.onFromCityChanged,
     this.onToCityChanged,
+    this.toPlace,
+    this.onToPlaceChanged,
+    this.onFromPlaceChanged,
   });
 
   final int selectedTab;
@@ -46,6 +50,9 @@ class HomeSearchCard extends ConsumerStatefulWidget {
   final BusLocation? toCity;
   final ValueChanged<BusLocation?>? onFromCityChanged;
   final ValueChanged<BusLocation?>? onToCityChanged;
+  final CarPlace? toPlace;
+  final ValueChanged<CarPlace?>? onToPlaceChanged;
+  final ValueChanged<CarPlace?>? onFromPlaceChanged;
 
   static const int flightTabIndex = TransportModeTabBar.flightTabIndex;
 
@@ -246,7 +253,11 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
           ),
           const SizedBox(height: AppSpacing.sm + AppSpacing.xs),
           if (isPrivateTab)
-            const CarSearchForm()
+            CarSearchForm(
+              toPlace: widget.toPlace,
+              onToPlaceChanged: widget.onToPlaceChanged,
+              onFromPlaceChanged: widget.onFromPlaceChanged,
+            )
           else if (widget.selectedTab == TransportModeTabBar.flightTabIndex)
             const FlightSearchForm()
           else
@@ -489,10 +500,16 @@ class _DateField extends StatelessWidget {
                     ),
                     Text(
                       value,
-                      style: AppTypography.title.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      style: (compact
+                              ? AppTypography.body
+                              : AppTypography.title)
+                          .copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                   ],
                 ),
