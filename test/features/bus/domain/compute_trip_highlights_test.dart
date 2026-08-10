@@ -40,17 +40,20 @@ void main() {
     expect(computeTripHighlights(const []), isEmpty);
   });
 
-  test('single trip is bestDeal', () {
+  test('single trip is dual winner (cheapest + fastest)', () {
     final t = _trip(
       id: 'a',
       depart: DateTime(2026, 7, 10, 8),
       arrive: DateTime(2026, 7, 10, 10),
       priceEgp: 100,
     );
-    expect(computeTripHighlights([t])['a'], TripHighlight.bestDeal);
+    expect(
+      computeTripHighlights([t])['a'],
+      const TripHighlights(isCheapest: true, isFastest: true),
+    );
   });
 
-  test('ties mark every cheapest and every fastest; both → bestDeal', () {
+  test('ties mark every cheapest and every fastest; both flags when dual', () {
     final cheapFast = _trip(
       id: 'cf',
       depart: DateTime(2026, 7, 10, 8),
@@ -70,12 +73,15 @@ void main() {
       priceEgp: 200,
     );
     final map = computeTripHighlights([cheapFast, cheapSlow, priceyFast]);
-    expect(map['cf'], TripHighlight.bestDeal);
-    expect(map['cs'], TripHighlight.cheapest);
-    expect(map['pf'], TripHighlight.fastest);
+    expect(
+      map['cf'],
+      const TripHighlights(isCheapest: true, isFastest: true),
+    );
+    expect(map['cs'], const TripHighlights(isCheapest: true));
+    expect(map['pf'], const TripHighlights(isFastest: true));
   });
 
-  test('sortTripsWithHighlights pins bestDeal then other marks then rest', () {
+  test('sortTripsWithHighlights pins dual then other marks then rest', () {
     final rest = _trip(
       id: 'r',
       depart: DateTime(2026, 7, 10, 7),
@@ -88,13 +94,13 @@ void main() {
       arrive: DateTime(2026, 7, 10, 14),
       priceEgp: 100,
     );
-    final best = _trip(
+    final dual = _trip(
       id: 'b',
       depart: DateTime(2026, 7, 10, 10),
       arrive: DateTime(2026, 7, 10, 12),
       priceEgp: 100,
     );
-    final trips = [rest, cheapest, best];
+    final trips = [rest, cheapest, dual];
     final highlights = computeTripHighlights(trips);
     final sorted = sortTripsWithHighlights(trips, highlights);
     expect(sorted.map((t) => t.id), ['b', 'c', 'r']);
@@ -103,7 +109,7 @@ void main() {
   test('tripMatchesHighlightFilter unions when both flags set', () {
     expect(
       tripMatchesHighlightFilter(
-        highlight: TripHighlight.cheapest,
+        highlight: const TripHighlights(isCheapest: true),
         cheapest: true,
         fastest: true,
       ),
@@ -111,7 +117,7 @@ void main() {
     );
     expect(
       tripMatchesHighlightFilter(
-        highlight: TripHighlight.fastest,
+        highlight: const TripHighlights(isFastest: true),
         cheapest: true,
         fastest: true,
       ),
@@ -124,6 +130,14 @@ void main() {
         fastest: false,
       ),
       isFalse,
+    );
+    expect(
+      tripMatchesHighlightFilter(
+        highlight: const TripHighlights(isCheapest: true, isFastest: true),
+        cheapest: true,
+        fastest: false,
+      ),
+      isTrue,
     );
   });
 }

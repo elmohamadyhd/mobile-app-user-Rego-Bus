@@ -35,8 +35,8 @@ class TripCard extends StatefulWidget {
   /// Other cards in the list stay fully interactive — see [_SelectButton].
   final bool loading;
 
-  /// Optional cheapest / fastest / best-deal mark for the header pill.
-  final TripHighlight? highlight;
+  /// Optional cheapest / fastest marks for the header pills.
+  final TripHighlights? highlight;
 
   /// Height of the fare stub (below the tear line). Drives the notch offset.
   static const double _stubHeight = 68;
@@ -190,11 +190,12 @@ class _Header extends StatelessWidget {
   const _Header({required this.trip, this.highlight});
 
   final BusTripSummary trip;
-  final TripHighlight? highlight;
+  final TripHighlights? highlight;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final marks = highlight;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -247,58 +248,86 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-        if (highlight != null) ...[
+        if (marks != null && marks.hasAny) ...[
           const SizedBox(width: AppSpacing.sm),
-          _HighlightBadge(highlight: highlight!, l10n: l10n),
+          Flexible(
+            child: Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: _HighlightBadges(highlight: marks, l10n: l10n),
+            ),
+          ),
         ],
       ],
     );
   }
 }
 
-class _HighlightBadge extends StatelessWidget {
-  const _HighlightBadge({required this.highlight, required this.l10n});
+class _HighlightBadges extends StatelessWidget {
+  const _HighlightBadges({required this.highlight, required this.l10n});
 
-  final TripHighlight highlight;
+  final TripHighlights highlight;
   final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    final (label, bg, fg) = switch (highlight) {
-      TripHighlight.cheapest => (
-          l10n.tripResultsSortCheapest,
-          AppColors.secondaryTint,
-          AppColors.onSecondary,
+    final pills = <Widget>[
+      if (highlight.isCheapest)
+        _HighlightBadge(
+          label: l10n.tripResultsSortCheapest,
+          bg: AppColors.secondaryTint,
+          fg: AppColors.onSecondary,
         ),
-      TripHighlight.fastest => (
-          l10n.tripResultsHighlightFastest,
-          AppColors.success.withValues(alpha: 0.14),
-          AppColors.success,
+      if (highlight.isFastest)
+        _HighlightBadge(
+          label: l10n.tripResultsHighlightFastest,
+          bg: AppColors.success.withValues(alpha: 0.14),
+          fg: AppColors.success,
         ),
-      TripHighlight.bestDeal => (
-          l10n.tripResultsHighlightBestDeal,
-          AppColors.primaryTint,
-          AppColors.primary,
-        ),
-    };
+    ];
+    final semanticsLabel = [
+      if (highlight.isCheapest) l10n.tripResultsSortCheapest,
+      if (highlight.isFastest) l10n.tripResultsHighlightFastest,
+    ].join(', ');
 
     return Semantics(
-      label: label,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: 4,
-        ),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
-        child: Text(
-          label,
-          style: AppTypography.caption.copyWith(
-            color: fg,
-            fontWeight: FontWeight.w700,
-          ),
+      label: semanticsLabel,
+      child: Wrap(
+        spacing: AppSpacing.xs,
+        runSpacing: AppSpacing.xs,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: pills,
+      ),
+    );
+  }
+}
+
+class _HighlightBadge extends StatelessWidget {
+  const _HighlightBadge({
+    required this.label,
+    required this.bg,
+    required this.fg,
+  });
+
+  final String label;
+  final Color bg;
+  final Color fg;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 4,
+      ),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.caption.copyWith(
+          color: fg,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

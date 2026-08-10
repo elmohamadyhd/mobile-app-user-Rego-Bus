@@ -659,10 +659,6 @@
   "@tripResultsHighlightFastest": {
     "description": "Badge/filter label for the shortest-duration trip(s)."
   },
-  "tripResultsHighlightBestDeal": "Best deal",
-  "@tripResultsHighlightBestDeal": {
-    "description": "Badge when a trip is both cheapest and fastest."
-  },
   "tripResultsSortSeats": "Seats",
   "tripResultsNoTrips": "No trips found",
   "tripResultsError": "Couldn't load trips",

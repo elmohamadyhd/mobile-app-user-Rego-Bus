@@ -61,7 +61,7 @@ Future<void> _pumpCard(
   Locale locale = const Locale('en'),
   void Function({required BusStop from, required BusStop to})? onSelect,
   bool loading = false,
-  TripHighlight? highlight,
+  TripHighlights? highlight,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -106,16 +106,27 @@ void main() {
     await _pumpCard(
       tester,
       _buildTrip(),
-      highlight: TripHighlight.cheapest,
+      highlight: const TripHighlights(isCheapest: true),
     );
     expect(find.text('Cheapest'), findsOneWidget);
+  });
+
+  testWidgets('shows cheapest and fastest badges for dual winners',
+      (tester) async {
+    await _pumpCard(
+      tester,
+      _buildTrip(),
+      highlight: const TripHighlights(isCheapest: true, isFastest: true),
+    );
+    expect(find.text('Cheapest'), findsOneWidget);
+    expect(find.text('Fastest'), findsOneWidget);
+    expect(find.text('Best deal'), findsNothing);
   });
 
   testWidgets('hides highlight badge when highlight is null', (tester) async {
     await _pumpCard(tester, _buildTrip());
     expect(find.text('Cheapest'), findsNothing);
     expect(find.text('Fastest'), findsNothing);
-    expect(find.text('Best deal'), findsNothing);
   });
 
   testWidgets(

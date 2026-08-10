@@ -177,7 +177,7 @@ void main() {
     expect(find.text('Filter trips'), findsOneWidget);
     expect(find.text('Highlights'), findsOneWidget);
     expect(find.text('Cheapest'), findsWidgets);
-    expect(find.text('Fastest'), findsOneWidget);
+    expect(find.text('Fastest'), findsWidgets);
     // Card behind the sheet + operator chip in the sheet both show the name.
     expect(find.text('Blue Bus'), findsAtLeastNWidgets(1));
   });
@@ -199,8 +199,22 @@ void main() {
     );
     await _pumpResultsWithTrips(tester, [tripA, tripB]);
     expect(find.byType(TripCard), findsNWidgets(2));
-    // Same duration → cheapest trip is Best deal when it also ties for fastest.
-    expect(find.text('Best deal'), findsOneWidget);
+    // Same duration → cheapest trip gets both pills; other stays fastest-only.
+    expect(
+      find.descendant(
+        of: find.byType(TripCard),
+        matching: find.text('Cheapest'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(TripCard),
+        matching: find.text('Fastest'),
+      ),
+      findsWidgets,
+    );
+    expect(find.text('Best deal'), findsNothing);
 
     await tester.tap(find.byIcon(PhosphorIconsLight.fadersHorizontal));
     await tester.pumpAndSettle();
@@ -215,7 +229,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(TripCard), findsOneWidget);
-    expect(find.text('Best deal'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(TripCard),
+        matching: find.text('Cheapest'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(TripCard),
+        matching: find.text('Fastest'),
+      ),
+      findsOneWidget,
+    );
     expect(
       find.descendant(
         of: find.byType(ActiveFilterChips),
@@ -233,7 +260,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(TripCard), findsNWidgets(2));
-    expect(find.text('Best deal'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(TripCard),
+        matching: find.text('Cheapest'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Best deal'), findsNothing);
   });
 
   testWidgets('applying operator filter shows chip and narrows list', (

@@ -152,7 +152,7 @@ void main() {
       expect(result.map((t) => t.id), ['a']);
     });
 
-    test('cheapest filter keeps cheapest and bestDeal only', () {
+    test('cheapest filter keeps cheapest and dual winners only', () {
       final cheapFast = _trip(
         id: 'cf',
         operatorName: 'A',

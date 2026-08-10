@@ -1,8 +1,8 @@
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/trip_highlight.dart';
 
-/// Marks cheapest / fastest trips in [trips] (ties included; both → bestDeal).
-Map<String, TripHighlight> computeTripHighlights(
+/// Marks cheapest / fastest trips in [trips] (ties included; both flags when dual).
+Map<String, TripHighlights> computeTripHighlights(
   List<BusTripSummary> trips,
 ) {
   if (trips.isEmpty) return {};
@@ -12,33 +12,27 @@ Map<String, TripHighlight> computeTripHighlights(
     if (t.terminalPriceEgp < minPrice) minPrice = t.terminalPriceEgp;
     if (t.durationMin < minDuration) minDuration = t.durationMin;
   }
-  final map = <String, TripHighlight>{};
+  final map = <String, TripHighlights>{};
   for (final t in trips) {
     final cheap = t.terminalPriceEgp == minPrice;
     final fast = t.durationMin == minDuration;
-    if (cheap && fast) {
-      map[t.id] = TripHighlight.bestDeal;
-    } else if (cheap) {
-      map[t.id] = TripHighlight.cheapest;
-    } else if (fast) {
-      map[t.id] = TripHighlight.fastest;
+    if (cheap || fast) {
+      map[t.id] = TripHighlights(isCheapest: cheap, isFastest: fast);
     }
   }
   return map;
 }
 
-int _highlightRank(TripHighlight? h) {
-  return switch (h) {
-    TripHighlight.bestDeal => 0,
-    TripHighlight.cheapest || TripHighlight.fastest => 1,
-    null => 2,
-  };
+int _highlightRank(TripHighlights? h) {
+  if (h == null || !h.hasAny) return 2;
+  if (h.isDualWinner) return 0;
+  return 1;
 }
 
-/// Pins Best deal → other marks → rest, then earliest departure within rank.
+/// Pins dual winners → other marks → rest, then earliest departure within rank.
 List<BusTripSummary> sortTripsWithHighlights(
   List<BusTripSummary> trips,
-  Map<String, TripHighlight> highlights,
+  Map<String, TripHighlights> highlights,
 ) {
   final list = [...trips];
   list.sort((a, b) {
@@ -52,17 +46,13 @@ List<BusTripSummary> sortTripsWithHighlights(
 
 /// Whether [highlight] satisfies cheapest/fastest filter flags (union).
 bool tripMatchesHighlightFilter({
-  required TripHighlight? highlight,
+  required TripHighlights? highlight,
   required bool cheapest,
   required bool fastest,
 }) {
   if (!cheapest && !fastest) return true;
-  if (highlight == null) return false;
-  final matchCheap = cheapest &&
-      (highlight == TripHighlight.cheapest ||
-          highlight == TripHighlight.bestDeal);
-  final matchFast = fastest &&
-      (highlight == TripHighlight.fastest ||
-          highlight == TripHighlight.bestDeal);
+  if (highlight == null || !highlight.hasAny) return false;
+  final matchCheap = cheapest && highlight.isCheapest;
+  final matchFast = fastest && highlight.isFastest;
   return matchCheap || matchFast;
 }

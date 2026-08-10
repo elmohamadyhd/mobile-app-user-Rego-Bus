@@ -67,7 +67,7 @@ String formatTimeOfDay(TimeOfDay time) {
 List<BusTripSummary> applyBusTripFilters(
   List<BusTripSummary> trips,
   BusTripFilters filters, {
-  Map<String, TripHighlight> highlights = const {},
+  Map<String, TripHighlights> highlights = const {},
 }) {
   if (!filters.isActive) return trips;
   return trips
@@ -78,7 +78,7 @@ List<BusTripSummary> applyBusTripFilters(
 bool _matches(
   BusTripSummary trip,
   BusTripFilters filters, {
-  required Map<String, TripHighlight> highlights,
+  required Map<String, TripHighlights> highlights,
 }) {
   if (filters.operators.isNotEmpty &&
       !filters.operators.contains(trip.operatorName)) {
