@@ -98,6 +98,8 @@ void main() {
         (body['destination'] as Map)['date'],
         '2026-12-20 22:00',
       );
+      expect((body['departure'] as Map)['name'], 'A');
+      expect((body['destination'] as Map)['name'], 'B');
     });
 
     test('orderStatusKind maps paid and cancelled', () {

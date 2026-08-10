@@ -25,9 +25,11 @@ abstract final class CarDtoMapper {
       departureLatitude: params.from.latitude.toString(),
       departureLongitude: params.from.longitude.toString(),
       departureDate: depart,
+      departureName: params.from.label,
       destinationLatitude: params.to.latitude.toString(),
       destinationLongitude: params.to.longitude.toString(),
       destinationDate: destinationDate,
+      destinationName: params.to.label,
     );
   }
 
@@ -39,11 +41,13 @@ abstract final class CarDtoMapper {
         'latitude': req.departureLatitude,
         'longitude': req.departureLongitude,
         'date': req.departureDate,
+        'name': req.departureName,
       },
       'destination': {
         'latitude': req.destinationLatitude,
         'longitude': req.destinationLongitude,
         'date': req.destinationDate,
+        'name': req.destinationName,
       },
     };
   }

@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 
+import 'package:safaria/core/places/place_name_resolver.dart';
 import 'package:safaria/core/places/place_prediction.dart';
 import 'package:safaria/features/car/domain/entities/car_place.dart';
 
@@ -118,7 +119,8 @@ class PlacesClient {
       options: Options(
         headers: {
           ..._apiKeyHeaders,
-          'X-Goog-FieldMask': 'location,formattedAddress,displayName',
+          'X-Goog-FieldMask':
+              'location,formattedAddress,displayName,addressComponents',
         },
       ),
     );
@@ -135,18 +137,22 @@ class PlacesClient {
       throw StateError('Place details missing location');
     }
 
-    var label = data['formattedAddress']?.toString() ?? '';
-    if (label.isEmpty) {
-      final displayName = data['displayName'];
-      if (displayName is Map<String, dynamic>) {
-        label = displayName['text']?.toString() ?? '';
-      }
+    String? knownName;
+    final displayName = data['displayName'];
+    if (displayName is Map<String, dynamic>) {
+      knownName = displayName['text']?.toString();
     }
+
+    final parts = _streetAndCityFromPlacesComponents(data['addressComponents']);
 
     return CarPlace(
       latitude: lat.toDouble(),
       longitude: lng.toDouble(),
-      label: label,
+      label: PlaceNameResolver.resolve(
+        knownName: knownName,
+        street: parts.street,
+        city: parts.city,
+      ),
     );
   }
 
@@ -176,20 +182,74 @@ class PlacesClient {
     if (results is List && results.isNotEmpty) {
       final first = results.first;
       if (first is Map<String, dynamic>) {
-        final label = first['formatted_address']?.toString();
-        if (label != null && label.isNotEmpty) {
-          return CarPlace(
-            latitude: latitude,
-            longitude: longitude,
-            label: label,
-          );
-        }
+        final parts = _streetAndCityFromGeocodeComponents(
+          first['address_components'],
+        );
+        return CarPlace(
+          latitude: latitude,
+          longitude: longitude,
+          label: PlaceNameResolver.resolve(
+            street: parts.street,
+            city: parts.city,
+          ),
+        );
       }
     }
     return CarPlace(
       latitude: latitude,
       longitude: longitude,
       label: '',
+    );
+  }
+
+  static ({String? street, String? city}) _streetAndCityFromPlacesComponents(
+    Object? raw,
+  ) {
+    if (raw is! List) return (street: null, city: null);
+    String? street;
+    String? locality;
+    String? admin2;
+    String? admin1;
+    for (final item in raw.whereType<Map<String, dynamic>>()) {
+      final types = item['types'];
+      if (types is! List) continue;
+      final typeSet = types.map((e) => e.toString()).toSet();
+      final text = item['longText']?.toString() ?? item['shortText']?.toString();
+      if (text == null || text.isEmpty) continue;
+      if (typeSet.contains('route')) street ??= text;
+      if (typeSet.contains('locality')) locality ??= text;
+      if (typeSet.contains('administrative_area_level_2')) admin2 ??= text;
+      if (typeSet.contains('administrative_area_level_1')) admin1 ??= text;
+    }
+    return (
+      street: street,
+      city: locality ?? admin2 ?? admin1,
+    );
+  }
+
+  static ({String? street, String? city}) _streetAndCityFromGeocodeComponents(
+    Object? raw,
+  ) {
+    if (raw is! List) return (street: null, city: null);
+    String? street;
+    String? locality;
+    String? admin2;
+    String? admin1;
+    for (final item in raw.whereType<Map<String, dynamic>>()) {
+      final types = item['types'];
+      if (types is! List) continue;
+      final typeSet = types.map((e) => e.toString()).toSet();
+      final text =
+          item['long_name']?.toString() ?? item['short_name']?.toString();
+      if (text == null || text.isEmpty) continue;
+      if (typeSet.contains('route')) street ??= text;
+      if (typeSet.contains('locality')) locality ??= text;
+      if (typeSet.contains('administrative_area_level_2')) admin2 ??= text;
+      if (typeSet.contains('administrative_area_level_1')) admin1 ??= text;
+    }
+    return (
+      street: street,
+      city: locality ?? admin2 ?? admin1,
     );
   }
 }

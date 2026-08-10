@@ -35,13 +35,23 @@ void main() {
       expect(results.first.description, contains('Cairo'));
     });
 
-    test('placeDetails resolves lat/lng and label from Places API (New)',
-        () async {
+    test('placeDetails prefers displayName as known place name', () async {
       final dio = Dio();
       dio.httpClientAdapter = _FakeAdapter({
         '/v1/places/abc': {
-          'formattedAddress': 'Cairo Festival City',
+          'displayName': {'text': 'Cairo Festival City'},
+          'formattedAddress': 'Ring Road, New Cairo, Egypt',
           'location': {'latitude': 30.03, 'longitude': 31.42},
+          'addressComponents': [
+            {
+              'longText': 'Ring Road',
+              'types': ['route'],
+            },
+            {
+              'longText': 'New Cairo',
+              'types': ['locality', 'political'],
+            },
+          ],
         },
       });
 
@@ -57,7 +67,77 @@ void main() {
       expect(place.longitude, 31.42);
     });
 
-    test('reverseGeocode uses Geocoding API', () async {
+    test('placeDetails falls back to street and city', () async {
+      final dio = Dio();
+      dio.httpClientAdapter = _FakeAdapter({
+        '/v1/places/xyz': {
+          'location': {'latitude': 30.04, 'longitude': 31.24},
+          'addressComponents': [
+            {
+              'longText': 'Nile Corniche',
+              'types': ['route'],
+            },
+            {
+              'longText': 'Cairo',
+              'types': ['locality', 'political'],
+            },
+          ],
+        },
+      });
+
+      final client = PlacesClient(placesDio: dio, apiKey: 'test-key');
+      final place = await client.placeDetails(
+        placeId: 'xyz',
+        languageCode: 'en',
+        sessionToken: 'sess-1',
+      );
+
+      expect(place.label, 'Nile Corniche, Cairo');
+    });
+
+    test('reverseGeocode builds street and city from components', () async {
+      final dio = Dio();
+      dio.httpClientAdapter = _FakeAdapter({
+        'geocode/json': {
+          'status': 'OK',
+          'results': [
+            {
+              'formatted_address': 'Nile Corniche, Cairo, Egypt',
+              'address_components': [
+                {
+                  'long_name': 'Nile Corniche',
+                  'short_name': 'Nile Corniche',
+                  'types': ['route'],
+                },
+                {
+                  'long_name': 'Cairo',
+                  'short_name': 'Cairo',
+                  'types': ['locality', 'political'],
+                },
+                {
+                  'long_name': 'Egypt',
+                  'short_name': 'EG',
+                  'types': ['country', 'political'],
+                },
+              ],
+            },
+          ],
+        },
+      });
+
+      final client = PlacesClient(geocodeDio: dio, apiKey: 'test-key');
+      final place = await client.reverseGeocode(
+        latitude: 30.04,
+        longitude: 31.24,
+        languageCode: 'en',
+      );
+
+      expect(place.label, 'Nile Corniche, Cairo');
+      expect(place.latitude, 30.04);
+      expect(place.longitude, 31.24);
+    });
+
+    test('reverseGeocode empty label when components missing', () async {
       final dio = Dio();
       dio.httpClientAdapter = _FakeAdapter({
         'geocode/json': {
@@ -75,9 +155,7 @@ void main() {
         languageCode: 'en',
       );
 
-      expect(place.label, 'Cairo, Egypt');
-      expect(place.latitude, 30.04);
-      expect(place.longitude, 31.24);
+      expect(place.label, '');
     });
 
     test('newSessionToken is URL-safe and at most 36 characters', () {

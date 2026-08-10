@@ -325,9 +325,11 @@ class CarBookingNotifier extends Notifier<CarBookingState> {
               departureLatitude: order.from.latitude.toString(),
               departureLongitude: order.from.longitude.toString(),
               departureDate: order.departureDate ?? '',
+              departureName: trip.fromLocation.name,
               destinationLatitude: order.to.latitude.toString(),
               destinationLongitude: order.to.longitude.toString(),
               destinationDate: order.returnDate ?? order.departureDate ?? '',
+              destinationName: trip.toLocation.name,
             );
       final paid = await _repo.payOrder(orderId: order.id, request: request);
       state = state.copyWith(order: paid);
