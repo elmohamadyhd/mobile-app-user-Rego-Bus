@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' hide TextDirection;
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
+import 'package:safaria/core/location/device_location_gateway.dart';
+import 'package:safaria/core/places/places_providers.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
@@ -17,7 +20,6 @@ import 'package:safaria/features/car/presentation/widgets/car_place_field.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/models/trip_type.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
-import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 class CarSearchForm extends ConsumerStatefulWidget {
   const CarSearchForm({
@@ -61,6 +63,22 @@ class _CarSearchFormState extends ConsumerState<CarSearchForm> {
     _returnDate = dateOnly(_travelDate.add(const Duration(days: 7)));
     _departTime = defaultDepartTimeForDate(_travelDate);
     _returnTime = defaultDepartTimeForDate(_returnDate);
+    // Prefill pickup only when permission is already granted — never prompt.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_prefillPickupIfPermitted());
+    });
+  }
+
+  Future<void> _prefillPickupIfPermitted() async {
+    if (!mounted || _from != null) return;
+    final place =
+        await ref.read(deviceLocationGatewayProvider).resolveCurrentPlace(
+              places: ref.read(placesClientProvider),
+              languageCode: Localizations.localeOf(context).languageCode,
+              requestIfNeeded: false,
+            );
+    if (!mounted || place == null || _from != null) return;
+    setState(() => _from = place);
   }
 
   // `_travelDate`/`_returnDate` are cached fields, so if the screen stays

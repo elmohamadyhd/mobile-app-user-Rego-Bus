@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'package:safaria/core/location/device_location_gateway.dart';
 import 'package:safaria/core/places/google_maps_capabilities.dart';
 import 'package:safaria/core/places/place_prediction.dart';
 import 'package:safaria/core/places/places_client.dart';
@@ -93,8 +93,12 @@ class _MapPlacePickerScreenState extends ConsumerState<MapPlacePickerScreen>
           setState(() {});
         });
       }
+      // Never prompt here — only center if permission is already granted.
+      // Permission is requested when the user enters the pickup search field.
       if (initial == null && widget.args.showUseMyLocation) {
-        unawaited(_centerOnMyLocation(silent: true));
+        unawaited(
+          _centerOnMyLocation(silent: true, requestIfNeeded: false),
+        );
       } else if (_draft?.label.isEmpty ?? false) {
         unawaited(_reverseGeocode());
       }
@@ -324,33 +328,26 @@ class _MapPlacePickerScreenState extends ConsumerState<MapPlacePickerScreen>
     }
   }
 
-  Future<void> _centerOnMyLocation({bool silent = false}) async {
+  Future<void> _centerOnMyLocation({
+    bool silent = false,
+    bool requestIfNeeded = true,
+  }) async {
     if (_locating) return;
     setState(() => _locating = true);
     try {
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        return;
-      }
-      final position = await Geolocator.getCurrentPosition();
-      if (!mounted) return;
-      final gps = LatLng(position.latitude, position.longitude);
+      final place =
+          await ref.read(deviceLocationGatewayProvider).resolveCurrentPlace(
+                places: ref.read(placesClientProvider),
+                languageCode: Localizations.localeOf(context).languageCode,
+                requestIfNeeded: requestIfNeeded,
+              );
+      if (!mounted || place == null) return;
+      final gps = LatLng(place.latitude, place.longitude);
       _center = gps;
-      _setDraft(
-        MapPlace(
-          latitude: gps.latitude,
-          longitude: gps.longitude,
-          label: _draft?.label ?? '',
-        ),
-      );
+      _setDraft(place);
       if (GoogleMapsCapabilities.mapRenderingAvailable) {
         await _animateTo(gps);
       }
-      await _reverseGeocode();
     } catch (_) {
       if (!silent && mounted) {
         // Permission / GPS failures are silent per spec.
@@ -527,8 +524,7 @@ class _MapPlacePickerScreenState extends ConsumerState<MapPlacePickerScreen>
     }
 
     final panelPeek = MediaQuery.sizeOf(context).height * _sheetPeek;
-    final sheetMin =
-        keyboardVisible ? _sheetMinKeyboard : _sheetMin;
+    final sheetMin = keyboardVisible ? _sheetMinKeyboard : _sheetMin;
     final sheetMax = keyboardVisible
         ? _sheetMaxKeyboard
         : (_isSearching ? _sheetExpanded : _sheetMaxIdle);
