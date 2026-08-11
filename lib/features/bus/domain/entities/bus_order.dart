@@ -60,5 +60,7 @@ abstract class BusOrder with _$BusOrder {
     String? tripId,
     String? gatewayOrderId,
     String? tripType,
+    @Default(false) bool canReview,
+    int? reviewRating,
   }) = _BusOrder;
 }

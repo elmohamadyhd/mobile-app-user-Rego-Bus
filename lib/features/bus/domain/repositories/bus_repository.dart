@@ -109,4 +109,11 @@ abstract interface class BusRepository {
 
   /// Cancels a cancellable order. Throws [ApiException] on failure.
   Future<void> cancelOrder(String orderId);
+
+  /// Submits a 1–5 star review for a completed order.
+  Future<void> submitReview({
+    required String orderId,
+    required int rating,
+    String? comment,
+  });
 }

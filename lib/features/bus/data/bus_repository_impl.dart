@@ -127,6 +127,22 @@ class BusRepositoryImpl implements BusRepository {
     });
   }
 
+  @override
+  Future<void> submitReview({
+    required String orderId,
+    required int rating,
+    String? comment,
+  }) {
+    return _guard(() async {
+      final body = await _api.submitReview(
+        orderId: orderId,
+        rating: rating,
+        comment: comment,
+      );
+      BusDtoMapper.ensureSuccess(body as Map<String, dynamic>);
+    });
+  }
+
   String _isoDate(DateTime date) {
     final y = date.year.toString().padLeft(4, '0');
     final m = date.month.toString().padLeft(2, '0');

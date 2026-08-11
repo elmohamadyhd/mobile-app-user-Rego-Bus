@@ -35,6 +35,9 @@ class FakeBusRepository implements BusRepository {
   bool listOrdersShouldThrow = false;
   List<String> cancelOrderCalls = [];
   bool cancelOrderShouldThrow = false;
+  final List<({String orderId, int rating, String? comment})> submitReviewCalls =
+      [];
+  bool submitReviewShouldThrow = false;
   BusOrder? orderByIdResult;
   Completer<BusOrder>? orderByIdCompleter;
   bool orderByIdShouldThrow = false;
@@ -146,6 +149,23 @@ class FakeBusRepository implements BusRepository {
     cancelOrderCalls.add(orderId);
     if (cancelOrderShouldThrow) {
       throw const ApiException('Cannot cancel', statusCode: 422);
+    }
+  }
+
+  @override
+  Future<void> submitReview({
+    required String orderId,
+    required int rating,
+    String? comment,
+  }) async {
+    submitReviewCalls.add(
+      (orderId: orderId, rating: rating, comment: comment),
+    );
+    if (submitReviewShouldThrow) {
+      throw const ApiException(
+        'Order must be completed to review',
+        statusCode: 400,
+      );
     }
   }
 

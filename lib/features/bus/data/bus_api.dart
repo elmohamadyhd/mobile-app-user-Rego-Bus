@@ -107,4 +107,21 @@ class BusApi {
     final res = await _dio.post(cancelOrderPath(orderId));
     return res.data;
   }
+
+  Future<dynamic> submitReview({
+    required String orderId,
+    required int rating,
+    String? comment,
+  }) async {
+    final body = <String, dynamic>{'rating': '$rating'};
+    final trimmed = comment?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) {
+      body['comment'] = trimmed;
+    }
+    final res = await _dio.post(
+      '/profile/buses/orders/$orderId/review',
+      data: body,
+    );
+    return res.data;
+  }
 }

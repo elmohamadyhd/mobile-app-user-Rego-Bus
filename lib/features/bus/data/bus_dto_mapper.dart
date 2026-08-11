@@ -8,6 +8,7 @@ import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/seat_map.dart';
 import 'package:safaria/features/bus/domain/repositories/bus_repository.dart';
 import 'package:safaria/features/bus/domain/seat_map_normalizer.dart';
+import 'package:safaria/shared/utils/order_review_mapping.dart';
 
 abstract final class BusDtoMapper {
   static void ensureSuccess(Map<String, dynamic> envelope) {
@@ -397,6 +398,8 @@ abstract final class BusDtoMapper {
       tripId: _string(json['trip_id']),
       gatewayOrderId: _string(json['gateway_order_id']),
       tripType: _string(json['trip_type']),
+      canReview: json['can_review'] == true,
+      reviewRating: parseOrderReviewRating(json['review']),
     );
   }
 
