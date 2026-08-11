@@ -37,20 +37,26 @@ class BusOrderCard extends StatelessWidget {
 
   static const double _cardActionHeight = 40;
   static const double _cardActionGap = AppSpacing.sm;
+  static const double _notchRadius = 10;
+  // Keeps the tear above the bottom edge when there are no actions so every
+  // card shares the same boarding-pass silhouette.
+  static const double _decorativeStubHeight = AppSpacing.lg;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final stubHeight = _stubHeightFor(order);
+    final actionsHeight = _actionsStubHeightFor(order);
+    final hasActions = actionsHeight > 0;
+    final stubHeight = hasActions ? actionsHeight : _decorativeStubHeight;
     final shape = TicketBorder(
       radius: AppRadius.card,
-      notchRadius: 10,
-      notchOffsetFromBottom: stubHeight > 0 ? stubHeight : 1,
+      notchRadius: _notchRadius,
+      notchOffsetFromBottom: stubHeight,
       dashColor: AppColors.border,
     );
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -153,25 +159,26 @@ class BusOrderCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (stubHeight > 0)
-                SizedBox(
-                  height: stubHeight,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      AppSpacing.md,
-                      AppSpacing.xs,
-                      AppSpacing.md,
-                      AppSpacing.sm,
-                    ),
-                    child: _OrderActions(
-                      order: order,
-                      onPay: onPay,
-                      onOpenETicket: onOpenETicket,
-                      onCancel: onCancel,
-                      onRate: onRate,
-                    ),
-                  ),
-                ),
+              SizedBox(
+                height: stubHeight,
+                child: hasActions
+                    ? Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          AppSpacing.md,
+                          AppSpacing.xs,
+                          AppSpacing.md,
+                          AppSpacing.sm,
+                        ),
+                        child: _OrderActions(
+                          order: order,
+                          onPay: onPay,
+                          onOpenETicket: onOpenETicket,
+                          onCancel: onCancel,
+                          onRate: onRate,
+                        ),
+                      )
+                    : null,
+              ),
             ],
           ),
         ),
@@ -182,7 +189,7 @@ class BusOrderCard extends StatelessWidget {
   static bool _showsReviewUi(BusOrder order) =>
       busOrderCanRate(order) || order.reviewRating != null;
 
-  static double _stubHeightFor(BusOrder order) {
+  static double _actionsStubHeightFor(BusOrder order) {
     final showPay = order.statusKind == BusOrderStatusKind.pending &&
         (order.gatewayCheckoutUrl ?? '').isNotEmpty;
     final showETicket = order.statusKind == BusOrderStatusKind.confirmed &&

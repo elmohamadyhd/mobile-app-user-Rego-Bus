@@ -19,6 +19,7 @@ import 'package:safaria/features/flight/domain/utils/flight_order_status.dart';
 import 'package:safaria/features/flight/presentation/flight_routes.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_orders_provider.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/order_rate_trip_button.dart';
 import 'package:safaria/shared/widgets/order_rated_badge.dart';
@@ -216,10 +217,15 @@ class _OrdersSkeleton extends StatelessWidget {
       baseColor: AppColors.hairline,
       highlightColor: AppColors.bgElevated,
       child: Container(
-        height: 140,
-        decoration: BoxDecoration(
+        height: 160,
+        decoration: const ShapeDecoration(
           color: AppColors.bgCard,
-          borderRadius: BorderRadius.circular(AppRadius.card),
+          shape: FlightTicketBorder(
+            radius: AppRadius.card,
+            notchRadius: 10,
+            notchOffsetFromBottom: AppSpacing.lg,
+            dashColor: AppColors.border,
+          ),
         ),
       ),
     );
@@ -247,6 +253,13 @@ class _FlightOrderCard extends ConsumerWidget {
 
   final FlightOrder order;
 
+  static const double _cardActionHeight = 40;
+  static const double _cardActionGap = AppSpacing.sm;
+  static const double _notchRadius = 10;
+  // Keeps the tear above the bottom edge when there are no actions so every
+  // card shares the same boarding-pass silhouette.
+  static const double _decorativeStubHeight = AppSpacing.lg;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -256,9 +269,23 @@ class _FlightOrderCard extends ConsumerWidget {
     final rated = order.reviewRating;
     final firstSegment = order.segments.isEmpty ? null : order.segments.first;
     final departure = firstSegment?.departureDateTime;
+    final showPay = !paid;
+    final showReview = canRate || rated != null;
+    final actionsHeight = _actionsStubHeightFor(
+      showPay: showPay,
+      showReview: showReview,
+    );
+    final hasActions = actionsHeight > 0;
+    final stubHeight = hasActions ? actionsHeight : _decorativeStubHeight;
+    final shape = FlightTicketBorder(
+      radius: AppRadius.card,
+      notchRadius: _notchRadius,
+      notchOffsetFromBottom: stubHeight,
+      dashColor: AppColors.border,
+    );
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -271,92 +298,128 @@ class _FlightOrderCard extends ConsumerWidget {
       ),
       child: Material(
         color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(AppRadius.card),
+        shape: shape,
         clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: Text(
-                      firstSegment == null
-                          ? ''
-                          : '${firstSegment.origin} → ${firstSegment.destination}',
-                      style: AppTypography.title.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          firstSegment == null
+                              ? ''
+                              : '${firstSegment.origin} → ${firstSegment.destination}',
+                          style: AppTypography.title.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: AppSpacing.sm),
+                      _StatusBadge(paid: paid),
+                    ],
                   ),
-                  const SizedBox(width: AppSpacing.sm),
-                  _StatusBadge(paid: paid),
-                ],
-              ),
-              if (departure != null) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Row(
-                  children: [
-                    const Icon(
-                      PhosphorIconsLight.calendarBlank,
-                      size: 16,
-                      color: AppColors.textMuted,
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      formatSearchDateTimeCell(departure, localeName),
-                      style: AppTypography.body.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  if (departure != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        const Icon(
+                          PhosphorIconsLight.calendarBlank,
+                          size: 16,
+                          color: AppColors.textMuted,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          formatSearchDateTimeCell(departure, localeName),
+                          style: AppTypography.body.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ],
-              const SizedBox(height: AppSpacing.sm),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.tripResultsFareLabel,
-                    style: AppTypography.caption
-                        .copyWith(color: AppColors.textSecondary),
-                  ),
-                  Text(
-                    '${order.totalAmount.toStringAsFixed(0)} ${order.currency}',
-                    textDirection: TextDirection.ltr,
-                    style: AppTypography.title
-                        .copyWith(fontWeight: FontWeight.w700),
+                  const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.tripResultsFareLabel,
+                        style: AppTypography.caption
+                            .copyWith(color: AppColors.textSecondary),
+                      ),
+                      Text(
+                        '${order.totalAmount.toStringAsFixed(0)} ${order.currency}',
+                        textDirection: TextDirection.ltr,
+                        style: AppTypography.title
+                            .copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              if (!paid) ...[
-                const SizedBox(height: AppSpacing.sm),
-                PrimaryButton(
-                  label: l10n.ticketActionPay,
-                  compact: true,
-                  onPressed: () => context.push(FlightRoutes.pay, extra: order),
-                ),
-              ],
-              if (canRate) ...[
-                const SizedBox(height: AppSpacing.sm),
-                OrderRateTripButton(
-                  onPressed: () => unawaited(_rate(context, ref, order)),
-                ),
-              ] else if (rated != null) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: OrderRatedBadge(rating: rated),
-                ),
-              ],
-            ],
-          ),
+            ),
+            SizedBox(
+              height: stubHeight,
+              child: hasActions
+                  ? Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        AppSpacing.md,
+                        AppSpacing.xs,
+                        AppSpacing.md,
+                        AppSpacing.sm,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (showPay)
+                            PrimaryButton(
+                              label: l10n.ticketActionPay,
+                              compact: true,
+                              onPressed: () =>
+                                  context.push(FlightRoutes.pay, extra: order),
+                            ),
+                          if (showPay && showReview)
+                            const SizedBox(height: _cardActionGap),
+                          if (canRate)
+                            OrderRateTripButton(
+                              onPressed: () =>
+                                  unawaited(_rate(context, ref, order)),
+                            )
+                          else if (rated != null)
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: OrderRatedBadge(rating: rated),
+                            ),
+                        ],
+                      ),
+                    )
+                  : null,
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  static double _actionsStubHeightFor({
+    required bool showPay,
+    required bool showReview,
+  }) {
+    final actionCount = (showPay ? 1 : 0) + (showReview ? 1 : 0);
+    if (actionCount == 0) return 0;
+
+    var height = AppSpacing.xs + AppSpacing.sm;
+    height += actionCount * _cardActionHeight;
+    if (actionCount > 1) height += _cardActionGap;
+    return height;
   }
 
   Future<void> _rate(

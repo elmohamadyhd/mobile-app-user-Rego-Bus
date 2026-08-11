@@ -18,6 +18,7 @@ import 'package:safaria/features/car/presentation/providers/car_booking_provider
 import 'package:safaria/features/car/presentation/providers/car_orders_provider.dart';
 import 'package:safaria/features/car/presentation/widgets/car_order_card.dart';
 import 'package:safaria/features/car/presentation/widgets/car_order_detail_sheet.dart';
+import 'package:safaria/features/car/presentation/widgets/car_ticket_shell.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/order_review_sheet.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
@@ -168,10 +169,15 @@ class _OrdersSkeleton extends StatelessWidget {
       baseColor: AppColors.hairline,
       highlightColor: AppColors.bgElevated,
       child: Container(
-        height: 140,
-        decoration: BoxDecoration(
+        height: 160,
+        decoration: const ShapeDecoration(
           color: AppColors.bgCard,
-          borderRadius: BorderRadius.circular(AppRadius.card),
+          shape: CarTicketBorder(
+            radius: AppRadius.card,
+            notchRadius: 10,
+            notchOffsetFromBottom: AppSpacing.lg,
+            dashColor: AppColors.border,
+          ),
         ),
       ),
     );

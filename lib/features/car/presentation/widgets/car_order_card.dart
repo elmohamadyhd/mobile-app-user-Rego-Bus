@@ -80,6 +80,10 @@ class CarOrderCard extends StatelessWidget {
 
   static const double _cardActionHeight = 40;
   static const double _cardActionGap = AppSpacing.sm;
+  static const double _notchRadius = 10;
+  // Keeps the tear above the bottom edge when there are no actions so every
+  // card shares the same boarding-pass silhouette.
+  static const double _decorativeStubHeight = AppSpacing.lg;
 
   @override
   Widget build(BuildContext context) {
@@ -95,21 +99,23 @@ class CarOrderCard extends StatelessWidget {
     final canRate = carOrderCanRate(order);
     final rated = order.reviewRating;
     final showReview = canRate || rated != null;
-    final stubHeight = _stubHeightFor(
+    final actionsHeight = _actionsStubHeightFor(
       showPay: showPay,
       showVoucher: showVoucher,
       showCancel: showCancel,
       showReview: showReview,
     );
+    final hasActions = actionsHeight > 0;
+    final stubHeight = hasActions ? actionsHeight : _decorativeStubHeight;
     final shape = CarTicketBorder(
       radius: AppRadius.card,
-      notchRadius: 10,
-      notchOffsetFromBottom: stubHeight > 0 ? stubHeight : 1,
+      notchRadius: _notchRadius,
+      notchOffsetFromBottom: stubHeight,
       dashColor: AppColors.border,
     );
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -174,66 +180,67 @@ class CarOrderCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (stubHeight > 0)
-              SizedBox(
-                height: stubHeight,
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(
-                    AppSpacing.md,
-                    AppSpacing.xs,
-                    AppSpacing.md,
-                    AppSpacing.sm,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (showPay)
-                        PrimaryButton(
-                          label: l10n.ticketActionPay,
-                          compact: true,
-                          onPressed: onPay,
-                        ),
-                      if (showVoucher) ...[
-                        if (showPay) const SizedBox(height: _cardActionGap),
-                        PrimaryButton(
-                          label: l10n.carTicketActionVoucher,
-                          compact: true,
-                          onPressed: onOpenVoucher,
-                        ),
-                      ],
-                      if (showCancel) ...[
-                        if (showPay || showVoucher)
-                          const SizedBox(height: _cardActionGap),
-                        PrimaryButton(
-                          label: l10n.ticketCancelConfirm,
-                          compact: true,
-                          variant: PrimaryButtonVariant.ghost,
-                          onPressed: onCancel,
-                        ),
-                      ],
-                      if (showReview) ...[
-                        if (showPay || showVoucher || showCancel)
-                          const SizedBox(height: _cardActionGap),
-                        if (canRate && onRate != null)
-                          OrderRateTripButton(onPressed: onRate!)
-                        else if (rated != null)
-                          Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: OrderRatedBadge(rating: rated),
-                          ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
+            SizedBox(
+              height: stubHeight,
+              child: hasActions
+                  ? Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        AppSpacing.md,
+                        AppSpacing.xs,
+                        AppSpacing.md,
+                        AppSpacing.sm,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (showPay)
+                            PrimaryButton(
+                              label: l10n.ticketActionPay,
+                              compact: true,
+                              onPressed: onPay,
+                            ),
+                          if (showVoucher) ...[
+                            if (showPay) const SizedBox(height: _cardActionGap),
+                            PrimaryButton(
+                              label: l10n.carTicketActionVoucher,
+                              compact: true,
+                              onPressed: onOpenVoucher,
+                            ),
+                          ],
+                          if (showCancel) ...[
+                            if (showPay || showVoucher)
+                              const SizedBox(height: _cardActionGap),
+                            PrimaryButton(
+                              label: l10n.ticketCancelConfirm,
+                              compact: true,
+                              variant: PrimaryButtonVariant.ghost,
+                              onPressed: onCancel,
+                            ),
+                          ],
+                          if (showReview) ...[
+                            if (showPay || showVoucher || showCancel)
+                              const SizedBox(height: _cardActionGap),
+                            if (canRate && onRate != null)
+                              OrderRateTripButton(onPressed: onRate!)
+                            else if (rated != null)
+                              Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: OrderRatedBadge(rating: rated),
+                              ),
+                          ],
+                        ],
+                      ),
+                    )
+                  : null,
+            ),
           ],
         ),
       ),
     );
   }
 
-  static double _stubHeightFor({
+  static double _actionsStubHeightFor({
     required bool showPay,
     required bool showVoucher,
     required bool showCancel,
