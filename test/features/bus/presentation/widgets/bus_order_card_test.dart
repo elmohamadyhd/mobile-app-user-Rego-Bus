@@ -10,6 +10,8 @@ import 'package:safaria/l10n/app_localizations.dart';
 BusOrder _order({
   BusOrderStatusKind statusKind = BusOrderStatusKind.pending,
   bool canCancel = true,
+  bool canReview = false,
+  int? reviewRating,
   String? cancelUrl =
       'https://demo.safaria.travel/api/v1/buses/orders/1475/cancel',
   String? gatewayCheckoutUrl = 'https://demo.MyFatoorah.com/pay',
@@ -45,6 +47,8 @@ BusOrder _order({
       total: 'EGP 219.35',
       currency: 'EGP',
     ),
+    canReview: canReview,
+    reviewRating: reviewRating,
   );
 }
 
@@ -55,6 +59,7 @@ Future<void> _pumpCard(
   VoidCallback? onPay,
   VoidCallback? onOpenETicket,
   VoidCallback? onCancel,
+  VoidCallback? onRate,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -68,6 +73,7 @@ Future<void> _pumpCard(
           onPay: onPay ?? () {},
           onOpenETicket: onOpenETicket ?? () {},
           onCancel: onCancel ?? () {},
+          onRate: onRate,
         ),
       ),
     ),
@@ -217,5 +223,46 @@ void main() {
     final gap = cancelRect.top - payRect.bottom;
 
     expect(gap, greaterThanOrEqualTo(AppSpacing.sm));
+  });
+
+  testWidgets('confirmed + canReview shows Rate trip', (tester) async {
+    await _pumpCard(
+      tester,
+      _order(
+        statusKind: BusOrderStatusKind.confirmed,
+        canCancel: false,
+        canReview: true,
+      ),
+      onRate: () {},
+    );
+
+    expect(find.text('Rate trip'), findsOneWidget);
+  });
+
+  testWidgets('reviewRating shows Rated badge without Rate trip',
+      (tester) async {
+    await _pumpCard(
+      tester,
+      _order(
+        statusKind: BusOrderStatusKind.confirmed,
+        canCancel: false,
+        canReview: false,
+        reviewRating: 5,
+      ),
+    );
+
+    expect(find.text('Rate trip'), findsNothing);
+    expect(find.textContaining('5'), findsWidgets);
+  });
+
+  testWidgets('pending never shows Rate trip even if canReview',
+      (tester) async {
+    await _pumpCard(
+      tester,
+      _order(canReview: true),
+      onRate: () {},
+    );
+
+    expect(find.text('Rate trip'), findsNothing);
   });
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,12 +8,17 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_order.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
+import 'package:safaria/features/bus/domain/utils/bus_order_review.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
 import 'package:safaria/features/bus/presentation/widgets/open_stop_in_google_maps.dart';
 import 'package:safaria/features/bus/presentation/widgets/operator_mark.dart';
 import 'package:safaria/features/bus/presentation/widgets/order_info_row.dart';
 import 'package:safaria/features/bus/presentation/widgets/order_status_badge.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/order_rate_trip_button.dart';
+import 'package:safaria/shared/widgets/order_rated_badge.dart';
+import 'package:safaria/shared/widgets/order_review_sheet.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Opens the order-detail sheet, seeded instantly from [order] (the row
@@ -29,6 +36,25 @@ Future<void> showBusOrderDetailSheet(BuildContext context, BusOrder order) {
           BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
     ),
     builder: (context) => _BusOrderDetailSheet(seed: order),
+  );
+}
+
+Future<void> _rateFromDetail(
+  BuildContext context,
+  WidgetRef ref,
+  BusOrder order,
+) async {
+  await showOrderReviewSheet(
+    context,
+    onSubmit: (rating, comment) async {
+      await ref.read(busRepositoryProvider).submitReview(
+            orderId: order.orderId,
+            rating: rating,
+            comment: comment,
+          );
+      await ref.read(busOrdersProvider.notifier).refresh();
+      ref.invalidate(busOrderDetailProvider(order.orderId));
+    },
   );
 }
 
@@ -97,6 +123,23 @@ class _BusOrderDetailSheet extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _HeaderSection(order: order),
+                    if (busOrderCanRate(order) ||
+                        order.reviewRating != null) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      if (busOrderCanRate(order))
+                        OrderRateTripButton(
+                          onPressed: () => unawaited(
+                            _rateFromDetail(context, ref, order),
+                          ),
+                        )
+                      else
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: OrderRatedBadge(
+                            rating: order.reviewRating!,
+                          ),
+                        ),
+                    ],
                     if (hasRoute) ...[
                       const SizedBox(height: AppSpacing.lg),
                       _RouteSection(order: order, l10n: l10n),

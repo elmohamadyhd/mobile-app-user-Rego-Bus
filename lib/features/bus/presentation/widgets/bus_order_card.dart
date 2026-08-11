@@ -4,11 +4,14 @@ import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/domain/entities/bus_order.dart';
+import 'package:safaria/features/bus/domain/utils/bus_order_review.dart';
 import 'package:safaria/features/bus/presentation/widgets/operator_mark.dart';
 import 'package:safaria/features/bus/presentation/widgets/order_info_row.dart';
 import 'package:safaria/features/bus/presentation/widgets/order_status_badge.dart';
 import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/order_rate_trip_button.dart';
+import 'package:safaria/shared/widgets/order_rated_badge.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
@@ -22,6 +25,7 @@ class BusOrderCard extends StatelessWidget {
     required this.onPay,
     required this.onOpenETicket,
     required this.onCancel,
+    this.onRate,
   });
 
   final BusOrder order;
@@ -29,6 +33,7 @@ class BusOrderCard extends StatelessWidget {
   final VoidCallback onPay;
   final VoidCallback onOpenETicket;
   final VoidCallback onCancel;
+  final VoidCallback? onRate;
 
   static const double _cardActionHeight = 40;
   static const double _cardActionGap = AppSpacing.sm;
@@ -163,6 +168,7 @@ class BusOrderCard extends StatelessWidget {
                       onPay: onPay,
                       onOpenETicket: onOpenETicket,
                       onCancel: onCancel,
+                      onRate: onRate,
                     ),
                   ),
                 ),
@@ -173,19 +179,25 @@ class BusOrderCard extends StatelessWidget {
     );
   }
 
+  static bool _showsReviewUi(BusOrder order) =>
+      busOrderCanRate(order) || order.reviewRating != null;
+
   static double _stubHeightFor(BusOrder order) {
     final showPay = order.statusKind == BusOrderStatusKind.pending &&
         (order.gatewayCheckoutUrl ?? '').isNotEmpty;
     final showETicket = order.statusKind == BusOrderStatusKind.confirmed &&
         (order.invoiceUrl ?? '').isNotEmpty;
     final showCancel = order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
+    final showReview = _showsReviewUi(order);
     final hasSecondary = showETicket || showCancel;
-    if (!showPay && !hasSecondary) return 0;
+    if (!showPay && !hasSecondary && !showReview) return 0;
 
     var height = AppSpacing.xs + AppSpacing.sm;
     if (showPay) height += _cardActionHeight;
-    if (showPay && hasSecondary) height += _cardActionGap;
+    if (showPay && (hasSecondary || showReview)) height += _cardActionGap;
     if (hasSecondary) height += _cardActionHeight;
+    if (hasSecondary && showReview) height += _cardActionGap;
+    if (showReview) height += _cardActionHeight;
     return height;
   }
 
@@ -199,12 +211,14 @@ class _OrderActions extends StatelessWidget {
     required this.onPay,
     required this.onOpenETicket,
     required this.onCancel,
+    this.onRate,
   });
 
   final BusOrder order;
   final VoidCallback onPay;
   final VoidCallback onOpenETicket;
   final VoidCallback onCancel;
+  final VoidCallback? onRate;
 
   @override
   Widget build(BuildContext context) {
@@ -214,8 +228,11 @@ class _OrderActions extends StatelessWidget {
     final showETicket = order.statusKind == BusOrderStatusKind.confirmed &&
         (order.invoiceUrl ?? '').isNotEmpty;
     final showCancel = order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
+    final canRate = busOrderCanRate(order);
+    final rated = order.reviewRating;
+    final showReview = canRate || rated != null;
 
-    if (!showPay && !showETicket && !showCancel) {
+    if (!showPay && !showETicket && !showCancel && !showReview) {
       return const SizedBox.shrink();
     }
 
@@ -229,7 +246,7 @@ class _OrderActions extends StatelessWidget {
             onPressed: onPay,
             compact: true,
           ),
-        if (showPay && (showETicket || showCancel))
+        if (showPay && (showETicket || showCancel || showReview))
           const SizedBox(height: BusOrderCard._cardActionGap),
         if (showETicket || showCancel)
           Row(
@@ -257,6 +274,14 @@ class _OrderActions extends StatelessWidget {
                   ),
                 ),
             ],
+          ),
+        if ((showETicket || showCancel) && showReview)
+          const SizedBox(height: BusOrderCard._cardActionGap),
+        if (canRate && onRate != null) OrderRateTripButton(onPressed: onRate!),
+        if (!canRate && rated != null)
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: OrderRatedBadge(rating: rated),
           ),
       ],
     );

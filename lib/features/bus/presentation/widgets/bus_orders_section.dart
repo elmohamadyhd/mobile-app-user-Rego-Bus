@@ -14,12 +14,14 @@ import 'package:safaria/features/auth/presentation/providers/auth_providers.dart
 import 'package:safaria/features/bus/domain/entities/bus_order.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/bus/presentation/payment_webview_screen.dart';
+import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_order_card.dart';
 import 'package:safaria/features/bus/presentation/widgets/bus_order_detail_sheet.dart';
 import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/providers/ticket_pdf_providers.dart';
+import 'package:safaria/shared/widgets/order_review_sheet.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
@@ -321,10 +323,30 @@ class _OrdersList extends ConsumerWidget {
             ),
             onCancel: () =>
                 unawaited(_confirmCancel(context, ref, order.orderId)),
+            onRate: () => unawaited(_rateOrder(context, ref, order)),
           ),
       ],
     );
   }
+}
+
+Future<void> _rateOrder(
+  BuildContext context,
+  WidgetRef ref,
+  BusOrder order,
+) async {
+  await showOrderReviewSheet(
+    context,
+    onSubmit: (rating, comment) async {
+      await ref.read(busRepositoryProvider).submitReview(
+            orderId: order.orderId,
+            rating: rating,
+            comment: comment,
+          );
+      await ref.read(busOrdersProvider.notifier).refresh();
+      ref.invalidate(busOrderDetailProvider(order.orderId));
+    },
+  );
 }
 
 Future<void> _confirmCancel(
