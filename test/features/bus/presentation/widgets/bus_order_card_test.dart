@@ -112,7 +112,8 @@ void main() {
     expect(tapped, 1);
   });
 
-  testWidgets('confirmed order hides Complete payment', (tester) async {
+  testWidgets('confirmed order hides Complete payment and shows Download',
+      (tester) async {
     await _pumpCard(
       tester,
       _order(statusKind: BusOrderStatusKind.confirmed, canCancel: false),
@@ -120,6 +121,31 @@ void main() {
 
     expect(find.text('Complete payment'), findsNothing);
     expect(find.text('Download'), findsOneWidget);
+  });
+
+  testWidgets(
+      'pending order hides Download even when invoiceUrl is present',
+      (tester) async {
+    await _pumpCard(tester, _order());
+
+    expect(find.text('Complete payment'), findsOneWidget);
+    expect(find.text('Download'), findsNothing);
+  });
+
+  testWidgets(
+      'cancelled order hides Download even when invoiceUrl is present',
+      (tester) async {
+    await _pumpCard(
+      tester,
+      _order(
+        statusKind: BusOrderStatusKind.cancelled,
+        canCancel: false,
+        gatewayCheckoutUrl: null,
+      ),
+    );
+
+    expect(find.text('Complete payment'), findsNothing);
+    expect(find.text('Download'), findsNothing);
   });
 
   testWidgets('cancellable order shows Cancel and invokes onCancel',
@@ -140,12 +166,20 @@ void main() {
     expect(find.text('Complete payment'), findsOneWidget);
   });
 
-  testWidgets('order with no invoice hides the download action',
+  testWidgets('confirmed order without invoice hides the download action',
       (tester) async {
-    await _pumpCard(tester, _order(invoiceUrl: null, canCancel: false));
+    await _pumpCard(
+      tester,
+      _order(
+        statusKind: BusOrderStatusKind.confirmed,
+        invoiceUrl: null,
+        canCancel: false,
+        gatewayCheckoutUrl: null,
+      ),
+    );
 
     expect(find.text('Download'), findsNothing);
-    expect(find.text('Complete payment'), findsOneWidget);
+    expect(find.text('Complete payment'), findsNothing);
   });
 
   testWidgets('tapping the card body invokes onTap', (tester) async {
@@ -174,13 +208,13 @@ void main() {
     expect(cardTapped, 0);
   });
 
-  testWidgets('pay and download buttons have at least sm vertical gap',
+  testWidgets('pay and cancel buttons have at least sm vertical gap',
       (tester) async {
     await _pumpCard(tester, _order());
 
     final payRect = tester.getRect(find.text('Complete payment'));
-    final downloadRect = tester.getRect(find.text('Download'));
-    final gap = downloadRect.top - payRect.bottom;
+    final cancelRect = tester.getRect(find.text('Cancel'));
+    final gap = cancelRect.top - payRect.bottom;
 
     expect(gap, greaterThanOrEqualTo(AppSpacing.sm));
   });

@@ -176,7 +176,8 @@ class BusOrderCard extends StatelessWidget {
   static double _stubHeightFor(BusOrder order) {
     final showPay = order.statusKind == BusOrderStatusKind.pending &&
         (order.gatewayCheckoutUrl ?? '').isNotEmpty;
-    final showETicket = (order.invoiceUrl ?? '').isNotEmpty;
+    final showETicket = order.statusKind == BusOrderStatusKind.confirmed &&
+        (order.invoiceUrl ?? '').isNotEmpty;
     final showCancel = order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
     final hasSecondary = showETicket || showCancel;
     if (!showPay && !hasSecondary) return 0;
@@ -210,7 +211,8 @@ class _OrderActions extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final showPay = order.statusKind == BusOrderStatusKind.pending &&
         (order.gatewayCheckoutUrl ?? '').isNotEmpty;
-    final showETicket = (order.invoiceUrl ?? '').isNotEmpty;
+    final showETicket = order.statusKind == BusOrderStatusKind.confirmed &&
+        (order.invoiceUrl ?? '').isNotEmpty;
     final showCancel = order.canCancel && (order.cancelUrl ?? '').isNotEmpty;
 
     if (!showPay && !showETicket && !showCancel) {
