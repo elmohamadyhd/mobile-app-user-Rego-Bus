@@ -196,8 +196,11 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final marks = highlight;
+    final serviceClass = trip.serviceClass.trim();
+    // Name owns the flex; badges take intrinsic width only so dual
+    // cheapest/fastest pills cannot crush the operator label.
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         OperatorAvatar(trip: trip),
         const SizedBox(width: AppSpacing.sm),
@@ -206,41 +209,27 @@ class _Header extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      trip.operatorName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.title.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  if (trip.serviceClass.trim().isNotEmpty) ...[
-                    Text(
-                      '  ·  ',
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textMuted,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Flexible(
-                      child: Text(
-                        trip.serviceClass,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textMuted,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
+              Text(
+                trip.operatorName,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.title.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
               ),
+              if (serviceClass.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.xxs),
+                Text(
+                  serviceClass,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
               if (trip.features.isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.xs),
                 AmenityIconsRow(features: trip.features),
@@ -250,12 +239,7 @@ class _Header extends StatelessWidget {
         ),
         if (marks != null && marks.hasAny) ...[
           const SizedBox(width: AppSpacing.sm),
-          Flexible(
-            child: Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: _HighlightBadges(highlight: marks, l10n: l10n),
-            ),
-          ),
+          _HighlightBadges(highlight: marks, l10n: l10n),
         ],
       ],
     );

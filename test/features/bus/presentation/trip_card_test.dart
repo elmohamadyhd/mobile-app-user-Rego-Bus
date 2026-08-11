@@ -123,6 +123,24 @@ void main() {
     expect(find.text('Best deal'), findsNothing);
   });
 
+  testWidgets(
+      'stacks service class under operator name so dual badges do not clip it',
+      (tester) async {
+    await _pumpCard(
+      tester,
+      _buildTrip().copyWith(operatorName: 'النور للسياحة والنقل'),
+      highlight: const TripHighlights(isCheapest: true, isFastest: true),
+    );
+
+    expect(find.text('النور للسياحة والنقل'), findsOneWidget);
+    expect(find.text('VIP'), findsOneWidget);
+    expect(find.textContaining('·'), findsNothing);
+
+    final nameTop = _textTopLeft(tester, 'النور للسياحة والنقل').dy;
+    final classTop = _textTopLeft(tester, 'VIP').dy;
+    expect(nameTop, lessThan(classTop));
+  });
+
   testWidgets('hides highlight badge when highlight is null', (tester) async {
     await _pumpCard(tester, _buildTrip());
     expect(find.text('Cheapest'), findsNothing);
