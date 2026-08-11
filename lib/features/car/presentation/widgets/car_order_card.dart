@@ -4,8 +4,11 @@ import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/car/domain/entities/car_order.dart';
+import 'package:safaria/features/car/domain/utils/car_order_review.dart';
 import 'package:safaria/features/car/presentation/widgets/car_ticket_shell.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/order_rate_trip_button.dart';
+import 'package:safaria/shared/widgets/order_rated_badge.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
 class CarOrderStatusBadge extends StatelessWidget {
@@ -65,6 +68,7 @@ class CarOrderCard extends StatelessWidget {
     required this.onOpenVoucher,
     required this.onCancel,
     this.onTap,
+    this.onRate,
   });
 
   final CarOrder order;
@@ -72,6 +76,7 @@ class CarOrderCard extends StatelessWidget {
   final VoidCallback onOpenVoucher;
   final VoidCallback onCancel;
   final VoidCallback? onTap;
+  final VoidCallback? onRate;
 
   static const double _cardActionHeight = 40;
   static const double _cardActionGap = AppSpacing.sm;
@@ -87,10 +92,14 @@ class CarOrderCard extends StatelessWidget {
     final showPay = order.statusKind == CarOrderStatusKind.pending;
     final showVoucher = order.statusKind == CarOrderStatusKind.confirmed;
     final showCancel = order.canBeCancel;
+    final canRate = carOrderCanRate(order);
+    final rated = order.reviewRating;
+    final showReview = canRate || rated != null;
     final stubHeight = _stubHeightFor(
       showPay: showPay,
       showVoucher: showVoucher,
       showCancel: showCancel,
+      showReview: showReview,
     );
     final shape = CarTicketBorder(
       radius: AppRadius.card,
@@ -203,6 +212,17 @@ class CarOrderCard extends StatelessWidget {
                           onPressed: onCancel,
                         ),
                       ],
+                      if (showReview) ...[
+                        if (showPay || showVoucher || showCancel)
+                          const SizedBox(height: _cardActionGap),
+                        if (canRate && onRate != null)
+                          OrderRateTripButton(onPressed: onRate!)
+                        else if (rated != null)
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: OrderRatedBadge(rating: rated),
+                          ),
+                      ],
                     ],
                   ),
                 ),
@@ -217,9 +237,12 @@ class CarOrderCard extends StatelessWidget {
     required bool showPay,
     required bool showVoucher,
     required bool showCancel,
+    required bool showReview,
   }) {
-    final actionCount =
-        (showPay ? 1 : 0) + (showVoucher ? 1 : 0) + (showCancel ? 1 : 0);
+    final actionCount = (showPay ? 1 : 0) +
+        (showVoucher ? 1 : 0) +
+        (showCancel ? 1 : 0) +
+        (showReview ? 1 : 0);
     if (actionCount == 0) return 0;
 
     var height = AppSpacing.xs + AppSpacing.sm;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,10 +9,15 @@ import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/map_location.dart';
 import 'package:safaria/features/car/domain/entities/car_order.dart';
 import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
+import 'package:safaria/features/car/domain/utils/car_order_review.dart';
+import 'package:safaria/features/car/presentation/providers/car_booking_providers.dart';
 import 'package:safaria/features/car/presentation/providers/car_orders_provider.dart';
 import 'package:safaria/features/car/presentation/widgets/car_order_card.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/open_location_in_google_maps.dart';
+import 'package:safaria/shared/widgets/order_rate_trip_button.dart';
+import 'package:safaria/shared/widgets/order_rated_badge.dart';
+import 'package:safaria/shared/widgets/order_review_sheet.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Opens the private-order detail sheet, seeded from [order] while
@@ -26,6 +33,25 @@ Future<void> showCarOrderDetailSheet(BuildContext context, CarOrder order) {
           BorderRadius.vertical(top: Radius.circular(AppRadius.sheet)),
     ),
     builder: (context) => _CarOrderDetailSheet(seed: order),
+  );
+}
+
+Future<void> _rateFromDetail(
+  BuildContext context,
+  WidgetRef ref,
+  CarOrder order,
+) async {
+  await showOrderReviewSheet(
+    context,
+    onSubmit: (rating, comment) async {
+      await ref.read(carRepositoryProvider).submitReview(
+            orderId: order.id,
+            rating: rating,
+            comment: comment,
+          );
+      await ref.read(carOrdersProvider.notifier).refresh();
+      ref.invalidate(carOrderDetailProvider(order.id));
+    },
   );
 }
 
@@ -94,6 +120,23 @@ class _CarOrderDetailSheet extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _HeaderSection(order: order),
+                    if (carOrderCanRate(order) ||
+                        order.reviewRating != null) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      if (carOrderCanRate(order))
+                        OrderRateTripButton(
+                          onPressed: () => unawaited(
+                            _rateFromDetail(context, ref, order),
+                          ),
+                        )
+                      else
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: OrderRatedBadge(
+                            rating: order.reviewRating!,
+                          ),
+                        ),
+                    ],
                     if (hasRoute) ...[
                       const SizedBox(height: AppSpacing.lg),
                       _RouteSection(trip: trip, l10n: l10n),

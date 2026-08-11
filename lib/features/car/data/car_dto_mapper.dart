@@ -5,6 +5,7 @@ import 'package:safaria/features/car/domain/entities/car_create_order_request.da
 import 'package:safaria/features/car/domain/entities/car_order.dart';
 import 'package:safaria/features/car/domain/entities/car_search_params.dart';
 import 'package:safaria/features/car/domain/entities/car_trip_quote.dart';
+import 'package:safaria/shared/utils/order_review_mapping.dart';
 
 abstract final class CarDtoMapper {
   static final _orderDateFormat = DateFormat('yyyy-MM-dd HH:mm');
@@ -125,6 +126,8 @@ abstract final class CarDtoMapper {
       paymentInvoiceId: paymentInvoiceId,
       canBeCancel: json['can_be_cancel'] == true,
       createdAt: _string(json['created_at']),
+      canReview: json['can_review'] == true,
+      reviewRating: parseOrderReviewRating(json['review']),
     );
   }
 

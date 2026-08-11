@@ -20,4 +20,10 @@ abstract interface class CarRepository {
   Future<List<CarOrder>> listOrders();
 
   Future<CarOrder> getOrder(int orderId);
+
+  Future<void> submitReview({
+    required int orderId,
+    required int rating,
+    String? comment,
+  });
 }

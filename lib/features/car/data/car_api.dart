@@ -66,4 +66,21 @@ class CarApi {
     final res = await _dio.get('/profile/private/orders/$orderId');
     return res.data;
   }
+
+  Future<dynamic> submitReview({
+    required int orderId,
+    required int rating,
+    String? comment,
+  }) async {
+    final body = <String, dynamic>{'rating': '$rating'};
+    final trimmed = comment?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) {
+      body['comment'] = trimmed;
+    }
+    final res = await _dio.post(
+      '/profile/private/orders/$orderId/review',
+      data: body,
+    );
+    return res.data;
+  }
 }

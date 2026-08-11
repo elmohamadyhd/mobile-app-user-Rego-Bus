@@ -32,6 +32,8 @@ final class CarOrder {
     this.paymentInvoiceId,
     required this.canBeCancel,
     this.createdAt,
+    this.canReview = false,
+    this.reviewRating,
   });
 
   final int id;
@@ -51,10 +53,56 @@ final class CarOrder {
   final String? paymentInvoiceId;
   final bool canBeCancel;
   final String? createdAt;
+  final bool canReview;
+  final int? reviewRating;
 
   String get orderId => id.toString();
 
   bool get isConfirmed => statusKind == CarOrderStatusKind.confirmed;
 
   bool get isPending => statusKind == CarOrderStatusKind.pending;
+
+  CarOrder copyWith({
+    int? id,
+    String? statusText,
+    CarOrderStatusKind? statusKind,
+    String? price,
+    String? currency,
+    bool? rounded,
+    String? departureDate,
+    String? returnDate,
+    CarOrderCoords? from,
+    CarOrderCoords? to,
+    CarTripQuote? trip,
+    String? invoiceUrl,
+    String? transactionStatus,
+    String? paymentGateway,
+    String? paymentInvoiceId,
+    bool? canBeCancel,
+    String? createdAt,
+    bool? canReview,
+    int? reviewRating,
+  }) {
+    return CarOrder(
+      id: id ?? this.id,
+      statusText: statusText ?? this.statusText,
+      statusKind: statusKind ?? this.statusKind,
+      price: price ?? this.price,
+      currency: currency ?? this.currency,
+      rounded: rounded ?? this.rounded,
+      departureDate: departureDate ?? this.departureDate,
+      returnDate: returnDate ?? this.returnDate,
+      from: from ?? this.from,
+      to: to ?? this.to,
+      trip: trip ?? this.trip,
+      invoiceUrl: invoiceUrl ?? this.invoiceUrl,
+      transactionStatus: transactionStatus ?? this.transactionStatus,
+      paymentGateway: paymentGateway ?? this.paymentGateway,
+      paymentInvoiceId: paymentInvoiceId ?? this.paymentInvoiceId,
+      canBeCancel: canBeCancel ?? this.canBeCancel,
+      createdAt: createdAt ?? this.createdAt,
+      canReview: canReview ?? this.canReview,
+      reviewRating: reviewRating ?? this.reviewRating,
+    );
+  }
 }

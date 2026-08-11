@@ -214,4 +214,11 @@ class FakeCarRepository implements CarRepository {
     }
     return Future.value(orderResult ?? sampleConfirmedOrder);
   }
+
+  @override
+  Future<void> submitReview({
+    required int orderId,
+    required int rating,
+    String? comment,
+  }) async {}
 }

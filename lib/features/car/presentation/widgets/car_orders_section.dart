@@ -19,6 +19,7 @@ import 'package:safaria/features/car/presentation/providers/car_orders_provider.
 import 'package:safaria/features/car/presentation/widgets/car_order_card.dart';
 import 'package:safaria/features/car/presentation/widgets/car_order_detail_sheet.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/order_review_sheet.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
@@ -237,6 +238,25 @@ class _OrdersList extends ConsumerWidget {
     context.push(CarRoutes.voucher);
   }
 
+  Future<void> _rateOrder(
+    BuildContext context,
+    WidgetRef ref,
+    CarOrder order,
+  ) async {
+    await showOrderReviewSheet(
+      context,
+      onSubmit: (rating, comment) async {
+        await ref.read(carRepositoryProvider).submitReview(
+              orderId: order.id,
+              rating: rating,
+              comment: comment,
+            );
+        await ref.read(carOrdersProvider.notifier).refresh();
+        ref.invalidate(carOrderDetailProvider(order.id));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
@@ -249,6 +269,7 @@ class _OrdersList extends ConsumerWidget {
             onPay: () => unawaited(_pay(context, ref, order)),
             onOpenVoucher: () => _openVoucher(context, ref, order),
             onCancel: () => unawaited(_cancel(context, ref, order)),
+            onRate: () => unawaited(_rateOrder(context, ref, order)),
           ),
       ],
     );
