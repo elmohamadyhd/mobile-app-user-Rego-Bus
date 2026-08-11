@@ -998,6 +998,40 @@
   "ticketResumePaidToast": "Payment confirmed! Your ticket is ready.",
   "ticketResumePendingToast": "We couldn't confirm the payment yet. It may take a moment.",
 
+  "orderRateTripCta": "Rate trip",
+  "@orderRateTripCta": {
+    "description": "CTA on a successful ticket card/detail to open the review sheet."
+  },
+  "orderReviewSheetTitle": "Rate your trip",
+  "@orderReviewSheetTitle": {
+    "description": "Title of the order review bottom sheet."
+  },
+  "orderReviewCommentHint": "Comment (optional)",
+  "@orderReviewCommentHint": {
+    "description": "Optional comment field hint on the review sheet."
+  },
+  "orderReviewSubmit": "Submit review",
+  "@orderReviewSubmit": {
+    "description": "Primary submit button on the review sheet."
+  },
+  "orderRatedLabel": "Rated ★{rating}",
+  "@orderRatedLabel": {
+    "description": "Compact badge after the rider has rated an order.",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "orderReviewSubmitError": "Could not submit your review. Please try again.",
+  "@orderReviewSubmitError": {
+    "description": "Generic snackbar when review POST fails."
+  },
+  "orderReviewNotAllowedError": "This order cannot be reviewed yet.",
+  "@orderReviewNotAllowedError": {
+    "description": "Snackbar when API returns order-must-be-completed / not allowed."
+  },
+
   "orderDetailTitle": "Order details",
   "orderDetailRouteSection": "Route",
   "orderDetailFareSection": "Fare breakdown",

@@ -371,6 +371,14 @@
   "ticketResumePaidToast": "تم تأكيد الدفع! تذكرتك جاهزة.",
   "ticketResumePendingToast": "لم نتمكن من تأكيد الدفع بعد، قد يستغرق الأمر بعض الوقت.",
 
+  "orderRateTripCta": "قيّم الرحلة",
+  "orderReviewSheetTitle": "قيّم رحلتك",
+  "orderReviewCommentHint": "تعليق (اختياري)",
+  "orderReviewSubmit": "إرسال التقييم",
+  "orderRatedLabel": "التقييم ★{rating}",
+  "orderReviewSubmitError": "تعذر إرسال التقييم. حاول مرة أخرى.",
+  "orderReviewNotAllowedError": "لا يمكن تقييم هذا الطلب حالياً.",
+
   "orderDetailTitle": "تفاصيل الطلب",
   "orderDetailRouteSection": "المسار",
   "orderDetailFareSection": "تفاصيل السعر",
