@@ -60,6 +60,40 @@ void main() {
     expect(order.receiptUrl, contains('safaria.travel'));
   });
 
+  test('profile list shape maps checkoutUrl from payment_transactions', () {
+    final order = FlightDtoMapper.orderFromEnvelope({
+      'data': {
+        'id': 77,
+        'status': 'pending',
+        'order_status': 'PendingPayment',
+        'payment_status': 'pending',
+        'total_amount': 14632.8,
+        'currency': 'EGP',
+        'payment_transactions': [
+          {
+            'id': 121,
+            'gateway': 'myfatoorah',
+            'status': 'pending',
+            'paid_at': null,
+            'invoice_url':
+                'https://eg.myfatoorah.com/EGY/ia/050714540828829563-65b64e08',
+            'invoice_id': 8288295,
+          },
+        ],
+        'invoice_url':
+            'https://demo.safaria.travel/flight-orders/77/invoice',
+      },
+    })!;
+
+    expect(
+      order.checkoutUrl,
+      'https://eg.myfatoorah.com/EGY/ia/050714540828829563-65b64e08',
+    );
+    expect(order.paymentStatus, 'pending');
+    expect(order.receiptUrl, contains('safaria.travel'));
+    expect(order.checkoutUrl, isNot(order.receiptUrl));
+  });
+
   test('maps passengers and segments', () {
     final order = FlightDtoMapper.orderFromEnvelope(_envelope)!;
     expect(order.passengers.single.firstName, 'Ahmed');

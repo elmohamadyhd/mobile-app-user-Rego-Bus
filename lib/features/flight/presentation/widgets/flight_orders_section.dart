@@ -270,9 +270,12 @@ class _FlightOrderCard extends ConsumerWidget {
     final firstSegment = order.segments.isEmpty ? null : order.segments.first;
     final departure = firstSegment?.departureDateTime;
     final showPay = !paid;
+    final checkoutUrl = order.checkoutUrl?.trim();
+    final canPay =
+        showPay && checkoutUrl != null && checkoutUrl.isNotEmpty;
     final showReview = canRate || rated != null;
     final actionsHeight = _actionsStubHeightFor(
-      showPay: showPay,
+      showPay: canPay,
       showReview: showReview,
     );
     final hasActions = actionsHeight > 0;
@@ -379,14 +382,14 @@ class _FlightOrderCard extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (showPay)
+                          if (canPay)
                             PrimaryButton(
                               label: l10n.ticketActionPay,
                               compact: true,
                               onPressed: () =>
                                   context.push(FlightRoutes.pay, extra: order),
                             ),
-                          if (showPay && showReview)
+                          if (canPay && showReview)
                             const SizedBox(height: _cardActionGap),
                           if (canRate)
                             OrderRateTripButton(

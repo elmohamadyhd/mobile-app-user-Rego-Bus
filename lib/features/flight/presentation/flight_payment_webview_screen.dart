@@ -36,6 +36,16 @@ class _FlightPaymentWebViewScreenState
   @override
   void initState() {
     super.initState();
+    final checkoutUrl = widget.order.checkoutUrl?.trim();
+    if (checkoutUrl == null || checkoutUrl.isEmpty) {
+      // Profile list used to omit the gateway URL; never crash on `!`.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.go(FlightRoutes.pending, extra: widget.order);
+      });
+      return;
+    }
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -44,7 +54,7 @@ class _FlightPaymentWebViewScreenState
           onNavigationRequest: (request) => _handleNavigation(request.url),
         ),
       )
-      ..loadRequest(Uri.parse(widget.order.checkoutUrl!));
+      ..loadRequest(Uri.parse(checkoutUrl));
   }
 
   NavigationDecision _handleNavigation(String url) {

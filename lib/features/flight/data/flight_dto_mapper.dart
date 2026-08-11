@@ -361,7 +361,7 @@ abstract final class FlightDtoMapper {
   }
 
   static FlightOrder _orderFromJson(Map json) {
-    final transaction = json['transaction'];
+    final transaction = _paymentTransactionFromJson(json);
     final passengers = json['passengers'];
     final segments = json['segments'];
 
@@ -369,16 +369,16 @@ abstract final class FlightDtoMapper {
       id: _string(json['id']) ?? '',
       status: _string(json['status']) ?? '',
       orderStatus: _string(json['order_status']) ?? '',
-      paymentStatus: transaction is Map
+      paymentStatus: transaction != null
           ? _string(transaction['status'])
           : _string(json['payment_status']),
       airlinePnr: _string(json['airline_pnr']),
       gdsPnr: _string(json['gds_pnr']),
-      paidAt: transaction is Map ? _dateTime(transaction['paid_at']) : null,
+      paidAt: transaction != null ? _dateTime(transaction['paid_at']) : null,
       totalAmount: _double(json['total_amount']) ?? 0,
       currency: _string(json['currency']) ?? 'EGP',
       checkoutUrl:
-          transaction is Map ? _string(transaction['invoice_url']) : null,
+          transaction != null ? _string(transaction['invoice_url']) : null,
       receiptUrl: _string(json['invoice_url']),
       canBeCancelled: json['can_be_cancel'] == true,
       canReview: json['can_review'] == true,
@@ -390,6 +390,25 @@ abstract final class FlightDtoMapper {
           ? segments.whereType<Map>().map(_orderSegmentFromJson).toList()
           : const [],
     );
+  }
+
+  /// Create-order returns a singular `transaction`; profile list/show return
+  /// `payment_transactions[]`. Prefer an entry that still has a checkout URL.
+  static Map? _paymentTransactionFromJson(Map json) {
+    final singular = json['transaction'];
+    if (singular is Map) return singular;
+
+    final list = json['payment_transactions'];
+    if (list is! List) return null;
+
+    Map? first;
+    for (final item in list) {
+      if (item is! Map) continue;
+      first ??= item;
+      final url = _string(item['invoice_url']);
+      if (url != null && url.isNotEmpty) return item;
+    }
+    return first;
   }
 
   static FlightOrderPassenger _orderPassengerFromJson(Map json) {

@@ -28,8 +28,10 @@ abstract class FlightOrderSegment with _$FlightOrderSegment {
 /// A created flight order.
 ///
 /// [checkoutUrl] is the gateway's hosted payment page. It comes from
-/// `transaction.invoice_url` — **not** the top-level `invoice_url`, which is
-/// a receipt on the REGO site and will not take a payment.
+/// `transaction.invoice_url` (create-order) or
+/// `payment_transactions[].invoice_url` (profile list/show) — **not** the
+/// top-level `invoice_url`, which is a receipt on the REGO site and will not
+/// take a payment.
 @freezed
 abstract class FlightOrder with _$FlightOrder {
   const factory FlightOrder({
