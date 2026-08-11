@@ -231,6 +231,18 @@ void main() {
       );
     });
 
+    test('confirmBooking with visa sends payment_method credit', () async {
+      final repo = FakeBusRepository(ticketResult: _pendingTicket());
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+      await _prepareBooking(notifier);
+      notifier.setPaymentMethod(PaymentMethod.visa);
+
+      await notifier.confirmBooking();
+
+      expect(repo.lastCreateTicketRequest?.paymentMethod, 'credit');
+    });
+
     test(
         'confirmBooking with wallet and confirmed status confirms even with payment_url',
         () async {

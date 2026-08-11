@@ -237,7 +237,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
   }
 
   String _apiPaymentMethod(PaymentMethod method) => switch (method) {
-        PaymentMethod.visa => 'myfatoorah',
+        PaymentMethod.visa => 'credit',
         PaymentMethod.wallet => 'wallet',
       };
 

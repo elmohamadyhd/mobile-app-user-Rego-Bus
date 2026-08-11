@@ -7340,24 +7340,9 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
 | **Full URL** | `https://demo.safaria.travel/api/v1/buses/trips/237747/create-ticket` |
 | **Auth** | Bearer token required |
 
-**Body (JSON)** — inline `//` comments from Postman document allowed values:
+**Body (JSON)** — `payment_method` is `"credit"` (Visa/card) or `"wallet"`:
 
 ```jsonc
-// {
-//   "from_city_id": 1,
-//   "to_city_id": 2,
-//   "from_location_id": "50",
-//   "to_location_id": "22",
-//   "date": "2026-07-29",
-//   "seats": [
-//     {
-//       "seat_type_id": "3",
-//       "seat_id": "3"
-//     }
-//   ],
-//   "payment_method": "myfatoorah",
-//   "currency": "EGP"
-// }
 {
   "from_city_id": 1,
   "to_city_id": 9,
@@ -7370,12 +7355,13 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
       "seat_id": "10"
     }
   ],
-  "payment_method": "myfatoorah",
+  // "credit" | "wallet"
+  "payment_method": "credit",
   "currency": "EGP"
 }
 ```
 
-**Commented example from Postman:**
+**Wallet example:**
 
 ```json
 {
@@ -7390,7 +7376,7 @@ _404 HTML page returned — stale example URL in Postman (`originalRequest` may 
        "seat_id": "3"
      }
    ],
-   "payment_method": "myfatoorah",
+   "payment_method": "wallet",
    "currency": "EGP"
  }
 ```

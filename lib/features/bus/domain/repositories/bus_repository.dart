@@ -57,7 +57,7 @@ final class BusCreateTicketRequest {
     required this.date,
     required this.seats,
     required this.currency,
-    this.paymentMethod = 'myfatoorah',
+    this.paymentMethod = 'credit',
   });
 
   final String tripId;

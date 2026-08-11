@@ -40,7 +40,7 @@ the raw Postman file:
 |---|---|
 | `GET /buses/trips/{id}` returns full trip detail (stations, pricing) for a "trip detail" step. | The only real saved example for this endpoint returns **empty** `cities_from/to` and `stations_from/to` — and critically, the **same trip id (`236510`) returns full station data when it appears inside a `/buses/trips` search-list response**, proving this is a backend bug on the by-id endpoint, not stale/missing data for that trip. A second saved example is a stale 404 HTML page. |
 | `seat_type_id` and `seat_id` are independent identifiers (a seat's physical id vs. its class/type id). | Every `create-ticket` sample sends them **equal**, with an explicit Postman comment: `"seat_type_id": "16", // same value like seat_id`. |
-| Wallet vs. Card is a real backend choice (`payment_method` varies). | Every `create-ticket` sample hardcodes `"payment_method": "myfatoorah"` with the comment `"fixed only one payment method"`. Per the user: **`myfatoorah` is the Visa/card gateway internally — never show that name in the UI.** There is currently no documented wallet-specific value. |
+| Wallet vs. Card is a real backend choice (`payment_method` varies). | `create-ticket` accepts `"credit"` (Visa/card) or `"wallet"`. UI shows Visa / Wallet only — never gateway brand names. |
 | Currency is user-selectable per search. | `currency` is a plain query param the client supplies (`EGP` in the Postman defaults; both `EGP` and `SAR` appear across different saved examples). No endpoint suggests a currency needs to be resolved server-side; there's no existing currency infrastructure in the app (`grep -ri currency lib/` found nothing). |
 | Boarding-stop choice affects price like dropoff-stop choice does. | Every `stations_from[]` entry across every real example has `price`, `original_price`, `final_price` all `= 0`. Only `stations_to[]` carries a non-zero fare. So the "live segment fare" only needs to recompute on **dropoff** changes, not boarding changes. |
 
@@ -54,13 +54,13 @@ the raw Postman file:
 6. **`/buses/stations`:** unused this iteration.
 7. **Currency:** hardcoded to `EGP` for now — no picker.
 8. **Promo code:** dropped from the summary screen this iteration.
-9. **Payment method:** UI keeps both **Visa** and **Wallet** options (never show the literal string "myfatoorah" — that's the internal gateway id for the Visa/card path). Visa is wired to `create-ticket` (`payment_method: "myfatoorah"`); Wallet is shown but disabled/"coming soon" until the backend documents a wallet value.
+9. **Payment method:** UI keeps both **Visa** and **Wallet** options. Visa → `create-ticket` with `payment_method: "credit"`; Wallet → `payment_method: "wallet"`.
 10. **Default stops:** first `stations_from` entry + the `stations_to` entry matching `price_start_with` (fallback: first entry).
 11. **Bus city picker:** replaces the static 4-city `HomeCity` stub in `lib/features/home/presentation/widgets/home_city_picker.dart` with a live search against `GET /buses/locations`, carrying the real numeric id required by `city_from`/`city_to`.
 
 ## 4. Open items — need backend/product confirmation, not blocking this iteration
 
-- **Wallet `payment_method` value for bus `create-ticket` is undocumented.** Every sample only shows `"myfatoorah"`. Needed before the Wallet option can actually submit a booking. *Action: ask backend what value (if any) triggers a wallet-funded booking, and whether wallet balance is checked automatically or needs a flag.*
+- ~~**Wallet `payment_method` value for bus `create-ticket` is undocumented.**~~ Resolved: `"credit"` (Visa) / `"wallet"`.
 - **`stations_to[].categories` is always empty.** If per-seat/category pricing is ever intended (the field's presence suggests it was designed for that), the backend needs to actually populate it, and the seat-map response needs the seat's `category` label to match the categories key so the client can look up a price. *Action: confirm with backend whether this is planned, or whether pricing is intentionally always flat.*
 - **`GET /buses/trips/{id}` returning empty stations for an id that has full data via the search-list endpoint** — this is a genuine backend bug (proven by comparing the two saved examples for the same id `236510`), not a "don't call this directly" contract. The app works around it (cached-first, merge-on-top, ignore empty fields) regardless of whether it's fixed, but it's worth a bug report since deep-link/"refresh a trip" flows would benefit from it actually working.
 - **Currency being a free-form client-supplied query param** with no validation visible — confirm `EGP` is an accepted value for all routes/carriers, and whether unsupported currencies degrade gracefully.
