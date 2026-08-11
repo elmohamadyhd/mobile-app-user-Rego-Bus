@@ -10,8 +10,8 @@
 | **Collection** | Wadeny |
 | **Default auth** | Bearer token (`{{token}}`) |
 | **Content-Type** | `application/json` (most endpoints) |
-| **Total requests** | 66 |
-| **Documented saved responses** | 113 |
+| **Total requests** | 70 |
+| **Documented saved responses** | 118 |
 
 Public endpoints (no auth): Auth group (login, register, OTP, password reset) and most Content endpoints.
 
@@ -84,6 +84,9 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 | `POST` | `/private/orders/:id/pay` | pay |
 | `POST` | `/profile` | Update profile |
 | `POST` | `/profile/address-book` | Create |
+| `POST` | `/profile/buses/orders/:id/review` | Review |
+| `POST` | `/profile/flights/orders/:id/review` | Review |
+| `POST` | `/profile/private/orders/:id/review` | Review |
 | `POST` | `/profile/tickets` | Create Ticket |
 | `POST` | `/profile/tickets/6/replies` | Create |
 | `POST` | `/profile/update-password` | Update password |
@@ -97,7 +100,7 @@ The backend uses it to localize `message`, `errors`, and localized content in re
 ## Table of contents
 
 - [Auth](#auth) (8 requests)
-- [Profile](#profile) (25 requests)
+- [Profile](#profile) (28 requests)
 - [Content](#content) (11 requests)
 - [Flights](#flights) (8 requests)
 - [Private](#private) (5 requests)
@@ -711,16 +714,19 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 | 13 | `POST` | `/profile/wallet/:amount/charge` | Charge |
 | 14 | `GET` | `/profile/flights/orders` | List |
 | 15 | `GET` | `/profile/flights/orders/:id` | Show |
-| 16 | `GET` | `/profile/buses/orders` | List |
-| 17 | `GET` | `/profile/buses/orders/:id` | Show |
-| 18 | `GET` | `/profile/private/orders` | List |
-| 19 | `GET` | `/profile/private/orders/:id` | Show |
-| 20 | `GET` | `/profile` | Show profile |
-| 21 | `POST` | `/profile` | Update profile |
-| 22 | `PUT` | `/profile/firebase/token` | Update Token |
-| 23 | `POST` | `/profile/verify-alt-phone` | Verify Alt phone |
-| 24 | `POST` | `/profile/update-password` | Update password |
-| 25 | `DELETE` | `/profile` | Delete account |
+| 16 | `POST` | `/profile/flights/orders/:id/review` | Review |
+| 17 | `GET` | `/profile/buses/orders` | List |
+| 18 | `GET` | `/profile/buses/orders/:id` | Show |
+| 19 | `POST` | `/profile/buses/orders/:id/review` | Review |
+| 20 | `GET` | `/profile/private/orders` | List |
+| 21 | `GET` | `/profile/private/orders/:id` | Show |
+| 22 | `POST` | `/profile/private/orders/:id/review` | Review |
+| 23 | `GET` | `/profile` | Show profile |
+| 24 | `POST` | `/profile` | Update profile |
+| 25 | `PUT` | `/profile/firebase/token` | Update Token |
+| 26 | `POST` | `/profile/verify-alt-phone` | Verify Alt phone |
+| 27 | `POST` | `/profile/update-password` | Update password |
+| 28 | `DELETE` | `/profile` | Delete account |
 
 #### addresses
 
@@ -1763,6 +1769,56 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 }
 ```
 
+### Review
+
+| | |
+|---|---|
+| **Method** | `POST` |
+| **Path** | `/profile/flights/orders/:id/review` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/flights/orders/:id/review` |
+| **Auth** | Bearer token required |
+| **Folder** | Orders > Flights |
+
+**Body (JSON)** — inline `//` comments from Postman document allowed values:
+
+```jsonc
+{
+    "rating":"1", //Required From 1 To 5
+    "comment":"adasd" //Nullable
+}
+```
+
+**Field notes (from Postman comments):**
+
+| Field | Allowed / notes |
+|-------|-----------------|
+| `rating` | `Required From 1 To 5` |
+| `comment` | `Nullable` |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `400` | Order must be completed to review | ar | — |
+
+#### 400 — Order must be completed to review (ar)
+
+```json
+{
+  "status": 400,
+  "message": "Order must be completed to review",
+  "errors": {},
+  "data": {}
+}
+```
+
 #### Orders > Buses
 
 ### List
@@ -2155,6 +2211,68 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
 }
 ```
 
+### Review
+
+| | |
+|---|---|
+| **Method** | `POST` |
+| **Path** | `/profile/buses/orders/:id/review` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/buses/orders/:id/review` |
+| **Auth** | Bearer token required |
+| **Folder** | Orders > Buses |
+
+**Body (JSON)** — inline `//` comments from Postman document allowed values:
+
+```jsonc
+{
+    "rating":"1", //Required From 1 To 5
+    "comment":"adasd" //Nullable
+}
+```
+
+**Field notes (from Postman comments):**
+
+| Field | Allowed / notes |
+|-------|-----------------|
+| `rating` | `Required From 1 To 5` |
+| `comment` | `Nullable` |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `404` | Bus order not found | ar | — |
+| `400` | Order must be completed to review | ar | — |
+
+#### 404 — Bus order not found (ar)
+
+```json
+{
+  "status": 404,
+  "message": "Bus order not found",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### 400 — Order must be completed to review (ar)
+
+```json
+{
+  "status": 400,
+  "message": "Order must be completed to review",
+  "errors": {},
+  "data": {}
+}
+```
+
 #### Orders > Private
 
 ### List
@@ -2513,6 +2631,68 @@ All Auth endpoints return JSON with this shape (HTTP status may differ from the 
     "can_be_cancel": true,
     "created_at": "2026-07-27T21:39:17+03:00"
   }
+}
+```
+
+### Review
+
+| | |
+|---|---|
+| **Method** | `POST` |
+| **Path** | `/profile/private/orders/:id/review` |
+| **Full URL** | `https://demo.safaria.travel/api/v1/profile/private/orders/:id/review` |
+| **Auth** | Bearer token required |
+| **Folder** | Orders > Private |
+
+**Body (JSON)** — inline `//` comments from Postman document allowed values:
+
+```jsonc
+{
+    "rating":"1", //Required From 1 To 5
+    "comment":"adasd" //Nullable
+}
+```
+
+**Field notes (from Postman comments):**
+
+| Field | Allowed / notes |
+|-------|-----------------|
+| `rating` | `Required From 1 To 5` |
+| `comment` | `Nullable` |
+
+**Headers:**
+
+| Header | Value |
+|--------|-------|
+| `Accept` | application/json |
+| `Accept-Language` | `ar` \| `en` (app locale) |
+
+**Saved responses:**
+
+| HTTP | Scenario | Language | Error fields |
+|------|----------|----------|--------------|
+| `404` | Bus order not found | ar | — |
+| `400` | Order must be completed to review | ar | — |
+
+#### 404 — Bus order not found (ar)
+
+```json
+{
+  "status": 404,
+  "message": "Bus order not found",
+  "errors": {},
+  "data": {}
+}
+```
+
+#### 400 — Order must be completed to review (ar)
+
+```json
+{
+  "status": 400,
+  "message": "Order must be completed to review",
+  "errors": {},
+  "data": {}
 }
 ```
 
@@ -5310,12 +5490,14 @@ All Flights endpoints return JSON with this shape (HTTP status may differ from t
   "departure": {
     "latitude": "30.0314696",
     "longitude": "31.2612288",
-    "date": "2026-12-20 22:00"
+    "date": "2026-12-20 22:00",
+    "name": ""
   },
   "destination": {
     "latitude": "31.182972882989525",
     "longitude": "29.894801258559188",
-    "date": "2026-12-21 01:00"
+    "date": "2026-12-21 01:00",
+    "name": ""
   }
 }
 ```

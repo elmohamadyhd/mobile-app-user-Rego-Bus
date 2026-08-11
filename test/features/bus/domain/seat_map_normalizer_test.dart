@@ -64,29 +64,21 @@ void main() {
       expect(map.salon.rows, 12);
     });
 
-    test('prepends driver row when API omits driver (seatsRespons_2.json)', () {
+    test('does not invent a driver when API omits driver (seatsRespons_2.json)',
+        () {
       final map = _loadFixture('seatsRespons_2.json');
-      final columns = map.salon.columns;
 
-      expect(_driverCount(map), 1);
-      expect(map.cells[0].kind, SeatMapCellKind.driver);
-      expect(
-          map.cells
-              .sublist(1, columns)
-              .every((c) => c.kind == SeatMapCellKind.space),
-          isTrue);
-
-      // Original seat 1 shifts down by one row.
-      expect(map.cells[columns].seatNo, '1');
-      expect(map.cells[columns + 4].seatNo, '2');
+      expect(_driverCount(map), 0);
+      expect(map.cells[0].kind, isNot(SeatMapCellKind.driver));
+      expect(map.cells[0].seatNo, '1');
 
       final raw = jsonDecode(
         File('dummy data/seatsRespons_2.json').readAsStringSync(),
       ) as Map<String, dynamic>;
       final data = raw['data'] as Map<String, dynamic>;
       final rawCells = data['seats_map'] as List;
-      expect(map.cells.length, rawCells.length + columns);
-      expect(map.salon.rows, 15);
+      expect(map.cells.length, rawCells.length);
+      expect(map.salon.rows, 14);
     });
 
     test('leaves already-correct driver at index 0 unchanged', () {
