@@ -45,6 +45,8 @@ abstract class FlightOrder with _$FlightOrder {
     String? checkoutUrl,
     String? receiptUrl,
     @Default(false) bool canBeCancelled,
+    @Default(false) bool canReview,
+    int? reviewRating,
     @Default([]) List<FlightOrderPassenger> passengers,
     @Default([]) List<FlightOrderSegment> segments,
   }) = _FlightOrder;

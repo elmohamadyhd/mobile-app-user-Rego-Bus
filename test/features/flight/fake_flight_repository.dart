@@ -208,4 +208,11 @@ class FakeFlightRepository implements FlightRepository {
     lastOrderId = id;
     return Future.value(orderResult ?? sampleOrder);
   }
+
+  @override
+  Future<void> submitReview({
+    required String orderId,
+    required int rating,
+    String? comment,
+  }) async {}
 }

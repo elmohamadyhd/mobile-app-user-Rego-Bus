@@ -59,4 +59,10 @@ abstract interface class FlightRepository {
   Future<List<FlightOrder>> orders();
 
   Future<FlightOrder?> order(String id);
+
+  Future<void> submitReview({
+    required String orderId,
+    required int rating,
+    String? comment,
+  });
 }

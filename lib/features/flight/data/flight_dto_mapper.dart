@@ -12,6 +12,7 @@ import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.d
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/features/flight/domain/entities/flight_settings.dart';
 import 'package:safaria/features/flight/domain/utils/flight_passenger_rules.dart';
+import 'package:safaria/shared/utils/order_review_mapping.dart';
 
 abstract final class FlightDtoMapper {
   static void ensureSuccess(Map<String, dynamic> envelope) {
@@ -380,6 +381,8 @@ abstract final class FlightDtoMapper {
           transaction is Map ? _string(transaction['invoice_url']) : null,
       receiptUrl: _string(json['invoice_url']),
       canBeCancelled: json['can_be_cancel'] == true,
+      canReview: json['can_review'] == true,
+      reviewRating: parseOrderReviewRating(json['review']),
       passengers: passengers is List
           ? passengers.whereType<Map>().map(_orderPassengerFromJson).toList()
           : const [],

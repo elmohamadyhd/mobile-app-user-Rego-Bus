@@ -108,5 +108,22 @@ class FlightApi {
     return res.data;
   }
 
+  Future<dynamic> submitReview({
+    required String orderId,
+    required int rating,
+    String? comment,
+  }) async {
+    final body = <String, dynamic>{'rating': '$rating'};
+    final trimmed = comment?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) {
+      body['comment'] = trimmed;
+    }
+    final res = await _dio.post(
+      '/profile/flights/orders/$orderId/review',
+      data: body,
+    );
+    return res.data;
+  }
+
   static String _encodeOfferId(String offerId) => Uri.encodeComponent(offerId);
 }

@@ -181,6 +181,22 @@ class FlightRepositoryImpl implements FlightRepository {
     });
   }
 
+  @override
+  Future<void> submitReview({
+    required String orderId,
+    required int rating,
+    String? comment,
+  }) {
+    return _guard(() async {
+      final body = await _api.submitReview(
+        orderId: orderId,
+        rating: rating,
+        comment: comment,
+      );
+      FlightDtoMapper.ensureSuccess(body as Map<String, dynamic>);
+    });
+  }
+
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
       return await action();

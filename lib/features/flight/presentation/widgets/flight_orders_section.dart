@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,10 +14,15 @@ import 'package:safaria/core/utils/date_formatting.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/flight/domain/entities/flight_order.dart';
+import 'package:safaria/features/flight/domain/utils/flight_order_review.dart';
 import 'package:safaria/features/flight/domain/utils/flight_order_status.dart';
 import 'package:safaria/features/flight/presentation/flight_routes.dart';
+import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_orders_provider.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/order_rate_trip_button.dart';
+import 'package:safaria/shared/widgets/order_rated_badge.dart';
+import 'package:safaria/shared/widgets/order_review_sheet.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
 
@@ -219,13 +226,13 @@ class _OrdersSkeleton extends StatelessWidget {
   }
 }
 
-class _OrdersList extends StatelessWidget {
+class _OrdersList extends ConsumerWidget {
   const _OrdersList({required this.orders});
 
   final List<FlightOrder> orders;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -235,16 +242,18 @@ class _OrdersList extends StatelessWidget {
   }
 }
 
-class _FlightOrderCard extends StatelessWidget {
+class _FlightOrderCard extends ConsumerWidget {
   const _FlightOrderCard({required this.order});
 
   final FlightOrder order;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final localeName = Localizations.localeOf(context).toString();
     final paid = isFlightOrderPaid(order);
+    final canRate = flightOrderCanRate(order);
+    final rated = order.reviewRating;
     final firstSegment = order.segments.isEmpty ? null : order.segments.first;
     final departure = firstSegment?.departureDateTime;
 
@@ -331,10 +340,40 @@ class _FlightOrderCard extends StatelessWidget {
                   onPressed: () => context.push(FlightRoutes.pay, extra: order),
                 ),
               ],
+              if (canRate) ...[
+                const SizedBox(height: AppSpacing.sm),
+                OrderRateTripButton(
+                  onPressed: () => unawaited(_rate(context, ref, order)),
+                ),
+              ] else if (rated != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: OrderRatedBadge(rating: rated),
+                ),
+              ],
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _rate(
+    BuildContext context,
+    WidgetRef ref,
+    FlightOrder order,
+  ) async {
+    await showOrderReviewSheet(
+      context,
+      onSubmit: (rating, comment) async {
+        await ref.read(flightRepositoryProvider).submitReview(
+              orderId: order.id,
+              rating: rating,
+              comment: comment,
+            );
+        ref.invalidate(flightOrdersProvider);
+      },
     );
   }
 }
