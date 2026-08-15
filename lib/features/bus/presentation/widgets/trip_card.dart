@@ -117,6 +117,11 @@ class _TripCardState extends State<TripCard> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final localeName = Localizations.localeOf(context).toString();
+    final departDateLabel = formatSearchDateCell(_departTime, localeName);
+    final arriveDateLabel = isSameDay(_departTime, _arriveTime)
+        ? null
+        : formatSearchDateCell(_arriveTime, localeName);
     const shape = TicketBorder(
       radius: AppRadius.xl,
       notchRadius: 10,
@@ -153,10 +158,8 @@ class _TripCardState extends State<TripCard> {
                   departLabel: _departLabel,
                   arriveLabel: _arriveLabel,
                   durationLabel: _durationLabel,
-                  departDateLabel: formatSearchDateCell(
-                    _departTime,
-                    Localizations.localeOf(context).toString(),
-                  ),
+                  departDateLabel: departDateLabel,
+                  arriveDateLabel: arriveDateLabel,
                   onStopsTap:
                       widget.trip.stopsCount > 0 ? _openStopsSheet : null,
                 ),
@@ -335,6 +338,7 @@ class _Timeline extends StatelessWidget {
     required this.arriveLabel,
     required this.durationLabel,
     required this.departDateLabel,
+    this.arriveDateLabel,
     this.onStopsTap,
   });
 
@@ -346,6 +350,7 @@ class _Timeline extends StatelessWidget {
   final String arriveLabel;
   final String durationLabel;
   final String departDateLabel;
+  final String? arriveDateLabel;
   final VoidCallback? onStopsTap;
 
   @override
@@ -401,6 +406,7 @@ class _Timeline extends StatelessWidget {
               flex: 1,
               child: _TimeCell(
                 time: arriveLabel,
+                date: arriveDateLabel,
                 alignment: AlignmentDirectional.centerEnd,
               ),
             ),

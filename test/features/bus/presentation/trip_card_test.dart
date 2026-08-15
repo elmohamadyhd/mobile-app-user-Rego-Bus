@@ -56,6 +56,38 @@ BusTripSummary _buildTrip({int seats = 6}) {
   );
 }
 
+BusTripSummary _buildOvernightTrip() {
+  final board = BusStop(
+    locationId: '1',
+    name: 'Ramsis',
+    cityId: 1,
+    cityName: 'Cairo',
+    arrivalAt: DateTime(2026, 2, 10, 23),
+  );
+  final drop = BusStop(
+    locationId: '9',
+    name: 'Sidi Gaber',
+    cityId: 2,
+    cityName: 'Alexandria',
+    arrivalAt: DateTime(2026, 2, 11, 5),
+    finalPrice: 180,
+  );
+  return BusTripSummary(
+    id: '290545-night',
+    gatewayId: 'Tazcara',
+    operatorName: 'Go Bus',
+    category: 'VIP',
+    dateTime: DateTime(2026, 2, 10, 23),
+    currency: 'EGP',
+    availableSeats: 6,
+    priceStartWith: 180,
+    defaultBoardingStop: board,
+    defaultDropoffStop: drop,
+    boardingStops: [board],
+    dropoffStops: [drop],
+  );
+}
+
 Future<void> _pumpCard(
   WidgetTester tester,
   BusTripSummary trip, {
@@ -128,6 +160,22 @@ void main() {
       find.text(formatSearchDateCell(DateTime(2026, 2, 10), 'en')),
       findsNothing,
     );
+  });
+
+  testWidgets('shows arrival date when it falls on a different day',
+      (tester) async {
+    await _pumpCard(tester, _buildOvernightTrip());
+
+    expect(
+      find.text(formatSearchDateCell(DateTime(2026, 2, 10), 'en')),
+      findsOneWidget,
+    );
+    expect(
+      find.text(formatSearchDateCell(DateTime(2026, 2, 11), 'en')),
+      findsOneWidget,
+    );
+    expect(find.text('23:00'), findsOneWidget);
+    expect(find.text('05:00'), findsOneWidget);
   });
 
   testWidgets('shows cheapest highlight badge in the header', (tester) async {
