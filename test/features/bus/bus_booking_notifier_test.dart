@@ -9,6 +9,20 @@ import 'package:safaria/features/bus/presentation/providers/bus_booking_provider
 
 import 'fake_bus_repository.dart';
 
+BusTripSummary _trip(String id, {double price = 100}) {
+  return FakeBusRepository.sampleTrip.copyWith(id: id, priceStartWith: price);
+}
+
+BusTripsPage _page(List<BusTripSummary> trips) {
+  return BusTripsPage(trips: trips, currentPage: 1, lastPage: 1);
+}
+
+Future<void> _search(BusBookingNotifier notifier) {
+  return notifier.searchTrips(
+    BusSearchParams(cityFromId: 1, cityToId: 2, date: DateTime(2026, 7, 10)),
+  );
+}
+
 BusTicket _pendingTicket({String? paymentUrl = 'https://pay.example/1'}) {
   return BusTicket(
     bookingRef: '000001',
@@ -40,10 +54,16 @@ Future<void> _prepareBooking(BusBookingNotifier notifier) async {
 }
 
 void main() {
-  ProviderContainer makeContainer(FakeBusRepository repo) {
+  ProviderContainer makeContainer(
+    FakeBusRepository repo, {
+    Duration gap = Duration.zero,
+  }) {
     final container = ProviderContainer(
       overrides: [
         busRepositoryProvider.overrideWithValue(repo),
+        busSearchScheduleProvider.overrideWithValue(
+          BusSearchSchedule(gap: gap),
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -142,7 +162,8 @@ void main() {
       expect(state.segmentFare, to.finalPrice);
     });
 
-    test('selectTrip without from/to keeps terminal drop-off default', () async {
+    test('selectTrip without from/to keeps terminal drop-off default',
+        () async {
       final trip = FakeBusRepository.sampleTrip;
       final container = makeContainer(FakeBusRepository());
       final notifier = container.read(busBookingProvider.notifier);
@@ -435,6 +456,114 @@ void main() {
       await notifier.confirmBooking();
 
       expect(repo.createTicketCallCount, 2);
+    });
+  });
+
+  group('BusBookingNotifier progressive search', () {
+    test('round 0 renders immediately and enters the polling phase', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('a')]),
+          _page([_trip('a'), _trip('b')]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+
+      final state = container.read(busBookingProvider);
+      expect(state.trips.map((t) => t.id), ['a']);
+      expect(state.searchPhase, BusSearchPhase.polling);
+      expect(state.status, BusBookingStatus.idle);
+    });
+
+    test('trips found in later rounds are staged, not shown', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('a')]),
+          _page([_trip('a'), _trip('b')]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.trips.map((t) => t.id), ['a']);
+      expect(state.stagedTrips.map((t) => t.id), ['b']);
+    });
+
+    test('arrivals go straight in while nothing is on screen yet', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([]),
+          _page([_trip('a')]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.trips.map((t) => t.id), ['a']);
+      expect(state.stagedTrips, isEmpty);
+    });
+
+    test('a price change on a visible trip updates it in place', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('a', price: 100)]),
+          _page([_trip('a', price: 120)]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.trips.single.priceStartWith, 120);
+      expect(state.stagedTrips, isEmpty);
+    });
+
+    test('two quiet rounds settle the search as complete', () async {
+      final repo = FakeBusRepository(tripsPage: _page([_trip('a')]));
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.searchPhase, BusSearchPhase.complete);
+      // Round 0 plus the two quiet rounds — the third never runs.
+      expect(repo.searchTripsCallCount, 3);
+    });
+
+    test('revealStagedTrips moves staged trips into the visible list',
+        () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('a')]),
+          _page([_trip('a'), _trip('b')]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+      notifier.revealStagedTrips();
+
+      final state = container.read(busBookingProvider);
+      expect(state.trips.map((t) => t.id), ['a', 'b']);
+      expect(state.stagedTrips, isEmpty);
     });
   });
 }

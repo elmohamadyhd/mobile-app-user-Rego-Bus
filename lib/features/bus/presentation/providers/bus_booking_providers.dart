@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safaria/core/network/dio_client.dart';
@@ -11,6 +13,7 @@ import 'package:safaria/features/bus/domain/entities/bus_ticket.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/seat_map.dart';
 import 'package:safaria/features/bus/domain/repositories/bus_repository.dart';
+import 'package:safaria/features/bus/domain/utils/merge_bus_trips.dart';
 
 part 'bus_booking_providers.freezed.dart';
 
@@ -88,33 +91,169 @@ abstract class BusBookingState with _$BusBookingState {
 
 class BusBookingNotifier extends Notifier<BusBookingState> {
   BusRepository get _repo => ref.read(busRepositoryProvider);
+  BusSearchSchedule get _schedule => ref.read(busSearchScheduleProvider);
+
+  /// Rounds finding nothing new before the search is called settled.
+  static const _quietRoundsToComplete = 2;
+
+  /// Consecutive round failures before the window gives up.
+  static const _maxConsecutiveFailures = 3;
+
+  Timer? _pollTimer;
 
   @override
-  BusBookingState build() => const BusBookingState();
+  BusBookingState build() {
+    ref.onDispose(_cancelPolling);
+    return const BusBookingState();
+  }
 
   Future<void> searchTrips(BusSearchParams params) async {
+    _cancelPolling();
+    final generation = state.searchGeneration + 1;
     state = state.copyWith(
       status: BusBookingStatus.loadingTrips,
       searchParams: params,
       error: null,
       trips: [],
+      stagedTrips: [],
       tripsPage: 1,
       tripsHasMore: false,
+      searchPhase: BusSearchPhase.polling,
+      searchGeneration: generation,
     );
     try {
       final page = await _repo.searchTrips(params);
+      if (generation != state.searchGeneration) return;
       state = state.copyWith(
         status: BusBookingStatus.idle,
         trips: page.trips,
         tripsPage: page.currentPage,
         tripsHasMore: page.hasMore,
       );
+      _scheduleRound(
+        generation: generation,
+        round: 1,
+        quiet: 0,
+        failures: 0,
+      );
     } catch (e) {
+      if (generation != state.searchGeneration) return;
       state = state.copyWith(
         status: BusBookingStatus.error,
         error: e.toString(),
+        searchPhase: BusSearchPhase.idle,
       );
     }
+  }
+
+  void _scheduleRound({
+    required int generation,
+    required int round,
+    required int quiet,
+    required int failures,
+  }) {
+    _pollTimer?.cancel();
+    if (round > _schedule.rounds) {
+      _finishPolling(generation, BusSearchPhase.exhausted);
+      return;
+    }
+    _pollTimer = Timer(_schedule.gap, () {
+      unawaited(
+        _runRound(
+          generation: generation,
+          round: round,
+          quiet: quiet,
+          failures: failures,
+        ),
+      );
+    });
+  }
+
+  Future<void> _runRound({
+    required int generation,
+    required int round,
+    required int quiet,
+    required int failures,
+  }) async {
+    if (generation != state.searchGeneration) return;
+    final params = state.searchParams;
+    if (params == null) return;
+
+    final BusTripsPage page;
+    try {
+      page = await _repo.searchTrips(params);
+    } catch (_) {
+      // A failed round is not evidence the aggregation finished, so it never
+      // counts toward the quiet rule — and it never surfaces a message to a
+      // rider who already has results on screen.
+      if (generation != state.searchGeneration) return;
+      final nextFailures = failures + 1;
+      if (nextFailures >= _maxConsecutiveFailures) {
+        _finishPolling(generation, BusSearchPhase.exhausted);
+        return;
+      }
+      _scheduleRound(
+        generation: generation,
+        round: round + 1,
+        quiet: quiet,
+        failures: nextFailures,
+      );
+      return;
+    }
+
+    if (generation != state.searchGeneration) return;
+
+    final visibleIds = {for (final trip in state.trips) trip.id};
+    final updates = page.trips.where((t) => visibleIds.contains(t.id));
+    final arrivals = page.trips.where((t) => !visibleIds.contains(t.id));
+
+    // With nothing on screen there is no reading position to protect, so
+    // arrivals skip the staging list entirely.
+    final stageArrivals = state.trips.isNotEmpty;
+
+    final visible = mergeBusTrips(
+      state.trips,
+      [...updates, if (!stageArrivals) ...arrivals],
+    );
+    final staged = mergeBusTrips(
+      state.stagedTrips,
+      [if (stageArrivals) ...arrivals],
+    );
+
+    state = state.copyWith(trips: visible.trips, stagedTrips: staged.trips);
+
+    final nextQuiet = (visible.changed || staged.changed) ? 0 : quiet + 1;
+    if (nextQuiet >= _quietRoundsToComplete) {
+      _finishPolling(generation, BusSearchPhase.complete);
+      return;
+    }
+    _scheduleRound(
+      generation: generation,
+      round: round + 1,
+      quiet: nextQuiet,
+      failures: 0,
+    );
+  }
+
+  void _finishPolling(int generation, BusSearchPhase phase) {
+    _cancelPolling();
+    if (generation != state.searchGeneration) return;
+    state = state.copyWith(searchPhase: phase);
+  }
+
+  void _cancelPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+  }
+
+  /// Promotes trips found after the first round into the visible list. Called
+  /// by the results screen when the rider is at the top, or taps the pill.
+  void revealStagedTrips() {
+    if (state.stagedTrips.isEmpty) return;
+    state = state.copyWith(
+      trips: [...state.trips, ...state.stagedTrips],
+      stagedTrips: const [],
+    );
   }
 
   Future<void> loadMoreTrips() async {
