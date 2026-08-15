@@ -565,5 +565,76 @@ void main() {
       expect(state.trips.map((t) => t.id), ['a', 'b']);
       expect(state.stagedTrips, isEmpty);
     });
+
+    test('a schedule that keeps finding trips ends as exhausted', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('a')]),
+          _page([_trip('a'), _trip('b')]),
+          _page([_trip('a'), _trip('b'), _trip('c')]),
+          _page([_trip('a'), _trip('b'), _trip('c'), _trip('d')]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.searchPhase, BusSearchPhase.exhausted);
+      // Round 0 plus all three follow-ups; the queue never went quiet.
+      expect(repo.searchTripsCallCount, 4);
+      expect(state.stagedTrips.map((t) => t.id), ['b', 'c', 'd']);
+    });
+
+    test('a failed round does not count toward the quiet rule', () async {
+      final repo = FakeBusRepository(tripsPage: _page([_trip('a')]))
+        ..failingSearchCalls = {1};
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      // Rounds 2 and 3 are the first two quiet ones, so the window runs out
+      // rather than settling: the failure in between reset nothing.
+      expect(state.searchPhase, BusSearchPhase.complete);
+      expect(state.trips.map((t) => t.id), ['a']);
+      expect(state.error, isNull);
+      expect(state.status, BusBookingStatus.idle);
+    });
+
+    test('three consecutive failures end the window as exhausted', () async {
+      final repo = FakeBusRepository(tripsPage: _page([_trip('a')]))
+        ..failingSearchCalls = {1, 2, 3};
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.searchPhase, BusSearchPhase.exhausted);
+      expect(state.trips.map((t) => t.id), ['a']);
+      expect(state.error, isNull);
+    });
+
+    test('a failing round 0 keeps the existing error behaviour', () async {
+      final repo = FakeBusRepository()..failingSearchCalls = {0};
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.status, BusBookingStatus.error);
+      expect(state.searchPhase, BusSearchPhase.idle);
+      expect(state.error, isNotNull);
+      // No follow-up rounds were scheduled off a failed first call.
+      expect(repo.searchTripsCallCount, 1);
+    });
   });
 }
