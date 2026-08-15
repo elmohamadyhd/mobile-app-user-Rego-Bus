@@ -6,11 +6,11 @@ import 'package:safaria/shared/widgets/order_rated_badge.dart';
 void main() {
   testWidgets('shows rated label with rating', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('en'),
+      const MaterialApp(
+        locale: Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const Scaffold(body: OrderRatedBadge(rating: 4)),
+        home: Scaffold(body: OrderRatedBadge(rating: 4)),
       ),
     );
     expect(find.textContaining('4'), findsOneWidget);

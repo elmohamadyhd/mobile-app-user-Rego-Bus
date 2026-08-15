@@ -8,13 +8,13 @@ import 'package:safaria/features/bus/presentation/widgets/operator_avatar.dart';
 import 'package:safaria/features/bus/presentation/widgets/operator_mark.dart';
 
 BusTripSummary _tripWithLogo() {
-  final board = BusStop(
+  const board = BusStop(
     locationId: '1',
     name: 'Ramsis',
     cityId: 1,
     cityName: 'Cairo',
   );
-  final drop = BusStop(
+  const drop = BusStop(
     locationId: '9',
     name: 'Sidi Gaber',
     cityId: 2,
