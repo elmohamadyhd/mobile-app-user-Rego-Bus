@@ -17,10 +17,12 @@ import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_booking_providers.dart';
 import 'package:safaria/features/bus/presentation/widgets/active_filter_chips.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
+import 'package:safaria/features/bus/presentation/widgets/new_trips_pill.dart';
 import 'package:safaria/features/bus/presentation/widgets/ticket_border.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_card.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_filter_button.dart';
 import 'package:safaria/features/bus/presentation/widgets/trip_filter_sheet.dart';
+import 'package:safaria/features/bus/presentation/widgets/trip_search_status_strip.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/route_arrow_label.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
@@ -33,8 +35,37 @@ class TripResultsScreen extends ConsumerStatefulWidget {
 }
 
 class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
+  /// Below this scroll offset the rider is effectively still at the top, so
+  /// new results can be inserted without moving anything they are reading.
+  static const _autoRevealOffset = 24.0;
+
   String? _loadingTripId;
   BusTripFilters _filters = const BusTripFilters();
+  final ScrollController _scrollController = ScrollController();
+  AppLifecycleListener? _lifecycleListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_maybeRevealStaged);
+    _lifecycleListener = AppLifecycleListener(
+      onPause: () =>
+          ref.read(busBookingProvider.notifier).stopProgressiveSearch(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycleListener?.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _maybeRevealStaged() {
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.offset > _autoRevealOffset) return;
+    ref.read(busBookingProvider.notifier).revealStagedTrips();
+  }
 
   /// Default ordering: earliest departure first.
   List<BusTripSummary> _byDepartureTime(List<BusTripSummary> trips) {
@@ -45,6 +76,17 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(
+      busBookingProvider.select((s) => s.stagedTrips.length),
+      (_, count) {
+        if (count == 0) return;
+        if (_scrollController.hasClients &&
+            _scrollController.offset > _autoRevealOffset) {
+          return;
+        }
+        ref.read(busBookingProvider.notifier).revealStagedTrips();
+      },
+    );
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(busBookingProvider);
     final from = state.searchFromLabel ?? 'Cairo';
@@ -81,6 +123,11 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
       );
     }
     if (state.trips.isEmpty) {
+      // "No trips" is not yet a true statement while operators are still
+      // answering — keep the skeleton up until the window closes.
+      if (state.searchPhase == BusSearchPhase.polling) {
+        return const _LoadingSkeleton();
+      }
       return Center(
         child: Text(
           l10n.tripResultsNoTrips,
@@ -107,6 +154,11 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
     }
     return Column(
       children: [
+        TripSearchStatusStrip(
+          phase: state.searchPhase,
+          onCheckForMore: () =>
+              ref.read(busBookingProvider.notifier).checkForMoreTrips(),
+        ),
         if (_filters.isActive)
           ActiveFilterChips(
             filters: _filters,
@@ -114,19 +166,46 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
                 setState(() => _filters = _filters.removeChip(chip)),
           ),
         Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
-            itemCount: trips.length,
-            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
-            itemBuilder: (context, i) => TripCard(
-              key: ValueKey(trips[i].id),
-              trip: trips[i],
-              highlight: highlights[trips[i].id],
-              loading: _loadingTripId == trips[i].id,
-              onSelect: ({required from, required to}) =>
-                  _selectTrip(trips[i], from: from, to: to),
-            ),
+          child: Stack(
+            children: [
+              ListView.separated(
+                controller: _scrollController,
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg),
+                itemCount: trips.length,
+                separatorBuilder: (_, __) =>
+                    const SizedBox(height: AppSpacing.md),
+                itemBuilder: (context, i) => TripCard(
+                  key: ValueKey(trips[i].id),
+                  trip: trips[i],
+                  highlight: highlights[trips[i].id],
+                  loading: _loadingTripId == trips[i].id,
+                  onSelect: ({required from, required to}) =>
+                      _selectTrip(trips[i], from: from, to: to),
+                ),
+              ),
+              if (state.stagedTrips.isNotEmpty)
+                Positioned(
+                  top: AppSpacing.sm,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: NewTripsPill(
+                      count: state.stagedTrips.length,
+                      onTap: () {
+                        ref
+                            .read(busBookingProvider.notifier)
+                            .revealStagedTrips();
+                        _scrollController.animateTo(
+                          0,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOut,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ],
@@ -325,7 +404,8 @@ class _ErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(PhosphorIconsLight.warningCircle, color: AppColors.error, size: 48),
+          const Icon(PhosphorIconsLight.warningCircle,
+              color: AppColors.error, size: 48),
           const SizedBox(height: AppSpacing.md),
           Text(
             message,
