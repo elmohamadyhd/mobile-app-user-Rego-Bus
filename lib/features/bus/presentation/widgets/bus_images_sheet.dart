@@ -74,23 +74,33 @@ class _BusImagesSheetBodyState extends State<_BusImagesSheetBody> {
                     AppTypography.title.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: AppSpacing.md),
-              AspectRatio(
-                aspectRatio: 16 / 10,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadius.card),
-                  child: PageView.builder(
-                    controller: _controller,
-                    itemCount: urls.length,
-                    onPageChanged: (i) => setState(() => _index = i),
-                    itemBuilder: (context, i) {
-                      return Semantics(
-                        label: l10n.seatSelectionBusImagesPage(
-                          i + 1,
-                          urls.length,
-                        ),
-                        child: _BusImagePage(url: urls[i], l10n: l10n),
-                      );
-                    },
+              // `Flexible` + `Center` give `AspectRatio` loose constraints on
+              // both axes. A plain `Column` child gets unbounded height, so
+              // `AspectRatio` would size purely from the stretched width and
+              // overflow the sheet's height budget on a wide/short viewport
+              // (landscape, a foldable, a short window). Loose constraints
+              // let it shrink to whichever dimension actually binds.
+              Flexible(
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: 16 / 10,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.card),
+                      child: PageView.builder(
+                        controller: _controller,
+                        itemCount: urls.length,
+                        onPageChanged: (i) => setState(() => _index = i),
+                        itemBuilder: (context, i) {
+                          return Semantics(
+                            label: l10n.seatSelectionBusImagesPage(
+                              i + 1,
+                              urls.length,
+                            ),
+                            child: _BusImagePage(url: urls[i], l10n: l10n),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ),

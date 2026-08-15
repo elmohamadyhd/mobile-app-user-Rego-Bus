@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/bus/presentation/providers/bus_orders_provider.dart';
@@ -36,7 +37,7 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
     final carCount = guestModeValue == false
         ? ref.watch(carOrdersProvider).value?.length
         : null;
-    final flightCount = guestModeValue == false
+    final flightCount = AppConfig.showFlights && guestModeValue == false
         ? ref.watch(flightOrdersProvider).value?.length
         : null;
     final count = switch (_modeIndex) {
@@ -51,7 +52,8 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
               await Future.wait([
                 ref.read(busOrdersProvider.notifier).refresh(),
                 ref.read(carOrdersProvider.notifier).refresh(),
-                ref.refresh(flightOrdersProvider.future),
+                if (AppConfig.showFlights)
+                  ref.refresh(flightOrdersProvider.future),
               ]);
             }
           : () async {},
@@ -89,7 +91,8 @@ class _TicketsScreenState extends ConsumerState<TicketsScreen> {
                 switch (_modeIndex) {
                   TransportModeTabBar.privateTabIndex =>
                     const CarOrdersSection(),
-                  TransportModeTabBar.flightTabIndex =>
+                  TransportModeTabBar.flightTabIndex
+                      when AppConfig.showFlights =>
                     const FlightOrdersSection(),
                   _ => const BusOrdersSection(),
                 },

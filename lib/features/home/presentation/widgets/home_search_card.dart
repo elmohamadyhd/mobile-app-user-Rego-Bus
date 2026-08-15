@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
@@ -258,7 +259,8 @@ class _HomeSearchCardState extends ConsumerState<HomeSearchCard> {
               onToPlaceChanged: widget.onToPlaceChanged,
               onFromPlaceChanged: widget.onFromPlaceChanged,
             )
-          else if (widget.selectedTab == TransportModeTabBar.flightTabIndex)
+          else if (AppConfig.showFlights &&
+              widget.selectedTab == TransportModeTabBar.flightTabIndex)
             const FlightSearchForm()
           else
             _buildBusForm(l10n),
@@ -503,13 +505,12 @@ class _DateField extends StatelessWidget {
                       maxLines: 1,
                       softWrap: false,
                       overflow: TextOverflow.ellipsis,
-                      style: (compact
-                              ? AppTypography.body
-                              : AppTypography.title)
-                          .copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w800,
-                          ),
+                      style:
+                          (compact ? AppTypography.body : AppTypography.title)
+                              .copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ],
                 ),

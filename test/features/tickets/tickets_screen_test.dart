@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/theme/app_theme.dart';
 import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
@@ -108,7 +109,10 @@ void main() {
     expect(find.text('SuperJet'), findsOneWidget);
     expect(find.text('Bus'), findsOneWidget);
     expect(find.text('Private'), findsOneWidget);
-    expect(find.text('Flight'), findsOneWidget);
+    expect(
+      find.text('Flight'),
+      AppConfig.showFlights ? findsOneWidget : findsNothing,
+    );
     expect(find.text('1 tickets'), findsOneWidget);
   });
 
@@ -125,7 +129,7 @@ void main() {
 
     expect(find.byType(FlightOrdersSection), findsOneWidget);
     expect(find.text('SuperJet'), findsNothing);
-  });
+  }, skip: !AppConfig.showFlights);
 
   testWidgets('empty list shows the empty state with a Book a trip CTA',
       (tester) async {

@@ -61,14 +61,38 @@ void main() {
           .selectQuote(FakeCarRepository.sampleQuote);
     }
 
+    // A real router, not a bare `MaterialApp`: a successful order push takes
+    // the screen through `context.push(CarRoutes.pay)` (and confirmed orders
+    // through `context.go(CarRoutes.voucher)`), which throws "No GoRouter
+    // found in context" without one — even for tests that only mean to
+    // assert on order creation, not on the page it lands on.
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => const CarTripDetailsScreen(),
+        ),
+        GoRoute(
+          path: CarRoutes.pay,
+          builder: (context, state) => const Scaffold(body: Text('pay-screen')),
+        ),
+        GoRoute(
+          path: CarRoutes.voucher,
+          builder: (context, state) =>
+              const Scaffold(body: Text('voucher-screen')),
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(
-          locale: Locale('ar'),
+        child: MaterialApp.router(
+          locale: const Locale('ar'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: CarTripDetailsScreen(),
+          routerConfig: router,
         ),
       ),
     );

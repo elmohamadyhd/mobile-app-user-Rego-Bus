@@ -27,4 +27,8 @@ abstract final class AppConfig {
 
   /// When false, login/register hide the Google sign-in row.
   static const bool showSocialLogin = false;
+
+  /// When false, Home and Tickets hide the Flight tab and flight routes
+  /// are not registered. Flip to true to ship the flight booking flow.
+  static const bool showFlights = true;
 }

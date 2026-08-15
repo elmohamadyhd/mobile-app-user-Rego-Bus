@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/complete_phone_screen.dart';
 import 'package:safaria/features/auth/presentation/forgot_password_screen.dart';
@@ -143,7 +144,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       ...busRoutes(),
       ...carRoutes(),
-      ...flightRoutes(),
+      if (AppConfig.showFlights) ...flightRoutes(),
       ...walletRoutes(),
       ...addressesRoutes(),
       ...notificationsRoutes(),

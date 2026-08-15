@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/places/place_prediction.dart';
 import 'package:safaria/core/places/places_client.dart';
 import 'package:safaria/core/places/places_providers.dart';
@@ -184,7 +185,7 @@ void main() {
     expect(find.text('Search flights'), findsOneWidget);
     expect(find.text('Search trips'), findsNothing);
     expect(find.text('Request a car'), findsNothing);
-  });
+  }, skip: !AppConfig.showFlights);
 
   testWidgets('flight tab no longer shows the coming-soon snackbar',
       (tester) async {
@@ -202,5 +203,22 @@ void main() {
     await tester.pump();
 
     expect(find.text('Coming soon'), findsNothing);
+  }, skip: !AppConfig.showFlights);
+
+  testWidgets('hides the Flight tab when showFlights is off', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        HomeSearchCard(
+          selectedTab: TransportModeTabBar.busTabIndex,
+          onTabChanged: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Flight'),
+      AppConfig.showFlights ? findsOneWidget : findsNothing,
+    );
   });
 }

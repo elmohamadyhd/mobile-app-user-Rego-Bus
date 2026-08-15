@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
@@ -25,9 +26,10 @@ class TransportModeTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final tabs = [
-      (l10n.homeTabBus, PhosphorIconsLight.bus),
-      (l10n.homeTabPrivate, PhosphorIconsLight.carProfile),
-      (l10n.homeTabFlight, PhosphorIconsLight.airplane),
+      (l10n.homeTabBus, PhosphorIconsLight.bus, busTabIndex),
+      (l10n.homeTabPrivate, PhosphorIconsLight.carProfile, privateTabIndex),
+      if (AppConfig.showFlights)
+        (l10n.homeTabFlight, PhosphorIconsLight.airplane, flightTabIndex),
     ];
 
     return Container(
@@ -37,18 +39,17 @@ class TransportModeTabBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Row(
-        children: List.generate(tabs.length, (i) {
-          final (label, icon) = tabs[i];
-          final active = selectedIndex == i;
-          return Expanded(
-            child: _TransportModeTab(
-              label: label,
-              icon: icon,
-              active: active,
-              onTap: () => onChanged(i),
+        children: [
+          for (final (label, icon, index) in tabs)
+            Expanded(
+              child: _TransportModeTab(
+                label: label,
+                icon: icon,
+                active: selectedIndex == index,
+                onTap: () => onChanged(index),
+              ),
             ),
-          );
-        }),
+        ],
       ),
     );
   }

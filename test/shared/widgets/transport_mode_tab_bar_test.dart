@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:safaria/core/config/app_config.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/transport_mode_tab_bar.dart';
@@ -35,7 +36,7 @@ void main() {
     expect(privateIcon.color, AppColors.primary);
   });
 
-  testWidgets('fits three Arabic tabs in a narrow card without overflow', (
+  testWidgets('fits Arabic tabs in a narrow card without overflow', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -60,6 +61,9 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('باص'), findsOneWidget);
-    expect(find.text('طيران'), findsOneWidget);
+    expect(
+      find.text('طيران'),
+      AppConfig.showFlights ? findsOneWidget : findsNothing,
+    );
   });
 }
