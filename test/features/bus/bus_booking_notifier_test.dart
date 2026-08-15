@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safaria/features/bus/domain/entities/bus_search_params.dart';
@@ -679,6 +681,76 @@ void main() {
       expect(state.trips.map((t) => t.id), ['a']);
       // The pending round was cancelled before it could run.
       expect(repo.searchTripsCallCount, 1);
+    });
+
+    test('an in-flight round after stopProgressiveSearch does not apply',
+        () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('a')]),
+          _page([_trip('a'), _trip('b')]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      final hold = Completer<void>();
+      repo.nextSearchTripsHold = hold;
+      await pumpEventQueue();
+      expect(repo.searchTripsCallCount, 2);
+      expect(
+        container.read(busBookingProvider).searchPhase,
+        BusSearchPhase.polling,
+      );
+
+      notifier.stopProgressiveSearch();
+      hold.complete();
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.searchPhase, BusSearchPhase.exhausted);
+      expect(state.trips.map((t) => t.id), ['a']);
+      expect(state.stagedTrips, isEmpty);
+      expect(repo.searchTripsCallCount, 2);
+    });
+
+    test('reset then a new search rejects the previous generation', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('old')]),
+          _page([_trip('old'), _trip('sneaky')]),
+          _page([_trip('new')]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      final firstGeneration =
+          container.read(busBookingProvider).searchGeneration;
+      final hold = Completer<void>();
+      repo.nextSearchTripsHold = hold;
+      await pumpEventQueue();
+      expect(repo.searchTripsCallCount, 2);
+
+      notifier.reset();
+      await _search(notifier);
+      final secondGeneration =
+          container.read(busBookingProvider).searchGeneration;
+      expect(secondGeneration, isNot(firstGeneration));
+      expect(
+        container.read(busBookingProvider).trips.map((t) => t.id),
+        ['new'],
+      );
+
+      hold.complete();
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.searchGeneration, secondGeneration);
+      expect(state.trips.map((t) => t.id), ['new']);
+      expect(state.stagedTrips, isEmpty);
     });
 
     test('loadMoreTrips is a no-op while rounds are still running', () async {

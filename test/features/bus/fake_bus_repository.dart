@@ -32,6 +32,9 @@ class FakeBusRepository implements BusRepository {
   /// Zero-based indices of `searchTrips` calls that should throw instead.
   Set<int> failingSearchCalls = {};
 
+  /// If set, the next `searchTrips` call waits on this, then clears it.
+  Completer<void>? nextSearchTripsHold;
+
   int searchTripsCallCount = 0;
   BusTripSummary? tripByIdResult;
   SeatMap? seatMapResult;
@@ -45,8 +48,8 @@ class FakeBusRepository implements BusRepository {
   bool listOrdersShouldThrow = false;
   List<String> cancelOrderCalls = [];
   bool cancelOrderShouldThrow = false;
-  final List<({String orderId, int rating, String? comment})> submitReviewCalls =
-      [];
+  final List<({String orderId, int rating, String? comment})>
+      submitReviewCalls = [];
   bool submitReviewShouldThrow = false;
   BusOrder? orderByIdResult;
   Completer<BusOrder>? orderByIdCompleter;
@@ -80,16 +83,19 @@ class FakeBusRepository implements BusRepository {
   ];
 
   @override
-  Future<BusTripsPage> searchTrips(BusSearchParams params, {int page = 1}) {
+  Future<BusTripsPage> searchTrips(BusSearchParams params,
+      {int page = 1}) async {
     final index = searchTripsCallCount++;
+    final hold = nextSearchTripsHold;
+    nextSearchTripsHold = null;
+    if (hold != null) await hold.future;
     if (failingSearchCalls.contains(index)) {
-      return Future.error(
-        const ApiException('search failed', statusCode: 500),
-      );
+      throw const ApiException('search failed', statusCode: 500);
     }
     final queue = tripsPageQueue;
     if (queue != null && queue.isNotEmpty) {
-      return Future.value(queue[index < queue.length ? index : queue.length - 1]);
+      return Future.value(
+          queue[index < queue.length ? index : queue.length - 1]);
     }
     return Future.value(
       tripsPage ??

@@ -410,6 +410,21 @@ void main() {
     expect(find.text('No trips found'), findsNothing);
   });
 
+  testWidgets('an empty exhausted list still shows Check for more',
+      (tester) async {
+    final container = await _pumpResultsWithRounds(
+      tester,
+      [[]],
+      gap: const Duration(days: 1),
+    );
+
+    container.read(busBookingProvider.notifier).stopProgressiveSearch();
+    await tester.pump();
+
+    expect(find.text('Check for more'), findsOneWidget);
+    expect(find.text('No trips found'), findsOneWidget);
+  });
+
   testWidgets('staged trips reveal themselves while the rider is at the top',
       (tester) async {
     final tripA = FakeBusRepository.sampleTrip;

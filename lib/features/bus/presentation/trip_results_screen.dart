@@ -128,11 +128,24 @@ class _TripResultsScreenState extends ConsumerState<TripResultsScreen> {
       if (state.searchPhase == BusSearchPhase.polling) {
         return const _LoadingSkeleton();
       }
-      return Center(
+      final emptyCopy = Center(
         child: Text(
           l10n.tripResultsNoTrips,
           style: AppTypography.body.copyWith(color: AppColors.textMuted),
         ),
+      );
+      if (state.searchPhase != BusSearchPhase.exhausted) {
+        return emptyCopy;
+      }
+      return Column(
+        children: [
+          TripSearchStatusStrip(
+            phase: state.searchPhase,
+            onCheckForMore: () =>
+                ref.read(busBookingProvider.notifier).checkForMoreTrips(),
+          ),
+          Expanded(child: emptyCopy),
+        ],
       );
     }
     final highlights = computeTripHighlights(state.trips);

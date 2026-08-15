@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:safaria/core/network/dio_client.dart';
@@ -187,7 +189,12 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
       // counts toward the quiet rule — and it never surfaces a message to a
       // rider who already has results on screen.
       if (generation != state.searchGeneration) return;
+      if (state.searchPhase != BusSearchPhase.polling) return;
       final nextFailures = failures + 1;
+      _logRound(
+        round,
+        'failed failures=$nextFailures',
+      );
       if (nextFailures >= _maxConsecutiveFailures) {
         _finishPolling(generation, BusSearchPhase.exhausted);
         return;
@@ -202,6 +209,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     }
 
     if (generation != state.searchGeneration) return;
+    if (state.searchPhase != BusSearchPhase.polling) return;
 
     final visibleIds = {for (final trip in state.trips) trip.id};
     final updates = page.trips.where((t) => visibleIds.contains(t.id));
@@ -223,6 +231,11 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     state = state.copyWith(trips: visible.trips, stagedTrips: staged.trips);
 
     final nextQuiet = (visible.changed || staged.changed) ? 0 : quiet + 1;
+    _logRound(
+      round,
+      'new=${arrivals.length} '
+      'changed=${visible.changed || staged.changed} quiet=$nextQuiet',
+    );
     if (nextQuiet >= _quietRoundsToComplete) {
       _finishPolling(generation, BusSearchPhase.complete);
       return;
@@ -244,6 +257,14 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
   void _cancelPolling() {
     _pollTimer?.cancel();
     _pollTimer = null;
+  }
+
+  void _logRound(int round, String details) {
+    if (!kDebugMode) return;
+    developer.log(
+      'round $round: $details',
+      name: 'bus.progressiveSearch',
+    );
   }
 
   /// Promotes trips found after the first round into the visible list. Called
@@ -564,7 +585,12 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     }
   }
 
-  void reset() => state = const BusBookingState();
+  void reset() {
+    _cancelPolling();
+    // Bump so an in-flight round born under the previous generation cannot
+    // match a later search that would otherwise restart at 0 → 1.
+    state = BusBookingState(searchGeneration: state.searchGeneration + 1);
+  }
 }
 
 final busBookingProvider =
