@@ -58,6 +58,14 @@ void main() {
       expect(state.trips, isEmpty);
     });
 
+    test('initial state is not searching and has nothing staged', () {
+      final container = makeContainer(FakeBusRepository());
+      final state = container.read(busBookingProvider);
+      expect(state.searchPhase, BusSearchPhase.idle);
+      expect(state.stagedTrips, isEmpty);
+      expect(state.searchGeneration, 0);
+    });
+
     test('searchTrips populates trips from repository', () async {
       final repo = FakeBusRepository(
         tripsPage: BusTripsPage(

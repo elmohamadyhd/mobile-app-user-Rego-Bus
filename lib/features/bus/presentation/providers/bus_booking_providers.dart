@@ -29,6 +29,31 @@ enum BusBookingStatus {
 
 enum PaymentMethod { visa, wallet }
 
+/// Lifecycle of the progressive search window, kept separate from
+/// [BusBookingStatus] so the existing error view, skeleton, and filter code
+/// keep reading exactly the field they read today.
+enum BusSearchPhase { idle, polling, complete, exhausted }
+
+/// Schedule for the follow-up search rounds.
+///
+/// The aggregating backend answers with whatever operator inventory has landed
+/// so far, and was observed to have more roughly 5 seconds later. These numbers
+/// are a starting point to re-tune from measurement, not a result — which is
+/// also why they are injected rather than hardcoded: tests override the gap to
+/// zero instead of pulling in a fake clock.
+class BusSearchSchedule {
+  const BusSearchSchedule({
+    this.gap = const Duration(seconds: 5),
+    this.rounds = 3,
+  });
+
+  final Duration gap;
+  final int rounds;
+}
+
+final busSearchScheduleProvider =
+    Provider<BusSearchSchedule>((ref) => const BusSearchSchedule());
+
 final busApiProvider =
     Provider<BusApi>((ref) => BusApi(ref.watch(dioProvider)));
 
@@ -55,6 +80,9 @@ abstract class BusBookingState with _$BusBookingState {
     String? error,
     String? searchFromLabel,
     String? searchToLabel,
+    @Default(BusSearchPhase.idle) BusSearchPhase searchPhase,
+    @Default([]) List<BusTripSummary> stagedTrips,
+    @Default(0) int searchGeneration,
   }) = _BusBookingState;
 }
 
