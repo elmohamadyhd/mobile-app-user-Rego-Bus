@@ -71,8 +71,6 @@ abstract class BusBookingState with _$BusBookingState {
   const factory BusBookingState({
     BusSearchParams? searchParams,
     @Default([]) List<BusTripSummary> trips,
-    @Default(1) int tripsPage,
-    @Default(false) bool tripsHasMore,
     @Default(BusBookingStatus.idle) BusBookingStatus status,
     BusTripSummary? selectedTrip,
     BusStop? fromStop,
@@ -101,6 +99,11 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
   /// Consecutive round failures before the window gives up.
   static const _maxConsecutiveFailures = 3;
 
+  /// Ceiling on how many pages a single round will pull. `/buses/trips` pages
+  /// at 15, so a real search is one or two pages; the cap exists only so a bad
+  /// `lastPage` cannot fan out into dozens of parallel requests.
+  static const _maxPagesPerRound = 5;
+
   Timer? _pollTimer;
 
   @override
@@ -118,20 +121,30 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
       error: null,
       trips: [],
       stagedTrips: [],
-      tripsPage: 1,
-      tripsHasMore: false,
       searchPhase: BusSearchPhase.polling,
       searchGeneration: generation,
     );
     try {
       final page = await _repo.searchTrips(params);
       if (generation != state.searchGeneration) return;
+      // Paint page 1 before pulling the rest: the first screenful is what the
+      // rider is waiting on, and the later pages are usually a second or two
+      // behind it.
       state = state.copyWith(
         status: BusBookingStatus.idle,
         trips: page.trips,
-        tripsPage: page.currentPage,
-        tripsHasMore: page.hasMore,
       );
+      if (page.lastPage > 1) {
+        final rest = await _fetchRemainingPages(
+          params,
+          lastPage: page.lastPage,
+        );
+        if (generation != state.searchGeneration) return;
+        // These pages belong to the same first answer, so they go into the
+        // visible list rather than behind the pill — the rider has not had
+        // time to settle on anything yet.
+        state = state.copyWith(trips: mergeBusTrips(state.trips, rest).trips);
+      }
       _scheduleRound(
         generation: generation,
         round: 1,
@@ -181,9 +194,9 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     final params = state.searchParams;
     if (params == null) return;
 
-    final BusTripsPage page;
+    final List<BusTripSummary> incoming;
     try {
-      page = await _repo.searchTrips(params);
+      incoming = await _fetchAllPages(params);
     } catch (_) {
       // A failed round is not evidence the aggregation finished, so it never
       // counts toward the quiet rule — and it never surfaces a message to a
@@ -212,8 +225,8 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     if (state.searchPhase != BusSearchPhase.polling) return;
 
     final visibleIds = {for (final trip in state.trips) trip.id};
-    final updates = page.trips.where((t) => visibleIds.contains(t.id));
-    final arrivals = page.trips.where((t) => !visibleIds.contains(t.id));
+    final updates = incoming.where((t) => visibleIds.contains(t.id));
+    final arrivals = incoming.where((t) => !visibleIds.contains(t.id));
 
     // With nothing on screen there is no reading position to protect, so
     // arrivals skip the staging list entirely.
@@ -246,6 +259,48 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
       quiet: nextQuiet,
       failures: 0,
     );
+  }
+
+  /// One round's worth of results: page 1 plus every further page it says
+  /// exists.
+  Future<List<BusTripSummary>> _fetchAllPages(BusSearchParams params) async {
+    final first = await _repo.searchTrips(params);
+    final rest = await _fetchRemainingPages(params, lastPage: first.lastPage);
+    return [...first.trips, ...rest];
+  }
+
+  /// Pages 2..lastPage, fetched together.
+  ///
+  /// Page numbers are not a stable coordinate while the aggregator is still
+  /// filling in — a trip on page 2 now may be on page 1 a moment later, so the
+  /// same trip can arrive twice or slip through a boundary. That is safe here
+  /// only because every page is folded through [mergeBusTrips], which collapses
+  /// anything seen twice and never drops what it already holds.
+  Future<List<BusTripSummary>> _fetchRemainingPages(
+    BusSearchParams params, {
+    required int lastPage,
+  }) async {
+    final target = lastPage < _maxPagesPerRound ? lastPage : _maxPagesPerRound;
+    if (target < 2) return const [];
+    final pages = await Future.wait([
+      for (var page = 2; page <= target; page++) _fetchPageOrEmpty(params, page),
+    ]);
+    return [for (final trips in pages) ...trips];
+  }
+
+  /// A single page that contributes nothing rather than sinking the round.
+  /// Losing five trips beats losing the fifteen already in hand.
+  Future<List<BusTripSummary>> _fetchPageOrEmpty(
+    BusSearchParams params,
+    int page,
+  ) async {
+    try {
+      final result = await _repo.searchTrips(params, page: page);
+      return result.trips;
+    } catch (_) {
+      _logRound(page, 'page $page failed');
+      return const [];
+    }
   }
 
   void _finishPolling(int generation, BusSearchPhase phase) {
@@ -304,27 +359,6 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
         failures: 0,
       ),
     );
-  }
-
-  Future<void> loadMoreTrips() async {
-    final params = state.searchParams;
-    if (params == null || !state.tripsHasMore) return;
-    // `page` is not a stable coordinate while the aggregator is still filling
-    // in: page 2 fetched now may repeat or skip rows relative to page 1.
-    if (state.searchPhase == BusSearchPhase.polling) return;
-    if (state.status == BusBookingStatus.loadingTrips) return;
-
-    final nextPage = state.tripsPage + 1;
-    try {
-      final page = await _repo.searchTrips(params, page: nextPage);
-      state = state.copyWith(
-        trips: [...state.trips, ...page.trips],
-        tripsPage: page.currentPage,
-        tripsHasMore: page.hasMore,
-      );
-    } catch (e) {
-      state = state.copyWith(error: e.toString());
-    }
   }
 
   void setSearchLabels({String? from, String? to}) {

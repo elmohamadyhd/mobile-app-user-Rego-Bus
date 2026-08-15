@@ -753,23 +753,82 @@ void main() {
       expect(state.stagedTrips, isEmpty);
     });
 
-    test('loadMoreTrips is a no-op while rounds are still running', () async {
-      final repo = FakeBusRepository(
-        tripsPageQueue: [
-          BusTripsPage(trips: [_trip('a')], currentPage: 1, lastPage: 3),
-        ],
-      );
+    test('the first answer includes trips from pages beyond the first',
+        () async {
+      final repo = FakeBusRepository()
+        ..paginatedRounds = [
+          [for (var i = 0; i < 20; i++) _trip('trip-$i')],
+        ]
+        ..perPage = 15;
       final container = makeContainer(repo, gap: const Duration(seconds: 30));
       final notifier = container.read(busBookingProvider.notifier);
 
       await _search(notifier);
-      await notifier.loadMoreTrips();
 
       final state = container.read(busBookingProvider);
-      expect(state.searchPhase, BusSearchPhase.polling);
-      // Paging never advanced past the first page.
-      expect(state.tripsPage, 1);
-      expect(repo.searchTripsCallCount, 1);
+      // All 20, not the 15 the first page carries.
+      expect(state.trips, hasLength(20));
+      // Page 2 belongs to the same first answer, so it is not held back
+      // behind the pill.
+      expect(state.stagedTrips, isEmpty);
+      expect(repo.searchTripsCallCount, 2);
+    });
+
+    test('a trip that only shows up on page 2 of a later round is staged',
+        () async {
+      final first = [for (var i = 0; i < 20; i++) _trip('trip-$i')];
+      final repo = FakeBusRepository()
+        ..paginatedRounds = [
+          first,
+          [...first, _trip('trip-late')],
+        ]
+        ..perPage = 15;
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.trips, hasLength(20));
+      expect(state.stagedTrips.map((t) => t.id), ['trip-late']);
+    });
+
+    test('a failing later page does not lose the page already in hand',
+        () async {
+      final repo = FakeBusRepository()
+        ..paginatedRounds = [
+          [for (var i = 0; i < 20; i++) _trip('trip-$i')],
+        ]
+        ..perPage = 15
+        // Call 0 is page 1, call 1 is page 2 of the same round.
+        ..failingSearchCalls = {1};
+      final container = makeContainer(repo, gap: const Duration(seconds: 30));
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+
+      final state = container.read(busBookingProvider);
+      expect(state.trips, hasLength(15));
+      expect(state.status, BusBookingStatus.idle);
+      expect(state.error, isNull);
+    });
+
+    test('a runaway page count cannot fan out without limit', () async {
+      final repo = FakeBusRepository()
+        ..paginatedRounds = [
+          [for (var i = 0; i < 100; i++) _trip('trip-$i')],
+        ]
+        // 20 pages advertised.
+        ..perPage = 5;
+      final container = makeContainer(repo, gap: const Duration(seconds: 30));
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+
+      // Page 1 plus four more, not twenty requests.
+      expect(repo.searchTripsCallCount, 5);
+      expect(container.read(busBookingProvider).trips, hasLength(25));
     });
 
     test('checkForMoreTrips reopens the window and merges what it finds',

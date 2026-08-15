@@ -27,6 +27,7 @@ window, and defines the backend contract that would let us stop guessing.
 | Repeated searches over a bounded window, merged by trip id | Any change to flight or private-car search |
 | Stop conditions, cancellation, lifecycle | Wiring `loadMoreTrips` into the results screen — see [Deferred](#deferred) |
 | Staged reveal so the list does not jump under the rider's finger | Server-side implementation (we only specify the ask) |
+| Pulling every page of each round (added 2026-08-15 — see [Pagination interaction](#pagination-interaction)) | |
 | Progress + completion affordances on the results screen | Caching results across screen visits |
 | Arabic and English strings for the new affordances | Filter/sort behaviour, which stays exactly as it is |
 
@@ -223,10 +224,28 @@ Rounds are also skipped when the notifier has been disposed.
 server: page 2 fetched at t=9s may repeat or skip rows relative to page 1
 fetched at t=0.
 
-Rule: **every round fetches page 1 only.** `loadMoreTrips` must not run while
-`searchPhase == polling`, and gains an early return enforcing that. It is
-currently dead code (defined at `bus_booking_providers.dart:92`, called from
-nowhere), so this costs nothing today and prevents a corrupt list tomorrow.
+**Revised 2026-08-15, after first run against the demo backend.** The original
+rule here was "every round fetches page 1 only", on the reasoning that paging a
+growing result set is unsafe. That was correct about the hazard and wrong about
+the cost: a live Cairo → Alexandria search returned `total: 20`, `perPage: 15`,
+`lastPage: 2`, so five trips the server already knew about sat on page 2 and no
+number of rounds would ever have reached them. Fetching page 1 only did not
+avoid the problem this feature exists to solve — it guaranteed it.
+
+Rule: **every round fetches page 1, then every further page the response
+advertises**, capped at `_maxPagesPerRound = 5`. Page 1 is rendered before the
+rest are requested, so the first screenful is not held back.
+
+Page instability is handled rather than avoided: every page is folded through
+`mergeBusTrips`, which collapses any trip seen twice and never drops one it
+already holds. A row that shifts across a page boundary between requests is
+therefore a no-op, not a duplicate or a loss.
+
+A page beyond the first that errors contributes nothing and does not fail the
+round — losing five trips beats losing the fifteen in hand.
+
+This makes `loadMoreTrips`, `tripsPage`, and `tripsHasMore` dead: every round
+already holds everything. They are removed rather than left to mislead.
 
 ---
 
@@ -361,11 +380,9 @@ reason to build the client side now rather than wait.
 
 ## Deferred
 
-**Wiring `loadMoreTrips` into the screen.** Riders currently only ever see page
-one. That is a real gap and a close cousin of this one, but it is a separate
-feature (infinite scroll, its own loading and error affordances) and folding it
-in would double the size of this change. This design only guarantees it cannot
-run at a moment when it would corrupt the list. Worth scheduling next.
+**~~Wiring `loadMoreTrips` into the screen.~~** Resolved on 2026-08-15 — not by
+wiring it up, but by making every round pull all pages and deleting it. See
+[Pagination interaction](#pagination-interaction).
 
 **Applying the same treatment to flight search.** `POST /flights/search`
 aggregates from multiple suppliers too and is likely to have the same

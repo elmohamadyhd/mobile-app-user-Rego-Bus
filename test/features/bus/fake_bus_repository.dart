@@ -29,6 +29,18 @@ class FakeBusRepository implements BusRepository {
   /// the last entry repeats — which is what a settled aggregator looks like.
   List<BusTripsPage>? tripsPageQueue;
 
+  /// Full result set per round, which the fake paginates itself using
+  /// [perPage]. A round is delimited by a `page: 1` call, so a caller that
+  /// pulls pages 1..n counts as one round. Takes precedence over
+  /// [tripsPageQueue]; the last round repeats once the list runs dry.
+  List<List<BusTripSummary>>? paginatedRounds;
+
+  /// Page size the fake reports and slices by when [paginatedRounds] is set.
+  /// Matches the live `/buses/trips` page size.
+  int perPage = 15;
+
+  int _roundCursor = -1;
+
   /// Zero-based indices of `searchTrips` calls that should throw instead.
   Set<int> failingSearchCalls = {};
 
@@ -91,6 +103,22 @@ class FakeBusRepository implements BusRepository {
     if (hold != null) await hold.future;
     if (failingSearchCalls.contains(index)) {
       throw const ApiException('search failed', statusCode: 500);
+    }
+    final rounds = paginatedRounds;
+    if (rounds != null && rounds.isNotEmpty) {
+      if (page == 1) _roundCursor++;
+      final all =
+          rounds[_roundCursor < rounds.length ? _roundCursor : rounds.length - 1];
+      final lastPage = all.isEmpty ? 1 : ((all.length - 1) ~/ perPage) + 1;
+      final start = (page - 1) * perPage;
+      final end = start + perPage;
+      return BusTripsPage(
+        trips: start >= all.length
+            ? const []
+            : all.sublist(start, end > all.length ? all.length : end),
+        currentPage: page,
+        lastPage: lastPage,
+      );
     }
     final queue = tripsPageQueue;
     if (queue != null && queue.isNotEmpty) {
