@@ -47,6 +47,13 @@ class FakeBusRepository implements BusRepository {
   /// If set, the next `searchTrips` call waits on this, then clears it.
   Completer<void>? nextSearchTripsHold;
 
+  /// If set, `searchTrips` for [holdSearchTripsPage] waits on this.
+  Completer<void>? searchTripsPageHold;
+
+  /// Page number that [searchTripsPageHold] applies to. Ignored when the
+  /// hold is null.
+  int holdSearchTripsPage = 2;
+
   int searchTripsCallCount = 0;
   BusTripSummary? tripByIdResult;
   SeatMap? seatMapResult;
@@ -101,14 +108,18 @@ class FakeBusRepository implements BusRepository {
     final hold = nextSearchTripsHold;
     nextSearchTripsHold = null;
     if (hold != null) await hold.future;
+    final pageHold = searchTripsPageHold;
+    if (pageHold != null && page == holdSearchTripsPage) {
+      await pageHold.future;
+    }
     if (failingSearchCalls.contains(index)) {
       throw const ApiException('search failed', statusCode: 500);
     }
     final rounds = paginatedRounds;
     if (rounds != null && rounds.isNotEmpty) {
       if (page == 1) _roundCursor++;
-      final all =
-          rounds[_roundCursor < rounds.length ? _roundCursor : rounds.length - 1];
+      final all = rounds[
+          _roundCursor < rounds.length ? _roundCursor : rounds.length - 1];
       final lastPage = all.isEmpty ? 1 : ((all.length - 1) ~/ perPage) + 1;
       final start = (page - 1) * perPage;
       final end = start + perPage;

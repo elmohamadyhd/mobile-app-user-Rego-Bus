@@ -135,22 +135,24 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
         trips: page.trips,
       );
       if (page.lastPage > 1) {
-        final rest = await _fetchRemainingPages(
-          params,
-          lastPage: page.lastPage,
+        // Do not hold the first paint (or the home-screen await) on extra
+        // pages — `/buses/trips` is already a slow aggregator, and page 2
+        // is another full round-trip. Merge them in the background.
+        unawaited(
+          _completeFirstRound(
+            generation: generation,
+            params: params,
+            lastPage: page.lastPage,
+          ),
         );
-        if (generation != state.searchGeneration) return;
-        // These pages belong to the same first answer, so they go into the
-        // visible list rather than behind the pill — the rider has not had
-        // time to settle on anything yet.
-        state = state.copyWith(trips: mergeBusTrips(state.trips, rest).trips);
+      } else {
+        _scheduleRound(
+          generation: generation,
+          round: 1,
+          quiet: 0,
+          failures: 0,
+        );
       }
-      _scheduleRound(
-        generation: generation,
-        round: 1,
-        quiet: 0,
-        failures: 0,
-      );
     } catch (e) {
       if (generation != state.searchGeneration) return;
       state = state.copyWith(
@@ -261,6 +263,28 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     );
   }
 
+  /// Page 2+ of the first answer, merged into the visible list once they
+  /// land. Kept off the `searchTrips` future so the home screen can navigate
+  /// as soon as page 1 is in hand. Follow-up rounds still wait until these
+  /// pages finish, so a `page: 1` of round 1 cannot race a lingering page 2.
+  Future<void> _completeFirstRound({
+    required int generation,
+    required BusSearchParams params,
+    required int lastPage,
+  }) async {
+    final rest = await _fetchRemainingPages(params, lastPage: lastPage);
+    if (generation != state.searchGeneration) return;
+    // These pages belong to the same first answer, so they go into the
+    // visible list rather than behind the pill.
+    state = state.copyWith(trips: mergeBusTrips(state.trips, rest).trips);
+    _scheduleRound(
+      generation: generation,
+      round: 1,
+      quiet: 0,
+      failures: 0,
+    );
+  }
+
   /// One round's worth of results: page 1 plus every further page it says
   /// exists.
   Future<List<BusTripSummary>> _fetchAllPages(BusSearchParams params) async {
@@ -283,7 +307,8 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     final target = lastPage < _maxPagesPerRound ? lastPage : _maxPagesPerRound;
     if (target < 2) return const [];
     final pages = await Future.wait([
-      for (var page = 2; page <= target; page++) _fetchPageOrEmpty(params, page),
+      for (var page = 2; page <= target; page++)
+        _fetchPageOrEmpty(params, page),
     ]);
     return [for (final trips in pages) ...trips];
   }

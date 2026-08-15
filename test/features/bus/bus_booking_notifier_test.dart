@@ -753,6 +753,32 @@ void main() {
       expect(state.stagedTrips, isEmpty);
     });
 
+    test('searchTrips returns after page 1 without waiting for remaining pages',
+        () async {
+      final holdPage2 = Completer<void>();
+      final repo = FakeBusRepository()
+        ..paginatedRounds = [
+          [for (var i = 0; i < 20; i++) _trip('trip-$i')],
+        ]
+        ..perPage = 15
+        ..searchTripsPageHold = holdPage2;
+      final container = makeContainer(repo, gap: const Duration(seconds: 30));
+      final notifier = container.read(busBookingProvider.notifier);
+
+      var searchReturned = false;
+      unawaited(_search(notifier).then((_) => searchReturned = true));
+      await pumpEventQueue();
+
+      expect(searchReturned, isTrue);
+      expect(container.read(busBookingProvider).trips, hasLength(15));
+      expect(container.read(busBookingProvider).status, BusBookingStatus.idle);
+
+      holdPage2.complete();
+      await pumpEventQueue();
+      expect(container.read(busBookingProvider).trips, hasLength(20));
+      expect(container.read(busBookingProvider).stagedTrips, isEmpty);
+    });
+
     test('the first answer includes trips from pages beyond the first',
         () async {
       final repo = FakeBusRepository()
@@ -764,6 +790,7 @@ void main() {
       final notifier = container.read(busBookingProvider.notifier);
 
       await _search(notifier);
+      await pumpEventQueue();
 
       final state = container.read(busBookingProvider);
       // All 20, not the 15 the first page carries.
@@ -807,6 +834,7 @@ void main() {
       final notifier = container.read(busBookingProvider.notifier);
 
       await _search(notifier);
+      await pumpEventQueue();
 
       final state = container.read(busBookingProvider);
       expect(state.trips, hasLength(15));
@@ -825,6 +853,7 @@ void main() {
       final notifier = container.read(busBookingProvider.notifier);
 
       await _search(notifier);
+      await pumpEventQueue();
 
       // Page 1 plus four more, not twenty requests.
       expect(repo.searchTripsCallCount, 5);
