@@ -256,9 +256,41 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     );
   }
 
+  /// Ends the window early without discarding anything already found.
+  ///
+  /// Used when the rider leaves the results list or the app goes to the
+  /// background: a progress bar that no timer will ever advance is worse than
+  /// a refresh button.
+  void stopProgressiveSearch() {
+    _cancelPolling();
+    if (state.searchPhase == BusSearchPhase.polling) {
+      state = state.copyWith(searchPhase: BusSearchPhase.exhausted);
+    }
+  }
+
+  /// Manual re-entry after the automatic window closed. Runs a round straight
+  /// away — a tap deserves an immediate answer, not a 5-second wait — and
+  /// merges rather than resetting, so the list on screen never blinks.
+  void checkForMoreTrips() {
+    if (state.searchPhase == BusSearchPhase.polling) return;
+    if (state.searchParams == null) return;
+    state = state.copyWith(searchPhase: BusSearchPhase.polling);
+    unawaited(
+      _runRound(
+        generation: state.searchGeneration,
+        round: 1,
+        quiet: 0,
+        failures: 0,
+      ),
+    );
+  }
+
   Future<void> loadMoreTrips() async {
     final params = state.searchParams;
     if (params == null || !state.tripsHasMore) return;
+    // `page` is not a stable coordinate while the aggregator is still filling
+    // in: page 2 fetched now may repeat or skip rows relative to page 1.
+    if (state.searchPhase == BusSearchPhase.polling) return;
     if (state.status == BusBookingStatus.loadingTrips) return;
 
     final nextPage = state.tripsPage + 1;
@@ -286,6 +318,7 @@ class BusBookingNotifier extends Notifier<BusBookingState> {
     BusStop? from,
     BusStop? to,
   }) async {
+    stopProgressiveSearch();
     // Seed the pair synchronously so the detail screen can open immediately,
     // then enrich in the background behind a loading state.
     final seedFrom = from ?? trip.defaultBoardingStop;

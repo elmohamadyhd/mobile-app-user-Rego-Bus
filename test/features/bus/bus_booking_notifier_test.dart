@@ -637,5 +637,93 @@ void main() {
       // No follow-up rounds were scheduled off a failed first call.
       expect(repo.searchTripsCallCount, 1);
     });
+
+    test('a new search resets the list and bumps the generation', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('old')]),
+          _page([_trip('new')]),
+        ],
+      );
+      // A long gap guarantees the first search's follow-up round is still
+      // pending when the second search cancels it.
+      final container = makeContainer(repo, gap: const Duration(seconds: 30));
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      final firstGeneration =
+          container.read(busBookingProvider).searchGeneration;
+      await _search(notifier);
+
+      final state = container.read(busBookingProvider);
+      expect(state.searchGeneration, greaterThan(firstGeneration));
+      expect(state.trips.map((t) => t.id), ['new']);
+      expect(state.stagedTrips, isEmpty);
+    });
+
+    test('stopProgressiveSearch keeps results and offers a refresh', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('a')]),
+          _page([_trip('a'), _trip('b')]),
+        ],
+      );
+      final container = makeContainer(repo, gap: const Duration(seconds: 30));
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      notifier.stopProgressiveSearch();
+
+      final state = container.read(busBookingProvider);
+      expect(state.searchPhase, BusSearchPhase.exhausted);
+      expect(state.trips.map((t) => t.id), ['a']);
+      // The pending round was cancelled before it could run.
+      expect(repo.searchTripsCallCount, 1);
+    });
+
+    test('loadMoreTrips is a no-op while rounds are still running', () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          BusTripsPage(trips: [_trip('a')], currentPage: 1, lastPage: 3),
+        ],
+      );
+      final container = makeContainer(repo, gap: const Duration(seconds: 30));
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await notifier.loadMoreTrips();
+
+      final state = container.read(busBookingProvider);
+      expect(state.searchPhase, BusSearchPhase.polling);
+      // Paging never advanced past the first page.
+      expect(state.tripsPage, 1);
+      expect(repo.searchTripsCallCount, 1);
+    });
+
+    test('checkForMoreTrips reopens the window and merges what it finds',
+        () async {
+      final repo = FakeBusRepository(
+        tripsPageQueue: [
+          _page([_trip('a')]),
+          _page([_trip('a')]),
+          _page([_trip('a')]),
+          _page([_trip('a'), _trip('b')]),
+        ],
+      );
+      final container = makeContainer(repo);
+      final notifier = container.read(busBookingProvider.notifier);
+
+      await _search(notifier);
+      await pumpEventQueue();
+      expect(container.read(busBookingProvider).searchPhase,
+          BusSearchPhase.complete);
+
+      notifier.checkForMoreTrips();
+      await pumpEventQueue();
+
+      final state = container.read(busBookingProvider);
+      expect(state.stagedTrips.map((t) => t.id), ['b']);
+      expect(state.trips.map((t) => t.id), ['a']);
+    });
   });
 }
