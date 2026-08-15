@@ -619,6 +619,7 @@ void main() {
       expect(state.searchPhase, BusSearchPhase.exhausted);
       expect(state.trips.map((t) => t.id), ['a']);
       expect(state.error, isNull);
+      expect(state.status, BusBookingStatus.idle);
     });
 
     test('a failing round 0 keeps the existing error behaviour', () async {
