@@ -671,6 +671,27 @@
   "tripResultsNoTrips": "No trips found",
   "tripResultsError": "Couldn't load trips",
   "tripResultsRetry": "Try again",
+  "tripResultsSearchingMore": "Looking for more trips…",
+  "@tripResultsSearchingMore": {
+    "description": "Shown while extra search rounds run against slow bus operators."
+  },
+  "tripResultsNewTrips": "{count, plural, =1{1 new trip} other{{count} new trips}}",
+  "@tripResultsNewTrips": {
+    "description": "Pill revealing trips that arrived after the rider scrolled away from the top.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripResultsSlowOperators": "Some operators are still responding slowly",
+  "@tripResultsSlowOperators": {
+    "description": "Shown when the progressive search window closed while results were still arriving."
+  },
+  "tripResultsCheckForMore": "Check for more",
+  "@tripResultsCheckForMore": {
+    "description": "Button that runs another search round after the automatic window closed."
+  },
   "tripResultsFareLabel": "Fare",
   "@tripResultsFareLabel": {
     "description": "Fare label on the trip card stub."
