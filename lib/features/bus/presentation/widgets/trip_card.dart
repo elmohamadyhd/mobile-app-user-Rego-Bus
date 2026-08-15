@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
+import 'package:safaria/core/utils/date_formatting.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
 import 'package:safaria/features/bus/domain/entities/trip_highlight.dart';
@@ -152,6 +153,10 @@ class _TripCardState extends State<TripCard> {
                   departLabel: _departLabel,
                   arriveLabel: _arriveLabel,
                   durationLabel: _durationLabel,
+                  departDateLabel: formatSearchDateCell(
+                    _departTime,
+                    Localizations.localeOf(context).toString(),
+                  ),
                   onStopsTap:
                       widget.trip.stopsCount > 0 ? _openStopsSheet : null,
                 ),
@@ -329,6 +334,7 @@ class _Timeline extends StatelessWidget {
     required this.departLabel,
     required this.arriveLabel,
     required this.durationLabel,
+    required this.departDateLabel,
     this.onStopsTap,
   });
 
@@ -339,6 +345,7 @@ class _Timeline extends StatelessWidget {
   final String departLabel;
   final String arriveLabel;
   final String durationLabel;
+  final String departDateLabel;
   final VoidCallback? onStopsTap;
 
   @override
@@ -379,14 +386,14 @@ class _Timeline extends StatelessWidget {
               flex: 1,
               child: _TimeCell(
                 time: departLabel,
+                date: departDateLabel,
                 alignment: AlignmentDirectional.centerStart,
               ),
             ),
             Expanded(
               flex: 2,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 child: _ConnectorWithDuration(duration: durationLabel),
               ),
             ),
@@ -505,20 +512,48 @@ class _TimeCell extends StatelessWidget {
   const _TimeCell({
     required this.time,
     required this.alignment,
+    this.date,
   });
 
   final String time;
+  final String? date;
   final AlignmentGeometry alignment;
 
   @override
   Widget build(BuildContext context) {
+    final isEnd = alignment == AlignmentDirectional.centerEnd;
+    final label = date == null ? time : '$time, $date';
     return Align(
       alignment: alignment,
-      child: Text(
-        time,
-        style: AppTypography.title.copyWith(
-          fontWeight: FontWeight.w800,
-          color: AppColors.textPrimary,
+      child: Semantics(
+        label: label,
+        child: ExcludeSemantics(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment:
+                isEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              Text(
+                time,
+                style: AppTypography.title.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              if (date != null) ...[
+                const SizedBox(height: AppSpacing.xxs),
+                Text(
+                  date!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:safaria/core/utils/date_formatting.dart';
 import 'package:safaria/features/bus/domain/entities/bus_feature.dart';
 import 'package:safaria/features/bus/domain/entities/bus_stop.dart';
 import 'package:safaria/features/bus/domain/entities/bus_trip.dart';
@@ -102,6 +103,33 @@ void main() {
     expect(find.text('11:30'), findsNothing);
   });
 
+  testWidgets('shows a compact date under departure on a same-day trip',
+      (tester) async {
+    await _pumpCard(tester, _buildTrip());
+
+    final date = formatSearchDateCell(DateTime(2026, 2, 10), 'en');
+    expect(find.text(date), findsOneWidget);
+    expect(find.text('08:00'), findsOneWidget);
+    expect(find.text('12:45'), findsOneWidget);
+  });
+
+  testWidgets('formats the departure date in Arabic', (tester) async {
+    await _pumpCard(
+      tester,
+      _buildTrip(),
+      locale: const Locale('ar'),
+    );
+
+    expect(
+      find.text(formatSearchDateCell(DateTime(2026, 2, 10), 'ar')),
+      findsOneWidget,
+    );
+    expect(
+      find.text(formatSearchDateCell(DateTime(2026, 2, 10), 'en')),
+      findsNothing,
+    );
+  });
+
   testWidgets('shows cheapest highlight badge in the header', (tester) async {
     await _pumpCard(
       tester,
@@ -200,8 +228,7 @@ void main() {
     expect(selectedTo?.locationId, '10');
   });
 
-  testWidgets('tapping the card body does not invoke onSelect',
-      (tester) async {
+  testWidgets('tapping the card body does not invoke onSelect', (tester) async {
     var selected = 0;
     await _pumpCard(
       tester,
@@ -430,7 +457,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('hides AmenityIconsRow when trip has no features', (tester) async {
+  testWidgets('hides AmenityIconsRow when trip has no features',
+      (tester) async {
     await _pumpCard(tester, _buildTrip().copyWith(features: const []));
     expect(find.byType(AmenityIconsRow), findsNothing);
   });
