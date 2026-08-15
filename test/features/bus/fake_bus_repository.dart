@@ -14,6 +14,7 @@ import 'package:safaria/features/bus/domain/repositories/bus_repository.dart';
 class FakeBusRepository implements BusRepository {
   FakeBusRepository({
     this.tripsPage,
+    this.tripsPageQueue,
     this.tripByIdResult,
     this.seatMapResult,
     this.ticketResult,
@@ -23,6 +24,15 @@ class FakeBusRepository implements BusRepository {
   });
 
   BusTripsPage? tripsPage;
+
+  /// Successive `searchTrips` results, one per call. Once the queue runs dry
+  /// the last entry repeats — which is what a settled aggregator looks like.
+  List<BusTripsPage>? tripsPageQueue;
+
+  /// Zero-based indices of `searchTrips` calls that should throw instead.
+  Set<int> failingSearchCalls = {};
+
+  int searchTripsCallCount = 0;
   BusTripSummary? tripByIdResult;
   SeatMap? seatMapResult;
   BusTicket? ticketResult;
@@ -71,6 +81,16 @@ class FakeBusRepository implements BusRepository {
 
   @override
   Future<BusTripsPage> searchTrips(BusSearchParams params, {int page = 1}) {
+    final index = searchTripsCallCount++;
+    if (failingSearchCalls.contains(index)) {
+      return Future.error(
+        const ApiException('search failed', statusCode: 500),
+      );
+    }
+    final queue = tripsPageQueue;
+    if (queue != null && queue.isNotEmpty) {
+      return Future.value(queue[index < queue.length ? index : queue.length - 1]);
+    }
     return Future.value(
       tripsPage ??
           const BusTripsPage(
