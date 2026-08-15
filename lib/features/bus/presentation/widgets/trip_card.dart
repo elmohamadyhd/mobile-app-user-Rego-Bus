@@ -385,14 +385,14 @@ class _Timeline extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.sm),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               flex: 1,
               child: _TimeCell(
                 time: departLabel,
                 date: departDateLabel,
-                alignment: AlignmentDirectional.centerStart,
+                alignment: AlignmentDirectional.topStart,
               ),
             ),
             Expanded(
@@ -407,7 +407,7 @@ class _Timeline extends StatelessWidget {
               child: _TimeCell(
                 time: arriveLabel,
                 date: arriveDateLabel,
-                alignment: AlignmentDirectional.centerEnd,
+                alignment: AlignmentDirectional.topEnd,
               ),
             ),
           ],
@@ -527,7 +527,7 @@ class _TimeCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isEnd = alignment == AlignmentDirectional.centerEnd;
+    final isEnd = alignment == AlignmentDirectional.topEnd;
     final label = date == null ? time : '$time, $date';
     return Align(
       alignment: alignment,

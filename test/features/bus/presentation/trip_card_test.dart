@@ -145,6 +145,15 @@ void main() {
     expect(find.text('12:45'), findsOneWidget);
   });
 
+  testWidgets('aligns departure and arrival clocks on the same baseline',
+      (tester) async {
+    await _pumpCard(tester, _buildTrip());
+
+    final departTop = _textTopLeft(tester, '08:00').dy;
+    final arriveTop = _textTopLeft(tester, '12:45').dy;
+    expect(departTop, arriveTop);
+  });
+
   testWidgets('formats the departure date in Arabic', (tester) async {
     await _pumpCard(
       tester,
