@@ -52,6 +52,20 @@ class FlightOfferCard extends StatelessWidget {
   /// Height of the fare stub (below the tear line). Drives the notch offset.
   static const double _stubHeight = 72;
 
+  /// Airport names are ticket data. `textMuted` on white is ~2.5:1 and
+  /// disappears at caption size; primary keeps them readable without
+  /// competing with the larger times.
+  static final _placeStyle = AppTypography.caption.copyWith(
+    color: AppColors.textPrimary,
+    fontWeight: FontWeight.w700,
+  );
+
+  /// Duration, stops, and section labels — secondary, not decorative.
+  static final _metaStyle = AppTypography.caption.copyWith(
+    color: AppColors.textSecondary,
+    fontWeight: FontWeight.w600,
+  );
+
   // Hand-rolled like `TripCard._formatTime` — always 24-hour, independent of
   // locale/intl data initialization.
   static String _time(DateTime dt) {
@@ -214,8 +228,9 @@ class _JourneyBlock extends StatelessWidget {
             padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.xs),
             child: Text(
               label!,
-              style: AppTypography.caption
-                  .copyWith(color: AppColors.textSecondary),
+              style: FlightOfferCard._metaStyle.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         _Timeline(
@@ -338,10 +353,7 @@ class _Timeline extends StatelessWidget {
                 origin,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.textMuted,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: FlightOfferCard._placeStyle,
               ),
             ),
             const Expanded(flex: 2, child: SizedBox.shrink()),
@@ -352,10 +364,7 @@ class _Timeline extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.end,
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.textMuted,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: FlightOfferCard._placeStyle,
               ),
             ),
           ],
@@ -405,8 +414,7 @@ class _ConnectorWithDuration extends StatelessWidget {
       children: [
         LtrText(
           duration,
-          style: AppTypography.caption.copyWith(
-            color: AppColors.textMuted,
+          style: FlightOfferCard._metaStyle.copyWith(
             fontWeight: FontWeight.w700,
           ),
           textAlign: TextAlign.center,
@@ -417,10 +425,7 @@ class _ConnectorWithDuration extends StatelessWidget {
         Text(
           stopsLabel,
           textAlign: TextAlign.center,
-          style: AppTypography.caption.copyWith(
-            color: AppColors.textMuted,
-            fontWeight: FontWeight.w600,
-          ),
+          style: FlightOfferCard._metaStyle,
         ),
       ],
     );
@@ -484,7 +489,8 @@ class _FareStub extends StatelessWidget {
               Text(
                 fareLabel,
                 style: AppTypography.overline.copyWith(
-                  color: AppColors.textMuted,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -500,8 +506,7 @@ class _FareStub extends StatelessWidget {
                     ),
                     TextSpan(
                       text: ' $currency',
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textMuted,
+                      style: FlightOfferCard._metaStyle.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),

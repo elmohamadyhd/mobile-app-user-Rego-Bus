@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_offer_card.dart';
@@ -191,6 +192,22 @@ void main() {
     expect(find.textContaining('EGP'), findsOneWidget);
     expect(find.text('Details'), findsNothing);
     expect(find.text('Select this flight'), findsOneWidget);
+  });
+
+  testWidgets('airport names use primary text, not muted chrome',
+      (tester) async {
+    await _pump(tester);
+
+    final origin = tester.widget<Text>(
+      find.text('Cairo International Airport'),
+    );
+    expect(origin.style?.color, AppColors.textPrimary);
+    expect(origin.style?.fontWeight, FontWeight.w700);
+
+    final destination = tester.widget<Text>(
+      find.text('King Khalid International Airport'),
+    );
+    expect(destination.style?.color, AppColors.textPrimary);
   });
 
   testWidgets('calls onSelect from the select button', (tester) async {
