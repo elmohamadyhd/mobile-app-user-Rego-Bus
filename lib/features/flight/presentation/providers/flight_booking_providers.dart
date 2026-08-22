@@ -63,6 +63,7 @@ abstract class FlightBookingState with _$FlightBookingState {
     String? error,
     String? searchFromLabel,
     String? searchToLabel,
+    @Default(<String, String>{}) Map<String, String> searchAirportNames,
     FlightOffer? selectedOffer,
     FlightConfirmedOrder? confirmedOrder,
     @Default(<String, String>{}) Map<String, String> selectedBundleCodes,
@@ -86,8 +87,16 @@ class FlightBookingNotifier extends Notifier<FlightBookingState> {
   @override
   FlightBookingState build() => const FlightBookingState();
 
-  void setSearchLabels({required String from, required String to}) {
-    state = state.copyWith(searchFromLabel: from, searchToLabel: to);
+  void setSearchLabels({
+    required String from,
+    required String to,
+    Map<String, String> airportNames = const {},
+  }) {
+    state = state.copyWith(
+      searchFromLabel: from,
+      searchToLabel: to,
+      searchAirportNames: airportNames,
+    );
   }
 
   /// Runs a server-side search. [preserveFilters] is true when the rider

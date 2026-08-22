@@ -58,8 +58,7 @@ void main() {
     expect(state.error, isNotNull);
   });
 
-  test('search with empty results leaves offers empty without error',
-      () async {
+  test('search with empty results leaves offers empty without error', () async {
     final repo = FakeFlightRepository(searchResult: const []);
     final container = makeContainer(repo);
     addTearDown(container.dispose);
@@ -76,12 +75,19 @@ void main() {
     final container = makeContainer(FakeFlightRepository());
     addTearDown(container.dispose);
 
-    container
-        .read(flightBookingProvider.notifier)
-        .setSearchLabels(from: 'CAI', to: 'RUH');
+    container.read(flightBookingProvider.notifier).setSearchLabels(
+      from: 'CAI',
+      to: 'RUH',
+      airportNames: const {
+        'CAI': 'Cairo Intl Airport',
+        'PAR': 'All Airport',
+      },
+    );
 
     final state = container.read(flightBookingProvider);
     expect(state.searchFromLabel, 'CAI');
     expect(state.searchToLabel, 'RUH');
+    expect(state.searchAirportNames['CAI'], 'Cairo Intl Airport');
+    expect(state.searchAirportNames['PAR'], 'All Airport');
   });
 }

@@ -10,6 +10,7 @@ import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer_filters.dart';
+import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/features/flight/domain/utils/apply_flight_offer_filters.dart';
 import 'package:safaria/features/flight/presentation/flight_routes.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
@@ -155,6 +156,9 @@ class _FlightResultsScreenState extends ConsumerState<FlightResultsScreen> {
             offer: offer,
             originLabel: state.searchFromLabel,
             destinationLabel: state.searchToLabel,
+            tripType: state.searchParams?.tripType ?? FlightTripType.oneWay,
+            searchLegs: state.searchParams?.legs ?? const [],
+            airportNames: state.searchAirportNames,
             onSelect: () {
               ref.read(flightBookingProvider.notifier).selectOffer(offer);
               context.push(FlightRoutes.review);

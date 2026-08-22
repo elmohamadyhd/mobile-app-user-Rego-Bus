@@ -5,6 +5,8 @@ import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
+import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
+import 'package:safaria/features/flight/domain/utils/flight_airport_labels.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
@@ -20,6 +22,9 @@ class FlightOfferCard extends StatelessWidget {
     required this.onSelect,
     this.originLabel,
     this.destinationLabel,
+    this.tripType = FlightTripType.oneWay,
+    this.searchLegs = const [],
+    this.airportNames = const {},
   });
 
   final FlightOffer offer;
@@ -27,11 +32,22 @@ class FlightOfferCard extends StatelessWidget {
   /// Enters the booking wizard, which confirms the offer.
   final VoidCallback onSelect;
 
-  /// Full airport name for the origin (falls back to the IATA code).
+  /// Full airport name for the searched origin (falls back to the IATA code).
   final String? originLabel;
 
-  /// Full airport name for the destination (falls back to the IATA code).
+  /// Full airport name for the searched destination (falls back to the IATA
+  /// code).
   final String? destinationLabel;
+
+  /// Needed so a round-trip return can reuse the searched names instead of
+  /// showing raw IATA codes.
+  final FlightTripType tripType;
+
+  /// Multi-city search hops, used to name every journey — not just the first.
+  final List<FlightSearchLeg> searchLegs;
+
+  /// IATA → picker name for every airport on the search form.
+  final Map<String, String> airportNames;
 
   /// Height of the fare stub (below the tear line). Drives the notch offset.
   static const double _stubHeight = 72;
@@ -64,6 +80,31 @@ class FlightOfferCard extends StatelessWidget {
       return index == 0 ? l10n.flightLegOutbound : l10n.flightLegReturn;
     }
     return l10n.flightLegLabel(index + 1);
+  }
+
+  List<Widget> _journeyBlocks(AppLocalizations l10n) {
+    final blocks = <Widget>[];
+    for (var i = 0; i < offer.journeys.length; i++) {
+      if (i > 0) blocks.add(const SizedBox(height: AppSpacing.sm));
+      final labels = flightJourneyAirportLabels(
+        index: i,
+        journey: offer.journeys[i],
+        tripType: tripType,
+        searchLegs: searchLegs,
+        namesByIata: airportNames,
+        searchFromLabel: originLabel,
+        searchToLabel: destinationLabel,
+      );
+      blocks.add(
+        _JourneyBlock(
+          journey: offer.journeys[i],
+          label: _legLabel(l10n, i, offer.journeys.length),
+          originLabel: labels.origin,
+          destinationLabel: labels.destination,
+        ),
+      );
+    }
+    return blocks;
   }
 
   @override
@@ -103,15 +144,7 @@ class FlightOfferCard extends StatelessWidget {
                 children: [
                   _Header(segment: headerSegment),
                   const SizedBox(height: AppSpacing.md),
-                  for (var i = 0; i < offer.journeys.length; i++) ...[
-                    if (i > 0) const SizedBox(height: AppSpacing.sm),
-                    _JourneyBlock(
-                      journey: offer.journeys[i],
-                      label: _legLabel(l10n, i, offer.journeys.length),
-                      originLabel: i == 0 ? originLabel : null,
-                      destinationLabel: i == 0 ? destinationLabel : null,
-                    ),
-                  ],
+                  ..._journeyBlocks(l10n),
                 ],
               ),
             ),

@@ -158,9 +158,8 @@ class _FlightSearchFormState extends ConsumerState<FlightSearchForm> {
 
   Future<void> _pickLegDate(int index) async {
     final minDate = _minDateForLeg(index);
-    final initial = _legs[index].date.isBefore(minDate)
-        ? minDate
-        : _legs[index].date;
+    final initial =
+        _legs[index].date.isBefore(minDate) ? minDate : _legs[index].date;
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
@@ -173,9 +172,8 @@ class _FlightSearchFormState extends ConsumerState<FlightSearchForm> {
   Future<void> _pickReturnDate() async {
     final minDate = _legs.first.date;
     final current = _returnDate;
-    final initial = current == null || current.isBefore(minDate)
-        ? minDate
-        : current;
+    final initial =
+        current == null || current.isBefore(minDate) ? minDate : current;
     final picked = await showDatePicker(
       context: context,
       initialDate: initial,
@@ -244,10 +242,16 @@ class _FlightSearchFormState extends ConsumerState<FlightSearchForm> {
 
     final first = _legs.first;
     final last = _legs.last;
+    final airportNames = <String, String>{};
+    for (final leg in _legs) {
+      airportNames[leg.origin!.iataCode] = leg.origin!.name;
+      airportNames[leg.destination!.iataCode] = leg.destination!.name;
+    }
     final notifier = ref.read(flightBookingProvider.notifier);
     notifier.setSearchLabels(
       from: first.origin!.name,
       to: last.destination!.name,
+      airportNames: airportNames,
     );
 
     final params = FlightSearchParams(
@@ -486,8 +490,7 @@ class _DateField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localeName = Localizations.localeOf(context).toString();
-    final value =
-        date == null ? '' : formatSearchDateCell(date!, localeName);
+    final value = date == null ? '' : formatSearchDateCell(date!, localeName);
 
     return Material(
       color: Colors.transparent,
