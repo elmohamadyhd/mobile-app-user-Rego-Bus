@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +19,7 @@ import 'package:safaria/features/auth/presentation/login_screen.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/bus/presentation/bus_routes.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/primary_button.dart';
 
 import '../../support/fake_auth_repository.dart';
 import '../../support/in_memory_secure_storage.dart';
@@ -28,6 +31,24 @@ class _FakeGoogleSignInService extends GoogleSignInService {
 
   @override
   Future<String?> signIn() async => _idToken;
+}
+
+/// Holds [login] until [gate] completes so overlapping taps can be simulated.
+class _GatedAuthRepository extends FakeAuthRepository {
+  _GatedAuthRepository(super.session, this.gate);
+
+  final Completer<AuthSession> gate;
+  int loginCalls = 0;
+
+  @override
+  Future<AuthSession> login({
+    required String phoneCode,
+    required String mobile,
+    required String password,
+  }) {
+    loginCalls++;
+    return gate.future;
+  }
 }
 
 void main() {
@@ -198,6 +219,89 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('CONFIRM'), findsOneWidget);
+    expect(container.read(guestModeProvider).value, isFalse);
+  });
+
+  testWidgets(
+      'overlapping Sign in taps do not throw after session redirect unmounts Login',
+      (tester) async {
+    const session = AuthSession(
+      token: 't',
+      user: AuthUser(mobile: '1012345678', phoneCode: '20'),
+    );
+    final gate = Completer<AuthSession>();
+    final repo = _GatedAuthRepository(session, gate);
+    final container = ProviderContainer(
+      overrides: [
+        secureStorageProvider.overrideWithValue(
+          SecureStorage(storage: InMemorySecureStorage({})),
+        ),
+        authRepositoryProvider.overrideWithValue(repo),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(guestModeProvider.future);
+    await container.read(sessionControllerProvider.future);
+
+    final refresh = ValueNotifier(0);
+    addTearDown(refresh.dispose);
+    final sub = container.listen(sessionControllerProvider, (_, __) {
+      refresh.value++;
+    });
+    addTearDown(sub.close);
+
+    final router = GoRouter(
+      initialLocation: AppRoutes.login,
+      refreshListenable: refresh,
+      redirect: (context, state) {
+        final loggedIn =
+            container.read(sessionControllerProvider).value != null;
+        if (loggedIn && state.matchedLocation == AppRoutes.login) {
+          return AppRoutes.home;
+        }
+        return null;
+      },
+      routes: [
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.home,
+          builder: (context, state) => const Text('HOME'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          routerConfig: router,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).first, '1012345678');
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+    await tester.pump();
+
+    final signIn = tester.widget<PrimaryButton>(
+      find.widgetWithText(PrimaryButton, 'Sign in'),
+    );
+    signIn.onPressed!();
+    signIn.onPressed!();
+    expect(repo.loginCalls, 1);
+
+    gate.complete(session);
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('HOME'), findsOneWidget);
     expect(container.read(guestModeProvider).value, isFalse);
   });
 

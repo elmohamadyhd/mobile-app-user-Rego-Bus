@@ -82,11 +82,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _continueAsGuest() async {
-    await ref.read(guestModeProvider.notifier).enable();
+    if (_submitting || _socialSubmitting) return;
+    final guestMode = ref.read(guestModeProvider.notifier);
+    await guestMode.enable();
     if (mounted) context.go(AppRoutes.home);
   }
 
   Future<void> _submit() async {
+    if (_submitting || _socialSubmitting) return;
+
     final l10n = AppLocalizations.of(context);
     setState(() {
       _phoneError = Validators.isValidPhone(_phone.text) ? null : l10n.valPhone;
@@ -95,15 +99,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (_phoneError != null || _passwordError != null) return;
 
     setState(() => _submitting = true);
+    // Capture before await: setSession redirects off /login and unmounts us.
+    final authRepository = ref.read(authRepositoryProvider);
+    final sessionController = ref.read(sessionControllerProvider.notifier);
+    final guestMode = ref.read(guestModeProvider.notifier);
     final mobile = Validators.digitsOnly(_phone.text);
     try {
-      final session = await ref.read(authRepositoryProvider).login(
-            phoneCode: _country.dial,
-            mobile: mobile,
-            password: _password.text,
-          );
-      await ref.read(sessionControllerProvider.notifier).setSession(session);
-      await ref.read(guestModeProvider.notifier).disable();
+      final session = await authRepository.login(
+        phoneCode: _country.dial,
+        mobile: mobile,
+        password: _password.text,
+      );
+      await sessionController.setSession(session);
+      await guestMode.disable();
       if (mounted) context.go(widget.gateArgs?.returnTo ?? AppRoutes.home);
     } on AccountNotVerifiedException {
       if (!mounted) return;
@@ -116,6 +124,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       );
     } on ApiException catch (e) {
+      if (!mounted) return;
       _applyErrors(e);
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -210,7 +219,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 PrimaryButton(
                                   label: l10n.loginButton,
                                   loading: _submitting,
-                                  onPressed: _socialSubmitting ? null : _submit,
+                                  onPressed: (_submitting || _socialSubmitting)
+                                      ? null
+                                      : _submit,
                                 ),
                                 if (AppConfig.showSocialLogin)
                                   SocialRow(
