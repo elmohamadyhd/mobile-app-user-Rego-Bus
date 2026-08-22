@@ -58,11 +58,11 @@ void main() {
           guestModeProvider.overrideWith(_FakeGuestController.new),
           flightRepositoryProvider.overrideWithValue(repo),
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
+        child:const MaterialApp(
+          locale:  Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(body: FlightOrdersSection()),
+          home:  Scaffold(body: FlightOrdersSection()),
         ),
       ),
     );

@@ -60,7 +60,7 @@ class FlightTicketScreen extends ConsumerWidget {
         !isFlightOrderCancelled(detail) &&
         checkoutUrl != null &&
         checkoutUrl.isNotEmpty;
-    final canPop = context.canPop();
+    final canPop = _routeCanPop(context);
     final showGoToTickets = paid && !canPop;
     final showFooter = canPay || showGoToTickets;
     final airlinePnr = detail.airlinePnr?.trim();
@@ -71,13 +71,7 @@ class FlightTicketScreen extends ConsumerWidget {
       backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(
         title: l10n.orderDetailTitle,
-        onBack: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.go(AppRoutes.tickets);
-          }
-        },
+        onBack: () => _leaveTicket(context),
       ),
       body: SafeArea(
         child: Align(
@@ -232,6 +226,28 @@ class FlightTicketScreen extends ConsumerWidget {
         ref.invalidate(flightOrderProvider(order.id));
       },
     );
+  }
+}
+
+bool _routeCanPop(BuildContext context) {
+  final router = GoRouter.maybeOf(context);
+  if (router != null) return router.canPop();
+  return Navigator.maybeOf(context)?.canPop() ?? false;
+}
+
+void _leaveTicket(BuildContext context) {
+  final router = GoRouter.maybeOf(context);
+  if (router != null) {
+    if (router.canPop()) {
+      router.pop();
+    } else {
+      router.go(AppRoutes.tickets);
+    }
+    return;
+  }
+  final navigator = Navigator.maybeOf(context);
+  if (navigator != null && navigator.canPop()) {
+    navigator.pop();
   }
 }
 
