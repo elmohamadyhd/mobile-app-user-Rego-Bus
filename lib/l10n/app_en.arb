@@ -208,8 +208,9 @@
   "flightTripOneWay": "One way",
   "flightTripRound": "Round trip",
   "flightTripMulti": "Multi-city",
-  "flightLegLabel": "Leg {number}",
+  "flightLegLabel": "Flight {number}",
   "@flightLegLabel": {
+    "description": "Numbered hop on a multi-city itinerary (results, review, search form).",
     "placeholders": {
       "number": {"type": "int"}
     }
@@ -274,6 +275,10 @@
   "flightFareRules": "Fare rules",
   "@flightFareRules": {
     "description": "Section heading for fare rule bullets on the offer details screen."
+  },
+  "flightFareBreakdown": "Fare breakdown",
+  "@flightFareBreakdown": {
+    "description": "Heading on the Review fare card. The sticky footer still shows Total."
   },
   "flightPriceBase": "Base fare",
   "@flightPriceBase": {
@@ -370,7 +375,7 @@
   "@flightBundleIncluded": {
     "description": "Shown instead of +0 when a bundle adds no fare delta."
   },
-  "flightBundleLeg": "Leg {number}",
+  "flightBundleLeg": "Flight {number}",
   "@flightBundleLeg": {
     "description": "Section heading for one journey's bundle choices.",
     "placeholders": {
