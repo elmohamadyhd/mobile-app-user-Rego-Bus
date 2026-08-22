@@ -602,6 +602,10 @@
   "@flightTicketPnr": {
     "description": "Label above the airline PNR on the flight ticket screen."
   },
+  "flightTicketGdsPnr": "GDS reference",
+  "@flightTicketGdsPnr": {
+    "description": "Label for the GDS PNR when it differs from the airline PNR."
+  },
   "flightPendingTitle": "Payment not completed",
   "@flightPendingTitle": {
     "description": "Title on the flight pending (unpaid outcome) screen."

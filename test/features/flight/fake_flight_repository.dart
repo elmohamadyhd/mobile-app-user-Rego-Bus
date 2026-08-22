@@ -206,7 +206,11 @@ class FakeFlightRepository implements FlightRepository {
   @override
   Future<FlightOrder?> order(String id) {
     lastOrderId = id;
-    return Future.value(orderResult ?? sampleOrder);
+    if (orderResult != null) return Future.value(orderResult);
+    for (final order in ordersResult ?? const <FlightOrder>[]) {
+      if (order.id == id) return Future.value(order);
+    }
+    return Future.value(sampleOrder);
   }
 
   @override

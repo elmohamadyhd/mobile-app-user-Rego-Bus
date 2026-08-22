@@ -14,11 +14,8 @@ final flightOrderProvider =
   return ref.watch(flightRepositoryProvider).order(id);
 });
 
-/// IATA → airport name for tickets. Lookups are best-effort; missing
-/// codes stay as IATA on the card.
-final flightOrderAirportNamesProvider =
-    FutureProvider<Map<String, String>>((ref) async {
-  final orders = await ref.watch(flightOrdersProvider.future);
+/// Sorted unique IATA codes from [orders], used as a names-provider key.
+String packedFlightAirportCodes(Iterable<FlightOrder> orders) {
   final codes = <String>{};
   for (final order in orders) {
     for (final segment in order.segments) {
@@ -26,6 +23,14 @@ final flightOrderAirportNamesProvider =
       if (segment.destination.isNotEmpty) codes.add(segment.destination);
     }
   }
+  final sorted = codes.toList()..sort();
+  return sorted.join(',');
+}
+
+/// IATA → airport name. Lookups are best-effort; missing codes stay as IATA.
+final flightAirportNamesProvider =
+    FutureProvider.family<Map<String, String>, String>((ref, packed) async {
+  final codes = packed.split(',').where((code) => code.isNotEmpty).toSet();
   if (codes.isEmpty) return const {};
 
   final repo = ref.watch(flightRepositoryProvider);
@@ -47,9 +52,18 @@ final flightOrderAirportNamesProvider =
           }
         }
       } on Object {
-        // Cards still render the IATA code.
+        // Cards and details still render the IATA code.
       }
     }),
   );
   return names;
+});
+
+/// Names for every airport on the current My Tickets list.
+final flightOrderAirportNamesProvider =
+    FutureProvider<Map<String, String>>((ref) async {
+  final orders = await ref.watch(flightOrdersProvider.future);
+  return ref.watch(
+    flightAirportNamesProvider(packedFlightAirportCodes(orders)).future,
+  );
 });

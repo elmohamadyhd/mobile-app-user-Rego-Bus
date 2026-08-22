@@ -44,7 +44,11 @@ void main() {
     expect(isFlightOrderPaid(_order(orderStatus: 'SomethingNew')), isFalse);
   });
 
-  test('case does not matter', () {
-    expect(isFlightOrderPaid(_order(paymentStatus: 'PAID')), isTrue);
+  test('a cancelled status is detected', () {
+    expect(
+      isFlightOrderCancelled(_order(orderStatus: 'Cancelled')),
+      isTrue,
+    );
+    expect(isFlightOrderCancelled(_order()), isFalse);
   });
 }

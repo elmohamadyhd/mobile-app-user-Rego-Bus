@@ -29,3 +29,12 @@ bool isFlightOrderPaid(FlightOrder order) {
   }
   return _paidOrderStatuses.contains(order.orderStatus.trim().toLowerCase());
 }
+
+bool _looksCancelled(String? value) =>
+    (value ?? '').trim().toLowerCase().contains('cancel');
+
+/// Whether [order] was cancelled. Checked before paid/pending for badges.
+bool isFlightOrderCancelled(FlightOrder order) =>
+    _looksCancelled(order.status) ||
+    _looksCancelled(order.orderStatus) ||
+    _looksCancelled(order.paymentStatus);

@@ -213,6 +213,7 @@
   "flightPayNow": "ادفع دلوقتي",
   "flightTicketTitle": "حجزك اتأكد",
   "flightTicketPnr": "رقم الحجز",
+  "flightTicketGdsPnr": "رقم الحجز (GDS)",
   "flightPendingTitle": "الدفع ما تمّش",
   "flightPendingBody": "الحجز محجوز بس لسه ما اتدفعش. تقدر تكمّل الدفع من تذاكري.",
   "flightPendingRetry": "جرّب تدفع تاني",
