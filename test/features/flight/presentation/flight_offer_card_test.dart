@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
@@ -249,6 +250,8 @@ void main() {
     expect(find.text('CAI'), findsNothing);
     expect(find.text('Outbound'), findsOneWidget);
     expect(find.text('Return'), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.airplaneTakeoff), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.airplaneLanding), findsOneWidget);
   });
 
   testWidgets('multi-city later legs show airport names, not IATA codes',

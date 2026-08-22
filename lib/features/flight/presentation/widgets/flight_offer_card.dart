@@ -9,6 +9,7 @@ import 'package:safaria/features/flight/domain/entities/flight_search_params.dar
 import 'package:safaria/features/flight/domain/utils/flight_airport_labels.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
@@ -96,10 +97,18 @@ class FlightOfferCard extends StatelessWidget {
     return l10n.flightLegLabel(index + 1);
   }
 
+  static _LegKind? _legKind(int index, int total) {
+    if (total < 2) return null;
+    if (total == 2) {
+      return index == 0 ? _LegKind.outbound : _LegKind.returning;
+    }
+    return _LegKind.numbered;
+  }
+
   List<Widget> _journeyBlocks(AppLocalizations l10n) {
     final blocks = <Widget>[];
     for (var i = 0; i < offer.journeys.length; i++) {
-      if (i > 0) blocks.add(const SizedBox(height: AppSpacing.sm));
+      if (i > 0) blocks.add(const SizedBox(height: AppSpacing.md));
       final labels = flightJourneyAirportLabels(
         index: i,
         journey: offer.journeys[i],
@@ -113,6 +122,7 @@ class FlightOfferCard extends StatelessWidget {
         _JourneyBlock(
           journey: offer.journeys[i],
           label: _legLabel(l10n, i, offer.journeys.length),
+          kind: _legKind(i, offer.journeys.length),
           originLabel: labels.origin,
           destinationLabel: labels.destination,
         ),
@@ -189,6 +199,8 @@ class FlightOfferCard extends StatelessWidget {
   }
 }
 
+enum _LegKind { outbound, returning, numbered }
+
 /// One leg of an offer: its route row, duration and stops. Repeated per
 /// journey — an offer is priced as a whole trip, so all of its legs belong on
 /// the same card.
@@ -196,6 +208,7 @@ class _JourneyBlock extends StatelessWidget {
   const _JourneyBlock({
     required this.journey,
     required this.label,
+    required this.kind,
     this.originLabel,
     this.destinationLabel,
   });
@@ -204,6 +217,7 @@ class _JourneyBlock extends StatelessWidget {
 
   /// Null for a single-leg offer, where a label would be noise.
   final String? label;
+  final _LegKind? kind;
   final String? originLabel;
   final String? destinationLabel;
 
@@ -223,15 +237,10 @@ class _JourneyBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (label != null)
+        if (label != null && kind != null)
           Padding(
             padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.xs),
-            child: Text(
-              label!,
-              style: FlightOfferCard._metaStyle.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            child: _LegBadge(label: label!, kind: kind!),
           ),
         _Timeline(
           departTime: FlightOfferCard._time(firstSegment.departureDateTime),
@@ -245,6 +254,64 @@ class _JourneyBlock extends StatelessWidget {
           stopsLabel: stopsLabel,
         ),
       ],
+    );
+  }
+}
+
+/// Compact section mark for outbound / return / multi-city. Color follows the
+/// timeline (blue outbound, amber return) so the two legs scan as a pair.
+class _LegBadge extends StatelessWidget {
+  const _LegBadge({required this.label, required this.kind});
+
+  final String label;
+  final _LegKind kind;
+
+  @override
+  Widget build(BuildContext context) {
+    final (Color bg, Color fg, IconData icon) = switch (kind) {
+      _LegKind.outbound => (
+          AppColors.primaryTint,
+          AppColors.primary,
+          PhosphorIconsLight.airplaneTakeoff,
+        ),
+      _LegKind.returning => (
+          AppColors.secondaryTint,
+          AppColors.secondaryDeep,
+          PhosphorIconsLight.airplaneLanding,
+        ),
+      _LegKind.numbered => (
+          AppColors.inputFill,
+          AppColors.textSecondary,
+          PhosphorIconsLight.airplane,
+        ),
+    };
+
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Container(
+        padding: const EdgeInsetsDirectional.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            LtrIcon(icon, size: 12, color: fg),
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              label,
+              style: AppTypography.caption.copyWith(
+                color: fg,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
