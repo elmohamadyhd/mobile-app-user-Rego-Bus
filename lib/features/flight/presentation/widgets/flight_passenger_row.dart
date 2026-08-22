@@ -56,65 +56,94 @@ class FlightPassengerRow extends StatelessWidget {
             ? slotLabel
             : l10n.flightPassengerMissing(_fieldLabel(l10n, missing.first));
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: Container(
-        margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.sm),
-        padding: const EdgeInsetsDirectional.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(
-            color: hasError
-                ? AppColors.error
-                : complete
-                    ? AppColors.hairline
-                    : AppColors.secondary,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              hasError
-                  ? PhosphorIconsLight.warningCircle
-                  : complete
-                      ? PhosphorIconsLight.checkCircle
-                      : PhosphorIconsLight.circle,
-              size: 22,
-              color: hasError
-                  ? AppColors.error
-                  : complete
-                      ? AppColors.success
-                      : AppColors.textMuted,
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    final (Color badgeBg, Color badgeFg, IconData badgeIcon) = hasError
+        ? (
+            AppColors.error.withValues(alpha: 0.12),
+            AppColors.error,
+            PhosphorIconsLight.warningCircle,
+          )
+        : complete
+            ? (
+                AppColors.primaryTint,
+                AppColors.primary,
+                PhosphorIconsLight.check,
+              )
+            : (
+                AppColors.secondaryTint,
+                AppColors.secondaryDeep,
+                PhosphorIconsLight.user,
+              );
+
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.sm),
+      child: Material(
+        color: AppColors.bgElevated,
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Container(
+              padding: const EdgeInsetsDirectional.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppRadius.card),
+                border: Border.all(
+                  color: hasError
+                      ? AppColors.error
+                      : complete
+                          ? AppColors.border
+                          : AppColors.secondary,
+                ),
+              ),
+              child: Row(
                 children: [
-                  Text(
-                    name.isEmpty ? slotLabel : name,
-                    style: AppTypography.body,
-                  ),
-                  Text(
-                    subtitle,
-                    style: AppTypography.caption.copyWith(
-                      color: hasError
-                          ? AppColors.error
-                          : complete
-                              ? AppColors.textMuted
-                              : AppColors.secondary,
+                  Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: badgeBg,
+                      shape: BoxShape.circle,
                     ),
+                    child: LtrIcon(badgeIcon, size: 20, color: badgeFg),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name.isEmpty ? slotLabel : name,
+                          style: AppTypography.body.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xxs),
+                        Text(
+                          subtitle,
+                          style: AppTypography.caption.copyWith(
+                            color: hasError
+                                ? AppColors.error
+                                : complete
+                                    ? AppColors.textSecondary
+                                    : AppColors.secondaryDeep,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(
+                    PhosphorIconsLight.caretRight,
+                    size: 16,
+                    color: AppColors.textSecondary,
                   ),
                 ],
               ),
             ),
-            const LtrIcon(
-              PhosphorIconsLight.caretRight,
-              size: 16,
-              color: AppColors.textMuted,
-            ),
-          ],
+          ),
         ),
       ),
     );

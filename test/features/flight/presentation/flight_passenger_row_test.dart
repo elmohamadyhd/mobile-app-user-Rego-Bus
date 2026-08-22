@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
+
 import 'package:safaria/features/flight/domain/entities/flight_passenger_counts.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_passenger_row.dart';
@@ -36,7 +38,8 @@ void main() {
       residenceCode: 'EGY',
     );
     await _pump(tester, draft);
-    expect(find.text('Missing date of birth'), findsOneWidget);
+    expect(find.text('Missing Date of birth'), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.user), findsOneWidget);
   });
 
   testWidgets('shows the traveller name once complete', (tester) async {
@@ -54,9 +57,12 @@ void main() {
       addressCityCode: 'CAI',
       addressLine1: '12 Tahrir St',
       addressLine2: 'Downtown',
+      email: 'ahmed@example.com',
+      phone: '01000000000',
     );
     await _pump(tester, draft);
     expect(find.text('Ahmed Mostafa'), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.check), findsOneWidget);
   });
 
   testWidgets('labels an empty draft by its slot', (tester) async {

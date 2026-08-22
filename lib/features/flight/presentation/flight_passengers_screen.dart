@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
+import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.dart';
@@ -65,6 +67,7 @@ class _FlightPassengersScreenState
     final canContinue = allComplete;
 
     return Scaffold(
+      backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(title: l10n.flightPassengersTitle),
       body: SafeArea(
         child: Align(
@@ -83,6 +86,14 @@ class _FlightPassengersScreenState
                   child: ListView(
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     children: [
+                      Text(
+                        l10n.flightPassengersFillHint,
+                        style: AppTypography.body.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
                       for (var i = 0; i < drafts.length; i++)
                         FlightPassengerRow(
                           draft: drafts[i],

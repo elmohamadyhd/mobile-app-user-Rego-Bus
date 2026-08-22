@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart' hide TextDirection;
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
-import 'package:safaria/core/utils/date_formatting.dart';
+import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/flight/data/flight_saved_travellers_store.dart';
 import 'package:safaria/features/flight/domain/entities/flight_passenger_counts.dart';
@@ -12,7 +14,9 @@ import 'package:safaria/features/flight/domain/entities/flight_passenger_draft.d
 import 'package:safaria/features/flight/domain/utils/flight_passenger_validation.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_country_field.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_form_controls.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
 /// One traveller, full screen. Reached from [FlightPassengersScreen] via
@@ -31,6 +35,7 @@ class _FlightPassengerFormScreenState
     extends ConsumerState<FlightPassengerFormScreen> {
   late FlightPassengerDraft _draft;
   bool _saveForNextTime = false;
+  int _formEpoch = 0;
 
   @override
   void initState() {
@@ -58,6 +63,16 @@ class _FlightPassengerFormScreenState
     if (mounted) Navigator.of(context).pop();
   }
 
+  void _applySaved(FlightPassengerDraft picked) {
+    setState(() {
+      _draft = picked.copyWith(
+        type: _draft.type,
+        savedId: picked.savedId,
+      );
+      _formEpoch++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -66,255 +81,394 @@ class _FlightPassengerFormScreenState
     final departure = _departureDate();
     final mismatch =
         flightPassengerTypeMismatch(_draft, departureDate: departure);
+    final locale = Localizations.localeOf(context).toString();
+    final sideBySide = !context.isCompact;
 
     return Scaffold(
+      backgroundColor: AppColors.bgBase,
       appBar: BookingAppBar(title: l10n.flightPassengersTitle),
-      body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        children: [
-          _SavedTravellerChips(
-            onPick: (picked) => setState(() {
-              _draft = picked.copyWith(
-                type: _draft.type,
-                savedId: picked.savedId,
-              );
-            }),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  initialValue: _draft.title,
-                  decoration: InputDecoration(labelText: l10n.flightFieldTitle),
-                  items: [
-                    DropdownMenuItem(
-                      value: 'MR',
-                      child: Text(l10n.flightTitleMr),
+      body: SafeArea(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: AppBreakpoints.maxContentWidth,
+            ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                      AppSpacing.lg,
+                      AppSpacing.lg,
                     ),
-                    DropdownMenuItem(
-                      value: 'MRS',
-                      child: Text(l10n.flightTitleMrs),
-                    ),
-                    DropdownMenuItem(
-                      value: 'MS',
-                      child: Text(l10n.flightTitleMs),
-                    ),
-                  ],
-                  onChanged: (value) =>
-                      setState(() => _draft = _draft.copyWith(title: value)),
+                    children: [
+                      _SavedTravellerChips(onPick: _applySaved),
+                      KeyedSubtree(
+                        key: ValueKey(_formEpoch),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            FlightSectionHeader(l10n.flightSectionIdentity),
+                            _pairOrStack(
+                              sideBySide: sideBySide,
+                              first: _dropdown<String>(
+                                label: l10n.flightFieldTitle,
+                                value: _draft.title,
+                                hint: l10n.flightSelectPlaceholder,
+                                items: [
+                                  DropdownMenuItem(
+                                    value: 'MR',
+                                    child: Text(l10n.flightTitleMr),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'MRS',
+                                    child: Text(l10n.flightTitleMrs),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'MS',
+                                    child: Text(l10n.flightTitleMs),
+                                  ),
+                                ],
+                                onChanged: (value) => setState(
+                                  () => _draft = _draft.copyWith(title: value),
+                                ),
+                              ),
+                              second: _dropdown<String>(
+                                label: l10n.flightFieldGender,
+                                value: _draft.gender,
+                                hint: l10n.flightSelectPlaceholder,
+                                items: [
+                                  DropdownMenuItem(
+                                    value: 'M',
+                                    child: Text(l10n.flightGenderMale),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'F',
+                                    child: Text(l10n.flightGenderFemale),
+                                  ),
+                                ],
+                                onChanged: (value) => setState(() {
+                                  final title = _draft.title ??
+                                      (value == 'F' ? 'MRS' : 'MR');
+                                  _draft = _draft.copyWith(
+                                    gender: value,
+                                    title: title,
+                                  );
+                                }),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            Text(
+                              l10n.flightNameAsPassport,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            _LatinField(
+                              label: l10n.flightFirstName,
+                              value: _draft.firstName,
+                              errorText: errors['firstName'],
+                              onChanged: (v) => setState(
+                                () => _draft = _draft.copyWith(firstName: v),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            _LatinField(
+                              label: l10n.flightMiddleName,
+                              value: _draft.middleName,
+                              errorText: errors['middleName'],
+                              onChanged: (v) => setState(
+                                () => _draft = _draft.copyWith(middleName: v),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            _LatinField(
+                              label: l10n.flightLastName,
+                              value: _draft.lastName,
+                              errorText: errors['lastName'],
+                              onChanged: (v) => setState(
+                                () => _draft = _draft.copyWith(lastName: v),
+                              ),
+                            ),
+                            FlightSectionHeader(l10n.flightSectionDocument),
+                            FlightFormPicker(
+                              label: l10n.flightFieldBirthDate,
+                              valueText: _draft.birthDate == null
+                                  ? null
+                                  : DateFormat.yMMMd(locale)
+                                      .format(_draft.birthDate!),
+                              hintText: l10n.flightSelectDate,
+                              icon: PhosphorIconsLight.calendarBlank,
+                              errorText: errors['birthDate'],
+                              onTap: () async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate:
+                                      _draft.birthDate ?? DateTime(1990),
+                                  firstDate: DateTime(1920),
+                                  lastDate: departure,
+                                );
+                                if (picked != null) {
+                                  setState(
+                                    () => _draft =
+                                        _draft.copyWith(birthDate: picked),
+                                  );
+                                }
+                              },
+                            ),
+                            if (mismatch != null)
+                              Padding(
+                                padding: const EdgeInsetsDirectional.only(
+                                  top: AppSpacing.xs,
+                                ),
+                                child: Text(
+                                  l10n.flightTypeMismatch,
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.secondaryDeep,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(height: AppSpacing.md),
+                            _labeledField(
+                              label: l10n.flightFieldDocumentNumber,
+                              child: TextFormField(
+                                initialValue: _draft.documentNumber,
+                                keyboardType: TextInputType.number,
+                                textDirection: TextDirection.ltr,
+                                decoration: flightFormDecoration(
+                                  errorText: errors['documentNumber'] ??
+                                      ((_draft.documentNumber ?? '')
+                                                  .isNotEmpty &&
+                                              _draft.documentNumber!
+                                                      .trim()
+                                                      .length !=
+                                                  14
+                                          ? l10n.flightNidLength
+                                          : null),
+                                ),
+                                onChanged: (v) => setState(
+                                  () => _draft =
+                                      _draft.copyWith(documentNumber: v),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            FlightCountryField(
+                              label: l10n.flightFieldNationality,
+                              value: _draft.nationalityCode,
+                              errorText: errors['nationalityCountryCode'],
+                              onChanged: (country) => setState(
+                                () => _draft = _draft.copyWith(
+                                  nationalityCode: country.passengerCode,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            FlightCountryField(
+                              label: l10n.flightFieldResidence,
+                              value: _draft.residenceCode,
+                              errorText: errors['residenceCountryCode'],
+                              onChanged: (country) => setState(
+                                () => _draft = _draft.copyWith(
+                                  residenceCode: country.passengerCode,
+                                ),
+                              ),
+                            ),
+                            FlightSectionHeader(l10n.flightSectionAddress),
+                            FlightCountryField(
+                              label: l10n.flightFieldAddressCountry,
+                              value: _draft.addressCountryCode,
+                              useIso2: true,
+                              errorText: errors['address.countryCode'],
+                              onChanged: (country) => setState(
+                                () => _draft = _draft.copyWith(
+                                  addressCountryCode: country.iso2,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            _labeledField(
+                              label: l10n.flightFieldAddressCity,
+                              child: TextFormField(
+                                initialValue: _draft.addressCityCode,
+                                textDirection: TextDirection.ltr,
+                                decoration: flightFormDecoration(
+                                  errorText: errors['address.cityCode'],
+                                ),
+                                onChanged: (v) => setState(
+                                  () => _draft =
+                                      _draft.copyWith(addressCityCode: v),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            _labeledField(
+                              label: l10n.flightFieldAddressLine1,
+                              child: TextFormField(
+                                initialValue: _draft.addressLine1,
+                                decoration: flightFormDecoration(
+                                  errorText: errors['address.line1'],
+                                ),
+                                onChanged: (v) => setState(
+                                  () =>
+                                      _draft = _draft.copyWith(addressLine1: v),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            _labeledField(
+                              label: l10n.flightFieldAddressLine2,
+                              child: TextFormField(
+                                initialValue: _draft.addressLine2,
+                                decoration: flightFormDecoration(
+                                  errorText: errors['address.line2'],
+                                ),
+                                onChanged: (v) => setState(
+                                  () =>
+                                      _draft = _draft.copyWith(addressLine2: v),
+                                ),
+                              ),
+                            ),
+                            FlightSectionHeader(l10n.flightSectionContact),
+                            _labeledField(
+                              label: l10n.flightContactEmail,
+                              child: TextFormField(
+                                initialValue: _draft.email,
+                                keyboardType: TextInputType.emailAddress,
+                                textDirection: TextDirection.ltr,
+                                decoration: flightFormDecoration(
+                                  errorText: errors['email'],
+                                ),
+                                onChanged: (v) => setState(
+                                  () => _draft = _draft.copyWith(email: v),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            _labeledField(
+                              label: l10n.flightContactPhone,
+                              child: TextFormField(
+                                initialValue: _draft.phone,
+                                keyboardType: TextInputType.phone,
+                                textDirection: TextDirection.ltr,
+                                decoration: flightFormDecoration(
+                                  errorText: errors['phone'],
+                                ),
+                                onChanged: (v) => setState(
+                                  () => _draft = _draft.copyWith(phone: v),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            CheckboxListTile(
+                              contentPadding: EdgeInsets.zero,
+                              controlAffinity: ListTileControlAffinity.leading,
+                              value: _saveForNextTime,
+                              onChanged: (value) => setState(
+                                () => _saveForNextTime = value ?? false,
+                              ),
+                              title: Text(
+                                l10n.flightSaveForNextTime,
+                                style: AppTypography.body.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  initialValue: _draft.gender,
-                  decoration:
-                      InputDecoration(labelText: l10n.flightFieldGender),
-                  items: [
-                    DropdownMenuItem(
-                      value: 'M',
-                      child: Text(l10n.flightGenderMale),
-                    ),
-                    DropdownMenuItem(
-                      value: 'F',
-                      child: Text(l10n.flightGenderFemale),
-                    ),
-                  ],
-                  onChanged: (value) => setState(() {
-                    // Derive the title from gender only while the rider has
-                    // not chosen one — never overwrite their choice.
-                    final title = _draft.title ?? (value == 'F' ? 'MRS' : 'MR');
-                    _draft = _draft.copyWith(gender: value, title: title);
-                  }),
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    AppSpacing.lg,
+                    AppSpacing.sm,
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                  ),
+                  child: PrimaryButton(
+                    label: l10n.flightSave,
+                    onPressed: _save,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            l10n.flightNameAsPassport,
-            style:
-                AppTypography.caption.copyWith(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          _LatinField(
-            label: l10n.flightFirstName,
-            value: _draft.firstName,
-            errorText: errors['firstName'],
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(firstName: v)),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _LatinField(
-            label: l10n.flightMiddleName,
-            value: _draft.middleName,
-            errorText: errors['middleName'],
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(middleName: v)),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _LatinField(
-            label: l10n.flightLastName,
-            value: _draft.lastName,
-            errorText: errors['lastName'],
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(lastName: v)),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          InkWell(
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _draft.birthDate ?? DateTime(1990),
-                firstDate: DateTime(1920),
-                lastDate: departure,
-              );
-              if (picked != null) {
-                setState(() => _draft = _draft.copyWith(birthDate: picked));
-              }
-            },
-            child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: l10n.flightFieldBirthDate,
-                errorText: errors['birthDate'],
-              ),
-              child: Text(
-                _draft.birthDate == null ? '' : toIsoDate(_draft.birthDate!),
-                style: AppTypography.body,
-              ),
+              ],
             ),
           ),
-          if (mismatch != null)
-            Padding(
-              padding: const EdgeInsetsDirectional.only(top: AppSpacing.xs),
-              child: Text(
-                l10n.flightTypeMismatch,
-                style: AppTypography.caption.copyWith(color: AppColors.warning),
-              ),
-            ),
-          const SizedBox(height: AppSpacing.md),
-          TextFormField(
-            initialValue: _draft.documentNumber,
-            keyboardType: TextInputType.number,
-            textDirection: TextDirection.ltr,
-            decoration: InputDecoration(
-              labelText: l10n.flightFieldDocumentNumber,
-              errorText: errors['documentNumber'] ??
-                  ((_draft.documentNumber ?? '').isNotEmpty &&
-                          _draft.documentNumber!.trim().length != 14
-                      ? l10n.flightNidLength
-                      : null),
-            ),
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(documentNumber: v)),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          FlightCountryField(
-            label: l10n.flightFieldNationality,
-            value: _draft.nationalityCode,
-            errorText: errors['nationalityCountryCode'],
-            onChanged: (country) => setState(
-              () => _draft =
-                  _draft.copyWith(nationalityCode: country.passengerCode),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          FlightCountryField(
-            label: l10n.flightFieldResidence,
-            value: _draft.residenceCode,
-            errorText: errors['residenceCountryCode'],
-            onChanged: (country) => setState(
-              () => _draft =
-                  _draft.copyWith(residenceCode: country.passengerCode),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            l10n.flightFieldAddressCountry,
-            style: AppTypography.body,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          FlightCountryField(
-            label: l10n.flightFieldAddressCountry,
-            value: _draft.addressCountryCode,
-            useIso2: true,
-            errorText: errors['address.countryCode'],
-            onChanged: (country) => setState(
-              () => _draft = _draft.copyWith(addressCountryCode: country.iso2),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          TextFormField(
-            initialValue: _draft.addressCityCode,
-            textDirection: TextDirection.ltr,
-            decoration: InputDecoration(
-              labelText: l10n.flightFieldAddressCity,
-              errorText: errors['address.cityCode'],
-            ),
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(addressCityCode: v)),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          TextFormField(
-            initialValue: _draft.addressLine1,
-            decoration: InputDecoration(
-              labelText: l10n.flightFieldAddressLine1,
-              errorText: errors['address.line1'],
-            ),
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(addressLine1: v)),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          TextFormField(
-            initialValue: _draft.addressLine2,
-            decoration: InputDecoration(
-              labelText: l10n.flightFieldAddressLine2,
-              errorText: errors['address.line2'],
-            ),
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(addressLine2: v)),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          TextFormField(
-            initialValue: _draft.email,
-            keyboardType: TextInputType.emailAddress,
-            textDirection: TextDirection.ltr,
-            decoration: InputDecoration(
-              labelText: l10n.flightContactEmail,
-              errorText: errors['email'],
-            ),
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(email: v)),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          TextFormField(
-            initialValue: _draft.phone,
-            keyboardType: TextInputType.phone,
-            textDirection: TextDirection.ltr,
-            decoration: InputDecoration(
-              labelText: l10n.flightContactPhone,
-              errorText: errors['phone'],
-            ),
-            onChanged: (v) =>
-                setState(() => _draft = _draft.copyWith(phone: v)),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          CheckboxListTile(
-            contentPadding: EdgeInsets.zero,
-            controlAffinity: ListTileControlAffinity.leading,
-            value: _saveForNextTime,
-            onChanged: (value) =>
-                setState(() => _saveForNextTime = value ?? false),
-            title: Text(
-              l10n.flightSaveForNextTime,
-              style: AppTypography.body,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          PrimaryButton(label: l10n.flightSave, onPressed: _save),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _pairOrStack({
+    required bool sideBySide,
+    required Widget first,
+    required Widget second,
+  }) {
+    if (!sideBySide) {
+      return Column(
+        children: [
+          first,
+          const SizedBox(height: AppSpacing.md),
+          second,
+        ],
+      );
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: first),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(child: second),
+      ],
+    );
+  }
+
+  Widget _dropdown<T>({
+    required String label,
+    required T? value,
+    required String hint,
+    required List<DropdownMenuItem<T>> items,
+    required ValueChanged<T?> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FlightFieldLabel(label),
+        const SizedBox(height: AppSpacing.xs),
+        DropdownButtonFormField<T>(
+          key: ValueKey('$label-$value'),
+          initialValue: value,
+          isExpanded: true,
+          decoration: flightFormDecoration(),
+          icon: const LtrIcon(
+            PhosphorIconsLight.caretDown,
+            size: 16,
+            color: AppColors.textSecondary,
+          ),
+          hint: Text(hint),
+          items: items,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _labeledField({required String label, required Widget child}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FlightFieldLabel(label),
+        const SizedBox(height: AppSpacing.xs),
+        child,
+      ],
     );
   }
 }
@@ -337,13 +491,20 @@ class _LatinField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      initialValue: value,
-      textDirection: TextDirection.ltr,
-      textAlign: TextAlign.left,
-      textCapitalization: TextCapitalization.words,
-      decoration: InputDecoration(labelText: label, errorText: errorText),
-      onChanged: onChanged,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FlightFieldLabel(label),
+        const SizedBox(height: AppSpacing.xs),
+        TextFormField(
+          initialValue: value,
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.left,
+          textCapitalization: TextCapitalization.words,
+          decoration: flightFormDecoration(errorText: errorText),
+          onChanged: onChanged,
+        ),
+      ],
     );
   }
 }
@@ -366,14 +527,11 @@ class _SavedTravellerChips extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.flightSavedTravellers,
-              style: AppTypography.caption
-                  .copyWith(color: AppColors.textSecondary),
-            ),
+            FlightFieldLabel(l10n.flightSavedTravellers),
             const SizedBox(height: AppSpacing.xs),
             Wrap(
               spacing: AppSpacing.xs,
+              runSpacing: AppSpacing.xs,
               children: [
                 for (final traveller in saved)
                   ActionChip(

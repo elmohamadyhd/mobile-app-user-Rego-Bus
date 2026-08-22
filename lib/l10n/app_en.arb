@@ -398,6 +398,34 @@
   "@flightPassengersTitle": {
     "description": "App bar title on the flight passenger list and form screens."
   },
+  "flightPassengersFillHint": "Open each traveller and add their details before you continue.",
+  "@flightPassengersFillHint": {
+    "description": "Helper under the passenger list explaining that every row must be completed."
+  },
+  "flightSectionIdentity": "Identity",
+  "@flightSectionIdentity": {
+    "description": "Passenger form section: title, gender, and name."
+  },
+  "flightSectionDocument": "Travel document",
+  "@flightSectionDocument": {
+    "description": "Passenger form section: date of birth, national ID, nationality, residence."
+  },
+  "flightSectionAddress": "Address",
+  "@flightSectionAddress": {
+    "description": "Passenger form section: home address fields."
+  },
+  "flightSectionContact": "Contact",
+  "@flightSectionContact": {
+    "description": "Passenger form section: email and phone."
+  },
+  "flightSelectPlaceholder": "Select",
+  "@flightSelectPlaceholder": {
+    "description": "Hint shown in empty dropdowns and country pickers."
+  },
+  "flightSelectDate": "Select date",
+  "@flightSelectDate": {
+    "description": "Hint shown in the empty date-of-birth picker."
+  },
   "flightContactEmail": "Email",
   "@flightContactEmail": {
     "description": "Label for the passenger email field."
@@ -434,59 +462,59 @@
       "field": {"type": "String"}
     }
   },
-  "flightFieldTitle": "title",
+  "flightFieldTitle": "Title",
   "@flightFieldTitle": {
     "description": "Passenger field name: title (Mr/Mrs/Ms)."
   },
-  "flightFieldFirstName": "first name",
+  "flightFieldFirstName": "First name",
   "@flightFieldFirstName": {
     "description": "Passenger field name: first name."
   },
-  "flightFieldLastName": "last name",
+  "flightFieldLastName": "Last name",
   "@flightFieldLastName": {
     "description": "Passenger field name: last name."
   },
-  "flightFieldGender": "gender",
+  "flightFieldGender": "Gender",
   "@flightFieldGender": {
     "description": "Passenger field name: gender."
   },
-  "flightFieldBirthDate": "date of birth",
+  "flightFieldBirthDate": "Date of birth",
   "@flightFieldBirthDate": {
     "description": "Passenger field name: date of birth."
   },
-  "flightFieldDocumentNumber": "national ID",
+  "flightFieldDocumentNumber": "National ID",
   "@flightFieldDocumentNumber": {
     "description": "Passenger field name: travel document / national ID number."
   },
-  "flightFieldNationality": "nationality",
+  "flightFieldNationality": "Nationality",
   "@flightFieldNationality": {
     "description": "Passenger field name: nationality."
   },
-  "flightFieldResidence": "country of residence",
+  "flightFieldResidence": "Country of residence",
   "@flightFieldResidence": {
     "description": "Passenger field name: country of residence."
   },
-  "flightFieldAddressCountry": "address country",
+  "flightFieldAddressCountry": "Country",
   "@flightFieldAddressCountry": {
     "description": "Passenger field name: home address country."
   },
-  "flightFieldAddressCity": "city",
+  "flightFieldAddressCity": "City",
   "@flightFieldAddressCity": {
     "description": "Passenger field name: home address city code."
   },
-  "flightFieldAddressLine1": "address line 1",
+  "flightFieldAddressLine1": "Address line 1",
   "@flightFieldAddressLine1": {
     "description": "Passenger field name: first line of the home address."
   },
-  "flightFieldAddressLine2": "address line 2",
+  "flightFieldAddressLine2": "Address line 2",
   "@flightFieldAddressLine2": {
     "description": "Passenger field name: second line of the home address."
   },
-  "flightFieldEmail": "email",
+  "flightFieldEmail": "Email",
   "@flightFieldEmail": {
     "description": "Passenger field name: email address."
   },
-  "flightFieldPhone": "phone",
+  "flightFieldPhone": "Phone",
   "@flightFieldPhone": {
     "description": "Passenger field name: phone number."
   },

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/flight/domain/entities/flight_country.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_form_controls.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
 /// Country picker backed by `GET /countries`.
@@ -39,18 +41,38 @@ class FlightCountryField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final countries = ref.watch(flightCountriesProvider);
 
     return countries.when(
-      loading: () => _Shell(label: label, child: const Text('…')),
-      error: (_, __) => _Shell(label: label, child: const Text('—')),
+      loading: () => IgnorePointer(
+        child: Opacity(
+          opacity: 0.55,
+          child: FlightFormPicker(
+            label: label,
+            hintText: l10n.flightSelectPlaceholder,
+            icon: PhosphorIconsLight.globe,
+            onTap: () {},
+          ),
+        ),
+      ),
+      error: (_, __) => FlightFormPicker(
+        label: label,
+        hintText: l10n.flightSelectPlaceholder,
+        icon: PhosphorIconsLight.globe,
+        errorText: errorText,
+        onTap: () {},
+      ),
       data: (list) {
         FlightCountry? selected;
         for (final country in list) {
           if (_codeOf(country) == value) selected = country;
         }
-        return _Shell(
+        return FlightFormPicker(
           label: label,
+          valueText: selected?.name,
+          hintText: l10n.flightSelectPlaceholder,
+          icon: PhosphorIconsLight.globe,
           errorText: errorText,
           onTap: () async {
             final picked = await showModalBottomSheet<FlightCountry>(
@@ -61,66 +83,8 @@ class FlightCountryField extends ConsumerWidget {
             );
             if (picked != null) onChanged(picked);
           },
-          child: Text(
-            selected?.name ?? '',
-            style: AppTypography.body,
-          ),
         );
       },
-    );
-  }
-}
-
-class _Shell extends StatelessWidget {
-  const _Shell({
-    required this.label,
-    required this.child,
-    this.onTap,
-    this.errorText,
-  });
-
-  final String label;
-  final Widget child;
-  final VoidCallback? onTap;
-  final String? errorText;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppRadius.input),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.md,
-            ),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppRadius.input),
-              border: Border.all(
-                color: errorText == null ? AppColors.hairline : AppColors.error,
-              ),
-            ),
-            child: child,
-          ),
-        ),
-        if (errorText != null)
-          Padding(
-            padding: const EdgeInsetsDirectional.only(top: AppSpacing.xs),
-            child: Text(
-              errorText!,
-              style: AppTypography.caption.copyWith(color: AppColors.error),
-            ),
-          ),
-      ],
     );
   }
 }
@@ -144,48 +108,62 @@ class _CountrySheetState extends State<_CountrySheet> {
     final matches = needle.isEmpty
         ? widget.countries
         : widget.countries
-            .where((c) =>
-                c.name.toLowerCase().contains(needle) ||
-                c.iso2.toLowerCase().startsWith(needle) ||
-                c.iso3.toLowerCase().startsWith(needle))
-            .toList();
-
-    return Padding(
-      padding: EdgeInsetsDirectional.only(
-        start: AppSpacing.lg,
-        end: AppSpacing.lg,
-        top: AppSpacing.lg,
-        bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            autofocus: true,
-            decoration: InputDecoration(hintText: l10n.flightCountrySearch),
-            onChanged: (value) => setState(() => _query = value),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (matches.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Text(
-                l10n.flightCountryEmpty,
-                style: AppTypography.body.copyWith(color: AppColors.textMuted),
-              ),
+            .where(
+              (c) =>
+                  c.name.toLowerCase().contains(needle) ||
+                  c.iso2.toLowerCase().startsWith(needle) ||
+                  c.iso3.toLowerCase().startsWith(needle),
             )
-          else
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: matches.length,
-                itemBuilder: (context, i) => ListTile(
-                  title: Text(matches[i].name, style: AppTypography.body),
-                  onTap: () => Navigator.of(context).pop(matches[i]),
+            .toList();
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.7;
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsetsDirectional.only(
+          start: AppSpacing.lg,
+          end: AppSpacing.lg,
+          top: AppSpacing.lg,
+          bottom: bottomInset + AppSpacing.lg,
+        ),
+        child: SizedBox(
+          height: maxHeight,
+          child: Column(
+            children: [
+              TextField(
+                autofocus: true,
+                decoration: flightFormDecoration(
+                  hintText: l10n.flightCountrySearch,
                 ),
+                onChanged: (value) => setState(() => _query = value),
               ),
-            ),
-        ],
+              const SizedBox(height: AppSpacing.md),
+              Expanded(
+                child: matches.isEmpty
+                    ? Center(
+                        child: Text(
+                          l10n.flightCountryEmpty,
+                          style: AppTypography.body.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: matches.length,
+                        itemBuilder: (context, i) => ListTile(
+                          title: Text(
+                            matches[i].name,
+                            style: AppTypography.body.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          onTap: () => Navigator.of(context).pop(matches[i]),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
