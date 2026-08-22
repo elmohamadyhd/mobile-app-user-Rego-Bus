@@ -87,8 +87,8 @@ class FlightTripSummaryCard extends StatelessWidget {
                         style: placeStyle,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
                         horizontal: AppSpacing.xs,
                       ),
                       child: Icon(

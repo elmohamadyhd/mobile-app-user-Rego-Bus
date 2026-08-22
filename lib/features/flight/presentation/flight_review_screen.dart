@@ -10,14 +10,19 @@ import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
 import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
+import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/features/flight/domain/entities/flight_wizard_step.dart';
+import 'package:safaria/features/flight/domain/utils/flight_airport_labels.dart';
+import 'package:safaria/features/flight/domain/utils/flight_fare_rules.dart';
 import 'package:safaria/features/flight/domain/utils/flight_price_change.dart';
 import 'package:safaria/features/flight/presentation/flight_routes.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_booking_step_bar.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_leg_badge.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_trip_summary_card.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_wizard_footer.dart';
 import 'package:safaria/l10n/app_localizations.dart';
+import 'package:safaria/shared/widgets/ltr_icon.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 
 /// Wizard step 1. Calls confirm on entry — the searched fare is an estimate
@@ -36,14 +41,6 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(flightBookingProvider.notifier).confirmSelectedOffer();
     });
-  }
-
-  static String? _legLabel(AppLocalizations l10n, int index, int total) {
-    if (total < 2) return null;
-    if (total == 2) {
-      return index == 0 ? l10n.flightLegOutbound : l10n.flightLegReturn;
-    }
-    return l10n.flightLegLabel(index + 1);
   }
 
   static String _passengerLabel(
@@ -132,43 +129,49 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
                       padding: const EdgeInsets.all(AppSpacing.lg),
                       children: [
                         if (change != null) _PriceChangeBanner(change: change),
-                        for (var i = 0; i < offer.journeys.length; i++)
-                          FlightTripSummaryCard(
-                            key: ValueKey(offer.journeys[i].id),
-                            journey: offer.journeys[i],
-                            legLabel: _legLabel(
-                              l10n,
-                              i,
-                              offer.journeys.length,
-                            ),
-                          ),
+                        ..._journeyCards(l10n, state, offer),
                         ..._fareRules(l10n, offer),
                         const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          l10n.flightPriceTotal,
-                          style: AppTypography.title.copyWith(
-                            fontWeight: FontWeight.w800,
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          decoration: BoxDecoration(
+                            color: AppColors.bgElevated,
+                            borderRadius: BorderRadius.circular(AppRadius.card),
+                            border: Border.all(color: AppColors.hairline),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.flightFareBreakdown,
+                                style: AppTypography.title.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
+                              for (final breakdown
+                                  in confirmed.passengerFareBreakdown)
+                                _FareRow(
+                                  label: _passengerLabel(l10n, breakdown),
+                                  amount: breakdown.passengerTotalAmount,
+                                  currency: confirmed.priceDetails.currency,
+                                ),
+                              _FareRow(
+                                label: l10n.flightPriceTaxes,
+                                amount: confirmed.priceDetails.taxesAmount,
+                                currency: confirmed.priceDetails.currency,
+                              ),
+                              if (confirmed.priceDetails.discountAmount > 0)
+                                _FareRow(
+                                  label: l10n.flightPriceDiscount,
+                                  amount:
+                                      -confirmed.priceDetails.discountAmount,
+                                  currency: confirmed.priceDetails.currency,
+                                ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.sm),
-                        for (final breakdown
-                            in confirmed.passengerFareBreakdown)
-                          _FareRow(
-                            label: _passengerLabel(l10n, breakdown),
-                            amount: breakdown.passengerTotalAmount,
-                            currency: confirmed.priceDetails.currency,
-                          ),
-                        _FareRow(
-                          label: l10n.flightPriceTaxes,
-                          amount: confirmed.priceDetails.taxesAmount,
-                          currency: confirmed.priceDetails.currency,
-                        ),
-                        if (confirmed.priceDetails.discountAmount > 0)
-                          _FareRow(
-                            label: l10n.flightPriceDiscount,
-                            amount: -confirmed.priceDetails.discountAmount,
-                            currency: confirmed.priceDetails.currency,
-                          ),
                       ],
                     ),
                   ),
@@ -196,10 +199,51 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
     );
   }
 
+  List<Widget> _journeyCards(
+    AppLocalizations l10n,
+    FlightBookingState state,
+    FlightOffer offer,
+  ) {
+    return [
+      for (var i = 0; i < offer.journeys.length; i++)
+        _journeyCard(l10n, state, offer, i),
+    ];
+  }
+
+  FlightTripSummaryCard _journeyCard(
+    AppLocalizations l10n,
+    FlightBookingState state,
+    FlightOffer offer,
+    int index,
+  ) {
+    final labels = flightJourneyAirportLabels(
+      index: index,
+      journey: offer.journeys[index],
+      tripType: state.searchParams?.tripType ?? FlightTripType.oneWay,
+      searchLegs: state.searchParams?.legs ?? const [],
+      namesByIata: state.searchAirportNames,
+      searchFromLabel: state.searchFromLabel,
+      searchToLabel: state.searchToLabel,
+    );
+    return FlightTripSummaryCard(
+      key: ValueKey(offer.journeys[index].id),
+      journey: offer.journeys[index],
+      originLabel: labels.origin,
+      destinationLabel: labels.destination,
+      legLabel: flightJourneyBadgeLabel(
+        l10n,
+        index: index,
+        total: offer.journeys.length,
+      ),
+      legKind: flightJourneyBadgeKind(
+        index: index,
+        total: offer.journeys.length,
+      ),
+    );
+  }
+
   List<Widget> _fareRules(AppLocalizations l10n, FlightOffer offer) {
-    final rules = offer.priceClasses
-        .expand((c) => c.rulesAndPenalties ?? const <String>[])
-        .toList();
+    final rules = uniqueFlightFareRules(offer.priceClasses);
     if (rules.isEmpty) return const [];
     return [
       const SizedBox(height: AppSpacing.sm),
@@ -210,7 +254,7 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
       const SizedBox(height: AppSpacing.sm),
       for (final rule in rules)
         Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+          padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.xs),
           child: Text(
             '•  $rule',
             style: AppTypography.body.copyWith(
@@ -234,7 +278,7 @@ class _PriceChangeBanner extends StatelessWidget {
     final now = change.nowConfirmed.toStringAsFixed(0);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      margin: const EdgeInsetsDirectional.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.secondaryTint,
@@ -243,7 +287,7 @@ class _PriceChangeBanner extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
+          const LtrIcon(
             PhosphorIconsLight.warning,
             size: 20,
             color: AppColors.secondaryDeep,
