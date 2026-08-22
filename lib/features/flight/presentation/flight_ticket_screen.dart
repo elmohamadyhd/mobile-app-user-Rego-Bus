@@ -401,24 +401,23 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: AppTypography.body.copyWith(
-              color: AppColors.textSecondary,
+          Flexible(
+            child: Text(
+              label,
+              style: AppTypography.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
-            child: Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: LtrText(
-                value,
-                style: AppTypography.body.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                ),
-                textAlign: TextAlign.end,
+            child: LtrText(
+              value,
+              style: AppTypography.body.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w700,
               ),
+              textAlign: TextAlign.end,
             ),
           ),
         ],

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
-
 import 'package:safaria/features/auth/domain/entities/auth_session.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/flight/domain/entities/flight_order.dart';

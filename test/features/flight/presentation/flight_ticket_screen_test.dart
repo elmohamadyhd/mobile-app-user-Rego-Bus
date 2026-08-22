@@ -38,12 +38,34 @@ FlightOrder _unpaidOrder() => FlightOrder(
       ],
     );
 
-FlightOrder _paidOrder() => _unpaidOrder().copyWith(
+FlightOrder _paidOrder() => FlightOrder(
+      id: '76',
+      status: 'ticketed',
       orderStatus: 'Ticketed',
       paymentStatus: 'paid',
       airlinePnr: 'ABC123',
       gdsPnr: 'GDS999',
-      checkoutUrl: null,
+      totalAmount: 37259,
+      currency: 'EGP',
+      passengers: const [
+        FlightOrderPassenger(
+          id: 'p1',
+          passengerTypeCode: 'ADT',
+          firstName: 'Mona',
+          lastName: 'Hassan',
+        ),
+      ],
+      segments: [
+        FlightOrderSegment(
+          id: '1',
+          origin: 'CAI',
+          destination: 'RUH',
+          departureDateTime: DateTime(2026, 8, 24, 15, 10),
+          arrivalDateTime: DateTime(2026, 8, 24, 18, 5),
+          marketingCarrierCode: 'XY',
+          marketingFlightNumber: '264',
+        ),
+      ],
     );
 
 Future<void> _pumpScreen(
@@ -91,10 +113,22 @@ void main() {
     await _pumpScreen(tester, order: _paidOrder());
 
     expect(find.text('Your booking is confirmed'), findsOneWidget);
-    expect(find.text('ABC123'), findsOneWidget);
-    expect(find.text('GDS999'), findsOneWidget);
-    expect(find.text('Booking reference'), findsOneWidget);
-    expect(find.text('GDS reference'), findsOneWidget);
+    expect(
+      find.text('ABC123', skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(
+      find.text('GDS999', skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Booking reference', skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(
+      find.text('GDS reference', skipOffstage: false),
+      findsOneWidget,
+    );
     expect(find.text('Go to My Tickets'), findsOneWidget);
     expect(find.text('Complete payment'), findsNothing);
   });
