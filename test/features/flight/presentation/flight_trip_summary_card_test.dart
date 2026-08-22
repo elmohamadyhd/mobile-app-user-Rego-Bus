@@ -73,4 +73,11 @@ void main() {
     final origin = tester.widget<Text>(find.text('All Airport'));
     expect(origin.style?.color, AppColors.textPrimary);
   });
+
+  testWidgets('date sits in a chip beside the return pill', (tester) async {
+    await _pump(tester);
+    expect(find.text('Sep 3'), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.calendarBlank), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsLight.airplaneLanding), findsOneWidget);
+  });
 }

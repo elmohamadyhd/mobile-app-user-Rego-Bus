@@ -45,7 +45,7 @@ class FlightBookingStepBar extends StatelessWidget {
               Expanded(
                 child: Container(
                   height: 2,
-                  margin: const EdgeInsets.only(bottom: 22),
+                  margin: const EdgeInsets.only(bottom: 20),
                   color: i <= currentIndex
                       ? AppColors.primary
                       : AppColors.hairline,
@@ -53,6 +53,7 @@ class FlightBookingStepBar extends StatelessWidget {
               ),
             _StepNode(
               label: _labelFor(l10n, steps[i]),
+              icon: _iconFor(steps[i]),
               isCompleted: i < currentIndex,
               isCurrent: i == currentIndex,
               onTap:
@@ -72,17 +73,28 @@ class FlightBookingStepBar extends StatelessWidget {
       FlightWizardStep.pay => l10n.flightStepPay,
     };
   }
+
+  static IconData _iconFor(FlightWizardStep step) {
+    return switch (step) {
+      FlightWizardStep.review => PhosphorIconsLight.clipboardText,
+      FlightWizardStep.bundles => PhosphorIconsLight.package,
+      FlightWizardStep.passengers => PhosphorIconsLight.users,
+      FlightWizardStep.pay => PhosphorIconsLight.creditCard,
+    };
+  }
 }
 
 class _StepNode extends StatelessWidget {
   const _StepNode({
     required this.label,
+    required this.icon,
     required this.isCompleted,
     required this.isCurrent,
     this.onTap,
   });
 
   final String label;
+  final IconData icon;
   final bool isCompleted;
   final bool isCurrent;
   final VoidCallback? onTap;
@@ -102,8 +114,9 @@ class _StepNode extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 22,
-                height: 22,
+                width: 28,
+                height: 28,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isCurrent
@@ -119,10 +132,16 @@ class _StepNode extends StatelessWidget {
                 child: isCompleted
                     ? const LtrIcon(
                         PhosphorIconsLight.check,
-                        size: 12,
+                        size: 14,
                         color: AppColors.primary,
                       )
-                    : null,
+                    : LtrIcon(
+                        icon,
+                        size: 14,
+                        color: isCurrent
+                            ? AppColors.onPrimary
+                            : AppColors.textMuted,
+                      ),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(

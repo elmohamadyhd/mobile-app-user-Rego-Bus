@@ -66,6 +66,8 @@ class FlightLegBadge extends StatelessWidget {
 
     return Align(
       alignment: AlignmentDirectional.centerStart,
+      widthFactor: 1,
+      heightFactor: 1,
       child: Container(
         padding: const EdgeInsetsDirectional.symmetric(
           horizontal: AppSpacing.sm,
