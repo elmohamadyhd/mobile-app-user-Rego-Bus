@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_leg_badge.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 
@@ -13,16 +15,28 @@ class FlightTripSummaryCard extends StatelessWidget {
   const FlightTripSummaryCard({
     super.key,
     required this.journey,
+    this.originLabel,
+    this.destinationLabel,
     this.legLabel,
+    this.legKind,
   });
 
   final FlightJourney journey;
+  final String? originLabel;
+  final String? destinationLabel;
   final String? legLabel;
+  final FlightLegKind? legKind;
 
   static String _time(DateTime dt) {
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';
+  }
+
+  static String _place(String? name, String iataCode) {
+    final trimmed = name?.trim();
+    if (trimmed != null && trimmed.isNotEmpty) return trimmed;
+    return iataCode;
   }
 
   @override
@@ -37,6 +51,12 @@ class FlightTripSummaryCard extends StatelessWidget {
         : journey.numberOfStops == 1
             ? l10n.flightOneStop
             : l10n.flightStopsCount(journey.numberOfStops);
+    final origin = _place(originLabel, journey.origin);
+    final destination = _place(destinationLabel, journey.destination);
+    final placeStyle = AppTypography.caption.copyWith(
+      color: AppColors.textPrimary,
+      fontWeight: FontWeight.w700,
+    );
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -49,30 +69,52 @@ class FlightTripSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (legLabel != null) ...[
-            Text(
-              legLabel!,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
+          if (legLabel != null && legKind != null) ...[
+            FlightLegBadge(label: legLabel!, kind: legKind!),
+            const SizedBox(height: AppSpacing.sm),
           ],
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(
-                  '${journey.origin} → ${journey.destination}',
-                  style: AppTypography.title.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        origin,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: placeStyle,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xs,
+                      ),
+                      child: Icon(
+                        PhosphorIconsLight.caretRight,
+                        size: 16,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        destination,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: placeStyle,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(width: AppSpacing.sm),
               Text(
                 dateText,
                 style: AppTypography.caption.copyWith(
                   color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -84,14 +126,16 @@ class FlightTripSummaryCard extends StatelessWidget {
                 '${_time(first.departureDateTime)} – '
                 '${_time(last.arrivalDateTime)}',
                 style: AppTypography.body.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
                 '· $stopsText',
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.textMuted,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
