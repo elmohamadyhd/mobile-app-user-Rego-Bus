@@ -13,12 +13,16 @@ class FlightWizardFooter extends StatelessWidget {
     required this.totalText,
     required this.ctaLabel,
     required this.onCta,
+    this.loading = false,
+    this.beforeCta,
   });
 
   final String totalLabel;
   final String totalText;
   final String ctaLabel;
   final VoidCallback? onCta;
+  final bool loading;
+  final Widget? beforeCta;
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +62,13 @@ class FlightWizardFooter extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
+              if (beforeCta != null) ...[
+                beforeCta!,
+                const SizedBox(height: AppSpacing.md),
+              ],
               PrimaryButton(
                 label: ctaLabel,
+                loading: loading,
                 onPressed: onCta,
               ),
             ],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:safaria/core/theme/app_colors.dart';
-import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 
@@ -21,47 +20,48 @@ class BookingTermsCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 24,
-          height: 24,
-          child: Checkbox(
-            value: value,
-            onChanged: (v) => onChanged(v ?? false),
-            activeColor: AppColors.primary,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            visualDensity: VisualDensity.compact,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 48),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 48,
+            height: 48,
+            child: Checkbox(
+              value: value,
+              onChanged: (v) => onChanged(v ?? false),
+              activeColor: AppColors.primary,
+              materialTapTargetSize: MaterialTapTargetSize.padded,
+            ),
           ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Text(
-                l10n.confirmTermsAgreePrefix,
-                style: AppTypography.body.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              GestureDetector(
-                onTap: onOpenTerms,
-                child: Text(
-                  l10n.confirmTermsLink,
+          Expanded(
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  l10n.confirmTermsAgreePrefix,
                   style: AppTypography.body.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
-                    decorationColor: AppColors.primary,
+                    color: AppColors.textSecondary,
                   ),
                 ),
-              ),
-            ],
+                GestureDetector(
+                  onTap: onOpenTerms,
+                  child: Text(
+                    l10n.confirmTermsLink,
+                    style: AppTypography.body.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

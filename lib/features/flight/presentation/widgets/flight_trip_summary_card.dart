@@ -52,6 +52,11 @@ class FlightTripSummaryCard extends StatelessWidget {
         : journey.numberOfStops == 1
             ? l10n.flightOneStop
             : l10n.flightStopsCount(journey.numberOfStops);
+    final flightNos = [
+      for (final segment in journey.segments)
+        '${segment.marketingCarrierCode}${segment.marketingFlightNumber}',
+    ].where((code) => code.trim().isNotEmpty).join(' · ');
+    final flightMeta = flightNos.isEmpty ? '' : ' · $flightNos';
     final origin = _place(originLabel, journey.origin);
     final destination = _place(destinationLabel, journey.destination);
     final placeStyle = AppTypography.caption.copyWith(
@@ -122,11 +127,15 @@ class FlightTripSummaryCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              Text(
-                '· $stopsText',
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: Text(
+                  '· $stopsText$flightMeta',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],

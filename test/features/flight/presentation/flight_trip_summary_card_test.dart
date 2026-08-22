@@ -59,6 +59,7 @@ void main() {
     expect(find.text('CAI'), findsNothing);
     expect(find.text('09:00 – 23:45'), findsOneWidget);
     expect(find.textContaining('1 stop'), findsOneWidget);
+    expect(find.textContaining('OS1'), findsOneWidget);
   });
 
   testWidgets('return pill uses landing icon and amber treatment',

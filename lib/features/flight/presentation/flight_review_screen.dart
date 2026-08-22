@@ -8,7 +8,6 @@ import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/core/utils/responsive.dart';
 import 'package:safaria/features/bus/presentation/widgets/booking_app_bar.dart';
-import 'package:safaria/features/flight/domain/entities/flight_confirmed_order.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/domain/entities/flight_search_params.dart';
 import 'package:safaria/features/flight/domain/entities/flight_wizard_step.dart';
@@ -18,6 +17,7 @@ import 'package:safaria/features/flight/domain/utils/flight_price_change.dart';
 import 'package:safaria/features/flight/presentation/flight_routes.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_booking_step_bar.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_fare_row.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_leg_badge.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_trip_summary_card.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_wizard_footer.dart';
@@ -41,19 +41,6 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(flightBookingProvider.notifier).confirmSelectedOffer();
     });
-  }
-
-  static String _passengerLabel(
-    AppLocalizations l10n,
-    FlightPassengerFareBreakdown breakdown,
-  ) {
-    final count = breakdown.numberOfPassengers;
-    return switch (breakdown.passengerTypeCode.toUpperCase()) {
-      'ADT' => l10n.flightFareAdults(count),
-      'CHD' => l10n.flightFareChildren(count),
-      'INF' => l10n.flightFareInfants(count),
-      _ => '$count × ${breakdown.passengerTypeCode}',
-    };
   }
 
   @override
@@ -152,18 +139,21 @@ class _FlightReviewScreenState extends ConsumerState<FlightReviewScreen> {
                               const SizedBox(height: AppSpacing.sm),
                               for (final breakdown
                                   in confirmed.passengerFareBreakdown)
-                                _FareRow(
-                                  label: _passengerLabel(l10n, breakdown),
+                                FlightFareRow(
+                                  label: flightPassengerFareLabel(
+                                    l10n,
+                                    breakdown,
+                                  ),
                                   amount: breakdown.passengerTotalAmount,
                                   currency: confirmed.priceDetails.currency,
                                 ),
-                              _FareRow(
+                              FlightFareRow(
                                 label: l10n.flightPriceTaxes,
                                 amount: confirmed.priceDetails.taxesAmount,
                                 currency: confirmed.priceDetails.currency,
                               ),
                               if (confirmed.priceDetails.discountAmount > 0)
-                                _FareRow(
+                                FlightFareRow(
                                   label: l10n.flightPriceDiscount,
                                   amount:
                                       -confirmed.priceDetails.discountAmount,
@@ -313,42 +303,6 @@ class _PriceChangeBanner extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FareRow extends StatelessWidget {
-  const _FareRow({
-    required this.label,
-    required this.amount,
-    required this.currency,
-  });
-
-  final String label;
-  final double amount;
-  final String currency;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: AppTypography.body.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          Text(
-            '${amount.toStringAsFixed(0)} $currency',
-            style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),
