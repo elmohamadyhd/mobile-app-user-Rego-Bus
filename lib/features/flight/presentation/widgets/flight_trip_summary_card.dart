@@ -8,7 +8,6 @@ import 'package:safaria/core/theme/app_typography.dart';
 import 'package:safaria/features/flight/domain/entities/flight_offer.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_leg_badge.dart';
 import 'package:safaria/l10n/app_localizations.dart';
-import 'package:safaria/shared/widgets/ltr_icon.dart';
 import 'package:safaria/shared/widgets/ltr_text.dart';
 
 /// Compact one-journey summary for the Review step.
@@ -80,7 +79,7 @@ class FlightTripSummaryCard extends StatelessWidget {
               if (legLabel != null && legKind != null)
                 FlightLegBadge(label: legLabel!, kind: legKind!),
               const Spacer(),
-              _DateChip(dateText),
+              FlightDateChip(dateText),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -139,44 +138,6 @@ class FlightTripSummaryCard extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DateChip extends StatelessWidget {
-  const _DateChip(this.label);
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsetsDirectional.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.inputFill,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const LtrIcon(
-            PhosphorIconsLight.calendarBlank,
-            size: 12,
-            color: AppColors.textSecondary,
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          Text(
-            label,
-            style: AppTypography.caption.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w700,
-            ),
           ),
         ],
       ),

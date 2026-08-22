@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -10,20 +11,23 @@ import 'package:safaria/core/router/app_router.dart';
 import 'package:safaria/core/theme/app_colors.dart';
 import 'package:safaria/core/theme/app_spacing.dart';
 import 'package:safaria/core/theme/app_typography.dart';
-import 'package:safaria/core/utils/date_formatting.dart';
 import 'package:safaria/features/auth/presentation/auth_flow_args.dart';
 import 'package:safaria/features/auth/presentation/providers/auth_providers.dart';
 import 'package:safaria/features/flight/domain/entities/flight_order.dart';
+import 'package:safaria/features/flight/domain/utils/flight_airport_labels.dart';
+import 'package:safaria/features/flight/domain/utils/flight_order_journeys.dart';
 import 'package:safaria/features/flight/domain/utils/flight_order_review.dart';
 import 'package:safaria/features/flight/domain/utils/flight_order_status.dart';
 import 'package:safaria/features/flight/presentation/flight_routes.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_booking_providers.dart';
 import 'package:safaria/features/flight/presentation/providers/flight_orders_provider.dart';
+import 'package:safaria/features/flight/presentation/widgets/flight_leg_badge.dart';
 import 'package:safaria/features/flight/presentation/widgets/flight_ticket_border.dart';
 import 'package:safaria/l10n/app_localizations.dart';
 import 'package:safaria/shared/widgets/order_rate_trip_button.dart';
 import 'package:safaria/shared/widgets/order_rated_badge.dart';
 import 'package:safaria/shared/widgets/order_review_sheet.dart';
+import 'package:safaria/shared/widgets/ltr_text.dart';
 import 'package:safaria/shared/widgets/primary_button.dart';
 import 'package:safaria/shared/widgets/skyline_float_card.dart';
 
@@ -239,19 +243,25 @@ class _OrdersList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final names = ref.watch(flightOrderAirportNamesProvider).value ?? const {};
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final order in orders) _FlightOrderCard(order: order),
+        for (final order in orders)
+          _FlightOrderCard(order: order, airportNames: names),
       ],
     );
   }
 }
 
 class _FlightOrderCard extends ConsumerWidget {
-  const _FlightOrderCard({required this.order});
+  const _FlightOrderCard({
+    required this.order,
+    required this.airportNames,
+  });
 
   final FlightOrder order;
+  final Map<String, String> airportNames;
 
   static const double _cardActionHeight = 40;
   static const double _cardActionGap = AppSpacing.sm;
@@ -267,12 +277,10 @@ class _FlightOrderCard extends ConsumerWidget {
     final paid = isFlightOrderPaid(order);
     final canRate = flightOrderCanRate(order);
     final rated = order.reviewRating;
-    final firstSegment = order.segments.isEmpty ? null : order.segments.first;
-    final departure = firstSegment?.departureDateTime;
+    final journeys = groupFlightOrderJourneys(order.segments);
     final showPay = !paid;
     final checkoutUrl = order.checkoutUrl?.trim();
-    final canPay =
-        showPay && checkoutUrl != null && checkoutUrl.isNotEmpty;
+    final canPay = showPay && checkoutUrl != null && checkoutUrl.isNotEmpty;
     final showReview = canRate || rated != null;
     final actionsHeight = _actionsStubHeightFor(
       showPay: canPay,
@@ -311,41 +319,15 @@ class _FlightOrderCard extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          firstSegment == null
-                              ? ''
-                              : '${firstSegment.origin} → ${firstSegment.destination}',
-                          style: AppTypography.title.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      _StatusBadge(paid: paid),
-                    ],
-                  ),
-                  if (departure != null) ...[
-                    const SizedBox(height: AppSpacing.sm),
-                    Row(
-                      children: [
-                        const Icon(
-                          PhosphorIconsLight.calendarBlank,
-                          size: 16,
-                          color: AppColors.textMuted,
-                        ),
-                        const SizedBox(width: AppSpacing.xs),
-                        Text(
-                          formatSearchDateTimeCell(departure, localeName),
-                          style: AppTypography.body.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                  for (var i = 0; i < journeys.length; i++) ...[
+                    if (i > 0) const SizedBox(height: AppSpacing.md),
+                    _OrderJourneyBlock(
+                      hops: journeys[i],
+                      index: i,
+                      total: journeys.length,
+                      airportNames: airportNames,
+                      localeName: localeName,
+                      trailing: i == 0 ? _StatusBadge(paid: paid) : null,
                     ),
                   ],
                   const SizedBox(height: AppSpacing.sm),
@@ -354,14 +336,17 @@ class _FlightOrderCard extends ConsumerWidget {
                     children: [
                       Text(
                         l10n.tripResultsFareLabel,
-                        style: AppTypography.caption
-                            .copyWith(color: AppColors.textSecondary),
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                      Text(
+                      LtrText(
                         '${order.totalAmount.toStringAsFixed(0)} ${order.currency}',
-                        textDirection: TextDirection.ltr,
-                        style: AppTypography.title
-                            .copyWith(fontWeight: FontWeight.w700),
+                        style: AppTypography.title.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ],
                   ),
@@ -440,6 +425,142 @@ class _FlightOrderCard extends ConsumerWidget {
             );
         ref.invalidate(flightOrdersProvider);
       },
+    );
+  }
+}
+
+class _OrderJourneyBlock extends StatelessWidget {
+  const _OrderJourneyBlock({
+    required this.hops,
+    required this.index,
+    required this.total,
+    required this.airportNames,
+    required this.localeName,
+    this.trailing,
+  });
+
+  final List<FlightOrderSegment> hops;
+  final int index;
+  final int total;
+  final Map<String, String> airportNames;
+  final String localeName;
+  final Widget? trailing;
+
+  static String _time(DateTime dt) {
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final first = hops.first;
+    final last = hops.last;
+    final origin = flightAirportDisplayName(
+      iataCode: first.origin,
+      namesByIata: airportNames,
+    );
+    final destination = flightAirportDisplayName(
+      iataCode: last.destination,
+      namesByIata: airportNames,
+    );
+    final badgeLabel = flightJourneyBadgeLabel(
+      l10n,
+      index: index,
+      total: total,
+    );
+    final badgeKind = flightJourneyBadgeKind(index: index, total: total);
+    final departure = first.departureDateTime;
+    final arrival = last.arrivalDateTime;
+    final stops = hops.length - 1;
+    final stopsText = stops == 0
+        ? l10n.flightDirect
+        : stops == 1
+            ? l10n.flightOneStop
+            : l10n.flightStopsCount(stops);
+    final flightNos = [
+      for (final hop in hops)
+        '${hop.marketingCarrierCode ?? ''}${hop.marketingFlightNumber ?? ''}',
+    ].where((code) => code.trim().isNotEmpty).join(' · ');
+    final flightMeta = flightNos.isEmpty ? '' : ' · $flightNos';
+    final placeStyle = AppTypography.caption.copyWith(
+      color: AppColors.textPrimary,
+      fontWeight: FontWeight.w700,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            if (badgeLabel != null && badgeKind != null)
+              FlightLegBadge(label: badgeLabel, kind: badgeKind),
+            if (departure != null) ...[
+              if (badgeLabel != null) const SizedBox(width: AppSpacing.xs),
+              FlightDateChip(DateFormat.MMMd(localeName).format(departure)),
+            ],
+            const Spacer(),
+            if (trailing != null) trailing!,
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                origin,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: placeStyle,
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+              child: Icon(
+                PhosphorIconsLight.caretRight,
+                size: 16,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            Expanded(
+              child: Text(
+                destination,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: placeStyle,
+              ),
+            ),
+          ],
+        ),
+        if (departure != null && arrival != null) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              LtrText(
+                '${_time(departure)} – ${_time(arrival)}',
+                style: AppTypography.body.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Flexible(
+                child: Text(
+                  '· $stopsText$flightMeta',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }
